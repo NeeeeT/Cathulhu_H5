@@ -27,9 +27,9 @@ export default class CharacterMove extends Laya.Script {
 
   onStart() {
     this.setup();
-    setInterval((()=>{
-      this.DetectRaycast();
-    }),100);
+    // setInterval((()=>{
+    //   this.DetectRaycast();
+    // }),100);
   }
   onUpdate():void{
   }

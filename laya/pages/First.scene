@@ -1,12 +1,12 @@
 {
     "x":0,
     "type":"Scene",
-    "selectedBox":2,
-    "selecteID":6,
+    "selectedBox":14,
+    "selecteID":16,
     "searchKey":"Scene",
     "props":{"width":1000,"sceneColor":"#000000","height":600},
     "nodeParent":-1,
-    "maxID":20,
+    "maxID":22,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -127,16 +127,17 @@
             "x":15,
             "type":"Image",
             "searchKey":"Image,box1",
-            "props":{"y":288,"x":733,"width":97,"skin":"comp/img_blank.png","name":"box1","height":95},
+            "props":{"y":240.5,"x":830,"width":97,"skin":"comp/img_blank.png","name":"box1","height":95},
             "nodeParent":2,
             "label":"box1",
-            "isOpen":null,
+            "isOpen":true,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":14,
             "child":[
                 {
+                    "x":30,
                     "type":"BoxCollider",
                     "switchAble":true,
                     "searchKey":"BoxCollider",
@@ -152,6 +153,7 @@
                         ]
                 },
                 {
+                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",
@@ -171,7 +173,7 @@
             "x":15,
             "type":"Image",
             "searchKey":"Image,box2",
-            "props":{"y":374,"x":572,"width":97,"skin":"comp/img_blank.png","name":"box2","height":95},
+            "props":{"y":338.5,"x":830,"width":97,"skin":"comp/img_blank.png","name":"box2","height":95},
             "nodeParent":2,
             "label":"box2",
             "isOpen":null,
@@ -210,6 +212,20 @@
                     "child":[
                         ]
                 }]
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "searchKey":"Image,box3",
+            "props":{"y":340,"x":600,"width":97,"skin":"comp/img_blank.png","name":"box3","height":101},
+            "nodeParent":2,
+            "label":"box3",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":21,
+            "child":[
+                ]
         }],
     "animations":[
         {

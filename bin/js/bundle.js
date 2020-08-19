@@ -47,9 +47,6 @@
         }
         onStart() {
             this.setup();
-            setInterval((() => {
-                this.DetectRaycast();
-            }), 100);
         }
         onUpdate() {
         }
