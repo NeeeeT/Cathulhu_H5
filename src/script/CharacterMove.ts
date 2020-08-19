@@ -1,3 +1,6 @@
+import DrawCmd from "./DrawCmd";
+import Raycast from "./Raycast";
+
 export default class CharacterMove extends Laya.Script {
   private playerRig: Laya.RigidBody;
   private keyDownList: Array<boolean>;
@@ -7,6 +10,9 @@ export default class CharacterMove extends Laya.Script {
   private canJump: boolean = false;
   private timestamp: boolean = true;
   private hanlder: TimerHandler;
+
+  private cd_ray: boolean = true;//空白鍵射線CD
+
   /** @prop {name:characterNode,tips:"放入角色Node",type:Node}*/
   characterNode: Laya.Node = null;
   characterSprite: Laya.Sprite = null;
@@ -128,8 +134,25 @@ export default class CharacterMove extends Laya.Script {
     //Down
     if (this.keyDownList[40]) {
     }
+    if (this.keyDownList[32]) {
+      if(!this.cd_ray) return;
+      
+      this.cd_ray = false;
+
+      let width_offset: number = (this.characterSprite.width / 2.5) * ((this.isFacingRight) ? 1:-1);
+      let raycast_range: number = 250 * ((this.isFacingRight) ? 1:-1);
+      let random_color: string = "#"+((1<<24)*Math.random()|0).toString(16);
+
+      DrawCmd.DrawLine(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, random_color, 2);
+      Raycast._RayCast(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, 1);
+      
+      setTimeout((()=>{
+        Laya.stage.graphics.clear();
+        this.cd_ray = true;
+      }), 2000);
+    };
   }
-  resetMove() {
+  private resetMove():void {
     this.playerVelocity["Vx"] = 0;
     this.playerVelocity["Vy"] = 0;
     this.applyMoveX();
@@ -138,13 +161,13 @@ export default class CharacterMove extends Laya.Script {
     //   console.log("jk");
     // });
   }
-  applyMoveX() {
+  private applyMoveX():void {
     this.playerRig.setVelocity({
       x: this.playerVelocity["Vx"],
       y: this.playerRig.linearVelocity.y,
     });
   }
-  applyMoveY() {
+  private applyMoveY():void {
     this.playerRig.setVelocity({
       x: this.playerRig.linearVelocity.x,
       y: this.playerVelocity["Vy"],
