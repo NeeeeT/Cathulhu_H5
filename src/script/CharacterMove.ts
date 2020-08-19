@@ -1,11 +1,9 @@
-import Raycast from "./Raycast";
-import DrawCmd from "./DrawCmd";
-
 export default class CharacterMove extends Laya.Script {
-  playerRig: Laya.RigidBody;
+  private playerRig: Laya.RigidBody;
   private keyDownList: Array<boolean>;
   private playerVelocity: Object;
   private isFacingRight: boolean = true;
+  private canMove: boolean = false;
   private canJump: boolean = false;
   private timestamp: boolean = true;
   private hanlder: TimerHandler;
@@ -27,12 +25,18 @@ export default class CharacterMove extends Laya.Script {
 
   onStart() {
     this.setup();
-    // setInterval((()=>{
-    //   this.DetectRaycast();
-    // }),100);
   }
-  onUpdate():void{
+
+  onUpdate() {
+    if (this.playerVelocity["Vx"] < -this.xMaxVelocity) {
+      this.playerVelocity["Vx"] = -this.xMaxVelocity;
+    }
+    if (this.playerVelocity["Vx"] > this.xMaxVelocity) {
+      this.playerVelocity["Vx"] = this.xMaxVelocity;
+    }
+    this.characterMove();
   }
+
   setup(): void {
     this.characterSprite = this.characterNode as Laya.Sprite;
     this.playerVelocity = { Vx: 0, Vy: 0 };
@@ -54,50 +58,69 @@ export default class CharacterMove extends Laya.Script {
   onTriggerEnter(col: Laya.BoxCollider) {
     // console.log(col.label);
     if (col.label == "BoxCollider") {
-      console.log("Yes");
+      this.resetMove();
       this.canJump = true;
+      this.canMove = true;
     }
   }
   onKeyDown(e: Laya.Event): void {
     var keyCode: number = e["keyCode"];
     this.keyDownList[keyCode] = true;
-    this.characterMove();
   }
 
   onKeyUp(e: Laya.Event): void {
-    this.resetMove();
+    // this.resetMove();
+    // setInterval((this.hanlder = ()=>{
+    //   if(this.playerVelocity["Vx"])
+    //   {
+    //     this.playerVelocity["Vx"]+= -1 * this.velocityMultiplier;
+    //   }
+    // }),50)
 
+    // 因為friction設為0，為了在平地不會因慣性持續前進，而將x速度做重置
+    if (this.canJump) {
+      this.playerVelocity["Vx"] = 0;
+      this.applyMoveX();
+    }
     delete this.keyDownList[e["keyCode"]];
   }
 
   characterMove() {
-    // if (!this.timestamp) return;
     //Left
     if (this.keyDownList[37]) {
-      if (this.playerVelocity["Vx"] > -this.xMaxVelocity) {
-        this.playerVelocity["Vx"] += -1 * this.velocityMultiplier;
-        this.applyMoveX();
-      }
+      // if (!this.canMove) return;
+      // if (this.playerVelocity["Vx"] > -this.xMaxVelocity) {
+      this.playerVelocity["Vx"] += -1 * this.velocityMultiplier;
+      this.applyMoveX();
+      // }
       if (this.isFacingRight) {
+        this.playerVelocity["Vx"] = 0;
+        this.applyMoveX();
         this.characterSprite.skewY = 180;
         this.isFacingRight = false;
       }
     }
     //Up
     if (this.keyDownList[38]) {
-      this.playerRig.linearVelocity.y = 0;
-      if (!this.canJump) return;
-      this.playerVelocity["Vy"] += -10;
-      this.applyMoveY();
-      this.canJump = false;
+      if (this.canJump) {
+        this.playerVelocity["Vy"] += -10;
+        this.applyMoveY();
+        this.canJump = false;
+        // this.canMove = false;
+      }
     }
     //Right
     if (this.keyDownList[39]) {
-      if (this.playerVelocity["Vx"] < this.xMaxVelocity) {
-        this.playerVelocity["Vx"] += 1 * this.velocityMultiplier;
-        this.applyMoveX();
-      }
+      // if (!this.canMove) return;
+      // if (this.playerVelocity["Vx"] < this.xMaxVelocity) {
+      this.playerVelocity["Vx"] += 1 * this.velocityMultiplier;
+      // console.log(this.playerRig);
+
+      this.applyMoveX();
+      // }
       if (!this.isFacingRight) {
+        this.playerVelocity["Vx"] = 0;
+        this.applyMoveX();
         this.characterSprite.skewY = 0;
         this.isFacingRight = true;
       }
@@ -105,16 +128,15 @@ export default class CharacterMove extends Laya.Script {
     //Down
     if (this.keyDownList[40]) {
     }
-    this.timestamp = false;
-    setTimeout(this.hanlder, 0.5, () => {
-      this.timestamp = true;
-    });
   }
   resetMove() {
     this.playerVelocity["Vx"] = 0;
     this.playerVelocity["Vy"] = 0;
     this.applyMoveX();
     this.applyMoveY();
+    // setTimeout(this.hanlder, 0.5, () => {
+    //   console.log("jk");
+    // });
   }
   applyMoveX() {
     this.playerRig.setVelocity({
@@ -123,23 +145,9 @@ export default class CharacterMove extends Laya.Script {
     });
   }
   applyMoveY() {
-    // console.log(this.playerRig.linearVelocity.y);
     this.playerRig.setVelocity({
       x: this.playerRig.linearVelocity.x,
       y: this.playerVelocity["Vy"],
     });
-  }
-  DetectRaycast():void{
-    let wOffset:number = (this.characterSprite.width / 2.5);
-    let RaycastRange:number = 200;
-
-    if(this.isFacingRight){
-      DrawCmd.DrawLine(this.characterSprite.x + wOffset, this.characterSprite.y, this.characterSprite.x + RaycastRange + wOffset, this.characterSprite.y, '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6), 1);
-      Raycast._RayCast(this.characterSprite.x + wOffset, this.characterSprite.y, this.characterSprite.x + RaycastRange + wOffset, this.characterSprite.y);
-    }
-    else{
-      DrawCmd.DrawLine(this.characterSprite.x - wOffset, this.characterSprite.y, this.characterSprite.x - RaycastRange - wOffset, this.characterSprite.y, '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6), 1);
-      Raycast._RayCast(this.characterSprite.x - wOffset, this.characterSprite.y, this.characterSprite.x - RaycastRange - wOffset, this.characterSprite.y);
-    }
   }
 }
