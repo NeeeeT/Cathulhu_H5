@@ -38,6 +38,19 @@
     }
     ;
 
+    class CameraHandler extends Laya.Script {
+        constructor() {
+            super();
+        }
+        static CameraFollower(sprite) {
+            setInterval((() => {
+                let player_pivot = Laya.stage.width / 2;
+                Laya.stage.x = player_pivot - sprite.x;
+            }), 0);
+        }
+        ;
+    }
+
     class CharacterMove extends Laya.Script {
         constructor() {
             super();
@@ -54,6 +67,7 @@
         }
         onStart() {
             this.setup();
+            CameraHandler.CameraFollower(this.characterSprite);
         }
         onUpdate() {
             if (this.playerVelocity["Vx"] < -this.xMaxVelocity) {
@@ -189,9 +203,9 @@
             reg("script/CharacterMove.ts", CharacterMove);
         }
     }
-    GameConfig.width = 1600;
-    GameConfig.height = 700;
-    GameConfig.scaleMode = "showall";
+    GameConfig.width = 1366;
+    GameConfig.height = 768;
+    GameConfig.scaleMode = "noscale";
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";

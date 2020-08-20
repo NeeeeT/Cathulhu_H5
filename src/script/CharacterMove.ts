@@ -1,5 +1,6 @@
 import DrawCmd from "./DrawCmd";
 import Raycast from "./Raycast";
+import CameraHandler from "./CameraHandler";
 
 export default class CharacterMove extends Laya.Script {
   private playerRig: Laya.RigidBody;
@@ -32,6 +33,7 @@ export default class CharacterMove extends Laya.Script {
 
   onStart() {
     this.setup();
+    CameraHandler.CameraFollower(this.characterSprite);//初始化相機
   }
 
   onUpdate() {
@@ -95,7 +97,6 @@ export default class CharacterMove extends Laya.Script {
     }
     delete this.keyDownList[e["keyCode"]];
   }
-
   characterMove() {
     //Left
     if (this.keyDownList[37]) {
@@ -143,6 +144,7 @@ export default class CharacterMove extends Laya.Script {
     }
     //Down
     if (this.keyDownList[40]) {
+      // CameraHandler.CameraFollower(this.characterSprite);
     }
     if (this.keyDownList[32]) {
       if(!this.cd_ray) return;
