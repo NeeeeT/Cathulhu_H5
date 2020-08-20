@@ -10,6 +10,7 @@ export default class CharacterMove extends Laya.Script {
   /** @prop {name:characterNode,tips:"放入角色Node",type:Node}*/
   characterNode: Laya.Node = null;
   characterSprite: Laya.Sprite = null;
+  characterAnim: Laya.Animation;
   // /** prop {name:groundCheckNode,tips:"放入groundcheck Node",type:Node}*/
   // groundCheckNode: Laya.Node = null;
   // groundCheckCollider: Laya.CircleCollider = null;
@@ -39,6 +40,7 @@ export default class CharacterMove extends Laya.Script {
 
   setup(): void {
     this.characterSprite = this.characterNode as Laya.Sprite;
+    this.characterAnim = this.characterNode as Laya.Animation;
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
     // this.groundCheckCollider = this.groundCheckNode.getComponent(
@@ -80,6 +82,9 @@ export default class CharacterMove extends Laya.Script {
     // 因為friction設為0，為了在平地不會因慣性持續前進，而將x速度做重置
     if (this.canJump) {
       this.playerVelocity["Vx"] = 0;
+      this.characterAnim.source =
+        "character/player_01.png,character/player_02.png";
+      this.characterAnim.interval = 500;
       this.applyMoveX();
     }
     delete this.keyDownList[e["keyCode"]];
@@ -91,6 +96,9 @@ export default class CharacterMove extends Laya.Script {
       // if (!this.canMove) return;
       // if (this.playerVelocity["Vx"] > -this.xMaxVelocity) {
       this.playerVelocity["Vx"] += -1 * this.velocityMultiplier;
+      this.characterAnim.source =
+        "character/player_walk_01.png,character/player_walk_02.png";
+      this.characterAnim.interval = 100;
       this.applyMoveX();
       // }
       if (this.isFacingRight) {
@@ -115,7 +123,9 @@ export default class CharacterMove extends Laya.Script {
       // if (this.playerVelocity["Vx"] < this.xMaxVelocity) {
       this.playerVelocity["Vx"] += 1 * this.velocityMultiplier;
       // console.log(this.playerRig);
-
+      this.characterAnim.source =
+        "character/player_walk_01.png,character/player_walk_02.png";
+      this.characterAnim.interval = 100;
       this.applyMoveX();
       // }
       if (!this.isFacingRight) {

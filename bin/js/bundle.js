@@ -28,6 +28,7 @@
       }
       setup() {
           this.characterSprite = this.characterNode;
+          this.characterAnim = this.characterNode;
           this.playerVelocity = { Vx: 0, Vy: 0 };
           this.playerRig = this.owner.getComponent(Laya.RigidBody);
           this.listenKeyboard();
@@ -51,6 +52,9 @@
       onKeyUp(e) {
           if (this.canJump) {
               this.playerVelocity["Vx"] = 0;
+              this.characterAnim.source =
+                  "character/player_01.png,character/player_02.png";
+              this.characterAnim.interval = 500;
               this.applyMoveX();
           }
           delete this.keyDownList[e["keyCode"]];
@@ -58,6 +62,9 @@
       characterMove() {
           if (this.keyDownList[37]) {
               this.playerVelocity["Vx"] += -1 * this.velocityMultiplier;
+              this.characterAnim.source =
+                  "character/player_walk_01.png,character/player_walk_02.png";
+              this.characterAnim.interval = 100;
               this.applyMoveX();
               if (this.isFacingRight) {
                   this.playerVelocity["Vx"] = 0;
@@ -75,6 +82,9 @@
           }
           if (this.keyDownList[39]) {
               this.playerVelocity["Vx"] += 1 * this.velocityMultiplier;
+              this.characterAnim.source =
+                  "character/player_walk_01.png,character/player_walk_02.png";
+              this.characterAnim.interval = 100;
               this.applyMoveX();
               if (!this.isFacingRight) {
                   this.playerVelocity["Vx"] = 0;
@@ -114,8 +124,8 @@
           reg("script/CharacterMove.ts", CharacterMove);
       }
   }
-  GameConfig.width = 1000;
-  GameConfig.height = 600;
+  GameConfig.width = 1366;
+  GameConfig.height = 768;
   GameConfig.scaleMode = "showall";
   GameConfig.screenMode = "none";
   GameConfig.alignV = "middle";
