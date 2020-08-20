@@ -1,12 +1,12 @@
 {
     "x":0,
     "type":"Scene",
-    "selectedBox":164,
-    "selecteID":164,
+    "selectedBox":2,
+    "selecteID":165,
     "searchKey":"Scene",
     "props":{"width":3000,"sceneColor":"#000000","height":700},
     "nodeParent":-1,
-    "maxID":165,
+    "maxID":169,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -14,69 +14,6 @@
     "hasChild":true,
     "compId":2,
     "child":[
-        {
-            "x":15,
-            "type":"Sprite",
-            "searchKey":"Sprite,Player",
-            "props":{"y":565,"x":806,"width":79,"texture":"comp/catboy.png","pivotY":43,"pivotX":40,"name":"Player","height":86},
-            "nodeParent":2,
-            "label":"Player",
-            "isOpen":true,
-            "isDirectory":true,
-            "isAniNode":true,
-            "hasChild":true,
-            "compId":3,
-            "child":[
-                {
-                    "x":30,
-                    "type":"BoxCollider",
-                    "switchAble":true,
-                    "searchKey":"BoxCollider",
-                    "removeAble":true,
-                    "props":{"y":0,"x":0,"width":79,"height":86,"friction":0.7},
-                    "nodeParent":3,
-                    "label":"BoxCollider",
-                    "isDirectory":false,
-                    "isAniNode":true,
-                    "hasChild":false,
-                    "compId":4,
-                    "child":[
-                        ]
-                },
-                {
-                    "x":30,
-                    "type":"RigidBody",
-                    "switchAble":true,
-                    "searchKey":"RigidBody",
-                    "removeAble":true,
-                    "props":{"gravityScale":3,"allowRotation":false},
-                    "nodeParent":3,
-                    "label":"RigidBody",
-                    "isDirectory":false,
-                    "isAniNode":true,
-                    "hasChild":false,
-                    "compId":5,
-                    "child":[
-                        ]
-                },
-                {
-                    "x":30,
-                    "type":"Script",
-                    "switchAble":true,
-                    "source":"src/script/CharacterMove.ts",
-                    "searchKey":"Script,CharacterMove",
-                    "removeAble":true,
-                    "props":{"yMaxVelocity":3,"xMaxVelocity":3,"velocityMultiplier":3,"characterNode":"@node:3"},
-                    "nodeParent":3,
-                    "label":"CharacterMove",
-                    "isDirectory":false,
-                    "isAniNode":true,
-                    "hasChild":false,
-                    "compId":9,
-                    "child":[
-                        ]
-                }]
-        },
         {
             "x":15,
             "type":"Sprite",
@@ -1425,6 +1362,69 @@
                             "child":[
                                 ]
                         }]
+                }]
+        },
+        {
+            "x":15,
+            "type":"Animation",
+            "searchKey":"Animation",
+            "props":{"y":75,"x":68,"width":1,"source":"character/player_01.png,character/player_02.png","pivotY":75,"pivotX":68,"interval":500,"height":1,"autoPlay":true},
+            "nodeParent":2,
+            "label":"Animation",
+            "isOpen":true,
+            "isDirectory":true,
+            "isAniNode":true,
+            "hasChild":true,
+            "compId":165,
+            "child":[
+                {
+                    "x":30,
+                    "type":"BoxCollider",
+                    "switchAble":true,
+                    "searchKey":"BoxCollider",
+                    "removeAble":true,
+                    "props":{"y":0,"x":0,"width":132,"height":130,"friction":0},
+                    "nodeParent":165,
+                    "label":"BoxCollider",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":166,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"RigidBody",
+                    "switchAble":true,
+                    "searchKey":"RigidBody",
+                    "removeAble":true,
+                    "props":{"gravityScale":3,"allowRotation":false},
+                    "nodeParent":165,
+                    "label":"RigidBody",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":167,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Script",
+                    "switchAble":true,
+                    "source":"src/script/CharacterMove.ts",
+                    "searchKey":"Script,CharacterMove",
+                    "removeAble":true,
+                    "props":{"yMaxVelocity":3,"xMaxVelocity":3,"velocityMultiplier":3,"characterNode":"@node:165"},
+                    "nodeParent":165,
+                    "label":"CharacterMove",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":168,
+                    "child":[
+                        ]
                 }]
         }],
     "animations":[
