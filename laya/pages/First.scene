@@ -18,16 +18,17 @@
             "x":15,
             "type":"Sprite",
             "searchKey":"Sprite,Ground",
-            "props":{"y":609,"x":2,"width":3000,"name":"Ground","height":159},
+            "props":{"y":609,"x":2,"width":3000,"texture":"comp/box.png","name":"Ground","height":159},
             "nodeParent":2,
             "label":"Ground",
-            "isOpen":false,
+            "isOpen":true,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":6,
             "child":[
                 {
+                    "x":30,
                     "type":"BoxCollider",
                     "switchAble":true,
                     "searchKey":"BoxCollider",
@@ -43,6 +44,7 @@
                         ]
                 },
                 {
+                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",
@@ -62,7 +64,7 @@
             "x":15,
             "type":"Sprite",
             "searchKey":"Sprite,boxcontainer",
-            "props":{"y":0,"x":0,"width":300,"visible":false,"name":"boxcontainer","height":713},
+            "props":{"y":0,"x":0,"width":300,"visible":true,"name":"boxcontainer","height":713},
             "nodeParent":2,
             "label":"boxcontainer",
             "isOpen":false,
@@ -74,7 +76,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":508,"x":1272,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":505,"x":1272,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -504,7 +506,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":415,"x":197,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":488,"x":200,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -547,7 +549,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":418,"x":100,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":491,"x":103,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -590,7 +592,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":419,"x":3,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":492,"x":6,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -633,7 +635,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":418,"x":294,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":491,"x":297,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -676,7 +678,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":419,"x":390,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":492,"x":393,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -719,7 +721,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":300,"x":356,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":373,"x":359,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -762,7 +764,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":306,"x":259,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":379,"x":262,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -805,7 +807,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":307,"x":162,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":380,"x":165,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -848,7 +850,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":200,"x":256,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":273,"x":259,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -891,7 +893,7 @@
                 {
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":207,"x":162,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":280,"x":165,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":true,
