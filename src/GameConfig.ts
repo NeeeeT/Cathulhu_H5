@@ -4,8 +4,8 @@ import CharacterMove from "./script/CharacterMove"
 * 游戏初始化配置;
 */
 export default class GameConfig{
-    static width:number=1200;
-    static height:number=600;
+    static width:number=1600;
+    static height:number=700;
     static scaleMode:string="showall";
     static screenMode:string="none";
     static alignV:string="middle";

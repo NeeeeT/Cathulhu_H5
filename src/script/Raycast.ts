@@ -2,34 +2,34 @@ export default class Raycast extends Laya.Script{
     constructor(){
         super();
     }
-    public static _RayCast(startX:number, startY:number, endX:number, endY:number, type:number):number 
+    public static _RayCast(startX:number, startY:number, endX:number, endY:number, direction:number):object 
     {
-        // 參數5(type)定義: 1返回所有射到的物體(貫穿)；0返回第一個射到的物體(非貫穿)。
-
+        // 參數5(direction)定義: 1為正向(朝右)，0為反向(朝左)。
         let world = Laya.Physics.I.world;
-        let hit:number = 0;//射中的物體數量
-    
+        let hit: number = 0;//射中的物體數量
+        let rigidbody_arr: Laya.RigidBody[] = [];
+        
+        let sprite_arr: Laya.Sprite[] = [];
+        
         world.RayCast(function(fixture, point, normal, fraction)
         {
-            // console.log('射線接觸到的物體 -> ' , fixture);
-            // console.log('射線交點 ->', point);
-            // console.log('射線交點面的法線 ->', normal);
-            // console.log('Fraction -> ', fraction);
+            /* Here's the raycast callback*/
+            let rigidbody:Laya.RigidBody = fixture.m_body as Laya.RigidBody;
+            let sprite:Laya.Sprite = fixture.collider.owner as Laya.Sprite;
 
-            world.DestroyBody(fixture.m_body);
+            rigidbody_arr.push(rigidbody);
+            sprite_arr.push(sprite);
             hit++;
+        },
+        { x: startX / Laya.Physics.PIXEL_RATIO, y: startY / Laya.Physics.PIXEL_RATIO },
+        { x: endX / Laya.Physics.PIXEL_RATIO, y: endY / Laya.Physics.PIXEL_RATIO });
 
-            return type;
-        },
-        {
-            x: startX / Laya.Physics.PIXEL_RATIO,
-            y: startY / Laya.Physics.PIXEL_RATIO
-        },
-        {
-            x: endX / Laya.Physics.PIXEL_RATIO,
-            y: endY / Laya.Physics.PIXEL_RATIO
-        });
-        console.log('射中物體數: ', hit, '射線類型: ', type?'貫穿':'非貫穿');
-        return hit;
+        console.log('射中物體數: ', hit);
+        // console.log(sprite_arr.sort((a, b) => a.x < b.x ? -1 : a.x > b.x ? 1 : 0));//待熟練此函數
+        return {
+            'Hit': hit,
+            'Rigidbody': rigidbody_arr,
+            'Sprite': (direction) ? sprite_arr.sort((a, b) => a.x < b.x ? -1 : a.x > b.x ? 1 : 0) : sprite_arr.sort((a, b) => a.x > b.x ? -1 : a.x > b.x ? 1 : 0),
+        };
     };
 };

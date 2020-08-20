@@ -140,16 +140,33 @@ export default class CharacterMove extends Laya.Script {
       this.cd_ray = false;
 
       let width_offset: number = (this.characterSprite.width / 2.5) * ((this.isFacingRight) ? 1:-1);
-      let raycast_range: number = 250 * ((this.isFacingRight) ? 1:-1);
+      let raycast_range: number = 300 * ((this.isFacingRight) ? 1:-1);
       let random_color: string = "#"+((1<<24)*Math.random()|0).toString(16);
+      let direction:number = this.isFacingRight ? 1:0;
+      let Raycast_return:object = Raycast._RayCast(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, direction);
 
       DrawCmd.DrawLine(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, random_color, 2);
-      Raycast._RayCast(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, 1);
       
+      if(Raycast_return['Hit']){
+        let rig: Laya.RigidBody[] = Raycast_return['Rigidbody'] as Laya.RigidBody[];
+        let spr: Laya.Sprite[] = Raycast_return['Sprite'] as Laya.Sprite[];
+        let world = Laya.Physics.I.world;
+
+        // console.log(Raycast_return['Sprite']);
+        
+        //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
+        rig.forEach(e => {
+          world.DestroyBody(e);          
+        });
+        spr.forEach(e => {
+          // console.log(e.x);
+          e.graphics.destroy();
+        });
+      }
       setTimeout((()=>{
         Laya.stage.graphics.clear();
         this.cd_ray = true;
-      }), 2000);
+      }), 500);
     };
   }
   private resetMove():void {

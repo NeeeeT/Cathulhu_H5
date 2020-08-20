@@ -15117,6 +15117,7 @@ window.box2d = box2d;
                 this.rigidBody = null;
                 this._shape = null;
                 this._def = null;
+                alert('hello');
             }
         }
         get isSensor() {

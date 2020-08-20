@@ -15,27 +15,24 @@
         constructor() {
             super();
         }
-        static _RayCast(startX, startY, endX, endY, type) {
+        static _RayCast(startX, startY, endX, endY, direction) {
             let world = Laya.Physics.I.world;
             let hit = 0;
-            Laya.Physics.I.world.RayCast;
+            let rigidbody_arr = [];
+            let sprite_arr = [];
             world.RayCast(function (fixture, point, normal, fraction) {
-                console.log('射線接觸到的物體 -> ', fixture);
-                console.log('射線交點 ->', point);
-                console.log('射線交點面的法線 ->', normal);
-                console.log('Fraction -> ', fraction);
-                world.DestroyBody(fixture.m_body);
+                let rigidbody = fixture.m_body;
+                let sprite = fixture.collider.owner;
+                rigidbody_arr.push(rigidbody);
+                sprite_arr.push(sprite);
                 hit++;
-                return type;
-            }, {
-                x: startX / Laya.Physics.PIXEL_RATIO,
-                y: startY / Laya.Physics.PIXEL_RATIO
-            }, {
-                x: endX / Laya.Physics.PIXEL_RATIO,
-                y: endY / Laya.Physics.PIXEL_RATIO
-            });
-            console.log('射中物體數: ', hit, '射線類型: ', type ? '貫穿' : '非貫穿');
-            return hit;
+            }, { x: startX / Laya.Physics.PIXEL_RATIO, y: startY / Laya.Physics.PIXEL_RATIO }, { x: endX / Laya.Physics.PIXEL_RATIO, y: endY / Laya.Physics.PIXEL_RATIO });
+            console.log('射中物體數: ', hit);
+            return {
+                'Hit': hit,
+                'Rigidbody': rigidbody_arr,
+                'Sprite': (direction) ? sprite_arr.sort((a, b) => a.x < b.x ? -1 : a.x > b.x ? 1 : 0) : sprite_arr.sort((a, b) => a.x > b.x ? -1 : a.x > b.x ? 1 : 0),
+            };
         }
         ;
     }
@@ -131,14 +128,26 @@
                     return;
                 this.cd_ray = false;
                 let width_offset = (this.characterSprite.width / 2.5) * ((this.isFacingRight) ? 1 : -1);
-                let raycast_range = 250 * ((this.isFacingRight) ? 1 : -1);
+                let raycast_range = 300 * ((this.isFacingRight) ? 1 : -1);
                 let random_color = "#" + ((1 << 24) * Math.random() | 0).toString(16);
+                let direction = this.isFacingRight ? 1 : 0;
+                let Raycast_return = Raycast._RayCast(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, direction);
                 DrawCmd.DrawLine(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, random_color, 2);
-                Raycast._RayCast(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, 1);
+                if (Raycast_return['Hit']) {
+                    let rig = Raycast_return['Rigidbody'];
+                    let spr = Raycast_return['Sprite'];
+                    let world = Laya.Physics.I.world;
+                    rig.forEach(e => {
+                        world.DestroyBody(e);
+                    });
+                    spr.forEach(e => {
+                        e.graphics.destroy();
+                    });
+                }
                 setTimeout((() => {
                     Laya.stage.graphics.clear();
                     this.cd_ray = true;
-                }), 2000);
+                }), 500);
             }
             ;
         }
@@ -170,8 +179,8 @@
             reg("script/CharacterMove.ts", CharacterMove);
         }
     }
-    GameConfig.width = 1200;
-    GameConfig.height = 600;
+    GameConfig.width = 1600;
+    GameConfig.height = 700;
     GameConfig.scaleMode = "showall";
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
