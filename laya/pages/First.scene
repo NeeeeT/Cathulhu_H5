@@ -1368,7 +1368,7 @@
             "x":15,
             "type":"Animation",
             "searchKey":"Animation",
-            "props":{"y":75,"x":68,"width":1,"source":"character/player_01.png,character/player_02.png","pivotY":75,"pivotX":68,"interval":500,"height":1,"autoPlay":true},
+            "props":{"y":271,"x":776,"width":133,"source":"character/player_01.png,character/player_02.png","pivotY":75,"pivotX":68,"interval":500,"height":131,"autoPlay":true},
             "nodeParent":2,
             "label":"Animation",
             "isOpen":true,
