@@ -12,17 +12,21 @@ export default class CharacterMove extends Laya.Script {
   private timestamp: boolean = true;
   private hanlder: TimerHandler;
 
-  private cd_ray: boolean = true;//空白鍵射線CD
+  private cd_ray: boolean = true; //空白鍵射線CD
 
   /** @prop {name:characterNode,tips:"放入角色Node",type:Node}*/
   characterNode: Laya.Node = null;
   characterSprite: Laya.Sprite = null;
   characterAnim: Laya.Animation;
 
-  /** @prop {name:attackNode,tips:"放入角色Node",type:Node}*/
-  attackNode: Laya.Node = null;
-  attackSprite: Laya.Sprite = null;
-
+  /** @prop {name:attackNode_Left,tips:"放入攻擊偵測Node(左)",type:Node}*/
+  attackNode_Left: Laya.Node = null;
+  attackSprite_Left: Laya.Sprite = null;
+  attackCollider_Left: Laya.CircleCollider = null;
+  /** @prop {name:attackNode_Right,tips:"放入攻擊偵測Node(右)",type:Node}*/
+  attackNode_Right: Laya.Node = null;
+  attackSprite_Right: Laya.Sprite = null;
+  attackCollider_Right: Laya.CircleCollider = null;
   // /** prop {name:groundCheckNode,tips:"放入groundcheck Node",type:Node}*/
   // groundCheckNode: Laya.Node = null;
   // groundCheckCollider: Laya.CircleCollider = null;
@@ -38,7 +42,7 @@ export default class CharacterMove extends Laya.Script {
 
   onStart() {
     this.setup();
-    CameraHandler.CameraFollower(this.characterSprite);//初始化相機
+    CameraHandler.CameraFollower(this.characterSprite); //初始化相機
   }
 
   onUpdate() {
@@ -49,13 +53,31 @@ export default class CharacterMove extends Laya.Script {
       this.playerVelocity["Vx"] = this.xMaxVelocity;
     }
     this.characterMove();
+
+    console.log(
+      this.attackSprite_Left.visible,
+      this.attackSprite_Right.visible
+    );
   }
 
   setup(): void {
     this.characterSprite = this.characterNode as Laya.Sprite;
     this.characterAnim = this.characterNode as Laya.Animation;
 
-    this.attackSprite = this.attackNode as Laya.Sprite;
+    this.attackSprite_Left = this.attackNode_Left as Laya.Sprite;
+    this.attackSprite_Right = this.attackNode_Right as Laya.Sprite;
+    this.attackCollider_Left = this.attackNode_Left.getComponent(
+      Laya.CircleCollider
+    ) as Laya.CircleCollider;
+    this.attackCollider_Right = this.attackNode_Right.getComponent(
+      Laya.CircleCollider
+    ) as Laya.CircleCollider;
+    // this.attackCollider_Right.enabled = false;
+    // this.attackNode_Right.active = false;
+    this.attackSprite_Right.visible = false;
+    // this.attackCollider_Left.enabled = false;
+    // this.attackNode_Left.active = false;
+    this.attackSprite_Left.visible = false;
 
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
@@ -96,7 +118,7 @@ export default class CharacterMove extends Laya.Script {
     // }),50)
 
     // 因為friction設為0，為了在平地不會因慣性持續前進，而將x速度做重置
-    if (this.canJump/* || this.keyDownList[37] || this.keyDownList[39]*/) {
+    if (this.canJump /* || this.keyDownList[37] || this.keyDownList[39]*/) {
       this.playerVelocity["Vx"] = 0;
       this.characterAnim.source =
         "character/player_01.png,character/player_02.png";
@@ -155,41 +177,79 @@ export default class CharacterMove extends Laya.Script {
       // CameraHandler.CameraFollower(this.characterSprite);
     }
     if (this.keyDownList[32]) {
-      if(!this.cd_ray) return;
-      
+      if (!this.cd_ray) return;
+
       this.cd_ray = false;
 
-      let width_offset: number = (this.characterSprite.width / 2.5) * ((this.isFacingRight) ? 1:-1);
-      let raycast_range: number = 300 * ((this.isFacingRight) ? 1:-1);
-      let random_color: string = "#"+((1<<24)*Math.random()|0).toString(16);
-      let direction:number = this.isFacingRight ? 1:0;
-      let Raycast_return:object = Raycast._RayCast(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, direction);
+      let width_offset: number =
+        (this.characterSprite.width / 2.5) * (this.isFacingRight ? 1 : -1);
+      let raycast_range: number = 300 * (this.isFacingRight ? 1 : -1);
+      let random_color: string =
+        "#" + (((1 << 24) * Math.random()) | 0).toString(16);
+      let direction: number = this.isFacingRight ? 1 : 0;
+      let Raycast_return: object = Raycast._RayCast(
+        this.characterSprite.x + width_offset,
+        this.characterSprite.y,
+        this.characterSprite.x + width_offset + raycast_range,
+        this.characterSprite.y,
+        direction
+      );
 
-      DrawCmd.DrawLine(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, random_color, 2);
-      
-      if(Raycast_return['Hit']){
-        let rig: Laya.RigidBody[] = Raycast_return['Rigidbody'] as Laya.RigidBody[];
-        let spr: Laya.Sprite[] = Raycast_return['Sprite'] as Laya.Sprite[];
+      DrawCmd.DrawLine(
+        this.characterSprite.x + width_offset,
+        this.characterSprite.y,
+        this.characterSprite.x + width_offset + raycast_range,
+        this.characterSprite.y,
+        random_color,
+        2
+      );
+
+      if (Raycast_return["Hit"]) {
+        let rig: Laya.RigidBody[] = Raycast_return[
+          "Rigidbody"
+        ] as Laya.RigidBody[];
+        let spr: Laya.Sprite[] = Raycast_return["Sprite"] as Laya.Sprite[];
         let world = Laya.Physics.I.world;
 
         // console.log(Raycast_return['Sprite']);
-        
+
         //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
-        rig.forEach(e => {
-          world.DestroyBody(e);      
+        rig.forEach((e) => {
+          world.DestroyBody(e);
         });
-        spr.forEach(e => {
+        spr.forEach((e) => {
           console.log(e);
           e.graphics.destroy();
         });
       }
-      setTimeout((()=>{
+      setTimeout(() => {
         Laya.stage.graphics.clear();
         this.cd_ray = true;
-      }), 500);
-    };
+      }, 500);
+    }
+    if (this.keyDownList[17]) {
+      if (this.isFacingRight) {
+        // this.attackCollider_Right.enabled = true;
+        // this.attackNode_Right.active = true;
+        this.attackSprite_Right.visible = true;
+        setTimeout(() => {
+          // this.attackCollider_Right.enabled = false;
+          // this.attackNode_Right.active = false;
+          this.attackSprite_Right.visible = false;
+        }, 1000);
+      } else {
+        // this.attackCollider_Left.enabled = true;
+        // this.attackNode_Left.active = true;
+        this.attackSprite_Left.visible = true;
+        setTimeout(() => {
+          // this.attackCollider_Left.enabled = false;
+          // this.attackNode_Right.active = false;
+          this.attackSprite_Left.visible = false;
+        }, 1000);
+      }
+    }
   }
-  private resetMove():void {
+  private resetMove(): void {
     this.playerVelocity["Vx"] = 0;
     this.playerVelocity["Vy"] = 0;
     this.applyMoveX();
@@ -198,13 +258,13 @@ export default class CharacterMove extends Laya.Script {
     //   console.log("jk");
     // });
   }
-  private applyMoveX():void {
+  private applyMoveX(): void {
     this.playerRig.setVelocity({
       x: this.playerVelocity["Vx"],
       y: this.playerRig.linearVelocity.y,
     });
   }
-  private applyMoveY():void {
+  private applyMoveY(): void {
     this.playerRig.setVelocity({
       x: this.playerRig.linearVelocity.x,
       y: this.playerVelocity["Vy"],

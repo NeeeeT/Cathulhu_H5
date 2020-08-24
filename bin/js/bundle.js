@@ -43,14 +43,13 @@
             super();
         }
         static CameraFollower(sprite) {
-            setInterval((() => {
+            setInterval(() => {
                 let player_pivot_x = Laya.stage.width / 2;
                 let player_pivot_y = Laya.stage.height / 2;
                 Laya.stage.x = player_pivot_x - sprite.x;
                 Laya.stage.y = player_pivot_y - sprite.y;
-            }), 0);
+            }, 0);
         }
-        ;
     }
 
     class CharacterMove extends Laya.Script {
@@ -63,8 +62,12 @@
             this.cd_ray = true;
             this.characterNode = null;
             this.characterSprite = null;
-            this.attackNode = null;
-            this.attackSprite = null;
+            this.attackNode_Left = null;
+            this.attackSprite_Left = null;
+            this.attackCollider_Left = null;
+            this.attackNode_Right = null;
+            this.attackSprite_Right = null;
+            this.attackCollider_Right = null;
             this.xMaxVelocity = 1;
             this.yMaxVelocity = 1;
             this.velocityMultiplier = 1;
@@ -81,11 +84,17 @@
                 this.playerVelocity["Vx"] = this.xMaxVelocity;
             }
             this.characterMove();
+            console.log(this.attackSprite_Left.visible, this.attackSprite_Right.visible);
         }
         setup() {
             this.characterSprite = this.characterNode;
             this.characterAnim = this.characterNode;
-            this.attackSprite = this.attackNode;
+            this.attackSprite_Left = this.attackNode_Left;
+            this.attackSprite_Right = this.attackNode_Right;
+            this.attackCollider_Left = this.attackNode_Left.getComponent(Laya.CircleCollider);
+            this.attackCollider_Right = this.attackNode_Right.getComponent(Laya.CircleCollider);
+            this.attackSprite_Right.visible = false;
+            this.attackSprite_Left.visible = false;
             this.playerVelocity = { Vx: 0, Vy: 0 };
             this.playerRig = this.owner.getComponent(Laya.RigidBody);
             this.listenKeyboard();
@@ -127,7 +136,6 @@
                     this.playerVelocity["Vx"] = 0;
                     this.applyMoveX();
                     this.characterSprite.skewY = 180;
-                    this.attackSprite.scaleX = -1;
                     this.isFacingRight = false;
                 }
             }
@@ -148,7 +156,6 @@
                     this.playerVelocity["Vx"] = 0;
                     this.applyMoveX();
                     this.characterSprite.skewY = 0;
-                    this.attackSprite.scaleX = 1;
                     this.isFacingRight = true;
                 }
             }
@@ -158,30 +165,43 @@
                 if (!this.cd_ray)
                     return;
                 this.cd_ray = false;
-                let width_offset = (this.characterSprite.width / 2.5) * ((this.isFacingRight) ? 1 : -1);
-                let raycast_range = 300 * ((this.isFacingRight) ? 1 : -1);
-                let random_color = "#" + ((1 << 24) * Math.random() | 0).toString(16);
+                let width_offset = (this.characterSprite.width / 2.5) * (this.isFacingRight ? 1 : -1);
+                let raycast_range = 300 * (this.isFacingRight ? 1 : -1);
+                let random_color = "#" + (((1 << 24) * Math.random()) | 0).toString(16);
                 let direction = this.isFacingRight ? 1 : 0;
                 let Raycast_return = Raycast._RayCast(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, direction);
                 DrawCmd.DrawLine(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, random_color, 2);
-                if (Raycast_return['Hit']) {
-                    let rig = Raycast_return['Rigidbody'];
-                    let spr = Raycast_return['Sprite'];
+                if (Raycast_return["Hit"]) {
+                    let rig = Raycast_return["Rigidbody"];
+                    let spr = Raycast_return["Sprite"];
                     let world = Laya.Physics.I.world;
-                    rig.forEach(e => {
+                    rig.forEach((e) => {
                         world.DestroyBody(e);
                     });
-                    spr.forEach(e => {
+                    spr.forEach((e) => {
                         console.log(e);
                         e.graphics.destroy();
                     });
                 }
-                setTimeout((() => {
+                setTimeout(() => {
                     Laya.stage.graphics.clear();
                     this.cd_ray = true;
-                }), 500);
+                }, 500);
             }
-            ;
+            if (this.keyDownList[17]) {
+                if (this.isFacingRight) {
+                    this.attackSprite_Right.visible = true;
+                    setTimeout(() => {
+                        this.attackSprite_Right.visible = false;
+                    }, 1000);
+                }
+                else {
+                    this.attackSprite_Left.visible = true;
+                    setTimeout(() => {
+                        this.attackSprite_Left.visible = false;
+                    }, 1000);
+                }
+            }
         }
         resetMove() {
             this.playerVelocity["Vx"] = 0;
