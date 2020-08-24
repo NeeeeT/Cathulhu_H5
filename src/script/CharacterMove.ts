@@ -18,6 +18,11 @@ export default class CharacterMove extends Laya.Script {
   characterNode: Laya.Node = null;
   characterSprite: Laya.Sprite = null;
   characterAnim: Laya.Animation;
+
+  /** @prop {name:attackNode,tips:"放入角色Node",type:Node}*/
+  attackNode: Laya.Node = null;
+  attackSprite: Laya.Sprite = null;
+
   // /** prop {name:groundCheckNode,tips:"放入groundcheck Node",type:Node}*/
   // groundCheckNode: Laya.Node = null;
   // groundCheckCollider: Laya.CircleCollider = null;
@@ -49,6 +54,9 @@ export default class CharacterMove extends Laya.Script {
   setup(): void {
     this.characterSprite = this.characterNode as Laya.Sprite;
     this.characterAnim = this.characterNode as Laya.Animation;
+
+    this.attackSprite = this.attackNode as Laya.Sprite;
+
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
     // this.groundCheckCollider = this.groundCheckNode.getComponent(
@@ -88,7 +96,7 @@ export default class CharacterMove extends Laya.Script {
     // }),50)
 
     // 因為friction設為0，為了在平地不會因慣性持續前進，而將x速度做重置
-    if (this.canJump) {
+    if (this.canJump/* || this.keyDownList[37] || this.keyDownList[39]*/) {
       this.playerVelocity["Vx"] = 0;
       this.characterAnim.source =
         "character/player_01.png,character/player_02.png";
@@ -168,10 +176,10 @@ export default class CharacterMove extends Laya.Script {
         
         //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
         rig.forEach(e => {
-          world.DestroyBody(e);          
+          world.DestroyBody(e);      
         });
         spr.forEach(e => {
-          // console.log(e.x);
+          console.log(e);
           e.graphics.destroy();
         });
       }

@@ -63,6 +63,8 @@
             this.cd_ray = true;
             this.characterNode = null;
             this.characterSprite = null;
+            this.attackNode = null;
+            this.attackSprite = null;
             this.xMaxVelocity = 1;
             this.yMaxVelocity = 1;
             this.velocityMultiplier = 1;
@@ -83,6 +85,7 @@
         setup() {
             this.characterSprite = this.characterNode;
             this.characterAnim = this.characterNode;
+            this.attackSprite = this.attackNode;
             this.playerVelocity = { Vx: 0, Vy: 0 };
             this.playerRig = this.owner.getComponent(Laya.RigidBody);
             this.listenKeyboard();
@@ -124,6 +127,7 @@
                     this.playerVelocity["Vx"] = 0;
                     this.applyMoveX();
                     this.characterSprite.skewY = 180;
+                    this.attackSprite.scaleX = -1;
                     this.isFacingRight = false;
                 }
             }
@@ -144,6 +148,7 @@
                     this.playerVelocity["Vx"] = 0;
                     this.applyMoveX();
                     this.characterSprite.skewY = 0;
+                    this.attackSprite.scaleX = 1;
                     this.isFacingRight = true;
                 }
             }
@@ -167,6 +172,7 @@
                         world.DestroyBody(e);
                     });
                     spr.forEach(e => {
+                        console.log(e);
                         e.graphics.destroy();
                     });
                 }
@@ -197,12 +203,28 @@
         }
     }
 
+    class AtkRange extends Laya.Script {
+        constructor() {
+            super();
+        }
+        onStart() {
+        }
+        onUpdate() {
+            let x = this.owner.getComponent(Laya.RigidBody);
+            x.linearVelocity = { x: 0, y: 0 };
+        }
+        onTriggerEnter() {
+            console.log('哦哦哦哦撞到了!');
+        }
+    }
+
     class GameConfig {
         constructor() {
         }
         static init() {
             var reg = Laya.ClassUtils.regClass;
             reg("script/CharacterMove.ts", CharacterMove);
+            reg("script/AtkRange.ts", AtkRange);
         }
     }
     GameConfig.width = 1366;
@@ -215,7 +237,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = false;
+    GameConfig.physicsDebug = true;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

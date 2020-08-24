@@ -16413,7 +16413,7 @@ window.box2d = box2d;
             if (this._joint)
                 this._joint.SetMotorSpeed(value);
         }
-        get maxMotorForce() {
+        get maxMotorForce() {g
             return this._maxMotorForce;
         }
         set maxMotorForce(value) {
