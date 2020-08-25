@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"Scene",
-    "selectedBox":2,
-    "selecteID":191,
+    "selectedBox":164,
+    "selecteID":70,
     "searchKey":"Scene",
     "props":{"x":0,"width":3000,"skewY":0,"skewX":0,"sceneColor":"#000000","pivotX":0,"height":768},
     "nodeParent":-1,
@@ -65,16 +65,17 @@
             "props":{"y":0,"x":0,"width":300,"visible":true,"name":"boxcontainer","height":713},
             "nodeParent":2,
             "label":"boxcontainer",
-            "isOpen":false,
+            "isOpen":true,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":164,
             "child":[
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
-                    "props":{"y":505,"x":1272,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
+                    "props":{"y":492,"x":1660,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
                     "nodeParent":164,
                     "label":"box",
                     "isOpen":false,
@@ -115,6 +116,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":412,"x":1272,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -158,6 +160,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":412,"x":1175,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -201,6 +204,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":506,"x":1175,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -244,6 +248,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":412,"x":1368,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -287,6 +292,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":507,"x":1078,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -330,6 +336,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":412,"x":1465,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -373,6 +380,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":412,"x":1078,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -416,6 +424,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":506,"x":1369,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -459,6 +468,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":506,"x":1465,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -502,6 +512,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":488,"x":200,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -545,6 +556,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":491,"x":103,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -588,6 +600,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":492,"x":6,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -631,6 +644,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":491,"x":297,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -674,6 +688,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":492,"x":393,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -717,6 +732,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":373,"x":359,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -760,6 +776,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":379,"x":262,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -803,6 +820,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":380,"x":165,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -846,6 +864,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":273,"x":259,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -889,6 +908,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":280,"x":165,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -901,6 +921,7 @@
                     "compId":123,
                     "child":[
                         {
+                            "x":45,
                             "type":"BoxCollider",
                             "switchAble":true,
                             "searchKey":"BoxCollider",
@@ -916,6 +937,7 @@
                                 ]
                         },
                         {
+                            "x":45,
                             "type":"RigidBody",
                             "switchAble":true,
                             "searchKey":"RigidBody",
@@ -932,6 +954,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":506,"x":2388,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -975,6 +998,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":410,"x":2388,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -1018,6 +1042,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":410,"x":2291,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -1061,6 +1086,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":504,"x":2291,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -1104,6 +1130,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":410,"x":2484,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -1147,6 +1174,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":505,"x":2194,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -1190,6 +1218,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":410,"x":2581,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -1233,6 +1262,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":410,"x":2194,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -1276,6 +1306,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":504,"x":2485,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
@@ -1319,6 +1350,7 @@
                         }]
                 },
                 {
+                    "x":30,
                     "type":"Sprite",
                     "searchKey":"Sprite",
                     "props":{"y":504,"x":2581,"texture":"comp/box.png","presetID":1,"preset":"laya/pages/box.prefab"},
