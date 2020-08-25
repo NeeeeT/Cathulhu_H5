@@ -73,11 +73,11 @@ export default class CharacterMove extends Laya.Script {
       Laya.CircleCollider
     ) as Laya.CircleCollider;
     // this.attackCollider_Right.enabled = false;
-    // this.attackNode_Right.active = false;
-    this.attackSprite_Right.visible = false;
+    this.attackNode_Right.active = false;
+    // this.attackSprite_Right.visible = false;
     // this.attackCollider_Left.enabled = false;
-    // this.attackNode_Left.active = false;
-    this.attackSprite_Left.visible = false;
+    this.attackNode_Left.active = false;
+    // this.attackSprite_Left.visible = false;
 
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
@@ -230,22 +230,26 @@ export default class CharacterMove extends Laya.Script {
     if (this.keyDownList[17]) {
       if (this.isFacingRight) {
         // this.attackCollider_Right.enabled = true;
-        // this.attackNode_Right.active = true;
-        this.attackSprite_Right.visible = true;
+        this.attackNode_Right.active = true;
+        this.attackSprite_Right.y = this.characterSprite.y;
+        this.attackSprite_Right.x = this.characterSprite.x + 75;
+        // this.attackSprite_Right.visible = true;
         setTimeout(() => {
           // this.attackCollider_Right.enabled = false;
-          // this.attackNode_Right.active = false;
-          this.attackSprite_Right.visible = false;
-        }, 1000);
+          this.attackNode_Right.active = false;
+          // this.attackSprite_Right.visible = false;
+        }, 100);
       } else {
         // this.attackCollider_Left.enabled = true;
-        // this.attackNode_Left.active = true;
-        this.attackSprite_Left.visible = true;
+        this.attackNode_Left.active = true;
+        this.attackSprite_Left.y = this.characterSprite.y;
+        this.attackSprite_Left.x = this.characterSprite.x - 75;
+        // this.attackSprite_Left.visible = true;
         setTimeout(() => {
           // this.attackCollider_Left.enabled = false;
-          // this.attackNode_Right.active = false;
-          this.attackSprite_Left.visible = false;
-        }, 1000);
+          this.attackNode_Left.active = false;
+          // this.attackSprite_Left.visible = false;
+        }, 100);
       }
     }
   }

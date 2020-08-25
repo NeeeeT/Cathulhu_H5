@@ -93,8 +93,8 @@
             this.attackSprite_Right = this.attackNode_Right;
             this.attackCollider_Left = this.attackNode_Left.getComponent(Laya.CircleCollider);
             this.attackCollider_Right = this.attackNode_Right.getComponent(Laya.CircleCollider);
-            this.attackSprite_Right.visible = false;
-            this.attackSprite_Left.visible = false;
+            this.attackNode_Right.active = false;
+            this.attackNode_Left.active = false;
             this.playerVelocity = { Vx: 0, Vy: 0 };
             this.playerRig = this.owner.getComponent(Laya.RigidBody);
             this.listenKeyboard();
@@ -190,16 +190,20 @@
             }
             if (this.keyDownList[17]) {
                 if (this.isFacingRight) {
-                    this.attackSprite_Right.visible = true;
+                    this.attackNode_Right.active = true;
+                    this.attackSprite_Right.y = this.characterSprite.y;
+                    this.attackSprite_Right.x = this.characterSprite.x + 75;
                     setTimeout(() => {
-                        this.attackSprite_Right.visible = false;
-                    }, 1000);
+                        this.attackNode_Right.active = false;
+                    }, 100);
                 }
                 else {
-                    this.attackSprite_Left.visible = true;
+                    this.attackNode_Left.active = true;
+                    this.attackSprite_Left.y = this.characterSprite.y;
+                    this.attackSprite_Left.x = this.characterSprite.x - 75;
                     setTimeout(() => {
-                        this.attackSprite_Left.visible = false;
-                    }, 1000);
+                        this.attackNode_Left.active = false;
+                    }, 100);
                 }
             }
         }
@@ -227,14 +231,15 @@
         constructor() {
             super();
         }
-        onStart() {
-        }
+        onStart() { }
         onUpdate() {
             let x = this.owner.getComponent(Laya.RigidBody);
             x.linearVelocity = { x: 0, y: 0 };
         }
-        onTriggerEnter() {
-            console.log('哦哦哦哦撞到了!');
+        onTriggerEnter(col) {
+            if (!this.owner.active)
+                return;
+            console.log("哦哦哦哦撞到了!");
         }
     }
 

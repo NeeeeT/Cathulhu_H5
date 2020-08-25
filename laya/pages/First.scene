@@ -2,7 +2,7 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":181,
+    "selecteID":191,
     "searchKey":"Scene",
     "props":{"x":0,"width":3000,"skewY":0,"skewX":0,"sceneColor":"#000000","pivotX":0,"height":768},
     "nodeParent":-1,
@@ -28,7 +28,6 @@
             "compId":6,
             "child":[
                 {
-                    "x":30,
                     "type":"BoxCollider",
                     "switchAble":true,
                     "searchKey":"BoxCollider",
@@ -44,7 +43,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",
@@ -1378,7 +1376,6 @@
             "compId":165,
             "child":[
                 {
-                    "x":30,
                     "type":"BoxCollider",
                     "switchAble":true,
                     "searchKey":"BoxCollider",
@@ -1394,7 +1391,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody,RigidBody",
@@ -1410,7 +1406,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Script",
                     "switchAble":true,
                     "source":"src/script/CharacterMove.ts",
@@ -1427,7 +1422,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"WeldJoint",
                     "switchAble":true,
                     "searchKey":"WeldJoint",
@@ -1443,7 +1437,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"WeldJoint",
                     "switchAble":true,
                     "searchKey":"WeldJoint",
@@ -1463,10 +1456,10 @@
             "x":15,
             "type":"Sprite",
             "searchKey":"Sprite,AtkRange_Right",
-            "props":{"y":330,"x":1376,"width":91,"texture":"comp/circle.png","skewY":0,"skewX":0,"scaleX":1,"pivotY":45,"pivotX":-78,"name":"AtkRange_Right","height":90},
+            "props":{"y":330,"x":1376,"width":91,"skewY":0,"skewX":0,"scaleX":1,"pivotY":45,"pivotX":-78,"name":"AtkRange_Right","height":90},
             "nodeParent":2,
             "label":"AtkRange_Right",
-            "isOpen":false,
+            "isOpen":true,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
@@ -1526,10 +1519,10 @@
             "x":15,
             "type":"Sprite",
             "searchKey":"Sprite,AtkRange_Left",
-            "props":{"y":330,"x":1380,"width":91,"texture":"comp/circle.png","skewY":0,"skewX":0,"scaleX":1,"pivotY":45,"pivotX":168,"name":"AtkRange_Left","height":90},
+            "props":{"y":330,"x":1380,"width":91,"skewY":0,"skewX":0,"scaleX":1,"pivotY":45,"pivotX":168,"name":"AtkRange_Left","height":90},
             "nodeParent":2,
             "label":"AtkRange_Left",
-            "isOpen":false,
+            "isOpen":true,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
