@@ -52,6 +52,30 @@
         }
     }
 
+    class EnemyNormal extends Laya.Script {
+        constructor() {
+            super();
+            this.name = '普通敵人';
+            this.health = 1000;
+        }
+        spawn(player) {
+            let enemyNormalSpr = new Laya.Sprite();
+            enemyNormalSpr.pos(player.x - 170, player.y - (player.height / 2));
+            enemyNormalSpr.width = player.width * 2 / 3;
+            enemyNormalSpr.height = player.height;
+            enemyNormalSpr.loadImage("comp/monster_normal.png");
+            enemyNormalSpr.addComponent(Laya.RigidBody);
+            enemyNormalSpr.addComponent(Laya.BoxCollider);
+            let enemyNormalCol = enemyNormalSpr.getComponent(Laya.BoxCollider);
+            enemyNormalCol.width = enemyNormalSpr.width;
+            enemyNormalCol.height = enemyNormalSpr.height;
+            Laya.stage.addChild(enemyNormalSpr);
+            console.log(enemyNormalSpr.width, enemyNormalSpr.height);
+            console.log(enemyNormalCol.width, enemyNormalCol.height);
+            console.log('普通敵人生成!!!');
+        }
+    }
+
     class CharacterMove extends Laya.Script {
         constructor() {
             super();
@@ -189,6 +213,8 @@
                     Laya.stage.graphics.clear();
                     this.cd_ray = true;
                 }, 500);
+                let enenmyNormal = new EnemyNormal();
+                enenmyNormal.spawn(this.characterSprite);
             }
             if (this.keyDownList[17]) {
                 if (this.isFacingRight) {
@@ -265,7 +291,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = false;
+    GameConfig.physicsDebug = true;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

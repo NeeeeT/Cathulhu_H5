@@ -1,6 +1,7 @@
 import DrawCmd from "./DrawCmd";
 import Raycast from "./Raycast";
 import CameraHandler from "./CameraHandler";
+import { EnemyNormal } from "./EnemyNormal";
 
 export default class CharacterMove extends Laya.Script {
   private playerRig: Laya.RigidBody;
@@ -229,8 +230,12 @@ export default class CharacterMove extends Laya.Script {
         Laya.stage.graphics.clear();
         this.cd_ray = true;
       }, 500);
+
+      let enenmyNormal:EnemyNormal = new EnemyNormal();
+      enenmyNormal.spawn(this.characterSprite);
     }
     if (this.keyDownList[17]) {
+
       if (this.isFacingRight) {
         // this.attackCollider_Right.enabled = true;
         this.attackNode_Right.active = true;
