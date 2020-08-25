@@ -39,7 +39,14 @@ export default class CharacterMove extends Laya.Script {
   constructor() {
     super();
   }
-
+  onAwake(){
+  //   Laya.loader.load([
+  //     "character/player_01.png",
+  //     "character/player_02.png",
+  //     "character/player_walk_01.png",
+  //     "character/player_walk_02.png"
+  // ], );
+  }
   onStart() {
     this.setup();
     CameraHandler.CameraFollower(this.characterSprite); //初始化相機
@@ -73,6 +80,7 @@ export default class CharacterMove extends Laya.Script {
     // this.attackCollider_Left.enabled = false;
     this.attackNode_Left.active = false;
     // this.attackSprite_Left.visible = false;
+    this.characterAnim.source = "character/player_01.png,character/player_02.png";
 
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);

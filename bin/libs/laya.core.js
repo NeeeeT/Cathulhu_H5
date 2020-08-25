@@ -19007,7 +19007,7 @@ window.Laya= (function (exports) {
         static cacheRes(url, data) {
             url = URL.formatURL(url);
             if (Loader.loadedMap[url] != null) {
-                console.warn("Resources already exist,is repeated loading:", url);
+                // console.warn("Resources already exist,is repeated loading:", url);
             }
             else {
                 if (data instanceof Texture) {
@@ -19022,7 +19022,7 @@ window.Laya= (function (exports) {
         static cacheTexture(url, data) {
             url = URL.formatURL(url);
             if (Loader.textureMap[url] != null) {
-                console.warn("Resources already exist,is repeated loading:", url);
+                // console.warn("Resources already exist,is repeated loading:", url);
             }
             else {
                 Loader.textureMap[url] = data;
@@ -19346,14 +19346,14 @@ window.Laya= (function (exports) {
             if (content == null) {
                 var errorCount = this._failRes[url] || 0;
                 if (errorCount < this.retryNum) {
-                    console.warn("[warn]Retry to load:", url);
+                    // console.warn("[warn]Retry to load:", url);
                     this._failRes[url] = errorCount + 1;
                     ILaya.systemTimer.once(this.retryDelay, this, this._addReTry, [resInfo], false);
                     return;
                 }
                 else {
                     Loader.clearRes(url);
-                    console.warn("[error]Failed to load:", url);
+                    //console.warn("[error]Failed to load:", url);
                     this.event(Event.ERROR, url);
                 }
             }

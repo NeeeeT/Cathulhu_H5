@@ -1,9 +1,4 @@
 D .
-D character
-P 14F25A30 player_01.png
-P 299C0000 player_02.png
-P D2B2B198 player_walk_01.png
-P 50DF7045 player_walk_02.png
 D comp
 P 1DFA6065 box.png
 P 316AD948 btn_close.png
