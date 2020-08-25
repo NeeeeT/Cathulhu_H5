@@ -235,7 +235,6 @@
         constructor() {
             super();
         }
-        onStart() { }
         onUpdate() {
             let x = this.owner.getComponent(Laya.RigidBody);
             x.linearVelocity = { x: 0, y: 0 };
@@ -266,7 +265,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = true;
+    GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

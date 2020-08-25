@@ -19007,7 +19007,7 @@ window.Laya= (function (exports) {
         static cacheRes(url, data) {
             url = URL.formatURL(url);
             if (Loader.loadedMap[url] != null) {
-                // console.warn("Resources already exist,is repeated loading:", url);
+                console.warn("Resources already exist,is repeated loading:", url);
             }
             else {
                 if (data instanceof Texture) {
@@ -19022,7 +19022,7 @@ window.Laya= (function (exports) {
         static cacheTexture(url, data) {
             url = URL.formatURL(url);
             if (Loader.textureMap[url] != null) {
-                // console.warn("Resources already exist,is repeated loading:", url);
+                console.warn("Resources already exist,is repeated loading:", url);
             }
             else {
                 Loader.textureMap[url] = data;
