@@ -84,7 +84,6 @@
                 this.playerVelocity["Vx"] = this.xMaxVelocity;
             }
             this.characterMove();
-            console.log(this.attackSprite_Left.visible, this.attackSprite_Right.visible);
         }
         setup() {
             this.characterSprite = this.characterNode;
@@ -194,6 +193,7 @@
                     this.attackSprite_Right.y = this.characterSprite.y;
                     this.attackSprite_Right.x = this.characterSprite.x + 75;
                     setTimeout(() => {
+                        this.attackSprite_Right.y = -1000;
                         this.attackNode_Right.active = false;
                     }, 100);
                 }
@@ -202,6 +202,7 @@
                     this.attackSprite_Left.y = this.characterSprite.y;
                     this.attackSprite_Left.x = this.characterSprite.x - 75;
                     setTimeout(() => {
+                        this.attackSprite_Left.y = -1000;
                         this.attackNode_Left.active = false;
                     }, 100);
                 }

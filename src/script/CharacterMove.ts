@@ -53,11 +53,6 @@ export default class CharacterMove extends Laya.Script {
       this.playerVelocity["Vx"] = this.xMaxVelocity;
     }
     this.characterMove();
-
-    console.log(
-      this.attackSprite_Left.visible,
-      this.attackSprite_Right.visible
-    );
   }
 
   setup(): void {
@@ -236,6 +231,7 @@ export default class CharacterMove extends Laya.Script {
         // this.attackSprite_Right.visible = true;
         setTimeout(() => {
           // this.attackCollider_Right.enabled = false;
+          this.attackSprite_Right.y = -1000;
           this.attackNode_Right.active = false;
           // this.attackSprite_Right.visible = false;
         }, 100);
@@ -247,6 +243,7 @@ export default class CharacterMove extends Laya.Script {
         // this.attackSprite_Left.visible = true;
         setTimeout(() => {
           // this.attackCollider_Left.enabled = false;
+          this.attackSprite_Left.y = -1000;
           this.attackNode_Left.active = false;
           // this.attackSprite_Left.visible = false;
         }, 100);
