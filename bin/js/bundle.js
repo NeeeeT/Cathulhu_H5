@@ -72,6 +72,8 @@
             this.yMaxVelocity = 1;
             this.velocityMultiplier = 1;
         }
+        onAwake() {
+        }
         onStart() {
             this.setup();
             CameraHandler.CameraFollower(this.characterSprite);
@@ -94,6 +96,7 @@
             this.attackCollider_Right = this.attackNode_Right.getComponent(Laya.CircleCollider);
             this.attackNode_Right.active = false;
             this.attackNode_Left.active = false;
+            this.characterAnim.source = "character/player_01.png,character/player_02.png";
             this.playerVelocity = { Vx: 0, Vy: 0 };
             this.playerRig = this.owner.getComponent(Laya.RigidBody);
             this.listenKeyboard();
@@ -232,7 +235,6 @@
         constructor() {
             super();
         }
-        onStart() { }
         onUpdate() {
             let x = this.owner.getComponent(Laya.RigidBody);
             x.linearVelocity = { x: 0, y: 0 };
@@ -263,7 +265,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = true;
+    GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

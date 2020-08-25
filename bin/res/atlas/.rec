@@ -1,14 +1,8 @@
 D .
-D character
-P 14F25A30 player_01.png
-P 299C0000 player_02.png
-P D2B2B198 player_walk_01.png
-P 50DF7045 player_walk_02.png
 D comp
 P 1DFA6065 box.png
 P 316AD948 btn_close.png
 P 5B258D17 button.png
-P 71B40C13 catboy.png
 P 3C493DD4 check_circle.png
 P 98E54F0D checkbox.png
 R 5298C6DC circle.png
@@ -33,7 +27,6 @@ P 5FD17798 img_bg4.png
 P 2BE22124 img_bg5.png
 P BA28BD65 img_blank.png
 P BA2A0579 label.png
-P 02B3215A player_.png
 P B017E53E progress$bar.png
 P C05839CD progress.png
 P 3C493DD4 radio.png

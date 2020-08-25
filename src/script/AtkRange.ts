@@ -2,7 +2,6 @@ export default class AtkRange extends Laya.Script {
   constructor() {
     super();
   }
-  onStart() {}
   onUpdate() {
     let x: Laya.RigidBody = this.owner.getComponent(
       Laya.RigidBody
