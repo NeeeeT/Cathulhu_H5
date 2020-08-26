@@ -39,13 +39,13 @@ export default class CharacterMove extends Laya.Script {
   constructor() {
     super();
   }
-  onAwake(){
-  //   Laya.loader.load([
-  //     "character/player_01.png",
-  //     "character/player_02.png",
-  //     "character/player_walk_01.png",
-  //     "character/player_walk_02.png"
-  // ], );
+  onAwake() {
+    //   Laya.loader.load([
+    //     "character/player_01.png",
+    //     "character/player_02.png",
+    //     "character/player_walk_01.png",
+    //     "character/player_walk_02.png"
+    // ], );
   }
   onStart() {
     this.setup();
@@ -236,6 +236,14 @@ export default class CharacterMove extends Laya.Script {
         this.attackNode_Right.active = true;
         this.attackSprite_Right.y = this.characterSprite.y;
         this.attackSprite_Right.x = this.characterSprite.x + 75;
+        this.characterAnim.source =
+          "Attack/Player_attack_0.png,Attack/Player_attack_1.png,Attack/Player_attack_2.png,Attack/Player_attack_3.png,Attack/Player_attack_4.png,Attack/Player_attack_5.png";
+        this.characterAnim.interval = 17;
+        if (this.isFacingRight) {
+          this.playerVelocity["Vx"] = 0;
+          this.characterSprite.skewY = 0;
+          this.isFacingRight = true;
+        }
         // this.attackSprite_Right.visible = true;
         setTimeout(() => {
           // this.attackCollider_Right.enabled = false;
@@ -249,6 +257,14 @@ export default class CharacterMove extends Laya.Script {
         this.attackSprite_Left.y = this.characterSprite.y;
         this.attackSprite_Left.x = this.characterSprite.x - 75;
         // this.attackSprite_Left.visible = true;
+        this.characterAnim.source =
+          "Attack/Player_attack_0.png,Attack/Player_attack_1.png,Attack/Player_attack_2.png,Attack/Player_attack_3.png,Attack/Player_attack_4.png,Attack/Player_attack_5.png";
+        this.characterAnim.interval = 17;
+        if (this.isFacingRight) {
+          this.playerVelocity["Vx"] = 0;
+          this.characterSprite.skewY = 180;
+          this.isFacingRight = false;
+        }
         setTimeout(() => {
           // this.attackCollider_Left.enabled = false;
           this.attackSprite_Left.y = -1000;

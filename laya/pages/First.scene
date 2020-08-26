@@ -2,11 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":165,
+    "selecteID":196,
     "searchKey":"Scene",
     "props":{"x":0,"width":3000,"skewY":0,"skewX":0,"sceneColor":"#000000","pivotX":0,"height":768},
     "nodeParent":-1,
-    "maxID":196,
+    "maxID":201,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -1459,7 +1459,7 @@
             "props":{"y":330,"x":1376,"width":91,"skewY":0,"skewX":0,"scaleX":1,"pivotY":45,"pivotX":-78,"name":"AtkRange_Right","height":90},
             "nodeParent":2,
             "label":"AtkRange_Right",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
@@ -1522,14 +1522,13 @@
             "props":{"y":330,"x":1380,"width":91,"skewY":0,"skewX":0,"scaleX":1,"pivotY":45,"pivotX":168,"name":"AtkRange_Left","height":90},
             "nodeParent":2,
             "label":"AtkRange_Left",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":191,
             "child":[
                 {
-                    "x":30,
                     "type":"CircleCollider",
                     "switchAble":true,
                     "searchKey":"CircleCollider",
@@ -1545,7 +1544,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",
@@ -1561,7 +1559,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Script",
                     "switchAble":true,
                     "source":"src/script/AtkRange.ts",
@@ -1574,6 +1571,52 @@
                     "isAniNode":true,
                     "hasChild":false,
                     "compId":194,
+                    "child":[
+                        ]
+                }]
+        },
+        {
+            "x":15,
+            "type":"Animation",
+            "searchKey":"Animation,Slash",
+            "props":{"y":-35,"x":898,"wrapMode":"0","source":"comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png","name":"Slash","autoPlay":true},
+            "nodeParent":2,
+            "label":"Slash",
+            "isOpen":null,
+            "isDirectory":true,
+            "isAniNode":true,
+            "hasChild":true,
+            "compId":196,
+            "child":[
+                {
+                    "type":"ColorFilterSetter",
+                    "switchAble":true,
+                    "searchKey":"ColorFilterSetter",
+                    "removeAble":true,
+                    "props":{"saturation":"15","hue":"0","contrast":"20","color":"#3e054f","brightness":"-70","alpha":"0"},
+                    "nodeParent":196,
+                    "label":"ColorFilterSetter",
+                    "isDirectory":false,
+                    "isClose":true,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":197,
+                    "child":[
+                        ]
+                },
+                {
+                    "type":"GlowFilterSetter",
+                    "switchAble":true,
+                    "searchKey":"GlowFilterSetter",
+                    "removeAble":true,
+                    "props":{"offY":"2","offX":"-1","color":"#9b05ff","blur":"10"},
+                    "nodeParent":196,
+                    "label":"GlowFilterSetter",
+                    "isDirectory":false,
+                    "isClose":true,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":199,
                     "child":[
                         ]
                 }]

@@ -195,6 +195,14 @@
                     this.attackNode_Right.active = true;
                     this.attackSprite_Right.y = this.characterSprite.y;
                     this.attackSprite_Right.x = this.characterSprite.x + 75;
+                    this.characterAnim.source =
+                        "Attack/Player_attack_0.png,Attack/Player_attack_1.png,Attack/Player_attack_2.png,Attack/Player_attack_3.png,Attack/Player_attack_4.png,Attack/Player_attack_5.png";
+                    this.characterAnim.interval = 17;
+                    if (this.isFacingRight) {
+                        this.playerVelocity["Vx"] = 0;
+                        this.characterSprite.skewY = 0;
+                        this.isFacingRight = true;
+                    }
                     setTimeout(() => {
                         this.attackSprite_Right.y = -1000;
                         this.attackNode_Right.active = false;
@@ -204,6 +212,14 @@
                     this.attackNode_Left.active = true;
                     this.attackSprite_Left.y = this.characterSprite.y;
                     this.attackSprite_Left.x = this.characterSprite.x - 75;
+                    this.characterAnim.source =
+                        "Attack/Player_attack_0.png,Attack/Player_attack_1.png,Attack/Player_attack_2.png,Attack/Player_attack_3.png,Attack/Player_attack_4.png,Attack/Player_attack_5.png";
+                    this.characterAnim.interval = 17;
+                    if (this.isFacingRight) {
+                        this.playerVelocity["Vx"] = 0;
+                        this.characterSprite.skewY = 180;
+                        this.isFacingRight = false;
+                    }
                     setTimeout(() => {
                         this.attackSprite_Left.y = -1000;
                         this.attackNode_Left.active = false;
@@ -296,6 +312,9 @@
             Laya.AtlasInfoManager.enable("fileconfig.json", Laya.Handler.create(this, this.onConfigLoaded));
         }
         onConfigLoaded() {
+            Laya.ClassUtils.regClass("laya.effect.ColorFilterSetter", Laya.ColorFilterSetter);
+            Laya.ClassUtils.regClass("laya.effect.GlowFilterSetter", Laya.GlowFilterSetter);
+            Laya.ClassUtils.regClass("laya.effect.BlurFilterSetter", Laya.BlurFilterSetter);
             GameConfig.startScene && Laya.Scene.open(GameConfig.startScene);
         }
     }

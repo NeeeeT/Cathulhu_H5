@@ -3,7 +3,6 @@ D comp
 P 1DFA6065 box.png
 P 316AD948 btn_close.png
 P 5B258D17 button.png
-P 71B40C13 catboy.png
 P 3C493DD4 check_circle.png
 P 98E54F0D checkbox.png
 R 5298C6DC circle.png
@@ -28,7 +27,6 @@ P 5FD17798 img_bg4.png
 P 2BE22124 img_bg5.png
 P BA28BD65 img_blank.png
 P BA2A0579 label.png
-P 02B3215A player_.png
 P B017E53E progress$bar.png
 P C05839CD progress.png
 P 3C493DD4 radio.png
@@ -42,3 +40,11 @@ P 0587871F vscroll$up.png
 P 5FD17798 vscroll.png
 P DDDDFB9E vslider$bar.png
 P 01BAE7F5 vslider.png
+D comp/SlashEffects
+R 7E72A836 Slash_0029.png
+R 0A7C3187 Slash_0030.png
+R CBE5C82D Slash_0031.png
+R 60DEB618 Slash_0032.png
+R 13FB1308 Slash_0033.png
+R 36563627 Slash_0034.png
+R 97BACC82 Slash_0035.png

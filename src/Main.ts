@@ -29,6 +29,9 @@ class Main {
 	}
 
 	onConfigLoaded(): void {
+		Laya.ClassUtils.regClass("laya.effect.ColorFilterSetter", Laya.ColorFilterSetter);
+		Laya.ClassUtils.regClass("laya.effect.GlowFilterSetter", Laya.GlowFilterSetter);
+		Laya.ClassUtils.regClass("laya.effect.BlurFilterSetter", Laya.BlurFilterSetter);
 		//加载IDE指定的场景
 		GameConfig.startScene && Laya.Scene.open(GameConfig.startScene);
 	}
