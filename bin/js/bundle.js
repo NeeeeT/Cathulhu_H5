@@ -237,6 +237,7 @@
                 if (!this.cd_atk)
                     return;
                 this.createAttackCircle(this.characterSprite);
+                this.createEffect(this.characterSprite);
                 this.cd_atk = false;
                 setTimeout(() => {
                     this.cd_atk = true;
@@ -285,6 +286,25 @@
                 atkCircle.destroy();
                 atkCircle.destroyed = true;
             }, 100);
+        }
+        createEffect(player) {
+            let slashEffect = new Laya.Animation();
+            if (this.isFacingRight) {
+                slashEffect.skewY = 0;
+                slashEffect.pos(player.x, player.y - 250);
+            }
+            else {
+                slashEffect.skewY = 180;
+                slashEffect.pos(player.x, player.y - 250);
+            }
+            slashEffect.source =
+                "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
+            slashEffect.on(Laya.Event.COMPLETE, this, function () {
+                console.log("動畫消除");
+                slashEffect.clear();
+            });
+            Laya.stage.addChild(slashEffect);
+            slashEffect.play();
         }
     }
 
@@ -336,6 +356,9 @@
             Laya.AtlasInfoManager.enable("fileconfig.json", Laya.Handler.create(this, this.onConfigLoaded));
         }
         onConfigLoaded() {
+            Laya.ClassUtils.regClass("laya.effect.ColorFilterSetter", Laya.ColorFilterSetter);
+            Laya.ClassUtils.regClass("laya.effect.GlowFilterSetter", Laya.GlowFilterSetter);
+            Laya.ClassUtils.regClass("laya.effect.BlurFilterSetter", Laya.BlurFilterSetter);
             GameConfig.startScene && Laya.Scene.open(GameConfig.startScene);
         }
     }
