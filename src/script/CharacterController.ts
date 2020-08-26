@@ -3,7 +3,7 @@ import Raycast from "./Raycast";
 import CameraHandler from "./CameraHandler";
 import { EnemyNormal } from "./EnemyNormal";
 
-export default class CharacterMove extends Laya.Script {
+export default class CharacterController extends Laya.Script {
   private playerRig: Laya.RigidBody;
   private keyDownList: Array<boolean>;
   private playerVelocity: Object;
@@ -22,11 +22,15 @@ export default class CharacterMove extends Laya.Script {
   characterAnim: Laya.Animation;
 
   /** @prop {name:xMaxVelocity,tips:"x軸速度上限",type:int,default:1}*/
-  xMaxVelocity: number = 1;
+  xMaxVelocity: number = 5;
   /** @prop {name:yMaxVelocity,tips:"y軸速度上限",type:int,default:1}*/
-  yMaxVelocity: number = 1;
+  yMaxVelocity: number = 5;
   /** @prop {name:velocityMultiplier,tips:"改變角色速度增加幅度",type:int,default:1}*/
-  velocityMultiplier: number = 1;
+  velocityMultiplier: number = 5;
+
+  /** @prop {name:attackCircleRadius,tips:"調整攻擊範圍圈半徑",type:int,default:100}*/
+  attackCircleRadius: number = 100;
+
   constructor() {
     super();
   }
@@ -67,10 +71,7 @@ export default class CharacterMove extends Laya.Script {
 
   listenKeyboard(): void {
     this.keyDownList = [];
-
-    //添加键盘按下事件,一直按着某按键则会不断触发
     Laya.stage.on(Laya.Event.KEY_DOWN, this, this.onKeyDown);
-    //添加键盘抬起事件
     Laya.stage.on(Laya.Event.KEY_UP, this, this.onKeyUp);
   }
   onTriggerEnter(col: Laya.BoxCollider) {
@@ -201,7 +202,7 @@ export default class CharacterMove extends Laya.Script {
       this.cd_atk = false;
       setTimeout(() => {
         this.cd_atk = true;
-      }, 100);
+      }, 500);
     }
   }
   private resetMove(): void {
@@ -225,16 +226,16 @@ export default class CharacterMove extends Laya.Script {
 
   private createAttackCircle(player: Laya.Sprite) {
     let atkCircle = new Laya.Sprite();
-    atkCircle.width = 100;
-    atkCircle.height = 100;
+    let x_offset:number = this.isFacingRight ? player.width * 1/2 + 3 : player.width * 5/4 + 3;
     if (this.isFacingRight) {
-      atkCircle.pos(player.x + 100, player.y);
+      atkCircle.pos(player.x + x_offset, player.y - (this.characterSprite.height * 1/2) + (this.characterSprite.height * 1/8));
     } else {
-      atkCircle.pos(player.x - 100, player.y);
+      atkCircle.pos(player.x - x_offset, player.y - (this.characterSprite.height * 1/2) + (this.characterSprite.height * 1/8));
     }
-    let atkCircleCollider: Laya.CircleCollider = atkCircle.addComponent(
-      Laya.CircleCollider
-    ) as Laya.CircleCollider;
+  
+    let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(
+      Laya.BoxCollider
+    ) as Laya.BoxCollider;
     let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(
       Laya.RigidBody
     ) as Laya.RigidBody;
@@ -242,18 +243,22 @@ export default class CharacterMove extends Laya.Script {
       Laya.Script
     ) as Laya.Script;
 
+    atkBoxCollider.height = atkBoxCollider.width = this.attackCircleRadius;
+
+
     atkCircleScript.onTriggerEnter = function () {
-      console.log("攻擊攻擊攻擊");
+      console.log("歐拉歐拉歐拉歐拉歐拉歐拉歐拉歐拉");
     };
-    atkCircleCollider.isSensor = true;
+    atkBoxCollider.isSensor = true;
     atkCircleRigid.gravityScale = 0;
 
     Laya.stage.addChild(atkCircle);
     atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     setTimeout(() => {
-      Laya.Physics.I.world.DestroyBody(atkCircleRigid);
-      atkCircle.graphics.destroy();
+      // Laya.Physics.I.world.DestroyBody(atkCircleRigid);
+      // atkCircle.graphics.destroy();
+      atkCircle.destroy();
       atkCircle.destroyed = true;
     }, 100);
   }

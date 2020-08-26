@@ -101,7 +101,7 @@
         }
     }
 
-    class CharacterMove extends Laya.Script {
+    class CharacterController extends Laya.Script {
         constructor() {
             super();
             this.isFacingRight = true;
@@ -112,9 +112,10 @@
             this.cd_atk = true;
             this.characterNode = null;
             this.characterSprite = null;
-            this.xMaxVelocity = 1;
-            this.yMaxVelocity = 1;
-            this.velocityMultiplier = 1;
+            this.xMaxVelocity = 5;
+            this.yMaxVelocity = 5;
+            this.velocityMultiplier = 5;
+            this.attackCircleRadius = 100;
         }
         onAwake() {
         }
@@ -239,7 +240,7 @@
                 this.cd_atk = false;
                 setTimeout(() => {
                     this.cd_atk = true;
-                }, 100);
+                }, 500);
             }
         }
         resetMove() {
@@ -262,27 +263,26 @@
         }
         createAttackCircle(player) {
             let atkCircle = new Laya.Sprite();
-            atkCircle.width = 100;
-            atkCircle.height = 100;
+            let x_offset = this.isFacingRight ? player.width * 1 / 2 + 3 : player.width * 5 / 4 + 3;
             if (this.isFacingRight) {
-                atkCircle.pos(player.x + 100, player.y);
+                atkCircle.pos(player.x + x_offset, player.y - (this.characterSprite.height * 1 / 2) + (this.characterSprite.height * 1 / 8));
             }
             else {
-                atkCircle.pos(player.x - 100, player.y);
+                atkCircle.pos(player.x - x_offset, player.y - (this.characterSprite.height * 1 / 2) + (this.characterSprite.height * 1 / 8));
             }
-            let atkCircleCollider = atkCircle.addComponent(Laya.CircleCollider);
+            let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
             let atkCircleScript = atkCircle.addComponent(Laya.Script);
+            atkBoxCollider.height = atkBoxCollider.width = this.attackCircleRadius;
             atkCircleScript.onTriggerEnter = function () {
-                console.log("攻擊攻擊攻擊");
+                console.log("歐拉歐拉歐拉歐拉歐拉歐拉歐拉歐拉");
             };
-            atkCircleCollider.isSensor = true;
+            atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
             Laya.stage.addChild(atkCircle);
             atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
             setTimeout(() => {
-                Laya.Physics.I.world.DestroyBody(atkCircleRigid);
-                atkCircle.graphics.destroy();
+                atkCircle.destroy();
                 atkCircle.destroyed = true;
             }, 100);
         }
@@ -293,7 +293,7 @@
         }
         static init() {
             var reg = Laya.ClassUtils.regClass;
-            reg("script/CharacterMove.ts", CharacterMove);
+            reg("script/CharacterController.ts", CharacterController);
         }
     }
     GameConfig.width = 1366;
