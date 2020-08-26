@@ -224,6 +224,8 @@ export default class CharacterMove extends Laya.Script {
         spr.forEach((e) => {
           console.log(e);
           e.graphics.destroy();
+          e.destroyed = true;
+          // e.active = false;
         });
       }
       setTimeout(() => {

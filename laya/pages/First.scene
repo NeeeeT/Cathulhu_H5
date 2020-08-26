@@ -2,11 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":200,
+    "selecteID":210,
     "searchKey":"Scene",
     "props":{"x":0,"width":3000,"skewY":0,"skewX":0,"sceneColor":"#000000","pivotX":0,"height":768},
     "nodeParent":-1,
-    "maxID":203,
+    "maxID":213,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -1369,13 +1369,14 @@
             "props":{"y":330,"x":1379,"width":132,"pivotY":65,"pivotX":66,"name":"Player","interval":500,"height":130,"autoPlay":true},
             "nodeParent":2,
             "label":"Player",
-            "isOpen":false,
+            "isOpen":true,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":165,
             "child":[
                 {
+                    "x":30,
                     "type":"BoxCollider",
                     "switchAble":true,
                     "searchKey":"BoxCollider",
@@ -1391,6 +1392,7 @@
                         ]
                 },
                 {
+                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody,RigidBody",
@@ -1406,6 +1408,7 @@
                         ]
                 },
                 {
+                    "x":30,
                     "type":"Script",
                     "switchAble":true,
                     "source":"src/script/CharacterMove.ts",
@@ -1422,6 +1425,7 @@
                         ]
                 },
                 {
+                    "x":30,
                     "type":"WeldJoint",
                     "switchAble":true,
                     "searchKey":"WeldJoint",
@@ -1437,6 +1441,7 @@
                         ]
                 },
                 {
+                    "x":30,
                     "type":"WeldJoint",
                     "switchAble":true,
                     "searchKey":"WeldJoint",
@@ -1459,14 +1464,13 @@
             "props":{"y":330,"x":1376,"width":91,"skewY":0,"skewX":0,"scaleX":1,"pivotY":45,"pivotX":-78,"name":"AtkRange_Right","height":90},
             "nodeParent":2,
             "label":"AtkRange_Right",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":181,
             "child":[
                 {
-                    "x":30,
                     "type":"CircleCollider",
                     "switchAble":true,
                     "searchKey":"CircleCollider",
@@ -1482,7 +1486,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",
@@ -1498,7 +1501,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Script",
                     "switchAble":true,
                     "source":"src/script/AtkRange.ts",
@@ -1522,14 +1524,13 @@
             "props":{"y":330,"x":1380,"width":91,"skewY":0,"skewX":0,"scaleX":1,"pivotY":45,"pivotX":168,"name":"AtkRange_Left","height":90},
             "nodeParent":2,
             "label":"AtkRange_Left",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":191,
             "child":[
                 {
-                    "x":30,
                     "type":"CircleCollider",
                     "switchAble":true,
                     "searchKey":"CircleCollider",
@@ -1545,7 +1546,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",
@@ -1561,7 +1561,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Script",
                     "switchAble":true,
                     "source":"src/script/AtkRange.ts",
@@ -1574,6 +1573,94 @@
                     "isAniNode":true,
                     "hasChild":false,
                     "compId":194,
+                    "child":[
+                        ]
+                }]
+        },
+        {
+            "x":15,
+            "type":"Sprite",
+            "searchKey":"Sprite,wall",
+            "props":{"y":259,"x":2,"width":28,"texture":"comp/box.png","name":"wall","height":350},
+            "nodeParent":2,
+            "label":"wall",
+            "isOpen":false,
+            "isDirectory":true,
+            "isAniNode":true,
+            "hasChild":true,
+            "compId":204,
+            "child":[
+                {
+                    "type":"BoxCollider",
+                    "switchAble":true,
+                    "searchKey":"BoxCollider",
+                    "removeAble":true,
+                    "props":{"width":28,"height":350},
+                    "nodeParent":204,
+                    "label":"BoxCollider",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":205,
+                    "child":[
+                        ]
+                },
+                {
+                    "type":"RigidBody",
+                    "switchAble":true,
+                    "searchKey":"RigidBody",
+                    "removeAble":true,
+                    "props":{"type":"static"},
+                    "nodeParent":204,
+                    "label":"RigidBody",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":206,
+                    "child":[
+                        ]
+                }]
+        },
+        {
+            "x":15,
+            "type":"Sprite",
+            "searchKey":"Sprite,wall",
+            "props":{"y":285,"x":2972,"width":28,"texture":"comp/box.png","name":"wall","height":350},
+            "nodeParent":2,
+            "label":"wall",
+            "isOpen":null,
+            "isDirectory":true,
+            "isAniNode":true,
+            "hasChild":true,
+            "compId":210,
+            "child":[
+                {
+                    "type":"BoxCollider",
+                    "switchAble":true,
+                    "searchKey":"BoxCollider",
+                    "removeAble":true,
+                    "props":{"width":28,"height":350},
+                    "nodeParent":210,
+                    "label":"BoxCollider",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":211,
+                    "child":[
+                        ]
+                },
+                {
+                    "type":"RigidBody",
+                    "switchAble":true,
+                    "searchKey":"RigidBody",
+                    "removeAble":true,
+                    "props":{"type":"static"},
+                    "nodeParent":210,
+                    "label":"RigidBody",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":212,
                     "child":[
                         ]
                 }]

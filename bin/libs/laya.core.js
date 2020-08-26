@@ -19007,7 +19007,7 @@ window.Laya= (function (exports) {
         static cacheRes(url, data) {
             url = URL.formatURL(url);
             if (Loader.loadedMap[url] != null) {
-                console.warn("Resources already exist,is repeated loading:", url);
+                // console.warn("Resources already exist,is repeated loading:", url);
             }
             else {
                 if (data instanceof Texture) {
@@ -19022,7 +19022,7 @@ window.Laya= (function (exports) {
         static cacheTexture(url, data) {
             url = URL.formatURL(url);
             if (Loader.textureMap[url] != null) {
-                console.warn("Resources already exist,is repeated loading:", url);
+                // console.warn("Resources already exist,is repeated loading:", url);
             }
             else {
                 Loader.textureMap[url] = data;
@@ -21274,12 +21274,12 @@ window.Laya= (function (exports) {
                 this._useCanvas = true;
             this._show = true;
             Stat._fpsData.length = 60;
-            this._view[0] = { title: "FPS(WebGL)", value: "_fpsStr", color: "yellow", units: "int" };
-            this._view[1] = { title: "Sprite", value: "_spriteStr", color: "white", units: "int" };
+            this._view[0] = { title: "幀數(WebGL)", value: "_fpsStr", color: "yellow", units: "int" };
+            this._view[1] = { title: "SPR數量", value: "_spriteStr", color: "white", units: "int" };
             this._view[2] = { title: "RenderBatches", value: "renderBatches", color: "white", units: "int" };
             this._view[3] = { title: "SavedRenderBatches", value: "savedRenderBatches", color: "white", units: "int" };
-            this._view[4] = { title: "CPUMemory", value: "cpuMemory", color: "yellow", units: "M" };
-            this._view[5] = { title: "GPUMemory", value: "gpuMemory", color: "yellow", units: "M" };
+            this._view[4] = { title: "CPU消耗", value: "cpuMemory", color: "yellow", units: "M" };
+            this._view[5] = { title: "GPU消耗", value: "gpuMemory", color: "yellow", units: "M" };
             this._view[6] = { title: "Shader", value: "shaderCall", color: "white", units: "int" };
             this._view[7] = { title: "Canvas", value: "_canvasStr", color: "white", units: "int" };
             if (Render.is3DMode) {

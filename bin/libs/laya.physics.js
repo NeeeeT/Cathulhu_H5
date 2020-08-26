@@ -6260,7 +6260,7 @@ goog.exportProperty(
 );
 box2d.b2Shape.prototype.GetType = function () {
   //以下新增
-  if (this.m_type === null) return 0;
+  // if (this.m_type === null) return 0;
   //
   return this.m_type;
 };
@@ -8421,8 +8421,8 @@ goog.exportProperty(
   box2d.b2Fixture.prototype.m_userData
 );
 box2d.b2Fixture.prototype.GetType = function () {
-  //以下新增
-  if (this.m_shape.GetType() === null) return 0;
+  //[以下新增]
+  // if (this.m_shape.GetType() === null) return 0;
   //
   return this.m_shape.GetType();
 };
@@ -9741,7 +9741,7 @@ goog.exportProperty(
 );
 box2d.b2Body.prototype.GetType = function () {
   //以下新增
-  if (this.m_type === null) return 0;
+  // if (this.m_type === null) return 0;
   //
   return this.m_type;
 };
@@ -13310,7 +13310,7 @@ goog.exportProperty(
 );
 box2d.b2Joint.prototype.GetType = function () {
   //以下新增
-  if (this.m_type === null) return 0;
+  // if (this.m_type === null) return 0;
   //
   return this.m_type;
 };

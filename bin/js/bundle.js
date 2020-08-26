@@ -66,13 +66,38 @@
             enemyNormalSpr.loadImage("comp/monster_normal.png");
             enemyNormalSpr.addComponent(Laya.RigidBody);
             enemyNormalSpr.addComponent(Laya.BoxCollider);
+            enemyNormalSpr.addComponent(Laya.Script);
             let enemyNormalCol = enemyNormalSpr.getComponent(Laya.BoxCollider);
+            let enemyNormalRig = enemyNormalSpr.getComponent(Laya.RigidBody);
+            let enemyNormalScr = enemyNormalSpr.getComponent(Laya.Script);
             enemyNormalCol.width = enemyNormalSpr.width;
             enemyNormalCol.height = enemyNormalSpr.height;
+            enemyNormalRig.allowRotation = false;
+            enemyNormalScr.onTriggerEnter = function () {
+                console.log('撞到普通敵人了!');
+            };
             Laya.stage.addChild(enemyNormalSpr);
-            console.log(enemyNormalSpr.width, enemyNormalSpr.height);
-            console.log(enemyNormalCol.width, enemyNormalCol.height);
+            this.show_health(enemyNormalSpr);
             console.log('普通敵人生成!!!');
+        }
+        show_health(enemy) {
+            let enemyHealthText = new Laya.Text();
+            enemyHealthText.pos(enemy.x, enemy.y - 40);
+            enemyHealthText.width = 100;
+            enemyHealthText.height = 60;
+            enemyHealthText.color = "#efefef";
+            enemyHealthText.fontSize = 40;
+            enemyHealthText.text = '' + String(this.health);
+            Laya.stage.addChild(enemyHealthText);
+            setInterval((() => {
+                if (enemy.destroyed) {
+                    enemyHealthText.destroy();
+                    enemyHealthText.destroyed = false;
+                    return;
+                }
+                enemyHealthText.pos(enemy.x, enemy.y - 40);
+                enemyHealthText.text = '' + String(this.health);
+            }), 30);
         }
     }
 
@@ -207,6 +232,7 @@
                     spr.forEach((e) => {
                         console.log(e);
                         e.graphics.destroy();
+                        e.destroyed = true;
                     });
                 }
                 setTimeout(() => {
