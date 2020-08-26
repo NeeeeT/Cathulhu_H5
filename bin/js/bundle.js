@@ -160,9 +160,6 @@
         onKeyUp(e) {
             if (this.canJump) {
                 this.playerVelocity["Vx"] = 0;
-                this.characterAnim.source =
-                    "character/player_01.png,character/player_02.png";
-                this.characterAnim.interval = 500;
                 this.applyMoveX();
             }
             delete this.keyDownList[e["keyCode"]];
@@ -236,9 +233,17 @@
             if (this.keyDownList[17]) {
                 if (!this.cd_atk)
                     return;
+                this.characterAnim.interval = 20;
+                this.characterAnim.source =
+                    "cahracter/Player_attack_0.png,cahracter/Player_attack_1.png,cahracter/Player_attack_2.png,cahracter/Player_attack_3.png,cahracter/Player_attack_4.png,cahracter/Player_attack_5.png";
                 this.createAttackCircle(this.characterSprite);
                 this.createEffect(this.characterSprite);
                 this.cd_atk = false;
+                this.characterAnim.on(Laya.Event.COMPLETE, this, function () {
+                    this.characterAnim.interval = 500;
+                    this.characterAnim.source =
+                        "character/player_01.png,character/player_02.png";
+                });
                 setTimeout(() => {
                     this.cd_atk = true;
                 }, 500);
@@ -264,12 +269,18 @@
         }
         createAttackCircle(player) {
             let atkCircle = new Laya.Sprite();
-            let x_offset = this.isFacingRight ? player.width * 1 / 2 + 3 : player.width * 5 / 4 + 3;
+            let x_offset = this.isFacingRight
+                ? (player.width * 1) / 2 + 3
+                : (player.width * 5) / 4 + 3;
             if (this.isFacingRight) {
-                atkCircle.pos(player.x + x_offset, player.y - (this.characterSprite.height * 1 / 2) + (this.characterSprite.height * 1 / 8));
+                atkCircle.pos(player.x + x_offset, player.y -
+                    (this.characterSprite.height * 1) / 2 +
+                    (this.characterSprite.height * 1) / 8);
             }
             else {
-                atkCircle.pos(player.x - x_offset, player.y - (this.characterSprite.height * 1 / 2) + (this.characterSprite.height * 1 / 8));
+                atkCircle.pos(player.x - x_offset, player.y -
+                    (this.characterSprite.height * 1) / 2 +
+                    (this.characterSprite.height * 1) / 8);
             }
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
@@ -281,7 +292,6 @@
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
             Laya.stage.addChild(atkCircle);
-            atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
             setTimeout(() => {
                 atkCircle.destroy();
                 atkCircle.destroyed = true;
@@ -291,11 +301,11 @@
             let slashEffect = new Laya.Animation();
             if (this.isFacingRight) {
                 slashEffect.skewY = 0;
-                slashEffect.pos(player.x, player.y - 250);
+                slashEffect.pos(player.x - 100, player.y - 250 + 30);
             }
             else {
                 slashEffect.skewY = 180;
-                slashEffect.pos(player.x, player.y - 250);
+                slashEffect.pos(player.x + 100, player.y - 250 + 30);
             }
             slashEffect.source =
                 "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
@@ -326,7 +336,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = true;
+    GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

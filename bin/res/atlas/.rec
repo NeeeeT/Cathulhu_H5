@@ -1,4 +1,11 @@
 D .
+D cahracter
+P D32D8CC2 Player_attack_0.png
+P 643FA78E Player_attack_1.png
+P F62B59C8 Player_attack_2.png
+P 0A2FCA3B Player_attack_3.png
+P 475FFB28 Player_attack_4.png
+P D32D8CC2 Player_attack_5.png
 D comp
 P 1DFA6065 box.png
 P 316AD948 btn_close.png

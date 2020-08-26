@@ -91,9 +91,9 @@ export default class CharacterController extends Laya.Script {
     // 因為friction設為0，為了在平地不會因慣性持續前進，而將x速度做重置
     if (this.canJump) {
       this.playerVelocity["Vx"] = 0;
-      this.characterAnim.source =
-        "character/player_01.png,character/player_02.png";
-      this.characterAnim.interval = 500;
+      // this.characterAnim.source =
+      //   "character/player_01.png,character/player_02.png";
+      // this.characterAnim.interval = 500;
       this.applyMoveX();
     }
     delete this.keyDownList[e["keyCode"]];
@@ -198,9 +198,19 @@ export default class CharacterController extends Laya.Script {
     }
     if (this.keyDownList[17]) {
       if (!this.cd_atk) return;
+      this.characterAnim.interval = 20;
+      this.characterAnim.source =
+        "cahracter/Player_attack_0.png,cahracter/Player_attack_1.png,cahracter/Player_attack_2.png,cahracter/Player_attack_3.png,cahracter/Player_attack_4.png,cahracter/Player_attack_5.png";
       this.createAttackCircle(this.characterSprite);
       this.createEffect(this.characterSprite);
       this.cd_atk = false;
+
+      this.characterAnim.on(Laya.Event.COMPLETE, this, function () {
+        this.characterAnim.interval = 500;
+        this.characterAnim.source =
+          "character/player_01.png,character/player_02.png";
+      });
+
       setTimeout(() => {
         this.cd_atk = true;
       }, 500);
@@ -227,13 +237,25 @@ export default class CharacterController extends Laya.Script {
 
   private createAttackCircle(player: Laya.Sprite) {
     let atkCircle = new Laya.Sprite();
-    let x_offset:number = this.isFacingRight ? player.width * 1/2 + 3 : player.width * 5/4 + 3;
+    let x_offset: number = this.isFacingRight
+      ? (player.width * 1) / 2 + 3
+      : (player.width * 5) / 4 + 3;
     if (this.isFacingRight) {
-      atkCircle.pos(player.x + x_offset, player.y - (this.characterSprite.height * 1/2) + (this.characterSprite.height * 1/8));
+      atkCircle.pos(
+        player.x + x_offset,
+        player.y -
+          (this.characterSprite.height * 1) / 2 +
+          (this.characterSprite.height * 1) / 8
+      );
     } else {
-      atkCircle.pos(player.x - x_offset, player.y - (this.characterSprite.height * 1/2) + (this.characterSprite.height * 1/8));
+      atkCircle.pos(
+        player.x - x_offset,
+        player.y -
+          (this.characterSprite.height * 1) / 2 +
+          (this.characterSprite.height * 1) / 8
+      );
     }
-  
+
     let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(
       Laya.BoxCollider
     ) as Laya.BoxCollider;
@@ -246,7 +268,6 @@ export default class CharacterController extends Laya.Script {
 
     atkBoxCollider.height = atkBoxCollider.width = this.attackCircleRadius;
 
-
     atkCircleScript.onTriggerEnter = function () {
       console.log("歐拉歐拉歐拉歐拉歐拉歐拉歐拉歐拉");
     };
@@ -254,7 +275,7 @@ export default class CharacterController extends Laya.Script {
     atkCircleRigid.gravityScale = 0;
 
     Laya.stage.addChild(atkCircle);
-    atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
+    // atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     setTimeout(() => {
       // Laya.Physics.I.world.DestroyBody(atkCircleRigid);
@@ -268,10 +289,10 @@ export default class CharacterController extends Laya.Script {
     let slashEffect: Laya.Animation = new Laya.Animation();
     if (this.isFacingRight) {
       slashEffect.skewY = 0;
-      slashEffect.pos(player.x, player.y - 250);
+      slashEffect.pos(player.x - 100, player.y - 250 + 30);
     } else {
       slashEffect.skewY = 180;
-      slashEffect.pos(player.x, player.y - 250);
+      slashEffect.pos(player.x + 100, player.y - 250 + 30);
     }
     slashEffect.source =
       "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
