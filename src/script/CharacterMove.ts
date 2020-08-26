@@ -198,6 +198,7 @@ export default class CharacterMove extends Laya.Script {
     if (this.keyDownList[17]) {
       if (!this.cd_atk) return;
       this.createAttackCircle(this.characterSprite);
+      this.createEffect(this.characterSprite);
       this.cd_atk = false;
       setTimeout(() => {
         this.cd_atk = true;
@@ -256,5 +257,24 @@ export default class CharacterMove extends Laya.Script {
       atkCircle.graphics.destroy();
       atkCircle.destroyed = true;
     }, 100);
+  }
+
+  private createEffect(player: Laya.Sprite) {
+    let slashEffect: Laya.Animation = new Laya.Animation();
+    if (this.isFacingRight) {
+      slashEffect.skewY = 0;
+      slashEffect.pos(player.x, player.y - 250);
+    } else {
+      slashEffect.skewY = 180;
+      slashEffect.pos(player.x, player.y - 250);
+    }
+    slashEffect.source =
+      "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
+    slashEffect.on(Laya.Event.COMPLETE, this, function () {
+      console.log("動畫消除");
+      slashEffect.clear();
+    });
+    Laya.stage.addChild(slashEffect);
+    slashEffect.play();
   }
 }
