@@ -109,14 +109,9 @@
             this.canJump = false;
             this.timestamp = true;
             this.cd_ray = true;
+            this.cd_atk = true;
             this.characterNode = null;
             this.characterSprite = null;
-            this.attackNode_Left = null;
-            this.attackSprite_Left = null;
-            this.attackCollider_Left = null;
-            this.attackNode_Right = null;
-            this.attackSprite_Right = null;
-            this.attackCollider_Right = null;
             this.xMaxVelocity = 1;
             this.yMaxVelocity = 1;
             this.velocityMultiplier = 1;
@@ -139,13 +134,8 @@
         setup() {
             this.characterSprite = this.characterNode;
             this.characterAnim = this.characterNode;
-            this.attackSprite_Left = this.attackNode_Left;
-            this.attackSprite_Right = this.attackNode_Right;
-            this.attackCollider_Left = this.attackNode_Left.getComponent(Laya.CircleCollider);
-            this.attackCollider_Right = this.attackNode_Right.getComponent(Laya.CircleCollider);
-            this.attackNode_Right.active = false;
-            this.attackNode_Left.active = false;
-            this.characterAnim.source = "character/player_01.png,character/player_02.png";
+            this.characterAnim.source =
+                "character/player_01.png,character/player_02.png";
             this.playerVelocity = { Vx: 0, Vy: 0 };
             this.playerRig = this.owner.getComponent(Laya.RigidBody);
             this.listenKeyboard();
@@ -243,24 +233,13 @@
                 enenmyNormal.spawn(this.characterSprite);
             }
             if (this.keyDownList[17]) {
-                if (this.isFacingRight) {
-                    this.attackNode_Right.active = true;
-                    this.attackSprite_Right.y = this.characterSprite.y;
-                    this.attackSprite_Right.x = this.characterSprite.x + 75;
-                    setTimeout(() => {
-                        this.attackSprite_Right.y = -1000;
-                        this.attackNode_Right.active = false;
-                    }, 100);
-                }
-                else {
-                    this.attackNode_Left.active = true;
-                    this.attackSprite_Left.y = this.characterSprite.y;
-                    this.attackSprite_Left.x = this.characterSprite.x - 75;
-                    setTimeout(() => {
-                        this.attackSprite_Left.y = -1000;
-                        this.attackNode_Left.active = false;
-                    }, 100);
-                }
+                if (!this.cd_atk)
+                    return;
+                this.createAttackCircle(this.characterSprite);
+                this.cd_atk = false;
+                setTimeout(() => {
+                    this.cd_atk = true;
+                }, 100);
             }
         }
         resetMove() {
@@ -281,20 +260,31 @@
                 y: this.playerVelocity["Vy"],
             });
         }
-    }
-
-    class AtkRange extends Laya.Script {
-        constructor() {
-            super();
-        }
-        onUpdate() {
-            let x = this.owner.getComponent(Laya.RigidBody);
-            x.linearVelocity = { x: 0, y: 0 };
-        }
-        onTriggerEnter(col) {
-            if (!this.owner.active)
-                return;
-            console.log("哦哦哦哦撞到了!");
+        createAttackCircle(player) {
+            let atkCircle = new Laya.Sprite();
+            atkCircle.width = 100;
+            atkCircle.height = 100;
+            if (this.isFacingRight) {
+                atkCircle.pos(player.x + 100, player.y);
+            }
+            else {
+                atkCircle.pos(player.x - 100, player.y);
+            }
+            let atkCircleCollider = atkCircle.addComponent(Laya.CircleCollider);
+            let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
+            let atkCircleScript = atkCircle.addComponent(Laya.Script);
+            atkCircleScript.onTriggerEnter = function () {
+                console.log("攻擊攻擊攻擊");
+            };
+            atkCircleCollider.isSensor = true;
+            atkCircleRigid.gravityScale = 0;
+            Laya.stage.addChild(atkCircle);
+            atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
+            setTimeout(() => {
+                Laya.Physics.I.world.DestroyBody(atkCircleRigid);
+                atkCircle.graphics.destroy();
+                atkCircle.destroyed = true;
+            }, 100);
         }
     }
 
@@ -304,7 +294,6 @@
         static init() {
             var reg = Laya.ClassUtils.regClass;
             reg("script/CharacterMove.ts", CharacterMove);
-            reg("script/AtkRange.ts", AtkRange);
         }
     }
     GameConfig.width = 1366;

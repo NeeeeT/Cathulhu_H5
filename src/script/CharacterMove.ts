@@ -14,23 +14,13 @@ export default class CharacterMove extends Laya.Script {
   private hanlder: TimerHandler;
 
   private cd_ray: boolean = true; //空白鍵射線CD
+  private cd_atk: boolean = true;
 
   /** @prop {name:characterNode,tips:"放入角色Node",type:Node}*/
   characterNode: Laya.Node = null;
   characterSprite: Laya.Sprite = null;
   characterAnim: Laya.Animation;
 
-  /** @prop {name:attackNode_Left,tips:"放入攻擊偵測Node(左)",type:Node}*/
-  attackNode_Left: Laya.Node = null;
-  attackSprite_Left: Laya.Sprite = null;
-  attackCollider_Left: Laya.CircleCollider = null;
-  /** @prop {name:attackNode_Right,tips:"放入攻擊偵測Node(右)",type:Node}*/
-  attackNode_Right: Laya.Node = null;
-  attackSprite_Right: Laya.Sprite = null;
-  attackCollider_Right: Laya.CircleCollider = null;
-  // /** prop {name:groundCheckNode,tips:"放入groundcheck Node",type:Node}*/
-  // groundCheckNode: Laya.Node = null;
-  // groundCheckCollider: Laya.CircleCollider = null;
   /** @prop {name:xMaxVelocity,tips:"x軸速度上限",type:int,default:1}*/
   xMaxVelocity: number = 1;
   /** @prop {name:yMaxVelocity,tips:"y軸速度上限",type:int,default:1}*/
@@ -40,13 +30,13 @@ export default class CharacterMove extends Laya.Script {
   constructor() {
     super();
   }
-  onAwake(){
-  //   Laya.loader.load([
-  //     "character/player_01.png",
-  //     "character/player_02.png",
-  //     "character/player_walk_01.png",
-  //     "character/player_walk_02.png"
-  // ], );
+  onAwake() {
+    //   Laya.loader.load([
+    //     "character/player_01.png",
+    //     "character/player_02.png",
+    //     "character/player_walk_01.png",
+    //     "character/player_walk_02.png"
+    // ], );
   }
   onStart() {
     this.setup();
@@ -66,28 +56,12 @@ export default class CharacterMove extends Laya.Script {
   setup(): void {
     this.characterSprite = this.characterNode as Laya.Sprite;
     this.characterAnim = this.characterNode as Laya.Animation;
-
-    this.attackSprite_Left = this.attackNode_Left as Laya.Sprite;
-    this.attackSprite_Right = this.attackNode_Right as Laya.Sprite;
-    this.attackCollider_Left = this.attackNode_Left.getComponent(
-      Laya.CircleCollider
-    ) as Laya.CircleCollider;
-    this.attackCollider_Right = this.attackNode_Right.getComponent(
-      Laya.CircleCollider
-    ) as Laya.CircleCollider;
-    // this.attackCollider_Right.enabled = false;
-    this.attackNode_Right.active = false;
-    // this.attackSprite_Right.visible = false;
-    // this.attackCollider_Left.enabled = false;
-    this.attackNode_Left.active = false;
-    // this.attackSprite_Left.visible = false;
-    this.characterAnim.source = "character/player_01.png,character/player_02.png";
+    this.characterAnim.source =
+      "character/player_01.png,character/player_02.png";
 
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
-    // this.groundCheckCollider = this.groundCheckNode.getComponent(
-    //   Laya.CircleCollider
-    // );
+
     this.listenKeyboard();
   }
 
@@ -113,16 +87,8 @@ export default class CharacterMove extends Laya.Script {
   }
 
   onKeyUp(e: Laya.Event): void {
-    // this.resetMove();
-    // setInterval((this.hanlder = ()=>{
-    //   if(this.playerVelocity["Vx"])
-    //   {
-    //     this.playerVelocity["Vx"]+= -1 * this.velocityMultiplier;
-    //   }
-    // }),50)
-
     // 因為friction設為0，為了在平地不會因慣性持續前進，而將x速度做重置
-    if (this.canJump /* || this.keyDownList[37] || this.keyDownList[39]*/) {
+    if (this.canJump) {
       this.playerVelocity["Vx"] = 0;
       this.characterAnim.source =
         "character/player_01.png,character/player_02.png";
@@ -134,14 +100,11 @@ export default class CharacterMove extends Laya.Script {
   characterMove() {
     //Left
     if (this.keyDownList[37]) {
-      // if (!this.canMove) return;
-      // if (this.playerVelocity["Vx"] > -this.xMaxVelocity) {
       this.playerVelocity["Vx"] += -1 * this.velocityMultiplier;
       this.characterAnim.source =
         "character/player_walk_01.png,character/player_walk_02.png";
       this.characterAnim.interval = 100;
       this.applyMoveX();
-      // }
       if (this.isFacingRight) {
         this.playerVelocity["Vx"] = 0;
         this.applyMoveX();
@@ -155,20 +118,16 @@ export default class CharacterMove extends Laya.Script {
         this.playerVelocity["Vy"] += -10;
         this.applyMoveY();
         this.canJump = false;
-        // this.canMove = false;
       }
     }
     //Right
     if (this.keyDownList[39]) {
-      // if (!this.canMove) return;
-      // if (this.playerVelocity["Vx"] < this.xMaxVelocity) {
       this.playerVelocity["Vx"] += 1 * this.velocityMultiplier;
-      // console.log(this.playerRig);
+
       this.characterAnim.source =
         "character/player_walk_01.png,character/player_walk_02.png";
       this.characterAnim.interval = 100;
       this.applyMoveX();
-      // }
       if (!this.isFacingRight) {
         this.playerVelocity["Vx"] = 0;
         this.applyMoveX();
@@ -233,36 +192,16 @@ export default class CharacterMove extends Laya.Script {
         this.cd_ray = true;
       }, 500);
 
-      let enenmyNormal:EnemyNormal = new EnemyNormal();
+      let enenmyNormal: EnemyNormal = new EnemyNormal();
       enenmyNormal.spawn(this.characterSprite);
     }
     if (this.keyDownList[17]) {
-
-      if (this.isFacingRight) {
-        // this.attackCollider_Right.enabled = true;
-        this.attackNode_Right.active = true;
-        this.attackSprite_Right.y = this.characterSprite.y;
-        this.attackSprite_Right.x = this.characterSprite.x + 75;
-        // this.attackSprite_Right.visible = true;
-        setTimeout(() => {
-          // this.attackCollider_Right.enabled = false;
-          this.attackSprite_Right.y = -1000;
-          this.attackNode_Right.active = false;
-          // this.attackSprite_Right.visible = false;
-        }, 100);
-      } else {
-        // this.attackCollider_Left.enabled = true;
-        this.attackNode_Left.active = true;
-        this.attackSprite_Left.y = this.characterSprite.y;
-        this.attackSprite_Left.x = this.characterSprite.x - 75;
-        // this.attackSprite_Left.visible = true;
-        setTimeout(() => {
-          // this.attackCollider_Left.enabled = false;
-          this.attackSprite_Left.y = -1000;
-          this.attackNode_Left.active = false;
-          // this.attackSprite_Left.visible = false;
-        }, 100);
-      }
+      if (!this.cd_atk) return;
+      this.createAttackCircle(this.characterSprite);
+      this.cd_atk = false;
+      setTimeout(() => {
+        this.cd_atk = true;
+      }, 100);
     }
   }
   private resetMove(): void {
@@ -270,9 +209,6 @@ export default class CharacterMove extends Laya.Script {
     this.playerVelocity["Vy"] = 0;
     this.applyMoveX();
     this.applyMoveY();
-    // setTimeout(this.hanlder, 0.5, () => {
-    //   console.log("jk");
-    // });
   }
   private applyMoveX(): void {
     this.playerRig.setVelocity({
@@ -285,5 +221,40 @@ export default class CharacterMove extends Laya.Script {
       x: this.playerRig.linearVelocity.x,
       y: this.playerVelocity["Vy"],
     });
+  }
+
+  private createAttackCircle(player: Laya.Sprite) {
+    let atkCircle = new Laya.Sprite();
+    atkCircle.width = 100;
+    atkCircle.height = 100;
+    if (this.isFacingRight) {
+      atkCircle.pos(player.x + 100, player.y);
+    } else {
+      atkCircle.pos(player.x - 100, player.y);
+    }
+    let atkCircleCollider: Laya.CircleCollider = atkCircle.addComponent(
+      Laya.CircleCollider
+    ) as Laya.CircleCollider;
+    let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(
+      Laya.RigidBody
+    ) as Laya.RigidBody;
+    let atkCircleScript: Laya.Script = atkCircle.addComponent(
+      Laya.Script
+    ) as Laya.Script;
+
+    atkCircleScript.onTriggerEnter = function () {
+      console.log("攻擊攻擊攻擊");
+    };
+    atkCircleCollider.isSensor = true;
+    atkCircleRigid.gravityScale = 0;
+
+    Laya.stage.addChild(atkCircle);
+    atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
+
+    setTimeout(() => {
+      Laya.Physics.I.world.DestroyBody(atkCircleRigid);
+      atkCircle.graphics.destroy();
+      atkCircle.destroyed = true;
+    }, 100);
   }
 }
