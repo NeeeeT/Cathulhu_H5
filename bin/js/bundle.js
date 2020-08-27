@@ -18,19 +18,16 @@
         static _RayCast(startX, startY, endX, endY, direction) {
             let world = Laya.Physics.I.world;
             let hit = 0;
-            let rigidbody_arr = [];
             let sprite_arr = [];
             world.RayCast(function (fixture, point, normal, fraction) {
                 let rigidbody = fixture.m_body;
                 let sprite = fixture.collider.owner;
-                rigidbody_arr.push(rigidbody);
                 sprite_arr.push(sprite);
                 hit++;
             }, { x: startX / Laya.Physics.PIXEL_RATIO, y: startY / Laya.Physics.PIXEL_RATIO }, { x: endX / Laya.Physics.PIXEL_RATIO, y: endY / Laya.Physics.PIXEL_RATIO });
             console.log('射中物體數: ', hit);
             return {
                 'Hit': hit,
-                'Rigidbody': rigidbody_arr,
                 'Sprite': (direction) ? sprite_arr.sort((a, b) => a.x < b.x ? -1 : a.x > b.x ? 1 : 0) : sprite_arr.sort((a, b) => a.x > b.x ? -1 : a.x > b.x ? 1 : 0),
             };
         }
@@ -52,32 +49,64 @@
         }
     }
 
-    class EnemyNormal extends Laya.Script {
+    class Enemy extends Laya.Script {
         constructor() {
-            super();
-            this.m_name = '普通敵人';
-            this.m_armor = 0;
+            super(...arguments);
+            this.m_name = '';
             this.m_health = 1000;
-            this.m_speed = 2;
-            this.m_id = 0;
+            this.m_armor = 0;
+            this.m_speed = 3;
+            this.m_imgSrc = '';
+            this.m_id = -1;
         }
         spawn(player) {
             this.sprite = new Laya.Sprite();
             this.sprite.pos(player.x - 170, player.y - (player.height / 2));
             this.sprite.width = player.width * 2 / 3;
             this.sprite.height = player.height;
-            this.sprite.loadImage("comp/monster_normal.png");
+            this.sprite.loadImage(this.m_imgSrc);
             this.collider = this.sprite.addComponent(Laya.BoxCollider);
-            let enemyNormalRig = this.sprite.addComponent(Laya.RigidBody);
+            this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
             this.collider.width = this.sprite.width;
             this.collider.height = this.sprite.height;
-            enemyNormalRig.allowRotation = false;
+            this.rigidbody.allowRotation = false;
             Laya.stage.addChild(this.sprite);
             this.showHealth(this.sprite);
-            console.log('普通敵人生成!!!');
-            console.log(this.sprite.x);
-            console.log(this.sprite.y);
         }
+        ;
+        destroy() {
+            this.sprite.destroy();
+        }
+        ;
+        setHealth(amount) {
+            this.m_health = amount;
+            if (this.m_health <= 0)
+                this.sprite.destroy();
+        }
+        getHealth() {
+            return this.m_health;
+        }
+        ;
+        setArmor(amount) {
+            this.m_armor = amount;
+        }
+        ;
+        getArmor() {
+            return this.m_armor;
+        }
+        ;
+        setSpeed(amount) {
+            this.m_speed = amount;
+        }
+        ;
+        getSpeed() {
+            return this.m_speed;
+        }
+        ;
+        setLabel(index) {
+            this.collider.label = index;
+        }
+        ;
         showHealth(enemy) {
             let enemyHealthText = new Laya.Text();
             enemyHealthText.pos(enemy.x, enemy.y - 40);
@@ -97,93 +126,46 @@
                 enemyHealthText.text = '' + String(this.m_health);
             }), 30);
         }
-        setHealth(amount) {
-            this.m_health = amount;
-            if (this.m_health <= 0) {
-                this.createEffect(this.sprite);
-                this.sprite.destroy();
-            }
-        }
-        createEffect(enemy) {
-            let bloodEffect = new Laya.Animation();
-            let colorMat = [
-                2, 0, 0, 0, -100,
-                0, 1, 0, 0, -100,
-                0, 0, 1, 0, -100,
-                0, 0, 0, 1, 0,
-            ];
-            let glowFilter = new Laya.GlowFilter("#fd081c", 10, 0, 0);
-            let colorFilter = new Laya.ColorFilter(colorMat);
-            bloodEffect.filters = [colorFilter, glowFilter];
-            bloodEffect.pos(enemy.x - 250, enemy.y - 250 + 30);
-            bloodEffect.source =
-                "comp/Blood/Blood_0000.png,comp/Blood/Blood_0001.png,comp/Blood/Blood_0002.png,comp/Blood/Blood_0003.png,comp/Blood/Blood_0004.png,comp/Blood/Blood_0005.png,comp/Blood/Blood_0006.png,comp/Blood/Blood_0007.png,comp/Blood/Blood_0008.png,comp/Blood/Blood_0009.png,comp/Blood/Blood_0010.png,comp/Blood/Blood_0011.png,comp/Blood/Blood_0012.png,comp/Blood/Blood_0013.png,comp/Blood/Blood_0014.png";
-            bloodEffect.on(Laya.Event.COMPLETE, this, function () {
-                bloodEffect.destroy();
-            });
-            Laya.stage.addChild(bloodEffect);
-            bloodEffect.play();
-        }
-        setArmor(amount) { this.m_armor = amount; }
-        setSpeed(amount) { this.m_speed = amount; }
-        getHealth() { return this.m_health; }
-        getArmor() { return this.m_armor; }
-        getSpeed() { return this.m_speed; }
-        setLabel(index) { this.collider.label = index; }
-        ;
-        destroy() { this.sprite.destroy(); }
-        ;
     }
-    class EnemyShield extends Laya.Script {
+    class EnemyNormal extends Enemy {
+        constructor() {
+            super();
+            this.m_name = '普通敵人';
+            this.m_health = 1000;
+            this.m_speed = 2;
+            this.m_imgSrc = "comp/monster_normal.png";
+        }
+    }
+    class EnemyShield extends Enemy {
         constructor() {
             super();
             this.m_name = '裝甲敵人';
             this.m_armor = 500;
             this.m_health = 1500;
             this.m_speed = 1;
-            this.m_id = 0;
+            this.m_imgSrc = '';
         }
-        spawn() { }
-        ;
-        destroy() { }
-        ;
-        setHealth(amount) {
-            if (this.m_health <= 0) {
-                this.sprite.destroy();
-                return;
-            }
-            this.m_health = amount;
-        }
-        setArmor(amount) { this.m_armor = amount; }
-        setSpeed(amount) { this.m_speed = amount; }
-        getHealth() { return this.m_health; }
-        getArmor() { return this.m_armor; }
-        getSpeed() { return this.m_speed; }
-        setLabel(index) { this.collider.label = index; }
-        ;
     }
 
     class EnemyHandler extends Laya.Script {
-        constructor() {
-            super();
-        }
         static generator(player) {
             let enemyNormal = new EnemyNormal();
-            this.enemyIndex++;
-            enemyNormal.m_id = this.enemyIndex;
+            enemyNormal.m_id = ++this.enemyIndex;
             let _id = 'n' + String(this.enemyIndex);
             enemyNormal.spawn(player);
             enemyNormal.setLabel(_id);
             this.enenmyPool.push({ '_id': _id, '_ent': enemyNormal });
-            this.enemyCount++;
-            console.log(this.enemyCount);
+            console.log(this.getEnemiesCount());
             console.log(this.enenmyPool);
         }
         static takeDamage(enemy, amount) {
             enemy.setHealth(enemy.getHealth() - amount);
         }
+        static getEnemiesCount() {
+            return (this.enenmyPool = this.enenmyPool.filter(data => data._ent.collider.owner != null)).length;
+            ;
+        }
     }
-    EnemyHandler.enemyCount = 0;
     EnemyHandler.enemyIndex = 0;
     EnemyHandler.enenmyPool = [];
 
@@ -300,12 +282,8 @@
                     let rig = Raycast_return["Rigidbody"];
                     let spr = Raycast_return["Sprite"];
                     let world = Laya.Physics.I.world;
-                    rig.forEach((e) => {
-                        world.DestroyBody(e);
-                    });
                     spr.forEach((e) => {
-                        console.log(e);
-                        e.graphics.destroy();
+                        e.destroy();
                         e.destroyed = true;
                     });
                 }
@@ -409,6 +387,7 @@
                 "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashEffect.destroy();
+                slashEffect.destroyed = true;
             });
             Laya.stage.addChild(slashEffect);
             slashEffect.play();
