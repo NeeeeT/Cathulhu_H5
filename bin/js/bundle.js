@@ -74,14 +74,36 @@
             this.showHealth(this.sprite);
         }
         ;
+        createEffect(enemy) {
+            let bloodEffect = new Laya.Animation();
+            let colorMat = [
+                2, 0, 0, 0, -100,
+                0, 1, 0, 0, -100,
+                0, 0, 1, 0, -100,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            bloodEffect.filters = [colorFilter, glowFilter];
+            bloodEffect.pos(enemy.x - 250, enemy.y - 250 + 30);
+            bloodEffect.source =
+                "comp/Blood/Blood_0000.png,comp/Blood/Blood_0001.png,comp/Blood/Blood_0002.png,comp/Blood/Blood_0003.png,comp/Blood/Blood_0004.png,comp/Blood/Blood_0005.png,comp/Blood/Blood_0006.png,comp/Blood/Blood_0007.png,comp/Blood/Blood_0008.png,comp/Blood/Blood_0009.png,comp/Blood/Blood_0010.png,comp/Blood/Blood_0011.png,comp/Blood/Blood_0012.png,comp/Blood/Blood_0013.png,comp/Blood/Blood_0014.png";
+            bloodEffect.on(Laya.Event.COMPLETE, this, function () {
+                bloodEffect.destroy();
+            });
+            Laya.stage.addChild(bloodEffect);
+            bloodEffect.play();
+        }
         destroy() {
             this.sprite.destroy();
         }
         ;
         setHealth(amount) {
             this.m_health = amount;
-            if (this.m_health <= 0)
+            if (this.m_health <= 0) {
+                this.createEffect(this.sprite);
                 this.sprite.destroy();
+            }
         }
         getHealth() {
             return this.m_health;
