@@ -59,24 +59,24 @@
             this.m_armor = 0;
             this.m_health = 1000;
             this.m_speed = 2;
-            this.m_id = -1;
+            this.m_id = 0;
         }
         spawn(player) {
-            let enemyNormalSpr = new Laya.Sprite();
-            enemyNormalSpr.pos(player.x - 170, player.y - (player.height / 2));
-            enemyNormalSpr.width = player.width * 2 / 3;
-            enemyNormalSpr.height = player.height;
-            enemyNormalSpr.loadImage("comp/monster_normal.png");
-            let enemyNormalCol = enemyNormalSpr.addComponent(Laya.BoxCollider);
-            let enemyNormalRig = enemyNormalSpr.addComponent(Laya.RigidBody);
-            let enemyNormalScr = enemyNormalSpr.addComponent(Laya.Script);
-            enemyNormalCol.width = enemyNormalSpr.width;
-            enemyNormalCol.height = enemyNormalSpr.height;
+            this.sprite = new Laya.Sprite();
+            this.sprite.pos(player.x - 170, player.y - (player.height / 2));
+            this.sprite.width = player.width * 2 / 3;
+            this.sprite.height = player.height;
+            this.sprite.loadImage("comp/monster_normal.png");
+            this.collider = this.sprite.addComponent(Laya.BoxCollider);
+            let enemyNormalRig = this.sprite.addComponent(Laya.RigidBody);
+            let enemyNormalScr = this.sprite.addComponent(Laya.Script);
+            this.collider.width = this.sprite.width;
+            this.collider.height = this.sprite.height;
             enemyNormalRig.allowRotation = false;
             enemyNormalScr.onTriggerEnter = function () {
             };
-            Laya.stage.addChild(enemyNormalSpr);
-            this.showHealth(enemyNormalSpr);
+            Laya.stage.addChild(this.sprite);
+            this.showHealth(this.sprite);
             console.log('普通敵人生成!!!');
         }
         showHealth(enemy) {
@@ -98,12 +98,20 @@
                 enemyHealthText.text = '' + String(this.m_health);
             }), 30);
         }
-        setHealth(amount) { this.m_health = amount; }
+        setHealth(amount) {
+            this.m_health = amount;
+            if (this.m_health <= 0)
+                this.sprite.destroy();
+        }
         setArmor(amount) { this.m_armor = amount; }
         setSpeed(amount) { this.m_speed = amount; }
         getHealth() { return this.m_health; }
         getArmor() { return this.m_armor; }
         getSpeed() { return this.m_speed; }
+        setLabel(index) { this.collider.label = index; }
+        ;
+        destroy() { this.sprite.destroy(); }
+        ;
     }
     class EnemyShield extends Laya.Script {
         constructor() {
@@ -112,16 +120,26 @@
             this.m_armor = 500;
             this.m_health = 1500;
             this.m_speed = 1;
-            this.m_id = -1;
+            this.m_id = 0;
         }
-        spawn() {
+        spawn() { }
+        ;
+        destroy() { }
+        ;
+        setHealth(amount) {
+            if (this.m_health <= 0) {
+                this.sprite.destroy();
+                return;
+            }
+            this.m_health = amount;
         }
-        setHealth(amount) { this.m_health = amount; }
         setArmor(amount) { this.m_armor = amount; }
         setSpeed(amount) { this.m_speed = amount; }
         getHealth() { return this.m_health; }
         getArmor() { return this.m_armor; }
         getSpeed() { return this.m_speed; }
+        setLabel(index) { this.collider.label = index; }
+        ;
     }
 
     class EnemyHandler extends Laya.Script {
@@ -130,13 +148,18 @@
         }
         static generator(player) {
             let enemyNormal = new EnemyNormal();
-            let _id = enemyNormal.m_id = ++this.enemyIndex;
-            let _ent = enemyNormal;
+            this.enemyIndex++;
+            enemyNormal.m_id = this.enemyIndex;
+            let _id = 'n' + String(this.enemyIndex);
             enemyNormal.spawn(player);
-            this.enenmyPool.push({ '_id': _id, '_ent': _ent });
+            enemyNormal.setLabel(_id);
+            this.enenmyPool.push({ '_id': _id, '_ent': enemyNormal });
             this.enemyCount++;
             console.log(this.enemyCount);
             console.log(this.enenmyPool);
+        }
+        static takeDamage(enemy, amount) {
+            enemy.setHealth(enemy.getHealth() - amount);
         }
     }
     EnemyHandler.enemyCount = 0;
@@ -328,7 +351,9 @@
             let atkCircleScript = atkCircle.addComponent(Laya.Script);
             atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
             atkCircleScript.onTriggerEnter = function (col) {
-                if (col.label == 'EnemyNormal') {
+                if (col.label[0] === 'n') {
+                    let eh = EnemyHandler;
+                    eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 100);
                 }
             };
             atkBoxCollider.isSensor = true;

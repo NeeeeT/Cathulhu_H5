@@ -268,13 +268,9 @@ export default class CharacterController extends Laya.Script {
     atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
 
     atkCircleScript.onTriggerEnter = function (col:Laya.BoxCollider) {
-      if(col.label == 'EnemyNormal'){
-        // console.log('------------');
-        // console.log(col);//collider
-        // console.log(col.owner);//sprite
-        // console.log(col.owner.parent);//stage
-        // console.log(col.owner.parent.getComponents);
-        // console.log('------------');
+      if(col.label[0] === 'n'){
+        let eh = EnemyHandler;
+        eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 100);
       }
     };
     atkBoxCollider.isSensor = true;
