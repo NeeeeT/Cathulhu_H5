@@ -262,7 +262,7 @@ export default class CharacterController extends Laya.Script {
     atkCircleScript.onTriggerEnter = function (col:Laya.BoxCollider) {
       if(col.label[0] === 'n'){
         let eh = EnemyHandler;
-        eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 100);
+        eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 600);
       }
     };
     atkBoxCollider.isSensor = true;

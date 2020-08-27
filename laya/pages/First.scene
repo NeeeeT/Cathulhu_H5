@@ -125,54 +125,6 @@
         },
         {
             "x":15,
-            "type":"Animation",
-            "searchKey":"Animation,Slash",
-            "props":{"y":-35,"x":898,"wrapMode":"0","name":"Slash","autoPlay":true},
-            "nodeParent":2,
-            "label":"Slash",
-            "isOpen":true,
-            "isDirectory":true,
-            "isAniNode":true,
-            "hasChild":true,
-            "compId":196,
-            "child":[
-                {
-                    "x":30,
-                    "type":"ColorFilterSetter",
-                    "switchAble":true,
-                    "searchKey":"ColorFilterSetter",
-                    "removeAble":true,
-                    "props":{"saturation":"15","hue":"0","contrast":"20","color":"#ff0028","brightness":"-70","alpha":"0"},
-                    "nodeParent":196,
-                    "label":"ColorFilterSetter",
-                    "isDirectory":false,
-                    "isClose":false,
-                    "isAniNode":true,
-                    "hasChild":false,
-                    "compId":197,
-                    "child":[
-                        ]
-                },
-                {
-                    "x":30,
-                    "type":"GlowFilterSetter",
-                    "switchAble":true,
-                    "searchKey":"GlowFilterSetter",
-                    "removeAble":true,
-                    "props":{"offY":"2","offX":"-1","color":"#9b05ff","blur":"10"},
-                    "nodeParent":196,
-                    "label":"GlowFilterSetter",
-                    "isDirectory":false,
-                    "isClose":true,
-                    "isAniNode":true,
-                    "hasChild":false,
-                    "compId":199,
-                    "child":[
-                        ]
-                }]
-        },
-        {
-            "x":15,
             "type":"Script",
             "switchAble":true,
             "source":"src/script/SceneInit.ts",
