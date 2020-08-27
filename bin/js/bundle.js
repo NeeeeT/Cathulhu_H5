@@ -69,15 +69,14 @@
             this.sprite.loadImage("comp/monster_normal.png");
             this.collider = this.sprite.addComponent(Laya.BoxCollider);
             let enemyNormalRig = this.sprite.addComponent(Laya.RigidBody);
-            let enemyNormalScr = this.sprite.addComponent(Laya.Script);
             this.collider.width = this.sprite.width;
             this.collider.height = this.sprite.height;
             enemyNormalRig.allowRotation = false;
-            enemyNormalScr.onTriggerEnter = function () {
-            };
             Laya.stage.addChild(this.sprite);
             this.showHealth(this.sprite);
             console.log('普通敵人生成!!!');
+            console.log(this.sprite.x);
+            console.log(this.sprite.y);
         }
         showHealth(enemy) {
             let enemyHealthText = new Laya.Text();
@@ -100,8 +99,30 @@
         }
         setHealth(amount) {
             this.m_health = amount;
-            if (this.m_health <= 0)
+            if (this.m_health <= 0) {
+                this.createEffect(this.sprite);
                 this.sprite.destroy();
+            }
+        }
+        createEffect(enemy) {
+            let bloodEffect = new Laya.Animation();
+            let colorMat = [
+                2, 0, 0, 0, -100,
+                0, 1, 0, 0, -100,
+                0, 0, 1, 0, -100,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#2db70b", 10, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            bloodEffect.filters = [colorFilter, glowFilter];
+            bloodEffect.pos(enemy.x - 250, enemy.y - 250 + 30);
+            bloodEffect.source =
+                "comp/Blood/Blood_0000.png,comp/Blood/Blood_0001.png,comp/Blood/Blood_0002.png,comp/Blood/Blood_0003.png,comp/Blood/Blood_0004.png,comp/Blood/Blood_0005.png,comp/Blood/Blood_0006.png,comp/Blood/Blood_0007.png,comp/Blood/Blood_0008.png,comp/Blood/Blood_0009.png,comp/Blood/Blood_0010.png,comp/Blood/Blood_0011.png,comp/Blood/Blood_0012.png,comp/Blood/Blood_0013.png,comp/Blood/Blood_0014.png";
+            bloodEffect.on(Laya.Event.COMPLETE, this, function () {
+                bloodEffect.destroy();
+            });
+            Laya.stage.addChild(bloodEffect);
+            bloodEffect.play();
         }
         setArmor(amount) { this.m_armor = amount; }
         setSpeed(amount) { this.m_speed = amount; }
