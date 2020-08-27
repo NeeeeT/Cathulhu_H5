@@ -275,7 +275,7 @@ export default class CharacterController extends Laya.Script {
     atkCircleRigid.gravityScale = 0;
 
     Laya.stage.addChild(atkCircle);
-    // atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
+    atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     setTimeout(() => {
       // Laya.Physics.I.world.DestroyBody(atkCircleRigid);
@@ -297,7 +297,7 @@ export default class CharacterController extends Laya.Script {
     slashEffect.source =
       "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
     slashEffect.on(Laya.Event.COMPLETE, this, function () {
-      console.log("動畫消除");
+      // console.log("動畫消除");
       slashEffect.clear();
     });
     Laya.stage.addChild(slashEffect);
