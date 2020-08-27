@@ -386,6 +386,7 @@
             }, 100);
         }
         createEffect(player) {
+            Laya.SoundManager.playSound("Audio/SlashAudio.wav", 1);
             let slashEffect = new Laya.Animation();
             let colorMat = [
                 2, 0, 0, 0, -100,

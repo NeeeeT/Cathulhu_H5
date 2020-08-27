@@ -278,6 +278,7 @@ export default class CharacterController extends Laya.Script {
   }
 
   private createEffect(player: Laya.Sprite) {
+    Laya.SoundManager.playSound("Audio/SlashAudio.wav", 1);
     let slashEffect: Laya.Animation = new Laya.Animation();
     //濾鏡
     let colorMat: Array<number> =
