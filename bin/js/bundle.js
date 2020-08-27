@@ -334,6 +334,7 @@
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
             Laya.stage.addChild(atkCircle);
+            atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
             setTimeout(() => {
                 atkCircle.destroy();
                 atkCircle.destroyed = true;
@@ -341,15 +342,15 @@
         }
         createEffect(player) {
             let slashEffect = new Laya.Animation();
-            let redMat = [
+            let colorMat = [
                 2, 0, 0, 0, -100,
                 0, 1, 0, 0, -100,
                 0, 0, 2, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
-            let redFilter = new Laya.ColorFilter(redMat);
-            slashEffect.filters = [redFilter, glowFilter];
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            slashEffect.filters = [colorFilter, glowFilter];
             if (this.isFacingRight) {
                 slashEffect.skewY = 0;
                 slashEffect.pos(player.x - 100, player.y - 250 + 30);
