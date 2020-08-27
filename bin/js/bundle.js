@@ -48,15 +48,18 @@
                 let player_pivot_y = Laya.stage.height / 2;
                 Laya.stage.x = player_pivot_x - sprite.x;
                 Laya.stage.y = player_pivot_y - sprite.y;
-            }, 0);
+            }, 10);
         }
     }
 
     class EnemyNormal extends Laya.Script {
         constructor() {
             super();
-            this.name = '普通敵人';
-            this.health = 1000;
+            this.m_name = '普通敵人';
+            this.m_armor = 0;
+            this.m_health = 1000;
+            this.m_speed = 2;
+            this.m_id = -1;
         }
         spawn(player) {
             let enemyNormalSpr = new Laya.Sprite();
@@ -64,30 +67,26 @@
             enemyNormalSpr.width = player.width * 2 / 3;
             enemyNormalSpr.height = player.height;
             enemyNormalSpr.loadImage("comp/monster_normal.png");
-            enemyNormalSpr.addComponent(Laya.RigidBody);
-            enemyNormalSpr.addComponent(Laya.BoxCollider);
-            enemyNormalSpr.addComponent(Laya.Script);
-            let enemyNormalCol = enemyNormalSpr.getComponent(Laya.BoxCollider);
-            let enemyNormalRig = enemyNormalSpr.getComponent(Laya.RigidBody);
-            let enemyNormalScr = enemyNormalSpr.getComponent(Laya.Script);
+            let enemyNormalCol = enemyNormalSpr.addComponent(Laya.BoxCollider);
+            let enemyNormalRig = enemyNormalSpr.addComponent(Laya.RigidBody);
+            let enemyNormalScr = enemyNormalSpr.addComponent(Laya.Script);
             enemyNormalCol.width = enemyNormalSpr.width;
             enemyNormalCol.height = enemyNormalSpr.height;
             enemyNormalRig.allowRotation = false;
             enemyNormalScr.onTriggerEnter = function () {
-                console.log('撞到普通敵人了!');
             };
             Laya.stage.addChild(enemyNormalSpr);
-            this.show_health(enemyNormalSpr);
+            this.showHealth(enemyNormalSpr);
             console.log('普通敵人生成!!!');
         }
-        show_health(enemy) {
+        showHealth(enemy) {
             let enemyHealthText = new Laya.Text();
             enemyHealthText.pos(enemy.x, enemy.y - 40);
             enemyHealthText.width = 100;
             enemyHealthText.height = 60;
             enemyHealthText.color = "#efefef";
             enemyHealthText.fontSize = 40;
-            enemyHealthText.text = '' + String(this.health);
+            enemyHealthText.text = '' + String(this.m_health);
             Laya.stage.addChild(enemyHealthText);
             setInterval((() => {
                 if (enemy.destroyed) {
@@ -96,10 +95,53 @@
                     return;
                 }
                 enemyHealthText.pos(enemy.x, enemy.y - 40);
-                enemyHealthText.text = '' + String(this.health);
+                enemyHealthText.text = '' + String(this.m_health);
             }), 30);
         }
+        setHealth(amount) { this.m_health = amount; }
+        setArmor(amount) { this.m_armor = amount; }
+        setSpeed(amount) { this.m_speed = amount; }
+        getHealth() { return this.m_health; }
+        getArmor() { return this.m_armor; }
+        getSpeed() { return this.m_speed; }
     }
+    class EnemyShield extends Laya.Script {
+        constructor() {
+            super();
+            this.m_name = '裝甲敵人';
+            this.m_armor = 500;
+            this.m_health = 1500;
+            this.m_speed = 1;
+            this.m_id = -1;
+        }
+        spawn() {
+        }
+        setHealth(amount) { this.m_health = amount; }
+        setArmor(amount) { this.m_armor = amount; }
+        setSpeed(amount) { this.m_speed = amount; }
+        getHealth() { return this.m_health; }
+        getArmor() { return this.m_armor; }
+        getSpeed() { return this.m_speed; }
+    }
+
+    class EnemyHandler extends Laya.Script {
+        constructor() {
+            super();
+        }
+        static generator(player) {
+            let enemyNormal = new EnemyNormal();
+            let _id = enemyNormal.m_id = ++this.enemyIndex;
+            let _ent = enemyNormal;
+            enemyNormal.spawn(player);
+            this.enenmyPool.push({ '_id': _id, '_ent': _ent });
+            this.enemyCount++;
+            console.log(this.enemyCount);
+            console.log(this.enenmyPool);
+        }
+    }
+    EnemyHandler.enemyCount = 0;
+    EnemyHandler.enemyIndex = 0;
+    EnemyHandler.enenmyPool = [];
 
     class CharacterController extends Laya.Script {
         constructor() {
@@ -115,7 +157,7 @@
             this.xMaxVelocity = 5;
             this.yMaxVelocity = 5;
             this.velocityMultiplier = 5;
-            this.attackCircleRadius = 100;
+            this.attackBoxRange = 100;
         }
         onAwake() {
         }
@@ -227,8 +269,7 @@
                     Laya.stage.graphics.clear();
                     this.cd_ray = true;
                 }, 500);
-                let enenmyNormal = new EnemyNormal();
-                enenmyNormal.spawn(this.characterSprite);
+                EnemyHandler.generator(this.characterSprite);
             }
             if (this.keyDownList[17]) {
                 if (!this.cd_atk)
@@ -285,9 +326,10 @@
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
             let atkCircleScript = atkCircle.addComponent(Laya.Script);
-            atkBoxCollider.height = atkBoxCollider.width = this.attackCircleRadius;
-            atkCircleScript.onTriggerEnter = function () {
-                console.log("歐拉歐拉歐拉歐拉歐拉歐拉歐拉歐拉");
+            atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
+            atkCircleScript.onTriggerEnter = function (col) {
+                if (col.label == 'EnemyNormal') {
+                }
             };
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
@@ -310,11 +352,19 @@
             slashEffect.source =
                 "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
-                console.log("動畫消除");
                 slashEffect.clear();
             });
             Laya.stage.addChild(slashEffect);
             slashEffect.play();
+        }
+    }
+
+    class SceneInit extends Laya.Script {
+        constructor() {
+            super();
+        }
+        onAwake() {
+            Laya.stage.bgColor = 'gray';
         }
     }
 
@@ -324,6 +374,7 @@
         static init() {
             var reg = Laya.ClassUtils.regClass;
             reg("script/CharacterController.ts", CharacterController);
+            reg("script/SceneInit.ts", SceneInit);
         }
     }
     GameConfig.width = 1366;
@@ -336,7 +387,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = false;
+    GameConfig.physicsDebug = true;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

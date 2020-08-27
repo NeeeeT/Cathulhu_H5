@@ -1,7 +1,8 @@
 import DrawCmd from "./DrawCmd";
 import Raycast from "./Raycast";
 import CameraHandler from "./CameraHandler";
-import { EnemyNormal } from "./EnemyNormal";
+import { EnemyNormal, EnemyShield } from "./Enemy";
+import EnemyHandler from "./EnemyHandler";
 
 export default class CharacterController extends Laya.Script {
   private playerRig: Laya.RigidBody;
@@ -14,7 +15,7 @@ export default class CharacterController extends Laya.Script {
   private hanlder: TimerHandler;
 
   private cd_ray: boolean = true; //空白鍵射線CD
-  private cd_atk: boolean = true;
+  private cd_atk: boolean = true; //CTRL攻擊CD
 
   /** @prop {name:characterNode,tips:"放入角色Node",type:Node}*/
   characterNode: Laya.Node = null;
@@ -28,8 +29,8 @@ export default class CharacterController extends Laya.Script {
   /** @prop {name:velocityMultiplier,tips:"改變角色速度增加幅度",type:int,default:1}*/
   velocityMultiplier: number = 5;
 
-  /** @prop {name:attackCircleRadius,tips:"調整攻擊範圍圈半徑",type:int,default:100}*/
-  attackCircleRadius: number = 100;
+  /** @prop {name:attackBoxRange,tips:"調整攻擊範圍方塊距離",type:int,default:100}*/
+  attackBoxRange: number = 100;
 
   constructor() {
     super();
@@ -136,9 +137,8 @@ export default class CharacterController extends Laya.Script {
         this.isFacingRight = true;
       }
     }
-    //Down
     if (this.keyDownList[40]) {
-      // CameraHandler.CameraFollower(this.characterSprite);
+      //Down
     }
     if (this.keyDownList[32]) {
       if (!this.cd_ray) return;
@@ -175,8 +175,6 @@ export default class CharacterController extends Laya.Script {
         let spr: Laya.Sprite[] = Raycast_return["Sprite"] as Laya.Sprite[];
         let world = Laya.Physics.I.world;
 
-        // console.log(Raycast_return['Sprite']);
-
         //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
         rig.forEach((e) => {
           world.DestroyBody(e);
@@ -185,7 +183,6 @@ export default class CharacterController extends Laya.Script {
           console.log(e);
           e.graphics.destroy();
           e.destroyed = true;
-          // e.active = false;
         });
       }
       setTimeout(() => {
@@ -193,8 +190,10 @@ export default class CharacterController extends Laya.Script {
         this.cd_ray = true;
       }, 500);
 
-      let enenmyNormal: EnemyNormal = new EnemyNormal();
-      enenmyNormal.spawn(this.characterSprite);
+      //敵人介面測試
+      EnemyHandler.generator(this.characterSprite);
+      // let enenmyNormal: EnemyNormal = new EnemyNormal();
+      // enenmyNormal.spawn(this.characterSprite);
     }
     if (this.keyDownList[17]) {
       if (!this.cd_atk) return;
@@ -266,10 +265,17 @@ export default class CharacterController extends Laya.Script {
       Laya.Script
     ) as Laya.Script;
 
-    atkBoxCollider.height = atkBoxCollider.width = this.attackCircleRadius;
+    atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
 
-    atkCircleScript.onTriggerEnter = function () {
-      console.log("歐拉歐拉歐拉歐拉歐拉歐拉歐拉歐拉");
+    atkCircleScript.onTriggerEnter = function (col:Laya.BoxCollider) {
+      if(col.label == 'EnemyNormal'){
+        // console.log('------------');
+        // console.log(col);//collider
+        // console.log(col.owner);//sprite
+        // console.log(col.owner.parent);//stage
+        // console.log(col.owner.parent.getComponents);
+        // console.log('------------');
+      }
     };
     atkBoxCollider.isSensor = true;
     atkCircleRigid.gravityScale = 0;
@@ -278,8 +284,6 @@ export default class CharacterController extends Laya.Script {
     // atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     setTimeout(() => {
-      // Laya.Physics.I.world.DestroyBody(atkCircleRigid);
-      // atkCircle.graphics.destroy();
       atkCircle.destroy();
       atkCircle.destroyed = true;
     }, 100);
@@ -297,7 +301,6 @@ export default class CharacterController extends Laya.Script {
     slashEffect.source =
       "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
     slashEffect.on(Laya.Event.COMPLETE, this, function () {
-      console.log("動畫消除");
       slashEffect.clear();
     });
     Laya.stage.addChild(slashEffect);

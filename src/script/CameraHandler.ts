@@ -8,6 +8,6 @@ export default class CameraHandler extends Laya.Script {
       let player_pivot_y: number = Laya.stage.height / 2;
       Laya.stage.x = player_pivot_x - sprite.x;
       Laya.stage.y = player_pivot_y - sprite.y;
-    }, 0);
+    }, 10);
   }
 }
