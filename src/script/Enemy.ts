@@ -97,7 +97,7 @@ export class EnemyNormal extends Laya.Script implements IEnemy {
                 0, 0, 1, 0, -100, //B
                 0, 0, 0, 1, 0, //A
             ];
-        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#2db70b", 10, 0, 0);
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#fd081c", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         bloodEffect.filters = [colorFilter, glowFilter];
         //濾鏡

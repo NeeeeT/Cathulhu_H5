@@ -112,7 +112,7 @@
                 0, 0, 1, 0, -100,
                 0, 0, 0, 1, 0,
             ];
-            let glowFilter = new Laya.GlowFilter("#2db70b", 10, 0, 0);
+            let glowFilter = new Laya.GlowFilter("#fd081c", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             bloodEffect.filters = [colorFilter, glowFilter];
             bloodEffect.pos(enemy.x - 250, enemy.y - 250 + 30);

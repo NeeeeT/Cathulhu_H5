@@ -146,7 +146,7 @@
                     "nodeParent":196,
                     "label":"ColorFilterSetter",
                     "isDirectory":false,
-                    "isClose":false,
+                    "isClose":true,
                     "isAniNode":true,
                     "hasChild":false,
                     "compId":197,
