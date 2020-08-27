@@ -387,7 +387,7 @@
             slashEffect.source =
                 "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
-                slashEffect.clear();
+                slashEffect.destroy();
             });
             Laya.stage.addChild(slashEffect);
             slashEffect.play();

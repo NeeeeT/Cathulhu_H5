@@ -4,7 +4,7 @@ interface IEnemy extends Laya.Script{
     m_armor:number;
     m_health:number;
     m_speed:number;
-    m_id?:number;
+    m_id:number;
 
     sprite: Laya.Sprite;
     collider:Laya.BoxCollider;
@@ -22,8 +22,6 @@ interface IEnemy extends Laya.Script{
     getSpeed():number;
 
     setLabel(index:string): void;
-
-
 }
 export class EnemyNormal extends Laya.Script implements IEnemy{
     // 實作敵人介面 -> 普通敵人
@@ -50,15 +48,10 @@ export class EnemyNormal extends Laya.Script implements IEnemy{
 
         this.collider = this.sprite.addComponent(Laya.BoxCollider);
         let enemyNormalRig = this.sprite.addComponent(Laya.RigidBody);
-        let enemyNormalScr = this.sprite.addComponent(Laya.Script);
         
         this.collider.width = this.sprite.width;
         this.collider.height = this.sprite.height
         enemyNormalRig.allowRotation = false;
-
-        enemyNormalScr.onTriggerEnter = function(){
-            // console.log('撞到普通敵人了!');
-        }
         
         Laya.stage.addChild(this.sprite);
         this.showHealth(this.sprite);
