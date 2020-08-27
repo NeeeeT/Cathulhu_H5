@@ -243,15 +243,15 @@ export default class CharacterController extends Laya.Script {
       atkCircle.pos(
         player.x + x_offset,
         player.y -
-          (this.characterSprite.height * 1) / 2 +
-          (this.characterSprite.height * 1) / 8
+        (this.characterSprite.height * 1) / 2 +
+        (this.characterSprite.height * 1) / 8
       );
     } else {
       atkCircle.pos(
         player.x - x_offset,
         player.y -
-          (this.characterSprite.height * 1) / 2 +
-          (this.characterSprite.height * 1) / 8
+        (this.characterSprite.height * 1) / 2 +
+        (this.characterSprite.height * 1) / 8
       );
     }
 
@@ -281,7 +281,7 @@ export default class CharacterController extends Laya.Script {
     atkCircleRigid.gravityScale = 0;
 
     Laya.stage.addChild(atkCircle);
-    // atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
+    atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     setTimeout(() => {
       atkCircle.destroy();
@@ -291,6 +291,18 @@ export default class CharacterController extends Laya.Script {
 
   private createEffect(player: Laya.Sprite) {
     let slashEffect: Laya.Animation = new Laya.Animation();
+    //濾鏡
+    let colorMat: Array<number> =
+      [
+        2, 0, 0, 0, -100, //R
+        0, 1, 0, 0, -100, //G
+        0, 0, 2, 0, -100, //B
+        0, 0, 0, 1, 0, //A
+      ];
+    let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
+    let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+    slashEffect.filters = [colorFilter, glowFilter];
+    //濾鏡
     if (this.isFacingRight) {
       slashEffect.skewY = 0;
       slashEffect.pos(player.x - 100, player.y - 250 + 30);

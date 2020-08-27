@@ -341,6 +341,15 @@
         }
         createEffect(player) {
             let slashEffect = new Laya.Animation();
+            let redMat = [
+                2, 0, 0, 0, -100,
+                0, 1, 0, 0, -100,
+                0, 0, 2, 0, -100,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
+            let redFilter = new Laya.ColorFilter(redMat);
+            slashEffect.filters = [redFilter, glowFilter];
             if (this.isFacingRight) {
                 slashEffect.skewY = 0;
                 slashEffect.pos(player.x - 100, player.y - 250 + 30);
