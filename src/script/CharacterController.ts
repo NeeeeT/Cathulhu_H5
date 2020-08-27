@@ -1,7 +1,7 @@
 import DrawCmd from "./DrawCmd";
 import Raycast from "./Raycast";
 import CameraHandler from "./CameraHandler";
-import { EnemyNormal, EnemyShield } from "./Enemy";
+import { EnemyNormal, EnemyShield } from "./EnemyManager";
 import EnemyHandler from "./EnemyHandler";
 
 export default class CharacterController extends Laya.Script {
@@ -176,12 +176,8 @@ export default class CharacterController extends Laya.Script {
         let world = Laya.Physics.I.world;
 
         //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
-        rig.forEach((e) => {
-          world.DestroyBody(e);
-        });
         spr.forEach((e) => {
-          console.log(e);
-          e.graphics.destroy();
+          e.destroy();
           e.destroyed = true;
         });
       }
@@ -189,11 +185,8 @@ export default class CharacterController extends Laya.Script {
         Laya.stage.graphics.clear();
         this.cd_ray = true;
       }, 500);
-
-      //敵人介面測試
+      //敵人生成測試
       EnemyHandler.generator(this.characterSprite);
-      // let enenmyNormal: EnemyNormal = new EnemyNormal();
-      // enenmyNormal.spawn(this.characterSprite);
     }
     if (this.keyDownList[17]) {
       if (!this.cd_atk) return;
@@ -209,7 +202,6 @@ export default class CharacterController extends Laya.Script {
         this.characterAnim.source =
           "character/player_01.png,character/player_02.png";
       });
-
       setTimeout(() => {
         this.cd_atk = true;
       }, 500);
@@ -310,6 +302,7 @@ export default class CharacterController extends Laya.Script {
       "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
     slashEffect.on(Laya.Event.COMPLETE, this, function () {
       slashEffect.destroy();
+      slashEffect.destroyed = true;
     });
     Laya.stage.addChild(slashEffect);
     slashEffect.play();
