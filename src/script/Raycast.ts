@@ -1,14 +1,9 @@
 export default class Raycast extends Laya.Script{
-    constructor(){
-        super();
-    }
     public static _RayCast(startX:number, startY:number, endX:number, endY:number, direction:number):object 
     {
         // 參數5(direction)定義: 1為正向(朝右)，0為反向(朝左)。
         let world = Laya.Physics.I.world;
         let hit: number = 0;//射中的物體數量
-        // let rigidbody_arr: Laya.RigidBody[] = [];
-        
         let sprite_arr: Laya.Sprite[] = [];
         
         world.RayCast(function(fixture, point, normal, fraction)

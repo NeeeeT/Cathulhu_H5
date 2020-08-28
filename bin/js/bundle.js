@@ -12,9 +12,6 @@
     ;
 
     class Raycast extends Laya.Script {
-        constructor() {
-            super();
-        }
         static _RayCast(startX, startY, endX, endY, direction) {
             let world = Laya.Physics.I.world;
             let hit = 0;
@@ -57,9 +54,9 @@
             this.m_armor = 0;
             this.m_speed = 3;
             this.m_imgSrc = '';
-            this.m_id = -1;
+            this.m_tag = '';
         }
-        spawn(player) {
+        spawn(player, id) {
             this.sprite = new Laya.Sprite();
             this.sprite.pos(player.x - 170, player.y - (player.height / 2));
             this.sprite.width = player.width * 2 / 3;
@@ -69,6 +66,7 @@
             this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
             this.collider.width = this.sprite.width;
             this.collider.height = this.sprite.height;
+            this.collider.label = id;
             this.rigidbody.allowRotation = false;
             Laya.stage.addChild(this.sprite);
             this.showHealth(this.sprite);
@@ -121,7 +119,7 @@
             setInterval((() => {
                 if (enemy.destroyed) {
                     enemyHealthText.destroy();
-                    enemyHealthText.destroyed = false;
+                    enemyHealthText.destroyed = true;
                     return;
                 }
                 enemyHealthText.pos(enemy.x, enemy.y - 40);
@@ -143,6 +141,7 @@
             bloodEffect.source = "comp/Blood/Blood_0000.png,comp/Blood/Blood_0001.png,comp/Blood/Blood_0002.png,comp/Blood/Blood_0003.png,comp/Blood/Blood_0004.png,comp/Blood/Blood_0005.png,comp/Blood/Blood_0006.png,comp/Blood/Blood_0007.png,comp/Blood/Blood_0008.png,comp/Blood/Blood_0009.png,comp/Blood/Blood_0010.png,comp/Blood/Blood_0011.png,comp/Blood/Blood_0012.png,comp/Blood/Blood_0013.png,comp/Blood/Blood_0014.png";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
                 bloodEffect.destroy();
+                bloodEffect.destroyed = true;
             });
             Laya.stage.addChild(bloodEffect);
             bloodEffect.play();
@@ -155,6 +154,7 @@
             this.m_health = 1000;
             this.m_speed = 2;
             this.m_imgSrc = "comp/monster_normal.png";
+            this.m_tag = 'n';
         }
     }
     class EnemyShield extends Enemy {
@@ -164,17 +164,16 @@
             this.m_armor = 500;
             this.m_health = 1500;
             this.m_speed = 1;
-            this.m_imgSrc = '';
+            this.m_imgSrc = 'comp/monster_shield.png';
+            this.m_tag = 's';
         }
     }
 
     class EnemyHandler extends Laya.Script {
         static generator(player) {
-            let enemyNormal = new EnemyNormal();
-            enemyNormal.m_id = ++this.enemyIndex;
-            let _id = 'n' + String(this.enemyIndex);
-            enemyNormal.spawn(player);
-            enemyNormal.setLabel(_id);
+            let enemyNormal = new EnemyShield();
+            let _id = enemyNormal.m_tag + String(++this.enemyIndex);
+            enemyNormal.spawn(player, _id);
             this.enenmyPool.push({ '_id': _id, '_ent': enemyNormal });
             console.log(this.getEnemiesCount());
             console.log(this.enenmyPool);
@@ -184,7 +183,6 @@
         }
         static getEnemiesCount() {
             return (this.enenmyPool = this.enenmyPool.filter(data => data._ent.collider.owner != null)).length;
-            ;
         }
     }
     EnemyHandler.enemyIndex = 0;
@@ -213,19 +211,16 @@
             CameraHandler.CameraFollower(this.characterSprite);
         }
         onUpdate() {
-            if (this.playerVelocity["Vx"] < -this.xMaxVelocity) {
+            if (this.playerVelocity["Vx"] < -this.xMaxVelocity)
                 this.playerVelocity["Vx"] = -this.xMaxVelocity;
-            }
-            if (this.playerVelocity["Vx"] > this.xMaxVelocity) {
+            if (this.playerVelocity["Vx"] > this.xMaxVelocity)
                 this.playerVelocity["Vx"] = this.xMaxVelocity;
-            }
             this.characterMove();
         }
         setup() {
             this.characterSprite = this.characterNode;
             this.characterAnim = this.characterNode;
-            this.characterAnim.source =
-                "character/player_01.png,character/player_02.png";
+            this.characterAnim.source = "character/player_01.png,character/player_02.png";
             this.playerVelocity = { Vx: 0, Vy: 0 };
             this.playerRig = this.owner.getComponent(Laya.RigidBody);
             this.listenKeyboard();
@@ -325,8 +320,7 @@
                 this.cd_atk = false;
                 this.characterAnim.on(Laya.Event.COMPLETE, this, function () {
                     this.characterAnim.interval = 500;
-                    this.characterAnim.source =
-                        "character/player_01.png,character/player_02.png";
+                    this.characterAnim.source = "character/player_01.png,character/player_02.png";
                 });
                 setTimeout(() => {
                     this.cd_atk = true;
@@ -374,6 +368,12 @@
                 if (col.label[0] === 'n') {
                     let eh = EnemyHandler;
                     eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 600);
+                }
+                else if (col.label[0] === 's') {
+                    let eh = EnemyHandler;
+                    eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 300);
+                    console.log(col.owner.parent);
+                    console.log(col.owner);
                 }
             };
             atkBoxCollider.isSensor = true;

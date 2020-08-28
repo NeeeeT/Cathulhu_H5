@@ -49,20 +49,15 @@ export default class CharacterController extends Laya.Script {
   }
 
   onUpdate() {
-    if (this.playerVelocity["Vx"] < -this.xMaxVelocity) {
-      this.playerVelocity["Vx"] = -this.xMaxVelocity;
-    }
-    if (this.playerVelocity["Vx"] > this.xMaxVelocity) {
-      this.playerVelocity["Vx"] = this.xMaxVelocity;
-    }
+    if (this.playerVelocity["Vx"] < -this.xMaxVelocity) this.playerVelocity["Vx"] = -this.xMaxVelocity;
+    if (this.playerVelocity["Vx"] > this.xMaxVelocity) this.playerVelocity["Vx"] = this.xMaxVelocity;
     this.characterMove();
   }
 
   setup(): void {
     this.characterSprite = this.characterNode as Laya.Sprite;
     this.characterAnim = this.characterNode as Laya.Animation;
-    this.characterAnim.source =
-      "character/player_01.png,character/player_02.png";
+    this.characterAnim.source = "character/player_01.png,character/player_02.png";
 
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
@@ -76,7 +71,6 @@ export default class CharacterController extends Laya.Script {
     Laya.stage.on(Laya.Event.KEY_UP, this, this.onKeyUp);
   }
   onTriggerEnter(col: Laya.BoxCollider) {
-    // console.log(col.label);
     if (col.label == "BoxCollider") {
       this.resetMove();
       this.canJump = true;
@@ -199,10 +193,9 @@ export default class CharacterController extends Laya.Script {
 
       this.characterAnim.on(Laya.Event.COMPLETE, this, function () {
         this.characterAnim.interval = 500;
-        this.characterAnim.source =
-          "character/player_01.png,character/player_02.png";
+        this.characterAnim.source = "character/player_01.png,character/player_02.png";
       });
-      setTimeout(() => {
+      setTimeout(() => { 
         this.cd_atk = true;
       }, 500);
     }
@@ -225,7 +218,6 @@ export default class CharacterController extends Laya.Script {
       y: this.playerVelocity["Vy"],
     });
   }
-
   private createAttackCircle(player: Laya.Sprite) {
     let atkCircle = new Laya.Sprite();
     let x_offset: number = this.isFacingRight
@@ -246,16 +238,9 @@ export default class CharacterController extends Laya.Script {
         (this.characterSprite.height * 1) / 8
       );
     }
-
-    let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(
-      Laya.BoxCollider
-    ) as Laya.BoxCollider;
-    let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(
-      Laya.RigidBody
-    ) as Laya.RigidBody;
-    let atkCircleScript: Laya.Script = atkCircle.addComponent(
-      Laya.Script
-    ) as Laya.Script;
+    let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
+    let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(Laya.RigidBody) as Laya.RigidBody;
+    let atkCircleScript: Laya.Script = atkCircle.addComponent(Laya.Script) as Laya.Script;
 
     atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
 
@@ -263,6 +248,15 @@ export default class CharacterController extends Laya.Script {
       if(col.label[0] === 'n'){
         let eh = EnemyHandler;
         eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 600);
+      }
+      else if(col.label[0] === 's'){
+        let eh = EnemyHandler;
+        eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 300);
+
+        console.log(col.owner.parent);
+        console.log(col.owner);
+        
+        
       }
     };
     atkBoxCollider.isSensor = true;
