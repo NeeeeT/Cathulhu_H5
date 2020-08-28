@@ -1,10 +1,9 @@
-abstract class Enemy extends Laya.Script {
+abstract class Enemy extends Laya.Script{
     m_name: string = '';
     m_health: number = 1000;
     m_armor: number = 0;
     m_speed: number = 3;
     m_imgSrc: string = '';
-
     m_tag: string = '';
 
     sprite: Laya.Sprite;
@@ -13,10 +12,10 @@ abstract class Enemy extends Laya.Script {
 
     spawn(player: Laya.Sprite, id: string): void {
         this.sprite = new Laya.Sprite();
+        this.sprite.loadImage(this.m_imgSrc);
         this.sprite.pos(player.x - 170, player.y - (player.height / 2));
         this.sprite.width = player.width * 2 / 3;
         this.sprite.height = player.height;
-        this.sprite.loadImage(this.m_imgSrc);
 
         this.collider = this.sprite.addComponent(Laya.BoxCollider);
         this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
@@ -24,6 +23,7 @@ abstract class Enemy extends Laya.Script {
         this.collider.width = this.sprite.width;
         this.collider.height = this.sprite.height
         this.collider.label = id;
+        this.collider.tag = 'Enemy';
         this.rigidbody.allowRotation = false;
 
         Laya.stage.addChild(this.sprite);
@@ -101,7 +101,7 @@ abstract class Enemy extends Laya.Script {
         bloodEffect.play();
     }
 }
-export class EnemyNormal extends Enemy {
+export class EnemyNormal extends Enemy{
     m_name = '普通敵人';
     m_health = 1000;
     m_speed = 2;

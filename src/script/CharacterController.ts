@@ -180,7 +180,7 @@ export default class CharacterController extends Laya.Script {
         this.cd_ray = true;
       }, 500);
       //敵人生成測試
-      EnemyHandler.generator(this.characterSprite);
+      EnemyHandler.generator(this.characterSprite, this.isFacingRight?1:2, 0);
     }
     if (this.keyDownList[17]) {
       if (!this.cd_atk) return;
@@ -188,7 +188,7 @@ export default class CharacterController extends Laya.Script {
       this.characterAnim.source =
         "cahracter/Player_attack_0.png,cahracter/Player_attack_1.png,cahracter/Player_attack_2.png,cahracter/Player_attack_3.png,cahracter/Player_attack_4.png,cahracter/Player_attack_5.png";
       this.createAttackCircle(this.characterSprite);
-      this.createEffect(this.characterSprite);
+      this.createAttackEffect(this.characterSprite);
       this.cd_atk = false;
 
       this.characterAnim.on(Laya.Event.COMPLETE, this, function () {
@@ -225,17 +225,11 @@ export default class CharacterController extends Laya.Script {
       : (player.width * 5) / 4 + 3;
     if (this.isFacingRight) {
       atkCircle.pos(
-        player.x + x_offset,
-        player.y -
-        (this.characterSprite.height * 1) / 2 +
-        (this.characterSprite.height * 1) / 8
+        player.x + x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8
       );
     } else {
       atkCircle.pos(
-        player.x - x_offset,
-        player.y -
-        (this.characterSprite.height * 1) / 2 +
-        (this.characterSprite.height * 1) / 8
+        player.x - x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8
       );
     }
     let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
@@ -245,18 +239,10 @@ export default class CharacterController extends Laya.Script {
     atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
 
     atkCircleScript.onTriggerEnter = function (col:Laya.BoxCollider) {
-      if(col.label[0] === 'n'){
-        let eh = EnemyHandler;
-        eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 600);
-      }
-      else if(col.label[0] === 's'){
-        let eh = EnemyHandler;
-        eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 300);
-
-        console.log(col.owner.parent);
-        console.log(col.owner);
-        
-        
+      if(col.tag === 'Enemy'){
+        let eh = EnemyHandler;//敵人控制器
+        let victim = eh.getEnemyByLabel(col.label);
+        eh.takeDamage(victim, 600);
       }
     };
     atkBoxCollider.isSensor = true;
@@ -271,7 +257,7 @@ export default class CharacterController extends Laya.Script {
     }, 100);
   }
 
-  private createEffect(player: Laya.Sprite) {
+  private createAttackEffect(player: Laya.Sprite) {
     Laya.SoundManager.playSound("Audio/SlashAudio.wav", 1);
     let slashEffect: Laya.Animation = new Laya.Animation();
     //濾鏡

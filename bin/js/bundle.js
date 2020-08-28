@@ -58,15 +58,16 @@
         }
         spawn(player, id) {
             this.sprite = new Laya.Sprite();
+            this.sprite.loadImage(this.m_imgSrc);
             this.sprite.pos(player.x - 170, player.y - (player.height / 2));
             this.sprite.width = player.width * 2 / 3;
             this.sprite.height = player.height;
-            this.sprite.loadImage(this.m_imgSrc);
             this.collider = this.sprite.addComponent(Laya.BoxCollider);
             this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
             this.collider.width = this.sprite.width;
             this.collider.height = this.sprite.height;
             this.collider.label = id;
+            this.collider.tag = 'Enemy';
             this.rigidbody.allowRotation = false;
             Laya.stage.addChild(this.sprite);
             this.showHealth(this.sprite);
@@ -150,7 +151,6 @@
     class EnemyNormal extends Enemy {
         constructor() {
             super(...arguments);
-            this.m_name = '普通敵人';
             this.m_health = 1000;
             this.m_speed = 2;
             this.m_imgSrc = "comp/monster_normal.png";
@@ -170,23 +170,38 @@
     }
 
     class EnemyHandler extends Laya.Script {
-        static generator(player) {
-            let enemyNormal = new EnemyShield();
-            let _id = enemyNormal.m_tag + String(++this.enemyIndex);
-            enemyNormal.spawn(player, _id);
-            this.enenmyPool.push({ '_id': _id, '_ent': enemyNormal });
-            console.log(this.getEnemiesCount());
-            console.log(this.enenmyPool);
+        static generator(player, enemyType, spawnPoint) {
+            let enemy = this.decideEnemyType(enemyType);
+            let id = enemy.m_tag + String(++this.enemyIndex);
+            enemy.spawn(player, id);
+            this.enemyPool.push({ '_id': id, '_ent': enemy });
+            this.updateEnemies();
+            console.log(this.enemyPool);
+        }
+        static decideEnemyType(enemyType) {
+            switch (enemyType) {
+                case 1: return new EnemyNormal();
+                case 2: return new EnemyShield();
+                default: return new EnemyNormal();
+            }
+            ;
+        }
+        static updateEnemies() {
+            return this.enemyPool = this.enemyPool.filter(data => data._ent.collider.owner != null);
         }
         static takeDamage(enemy, amount) {
             enemy.setHealth(enemy.getHealth() - amount);
         }
         static getEnemiesCount() {
-            return (this.enenmyPool = this.enenmyPool.filter(data => data._ent.collider.owner != null)).length;
+            return (this.enemyPool = this.enemyPool.filter(data => data._ent.collider.owner != null)).length;
+        }
+        static getEnemyByLabel(label) {
+            return this.enemyPool.filter(data => data._id === label)[0]['_ent'];
+            ;
         }
     }
     EnemyHandler.enemyIndex = 0;
-    EnemyHandler.enenmyPool = [];
+    EnemyHandler.enemyPool = [];
 
     class CharacterController extends Laya.Script {
         constructor() {
@@ -307,7 +322,7 @@
                     Laya.stage.graphics.clear();
                     this.cd_ray = true;
                 }, 500);
-                EnemyHandler.generator(this.characterSprite);
+                EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
             }
             if (this.keyDownList[17]) {
                 if (!this.cd_atk)
@@ -316,7 +331,7 @@
                 this.characterAnim.source =
                     "cahracter/Player_attack_0.png,cahracter/Player_attack_1.png,cahracter/Player_attack_2.png,cahracter/Player_attack_3.png,cahracter/Player_attack_4.png,cahracter/Player_attack_5.png";
                 this.createAttackCircle(this.characterSprite);
-                this.createEffect(this.characterSprite);
+                this.createAttackEffect(this.characterSprite);
                 this.cd_atk = false;
                 this.characterAnim.on(Laya.Event.COMPLETE, this, function () {
                     this.characterAnim.interval = 500;
@@ -351,29 +366,20 @@
                 ? (player.width * 1) / 2 + 3
                 : (player.width * 5) / 4 + 3;
             if (this.isFacingRight) {
-                atkCircle.pos(player.x + x_offset, player.y -
-                    (this.characterSprite.height * 1) / 2 +
-                    (this.characterSprite.height * 1) / 8);
+                atkCircle.pos(player.x + x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8);
             }
             else {
-                atkCircle.pos(player.x - x_offset, player.y -
-                    (this.characterSprite.height * 1) / 2 +
-                    (this.characterSprite.height * 1) / 8);
+                atkCircle.pos(player.x - x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8);
             }
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
             let atkCircleScript = atkCircle.addComponent(Laya.Script);
             atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
             atkCircleScript.onTriggerEnter = function (col) {
-                if (col.label[0] === 'n') {
+                if (col.tag === 'Enemy') {
                     let eh = EnemyHandler;
-                    eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 600);
-                }
-                else if (col.label[0] === 's') {
-                    let eh = EnemyHandler;
-                    eh.takeDamage(eh.enenmyPool.filter(enemy => enemy._id === col.label)[0]['_ent'], 300);
-                    console.log(col.owner.parent);
-                    console.log(col.owner);
+                    let victim = eh.getEnemyByLabel(col.label);
+                    eh.takeDamage(victim, 600);
                 }
             };
             atkBoxCollider.isSensor = true;
@@ -385,7 +391,7 @@
                 atkCircle.destroyed = true;
             }, 100);
         }
-        createEffect(player) {
+        createAttackEffect(player) {
             Laya.SoundManager.playSound("Audio/SlashAudio.wav", 1);
             let slashEffect = new Laya.Animation();
             let colorMat = [
