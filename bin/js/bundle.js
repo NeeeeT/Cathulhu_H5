@@ -101,6 +101,74 @@
         }
     }
 
+    class Context extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.m_State = null;
+        }
+        request(value) {
+            this.m_State.handle(value);
+        }
+        setState(theState) {
+            console.log("Context.SetState: " + theState);
+            this.m_State = theState;
+        }
+    }
+    class State extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.m_Context = null;
+        }
+        State(theContext) {
+            this.m_Context = theContext;
+        }
+    }
+    class CharacterIdleState extends State {
+        constructor(context) {
+            super();
+            this.m_Context = null;
+        }
+        CharacterIdleState(theContext) {
+            this.m_Context = super.m_Context;
+        }
+        handle(value) {
+            console.log("CharacterIdleState.handle");
+            if (value > 10) {
+                this.m_Context.setState(new CharacterMoveState(this.m_Context));
+            }
+        }
+    }
+    class CharacterMoveState extends State {
+        constructor(context) {
+            super();
+            this.m_Context = null;
+        }
+        CharacterMoveState(theContext) {
+            this.m_Context = super.m_Context;
+        }
+        handle(value) {
+            console.log("CharacterMoveState.handle");
+            if (value > 20) {
+                this.m_Context.setState(new CharacterDashState(this.m_Context));
+            }
+        }
+    }
+    class CharacterDashState extends State {
+        constructor(context) {
+            super();
+            this.m_Context = null;
+        }
+        CharacterDashState(theContext) {
+            this.m_Context = super.m_Context;
+        }
+        handle(value) {
+            console.log("CharacterDashState.handle");
+            if (value > 20) {
+                console.log("end");
+            }
+        }
+    }
+
     class CharacterController extends Laya.Script {
         constructor() {
             super();
@@ -122,6 +190,11 @@
         onStart() {
             this.setup();
             CameraHandler.CameraFollower(this.characterSprite);
+            let theContext = new Context();
+            theContext.setState(new CharacterIdleState());
+            theContext.request(5);
+            theContext.request(15);
+            theContext.request(25);
         }
         onUpdate() {
             if (this.playerVelocity["Vx"] < -this.xMaxVelocity) {
@@ -292,6 +365,7 @@
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
             Laya.stage.addChild(atkCircle);
+            atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
             setTimeout(() => {
                 atkCircle.destroy();
                 atkCircle.destroyed = true;
@@ -319,7 +393,6 @@
             slashEffect.source =
                 "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
-                console.log("動畫消除");
                 slashEffect.clear();
             });
             Laya.stage.addChild(slashEffect);

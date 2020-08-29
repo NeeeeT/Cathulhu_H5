@@ -2,6 +2,9 @@ import DrawCmd from "./DrawCmd";
 import Raycast from "./Raycast";
 import CameraHandler from "./CameraHandler";
 import { EnemyNormal } from "./EnemyNormal";
+import {Context} from "./CharacterState";
+import {State} from "./CharacterState";
+import {CharacterIdleState} from "./CharacterState";
 
 export default class CharacterController extends Laya.Script {
   private playerRig: Laya.RigidBody;
@@ -45,6 +48,15 @@ export default class CharacterController extends Laya.Script {
   onStart() {
     this.setup();
     CameraHandler.CameraFollower(this.characterSprite); //初始化相機
+
+    //角色狀態
+    let theContext:Context = new Context();
+    theContext.setState(new CharacterIdleState());
+
+    theContext.request(5);
+    theContext.request(15);
+    theContext.request(25);
+
   }
 
   onUpdate() {
