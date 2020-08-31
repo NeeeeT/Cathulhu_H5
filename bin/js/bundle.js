@@ -64,11 +64,14 @@
             this.sprite.height = player.height;
             this.collider = this.sprite.addComponent(Laya.BoxCollider);
             this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
+            this.m_script = this.sprite.addComponent(Laya.Script);
+            this.m_script.onUpdate = () => { this.pursuitPlayer(); };
             this.collider.width = this.sprite.width;
             this.collider.height = this.sprite.height;
             this.collider.label = id;
             this.collider.tag = 'Enemy';
             this.rigidbody.allowRotation = false;
+            this.m_player = player;
             Laya.stage.addChild(this.sprite);
             this.showHealth(this.sprite);
         }
@@ -147,14 +150,32 @@
             Laya.stage.addChild(bloodEffect);
             bloodEffect.play();
         }
+        pursuitPlayer() {
+            let dir = this.m_player.x - this.sprite.x;
+            if (dir > 0) {
+                this.sprite.x += this.m_speed;
+            }
+            else if (dir < 0) {
+                this.sprite.x += -this.m_speed;
+            }
+        }
+        playerRangeCheck() {
+            let dist = 0;
+        }
+        attack() {
+        }
     }
     class EnemyNormal extends Enemy {
         constructor() {
             super(...arguments);
+            this.m_name = '普通敵人';
             this.m_health = 1000;
             this.m_speed = 2;
             this.m_imgSrc = "comp/monster_normal.png";
             this.m_tag = 'n';
+        }
+        pursuitPlayer() {
+            console.log("5566");
         }
     }
     class EnemyShield extends Enemy {
@@ -177,6 +198,7 @@
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();
             console.log(this.enemyPool);
+            return enemy;
         }
         static decideEnemyType(enemyType) {
             switch (enemyType) {
