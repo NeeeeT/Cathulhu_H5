@@ -28023,6 +28023,7 @@ window.box2d = box2d;
       this.category = 1;
       this.mask = -1;
       this.label = "RigidBody";
+      this.tag = "RigidBody_Tag"; //2020/08/29新增 用於敵人判斷
     }
     _createBody() {
       if (this._body || !this.owner) return;
@@ -28581,6 +28582,7 @@ window.box2d = box2d;
         this._setShape(false);
       }
       this.label = this.label || "BoxCollider";
+      this.tag = this.tag || "BoxCollider_Tag"; //2020/08/29新增 用於敵人判斷
       return super.getDef();
     }
     _setShape(re = true) {
@@ -28647,6 +28649,7 @@ window.box2d = box2d;
         this._setShape(false);
       }
       this.label = this.label || "ChainCollider";
+      this.tag = this.tag || "ChainCollider"; //2020/08/29新增 用於敵人判斷
       return super.getDef();
     }
     _setShape(re = true) {
@@ -28714,6 +28717,7 @@ window.box2d = box2d;
         this._setShape(false);
       }
       this.label = this.label || "CircleCollider";
+      this.tag = this.tag || "CircleCollider"; //2020/08/29新增 用於敵人判斷
       return super.getDef();
     }
     _setShape(re = true) {
@@ -29017,6 +29021,7 @@ window.box2d = box2d;
         this._setShape(false);
       }
       this.label = this.label || "PolygonCollider";
+      this.tag = this.tag || "PolygonCollider"; //2020/08/29新增 用於敵人判斷
       return super.getDef();
     }
     _setShape(re = true) {

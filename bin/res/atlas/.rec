@@ -1,4 +1,20 @@
 D .
+D Blood
+P C1E52BA3 Blood_0000.png
+P DD533C61 Blood_0001.png
+P 3B7538DA Blood_0002.png
+P 61C24476 Blood_0003.png
+P 4D2C0B1D Blood_0004.png
+P 3560B8C0 Blood_0005.png
+P 8312326B Blood_0006.png
+P EF79E8AA Blood_0007.png
+P A4978A13 Blood_0008.png
+P FC055C21 Blood_0009.png
+P 35E0D635 Blood_0010.png
+P 05188180 Blood_0011.png
+P B251754D Blood_0012.png
+P F7503637 Blood_0013.png
+P 550FE1FA Blood_0014.png
 D cahracter
 P D32D8CC2 Player_attack_0.png
 P 643FA78E Player_attack_1.png
@@ -19,6 +35,7 @@ P D749C312 clip_tree_folder.png
 P 704C5D70 combobox.png
 P D566AE8B fontClip.png
 P 38AB8F3F fontClip_num.png
+P AE9108A3 grass20.png
 P 6EF336AE hscroll$bar.png
 P 7FF47AC5 hscroll$down.png
 P 3D7B147A hscroll$up.png
@@ -35,6 +52,7 @@ P 2BE22124 img_bg5.png
 P BA28BD65 img_blank.png
 P BA2A0579 label.png
 P 9F43D29D monster_normal.png
+P 69ADCFE4 monster_shield.png
 P B017E53E progress$bar.png
 P C05839CD progress.png
 P 3C493DD4 radio.png

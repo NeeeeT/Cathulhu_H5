@@ -1,10 +1,11 @@
 import DrawCmd from "./DrawCmd";
 import Raycast from "./Raycast";
 import CameraHandler from "./CameraHandler";
-import { EnemyNormal } from "./EnemyNormal";
 import {Context} from "./CharacterState";
 import {State} from "./CharacterState";
 import {CharacterIdleState} from "./CharacterState";
+import { EnemyNormal, EnemyShield } from "./EnemyManager";
+import EnemyHandler from "./EnemyHandler";
 
 export default class CharacterController extends Laya.Script {
   private playerRig: Laya.RigidBody;
@@ -17,7 +18,7 @@ export default class CharacterController extends Laya.Script {
   private hanlder: TimerHandler;
 
   private cd_ray: boolean = true; //空白鍵射線CD
-  private cd_atk: boolean = true;
+  private cd_atk: boolean = true; //CTRL攻擊CD
 
   /** @prop {name:characterNode,tips:"放入角色Node",type:Node}*/
   characterNode: Laya.Node = null;
@@ -31,8 +32,8 @@ export default class CharacterController extends Laya.Script {
   /** @prop {name:velocityMultiplier,tips:"改變角色速度增加幅度",type:int,default:1}*/
   velocityMultiplier: number = 5;
 
-  /** @prop {name:attackCircleRadius,tips:"調整攻擊範圍圈半徑",type:int,default:100}*/
-  attackCircleRadius: number = 100;
+  /** @prop {name:attackBoxRange,tips:"調整攻擊範圍方塊距離",type:int,default:100}*/
+  attackBoxRange: number = 100;
 
   constructor() {
     super();
@@ -60,20 +61,15 @@ export default class CharacterController extends Laya.Script {
   }
 
   onUpdate() {
-    if (this.playerVelocity["Vx"] < -this.xMaxVelocity) {
-      this.playerVelocity["Vx"] = -this.xMaxVelocity;
-    }
-    if (this.playerVelocity["Vx"] > this.xMaxVelocity) {
-      this.playerVelocity["Vx"] = this.xMaxVelocity;
-    }
+    if (this.playerVelocity["Vx"] < -this.xMaxVelocity) this.playerVelocity["Vx"] = -this.xMaxVelocity;
+    if (this.playerVelocity["Vx"] > this.xMaxVelocity) this.playerVelocity["Vx"] = this.xMaxVelocity;
     this.characterMove();
   }
 
   setup(): void {
     this.characterSprite = this.characterNode as Laya.Sprite;
     this.characterAnim = this.characterNode as Laya.Animation;
-    this.characterAnim.source =
-      "character/player_01.png,character/player_02.png";
+    this.characterAnim.source = "character/player_01.png,character/player_02.png";
 
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
@@ -87,7 +83,6 @@ export default class CharacterController extends Laya.Script {
     Laya.stage.on(Laya.Event.KEY_UP, this, this.onKeyUp);
   }
   onTriggerEnter(col: Laya.BoxCollider) {
-    // console.log(col.label);
     if (col.label == "BoxCollider") {
       this.resetMove();
       this.canJump = true;
@@ -148,9 +143,8 @@ export default class CharacterController extends Laya.Script {
         this.isFacingRight = true;
       }
     }
-    //Down
     if (this.keyDownList[40]) {
-      // CameraHandler.CameraFollower(this.characterSprite);
+      //Down
     }
     if (this.keyDownList[32]) {
       if (!this.cd_ray) return;
@@ -187,26 +181,18 @@ export default class CharacterController extends Laya.Script {
         let spr: Laya.Sprite[] = Raycast_return["Sprite"] as Laya.Sprite[];
         let world = Laya.Physics.I.world;
 
-        // console.log(Raycast_return['Sprite']);
-
         //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
-        rig.forEach((e) => {
-          world.DestroyBody(e);
-        });
         spr.forEach((e) => {
-          console.log(e);
-          e.graphics.destroy();
+          e.destroy();
           e.destroyed = true;
-          // e.active = false;
         });
       }
       setTimeout(() => {
         Laya.stage.graphics.clear();
         this.cd_ray = true;
       }, 500);
-
-      let enenmyNormal: EnemyNormal = new EnemyNormal();
-      enenmyNormal.spawn(this.characterSprite);
+      //敵人生成測試
+      EnemyHandler.generator(this.characterSprite, this.isFacingRight?1:2, 0);
     }
     if (this.keyDownList[17]) {
       if (!this.cd_atk) return;
@@ -214,16 +200,14 @@ export default class CharacterController extends Laya.Script {
       this.characterAnim.source =
         "cahracter/Player_attack_0.png,cahracter/Player_attack_1.png,cahracter/Player_attack_2.png,cahracter/Player_attack_3.png,cahracter/Player_attack_4.png,cahracter/Player_attack_5.png";
       this.createAttackCircle(this.characterSprite);
-      this.createEffect(this.characterSprite);
+      this.createAttackEffect(this.characterSprite);
       this.cd_atk = false;
 
       this.characterAnim.on(Laya.Event.COMPLETE, this, function () {
         this.characterAnim.interval = 500;
-        this.characterAnim.source =
-          "character/player_01.png,character/player_02.png";
+        this.characterAnim.source = "character/player_01.png,character/player_02.png";
       });
-
-      setTimeout(() => {
+      setTimeout(() => { 
         this.cd_atk = true;
       }, 500);
     }
@@ -246,7 +230,6 @@ export default class CharacterController extends Laya.Script {
       y: this.playerVelocity["Vy"],
     });
   }
-
   private createAttackCircle(player: Laya.Sprite) {
     let atkCircle = new Laya.Sprite();
     let x_offset: number = this.isFacingRight
@@ -254,34 +237,25 @@ export default class CharacterController extends Laya.Script {
       : (player.width * 5) / 4 + 3;
     if (this.isFacingRight) {
       atkCircle.pos(
-        player.x + x_offset,
-        player.y -
-        (this.characterSprite.height * 1) / 2 +
-        (this.characterSprite.height * 1) / 8
+        player.x + x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8
       );
     } else {
       atkCircle.pos(
-        player.x - x_offset,
-        player.y -
-        (this.characterSprite.height * 1) / 2 +
-        (this.characterSprite.height * 1) / 8
+        player.x - x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8
       );
     }
+    let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
+    let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(Laya.RigidBody) as Laya.RigidBody;
+    let atkCircleScript: Laya.Script = atkCircle.addComponent(Laya.Script) as Laya.Script;
 
-    let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(
-      Laya.BoxCollider
-    ) as Laya.BoxCollider;
-    let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(
-      Laya.RigidBody
-    ) as Laya.RigidBody;
-    let atkCircleScript: Laya.Script = atkCircle.addComponent(
-      Laya.Script
-    ) as Laya.Script;
+    atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
 
-    atkBoxCollider.height = atkBoxCollider.width = this.attackCircleRadius;
-
-    atkCircleScript.onTriggerEnter = function () {
-      console.log("歐拉歐拉歐拉歐拉歐拉歐拉歐拉歐拉");
+    atkCircleScript.onTriggerEnter = function (col:Laya.BoxCollider) {
+      if(col.tag === 'Enemy'){
+        let eh = EnemyHandler;//敵人控制器
+        let victim = eh.getEnemyByLabel(col.label);
+        eh.takeDamage(victim, 600);
+      }
     };
     atkBoxCollider.isSensor = true;
     atkCircleRigid.gravityScale = 0;
@@ -290,17 +264,16 @@ export default class CharacterController extends Laya.Script {
     atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     setTimeout(() => {
-      // Laya.Physics.I.world.DestroyBody(atkCircleRigid);
-      // atkCircle.graphics.destroy();
       atkCircle.destroy();
       atkCircle.destroyed = true;
     }, 100);
   }
 
-  private createEffect(player: Laya.Sprite) {
+  private createAttackEffect(player: Laya.Sprite) {
+    Laya.SoundManager.playSound("Audio/SlashAudio.wav", 1);
     let slashEffect: Laya.Animation = new Laya.Animation();
     //濾鏡
-    let redMat: Array<number> =
+    let colorMat: Array<number> =
       [
         2, 0, 0, 0, -100, //R
         0, 1, 0, 0, -100, //G
@@ -308,8 +281,8 @@ export default class CharacterController extends Laya.Script {
         0, 0, 0, 1, 0, //A
       ];
     let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
-    let redFilter: Laya.ColorFilter = new Laya.ColorFilter(redMat);
-    slashEffect.filters = [redFilter, glowFilter];
+    let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+    slashEffect.filters = [colorFilter, glowFilter];
     //濾鏡
     if (this.isFacingRight) {
       slashEffect.skewY = 0;
@@ -321,8 +294,8 @@ export default class CharacterController extends Laya.Script {
     slashEffect.source =
       "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
     slashEffect.on(Laya.Event.COMPLETE, this, function () {
-      // console.log("動畫消除");
-      slashEffect.clear();
+      slashEffect.destroy();
+      slashEffect.destroyed = true;
     });
     Laya.stage.addChild(slashEffect);
     slashEffect.play();

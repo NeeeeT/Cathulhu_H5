@@ -1,14 +1,9 @@
 export default class Raycast extends Laya.Script{
-    constructor(){
-        super();
-    }
     public static _RayCast(startX:number, startY:number, endX:number, endY:number, direction:number):object 
     {
         // 參數5(direction)定義: 1為正向(朝右)，0為反向(朝左)。
         let world = Laya.Physics.I.world;
         let hit: number = 0;//射中的物體數量
-        let rigidbody_arr: Laya.RigidBody[] = [];
-        
         let sprite_arr: Laya.Sprite[] = [];
         
         world.RayCast(function(fixture, point, normal, fraction)
@@ -17,7 +12,7 @@ export default class Raycast extends Laya.Script{
             let rigidbody:Laya.RigidBody = fixture.m_body as Laya.RigidBody;
             let sprite:Laya.Sprite = fixture.collider.owner as Laya.Sprite;
 
-            rigidbody_arr.push(rigidbody);
+            // rigidbody_arr.push(rigidbody);
             sprite_arr.push(sprite);
             hit++;
         },
@@ -28,7 +23,6 @@ export default class Raycast extends Laya.Script{
         // console.log(sprite_arr.sort((a, b) => a.x < b.x ? -1 : a.x > b.x ? 1 : 0));//待熟練此函數
         return {
             'Hit': hit,
-            'Rigidbody': rigidbody_arr,
             'Sprite': (direction) ? sprite_arr.sort((a, b) => a.x < b.x ? -1 : a.x > b.x ? 1 : 0) : sprite_arr.sort((a, b) => a.x > b.x ? -1 : a.x > b.x ? 1 : 0),
         };
     };
