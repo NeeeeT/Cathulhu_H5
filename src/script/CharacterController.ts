@@ -183,7 +183,7 @@ export default class CharacterController extends Laya.Script {
         this.cd_ray = true;
       }, 500);
       //敵人生成測試
-      EnemyHandler.generator(this.characterSprite, this.isFacingRight?1:2, 0);
+      EnemyHandler.generator(this.characterSprite, this.isFacingRight? 1 : 2, 0);
     }
     if (this.keyDownList[17]) {
       if (!this.cd_atk) return;
@@ -223,9 +223,7 @@ export default class CharacterController extends Laya.Script {
   }
   private createAttackCircle(player: Laya.Sprite) {
     let atkCircle = new Laya.Sprite();
-    let x_offset: number = this.isFacingRight
-      ? (player.width * 1) / 2 + 3
-      : (player.width * 5) / 4 + 3;
+    let x_offset: number = this.isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
     if (this.isFacingRight) {
       atkCircle.pos(
         player.x + x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8
@@ -250,9 +248,9 @@ export default class CharacterController extends Laya.Script {
     };
     atkBoxCollider.isSensor = true;
     atkCircleRigid.gravityScale = 0;
+    atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     Laya.stage.addChild(atkCircle);
-    atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     setTimeout(() => {
       atkCircle.destroy();

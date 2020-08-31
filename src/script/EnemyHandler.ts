@@ -31,6 +31,29 @@ export default class EnemyHandler extends Laya.Script{
     }
     public static takeDamage(enemy: EnemyType, amount: number){
         enemy.setHealth(enemy.getHealth() - amount);
+
+        let damageText = new Laya.Text();
+        damageText.text = String(amount);
+        damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
+        damageText.fontSize = 25;
+        damageText.bold = true;
+        damageText.align = "center";
+        damageText.color = "red";
+
+        Laya.stage.addChild(damageText);
+
+        setInterval((()=>{
+            if(damageText.destroyed) return;
+
+            damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
+            damageText.align = "center";
+        }), 10);
+        setTimeout((()=>{
+            if(damageText.destroyed) return;
+            
+            damageText.destroy();
+            damageText.destroyed = true;
+        }), 500);
     }
     public static getEnemiesCount():number{
         return (this.enemyPool = this.enemyPool.filter(data => data._ent.collider.owner != null)).length;
