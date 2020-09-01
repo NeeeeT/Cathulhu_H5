@@ -61,36 +61,37 @@
             this.m_isFacingRight = true;
         }
         spawn(player, id) {
-            this.sprite = new Laya.Sprite();
-            this.sprite.loadImage(this.m_imgSrc);
-            this.sprite.pos(player.x - 170, player.y - (player.height / 2));
-            this.sprite.width = player.width * 2 / 3;
-            this.sprite.height = player.height;
-            this.sprite.pivotX = this.sprite.width / 2;
-            this.sprite.pivotY = this.sprite.height / 2;
-            this.collider = this.sprite.addComponent(Laya.BoxCollider);
-            this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
-            this.m_script = this.sprite.addComponent(Laya.Script);
+            this.m_sprite = new Laya.Sprite();
+            this.m_sprite.loadImage(this.m_imgSrc);
+            this.m_sprite.pos(player.x - 170, player.y - (player.height / 2));
+            this.m_sprite.width = player.width * 2 / 3;
+            this.m_sprite.height = player.height;
+            this.m_sprite.pivotX = this.m_sprite.width / 2;
+            this.m_sprite.pivotY = this.m_sprite.height / 2;
+            this.m_maxHealth = this.m_health;
+            this.m_collider = this.m_sprite.addComponent(Laya.BoxCollider);
+            this.m_rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
+            this.m_script = this.m_sprite.addComponent(Laya.Script);
             this.m_script.onUpdate = () => { this.pursuitPlayer(); };
-            this.collider.width = this.sprite.width;
-            this.collider.height = this.sprite.height;
-            this.collider.label = id;
-            this.collider.tag = 'Enemy';
-            this.rigidbody.allowRotation = false;
+            this.m_collider.width = this.m_sprite.width;
+            this.m_collider.height = this.m_sprite.height;
+            this.m_collider.label = id;
+            this.m_collider.tag = 'Enemy';
+            this.m_rigidbody.allowRotation = false;
             this.m_player = player;
-            Laya.stage.addChild(this.sprite);
-            this.showHealth(this.sprite);
+            Laya.stage.addChild(this.m_sprite);
+            this.showHealth(this.m_sprite);
         }
         ;
         destroy() {
-            this.sprite.destroy();
+            this.m_sprite.destroy();
         }
         ;
         setHealth(amount) {
             this.m_health = amount;
             if (this.m_health <= 0) {
-                this.bloodSplitEffect(this.sprite);
-                this.sprite.destroy();
+                this.bloodSplitEffect(this.m_sprite);
+                this.m_sprite.destroy();
             }
         }
         getHealth() {
@@ -114,26 +115,25 @@
         }
         ;
         setLabel(index) {
-            this.collider.label = index;
+            this.m_collider.label = index;
         }
         ;
         showHealth(enemy) {
-            let enemyHealthText = new Laya.Text();
-            enemyHealthText.pos(enemy.x, enemy.y - 40);
-            enemyHealthText.width = 100;
-            enemyHealthText.height = 60;
-            enemyHealthText.color = "#efefef";
-            enemyHealthText.fontSize = 40;
-            enemyHealthText.text = '' + String(this.m_health);
-            Laya.stage.addChild(enemyHealthText);
+            let healthBar = new Laya.ProgressBar();
+            healthBar.pos(enemy.x, enemy.y - 10);
+            healthBar.height = 10;
+            healthBar.width = 90;
+            healthBar.skin = "comp/progress.png";
+            healthBar.value = 1;
+            Laya.stage.addChild(healthBar);
             setInterval((() => {
                 if (enemy.destroyed) {
-                    enemyHealthText.destroy();
-                    enemyHealthText.destroyed = true;
+                    healthBar.destroy();
+                    healthBar.destroyed = true;
                     return;
                 }
-                enemyHealthText.pos(enemy.x, enemy.y - 40);
-                enemyHealthText.text = '' + String(this.m_health);
+                healthBar.pos(enemy.x, enemy.y - 10);
+                healthBar.value = this.m_health / this.m_maxHealth;
             }), 30);
         }
         bloodSplitEffect(enemy) {
@@ -157,8 +157,8 @@
             bloodEffect.play();
         }
         pursuitPlayer() {
-            let dir = this.m_player.x - this.sprite.x;
-            this.sprite.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
+            let dir = this.m_player.x - this.m_sprite.x;
+            this.m_sprite.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
             this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false;
             if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
                 this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
@@ -170,7 +170,7 @@
             this.applyMoveX();
         }
         playerRangeCheck(detectRange) {
-            let dist = Math.sqrt(Math.pow((this.m_player.x - this.sprite.x), 2) + Math.pow((this.m_player.y - this.sprite.y), 2));
+            let dist = Math.sqrt(Math.pow((this.m_player.x - this.m_sprite.x), 2) + Math.pow((this.m_player.y - this.m_sprite.y), 2));
             return (dist <= detectRange) ? true : false;
         }
         attack() {
@@ -179,13 +179,13 @@
                 this.m_moveVelocity["Vx"] = 0;
                 let atkCircle = new Laya.Sprite();
                 let x_offset = this.m_isFacingRight
-                    ? (this.sprite.width * 1) / 2 + 3
-                    : (this.sprite.width * 5) / 4 + 3;
+                    ? (this.m_sprite.width * 1) / 2 + 3
+                    : (this.m_sprite.width * 5) / 4 + 3;
                 if (this.m_isFacingRight) {
-                    atkCircle.pos(this.sprite.x + this.sprite.width / 2, this.sprite.y - this.sprite.height / 2);
+                    atkCircle.pos(this.m_sprite.x + this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2);
                 }
                 else {
-                    atkCircle.pos(this.sprite.x - 3 * this.sprite.width / 2, this.sprite.y - this.sprite.height / 2);
+                    atkCircle.pos(this.m_sprite.x - 3 * this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2);
                 }
                 let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
                 let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
@@ -210,14 +210,14 @@
             }
         }
         applyMoveX() {
-            this.rigidbody.setVelocity({
+            this.m_rigidbody.setVelocity({
                 x: this.m_moveVelocity["Vx"],
-                y: this.rigidbody.linearVelocity.y,
+                y: this.m_rigidbody.linearVelocity.y,
             });
         }
         applyMoveY() {
-            this.rigidbody.setVelocity({
-                x: this.rigidbody.linearVelocity.x,
+            this.m_rigidbody.setVelocity({
+                x: this.m_rigidbody.linearVelocity.x,
                 y: this.m_moveVelocity["Vy"],
             });
         }
@@ -227,6 +227,7 @@
             super(...arguments);
             this.m_name = '普通敵人';
             this.m_health = 1000;
+            this.m_armor = 100;
             this.m_speed = 2;
             this.m_imgSrc = "comp/monster_normal.png";
             this.m_tag = 'n';
@@ -265,13 +266,33 @@
             ;
         }
         static updateEnemies() {
-            return this.enemyPool = this.enemyPool.filter(data => data._ent.collider.owner != null);
+            return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
         }
         static takeDamage(enemy, amount) {
             enemy.setHealth(enemy.getHealth() - amount);
+            let damageText = new Laya.Text();
+            damageText.text = String(amount);
+            damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
+            damageText.fontSize = 25;
+            damageText.bold = true;
+            damageText.align = "center";
+            damageText.color = "red";
+            Laya.stage.addChild(damageText);
+            setInterval((() => {
+                if (damageText.destroyed)
+                    return;
+                damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
+                damageText.align = "center";
+            }), 10);
+            setTimeout((() => {
+                if (damageText.destroyed)
+                    return;
+                damageText.destroy();
+                damageText.destroyed = true;
+            }), 500);
         }
         static getEnemiesCount() {
-            return (this.enemyPool = this.enemyPool.filter(data => data._ent.collider.owner != null)).length;
+            return (this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null)).length;
         }
         static getEnemyByLabel(label) {
             return this.enemyPool.filter(data => data._id === label)[0]['_ent'];
@@ -442,9 +463,7 @@
         }
         createAttackCircle(player) {
             let atkCircle = new Laya.Sprite();
-            let x_offset = this.isFacingRight
-                ? (player.width * 1) / 2 + 3
-                : (player.width * 5) / 4 + 3;
+            let x_offset = this.isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
             if (this.isFacingRight) {
                 atkCircle.pos(player.x + x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8);
             }
@@ -464,8 +483,8 @@
             };
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
-            Laya.stage.addChild(atkCircle);
             atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
+            Laya.stage.addChild(atkCircle);
             setTimeout(() => {
                 atkCircle.destroy();
                 atkCircle.destroyed = true;

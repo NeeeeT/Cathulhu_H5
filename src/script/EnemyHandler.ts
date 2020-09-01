@@ -27,7 +27,7 @@ export default class EnemyHandler extends Laya.Script{
         };
     }
     private static updateEnemies(): any{
-        return this.enemyPool = this.enemyPool.filter(data => data._ent.collider.owner != null);
+        return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
     }
     public static takeDamage(enemy: EnemyType, amount: number){
         enemy.setHealth(enemy.getHealth() - amount);
@@ -56,7 +56,7 @@ export default class EnemyHandler extends Laya.Script{
         }), 500);
     }
     public static getEnemiesCount():number{
-        return (this.enemyPool = this.enemyPool.filter(data => data._ent.collider.owner != null)).length;
+        return (this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null)).length;
     }
     public static getEnemyByLabel(label: string): EnemyType{
         return this.enemyPool.filter(data => data._id === label)[0]['_ent'] as EnemyType;;
