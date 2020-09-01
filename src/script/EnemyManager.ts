@@ -6,11 +6,17 @@ abstract class Enemy extends Laya.Script{
     m_imgSrc: string = '';
     m_tag: string = '';
 
+    m_moveVelocity: object = {"Vx":0, "Vy":0};
+    m_attackRange: number = 100;
+    m_atkCd: boolean = true;
+
     sprite: Laya.Sprite;
     collider: Laya.BoxCollider;
     rigidbody: Laya.RigidBody;
     m_script:Laya.Script;
     m_player:Laya.Sprite;
+
+    m_isFacingRight: boolean = true;
 
     spawn(player: Laya.Sprite, id: string): void {
         this.sprite = new Laya.Sprite();
@@ -18,6 +24,8 @@ abstract class Enemy extends Laya.Script{
         this.sprite.pos(player.x - 170, player.y - (player.height / 2));
         this.sprite.width = player.width * 2 / 3;
         this.sprite.height = player.height;
+        this.sprite.pivotX = this.sprite.width / 2;
+        this.sprite.pivotY = this.sprite.height / 2;
 
         this.collider = this.sprite.addComponent(Laya.BoxCollider);
         this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
@@ -111,20 +119,98 @@ abstract class Enemy extends Laya.Script{
 
     public pursuitPlayer(){
         let dir:number = this.m_player.x - this.sprite.x;
-        if(dir > 0){
-            this.sprite.x += this.m_speed;
-        }else if(dir < 0){
-            this.sprite.x += -this.m_speed;
+        this.sprite.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
+        this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false
+        if(Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed){
+            this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
+        }else{
+            this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
         }
+
+        // this.m_speed = (Math.abs(this.m_moveVelocity["Vx"]) < this.m_speed) ? (this.m_moveVelocity["Vx"] += (dir > 0) ? 0.1 : -0.1) : this.m_speed;
+        // if(this.playerRangeCheck(2 * this.m_attackRange)){
+        //     setTimeout(() => {
+        //         this.attack();
+        //     }, 1000);
+        // }
+        
+        console.log(this.m_moveVelocity["Vx"]);
+        this.applyMoveX();
     }
 
-    private playerRangeCheck(){
-        let dist:number = 0;
+    private playerRangeCheck(detectRange:number):boolean{
+        //取得角色與敵人的最短路徑長度
+        let dist:number = Math.sqrt(Math.pow((this.m_player.x - this.sprite.x), 2) + Math.pow((this.m_player.y - this.sprite.y), 2));          
+        return (dist <= detectRange) ? true : false;
     }
 
     private attack(){
-
+        if(this.m_atkCd){
+            this.m_atkCd = false;
+            // this.rigidbody.setVelocity({x:0, y:this.rigidbody.linearVelocity.y});
+            this.m_moveVelocity["Vx"] = 0;
+            let atkCircle = new Laya.Sprite();
+            let x_offset: number = this.m_isFacingRight
+              ? (this.sprite.width * 1) / 2 + 3
+              : (this.sprite.width * 5) / 4 + 3;
+            if (this.m_isFacingRight) {
+              atkCircle.pos(
+                // this.sprite.x + x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
+                this.sprite.x + this.sprite.width / 2, this.sprite.y - this.sprite.height / 2
+              );
+            } else {
+              atkCircle.pos(
+                // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
+                this.sprite.x - 3 * this.sprite.width / 2, this.sprite.y - this.sprite.height / 2
+              );
+            }
+            let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
+            let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(Laya.RigidBody) as Laya.RigidBody;
+            let atkCircleScript: Laya.Script = atkCircle.addComponent(Laya.Script) as Laya.Script;
+        
+            atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
+        
+            atkCircleScript.onTriggerEnter = function (col:Laya.BoxCollider) {
+                //攻擊擊中判定
+                if(col.label === 'Player'){
+                    console.log("打到玩家了");
+                    
+            //     let eh = EnemyHandler;//敵人控制器
+            //     let victim = eh.getEnemyByLabel(col.label);
+            //     eh.takeDamage(victim, 600);
+                }
+            };
+            atkBoxCollider.isSensor = true;
+            atkCircleRigid.gravityScale = 0;
+        
+            atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
+            Laya.stage.addChild(atkCircle);
+        
+            setTimeout(() => {
+              atkCircle.destroy();
+              atkCircle.destroyed = true;
+            }, 100);
+    
+            setTimeout(() => {
+               this.m_atkCd = true; 
+            }, 500);
+            
+        }
+        
     }
+
+    private applyMoveX(): void {
+        this.rigidbody.setVelocity({
+          x: this.m_moveVelocity["Vx"],
+          y: this.rigidbody.linearVelocity.y,
+        });
+      }
+      private applyMoveY(): void {
+        this.rigidbody.setVelocity({
+          x: this.rigidbody.linearVelocity.x,
+          y: this.m_moveVelocity["Vy"],
+        });
+      }
 
 }
 export class EnemyNormal extends Enemy{
@@ -133,6 +219,7 @@ export class EnemyNormal extends Enemy{
     m_speed = 2;
     m_imgSrc = "comp/monster_normal.png";
     m_tag = 'n';
+    m_attackRange = 100;
 }
 export class EnemyShield extends Enemy {
     m_name = '裝甲敵人';
@@ -141,4 +228,5 @@ export class EnemyShield extends Enemy {
     m_speed = 1;
     m_imgSrc = 'comp/monster_shield.png';
     m_tag = 's';
+    m_attackRange = 100;
 }

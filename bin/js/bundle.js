@@ -55,6 +55,10 @@
             this.m_speed = 3;
             this.m_imgSrc = '';
             this.m_tag = '';
+            this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
+            this.m_attackRange = 100;
+            this.m_atkCd = true;
+            this.m_isFacingRight = true;
         }
         spawn(player, id) {
             this.sprite = new Laya.Sprite();
@@ -62,6 +66,8 @@
             this.sprite.pos(player.x - 170, player.y - (player.height / 2));
             this.sprite.width = player.width * 2 / 3;
             this.sprite.height = player.height;
+            this.sprite.pivotX = this.sprite.width / 2;
+            this.sprite.pivotY = this.sprite.height / 2;
             this.collider = this.sprite.addComponent(Laya.BoxCollider);
             this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
             this.m_script = this.sprite.addComponent(Laya.Script);
@@ -152,17 +158,68 @@
         }
         pursuitPlayer() {
             let dir = this.m_player.x - this.sprite.x;
-            if (dir > 0) {
-                this.sprite.x += this.m_speed;
+            this.sprite.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
+            this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false;
+            if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
+                this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
             }
-            else if (dir < 0) {
-                this.sprite.x += -this.m_speed;
+            else {
+                this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
             }
+            console.log(this.m_moveVelocity["Vx"]);
+            this.applyMoveX();
         }
-        playerRangeCheck() {
-            let dist = 0;
+        playerRangeCheck(detectRange) {
+            let dist = Math.sqrt(Math.pow((this.m_player.x - this.sprite.x), 2) + Math.pow((this.m_player.y - this.sprite.y), 2));
+            return (dist <= detectRange) ? true : false;
         }
         attack() {
+            if (this.m_atkCd) {
+                this.m_atkCd = false;
+                this.m_moveVelocity["Vx"] = 0;
+                let atkCircle = new Laya.Sprite();
+                let x_offset = this.m_isFacingRight
+                    ? (this.sprite.width * 1) / 2 + 3
+                    : (this.sprite.width * 5) / 4 + 3;
+                if (this.m_isFacingRight) {
+                    atkCircle.pos(this.sprite.x + this.sprite.width / 2, this.sprite.y - this.sprite.height / 2);
+                }
+                else {
+                    atkCircle.pos(this.sprite.x - 3 * this.sprite.width / 2, this.sprite.y - this.sprite.height / 2);
+                }
+                let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
+                let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
+                let atkCircleScript = atkCircle.addComponent(Laya.Script);
+                atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
+                atkCircleScript.onTriggerEnter = function (col) {
+                    if (col.label === 'Player') {
+                        console.log("打到玩家了");
+                    }
+                };
+                atkBoxCollider.isSensor = true;
+                atkCircleRigid.gravityScale = 0;
+                atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
+                Laya.stage.addChild(atkCircle);
+                setTimeout(() => {
+                    atkCircle.destroy();
+                    atkCircle.destroyed = true;
+                }, 100);
+                setTimeout(() => {
+                    this.m_atkCd = true;
+                }, 500);
+            }
+        }
+        applyMoveX() {
+            this.rigidbody.setVelocity({
+                x: this.m_moveVelocity["Vx"],
+                y: this.rigidbody.linearVelocity.y,
+            });
+        }
+        applyMoveY() {
+            this.rigidbody.setVelocity({
+                x: this.rigidbody.linearVelocity.x,
+                y: this.m_moveVelocity["Vy"],
+            });
         }
     }
     class EnemyNormal extends Enemy {
@@ -173,9 +230,7 @@
             this.m_speed = 2;
             this.m_imgSrc = "comp/monster_normal.png";
             this.m_tag = 'n';
-        }
-        pursuitPlayer() {
-            console.log("5566");
+            this.m_attackRange = 100;
         }
     }
     class EnemyShield extends Enemy {
@@ -187,6 +242,7 @@
             this.m_speed = 1;
             this.m_imgSrc = 'comp/monster_shield.png';
             this.m_tag = 's';
+            this.m_attackRange = 100;
         }
     }
 
@@ -234,6 +290,8 @@
             this.timestamp = true;
             this.cd_ray = true;
             this.cd_atk = true;
+            this.playerHp = 0;
+            this.playerDef = 0;
             this.characterNode = null;
             this.characterSprite = null;
             this.xMaxVelocity = 5;
@@ -472,7 +530,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = false;
+    GameConfig.physicsDebug = true;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 
