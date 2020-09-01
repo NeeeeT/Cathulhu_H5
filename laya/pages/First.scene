@@ -64,7 +64,7 @@
             "x":15,
             "type":"Animation",
             "searchKey":"Animation,Player",
-            "props":{"y":544,"x":1349,"width":132,"pivotY":65,"pivotX":66,"name":"Player","interval":500,"height":130,"autoPlay":true},
+            "props":{"y":544,"x":1341,"width":132,"pivotY":65,"pivotX":66,"name":"Player","interval":500,"height":130,"autoPlay":true},
             "nodeParent":2,
             "label":"Player",
             "isOpen":true,
