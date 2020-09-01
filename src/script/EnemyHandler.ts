@@ -36,7 +36,7 @@ export default class EnemyHandler extends Laya.Script {
         if (x <= 50) {
             amount *= 5;
             damageText.text = String(amount);
-            damageText.pos(enemy.m_sprite.x + 45, enemy.m_sprite.y - 5);
+            damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 45, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
             damageText.fontSize = 45;
             damageText.bold = true;
             damageText.align = "center";
@@ -44,7 +44,7 @@ export default class EnemyHandler extends Laya.Script {
         }
         else {
             damageText.text = String(amount);
-            damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
+            damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 20, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
             damageText.fontSize = 25;
             damageText.bold = false;
             damageText.align = "center";
@@ -56,7 +56,7 @@ export default class EnemyHandler extends Laya.Script {
         setInterval((() => {
             if (damageText.destroyed) return;
 
-            damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
+            damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 20, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
             damageText.align = "center";
         }), 10);
         setTimeout((() => {

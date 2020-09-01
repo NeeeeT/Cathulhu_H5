@@ -77,7 +77,7 @@ abstract class Enemy extends Laya.Script {
 
     private showHealth(enemy: Laya.Sprite) {
         let healthBar = new Laya.ProgressBar();
-        healthBar.pos(enemy.x, enemy.y - 10);
+        healthBar.pos(enemy.x - this.m_sprite.width / 2, (enemy.y - this.m_sprite.height / 2) - 20);
         healthBar.height = 10;
         healthBar.width = 90;
         healthBar.skin = "comp/progress.png";
@@ -90,7 +90,7 @@ abstract class Enemy extends Laya.Script {
                 healthBar.destroyed = true;
                 return;
             }
-            healthBar.pos(enemy.x, enemy.y - 10);
+            healthBar.pos(enemy.x - this.m_sprite.width / 2, (enemy.y - this.m_sprite.height / 2) - 20);
             healthBar.value = this.m_health / this.m_maxHealth;
         }), 30);
     }
