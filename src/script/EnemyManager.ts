@@ -10,43 +10,36 @@ abstract class Enemy extends Laya.Script {
     m_attackRange: number = 100;
     m_atkCd: boolean = true;
 
-    sprite: Laya.Sprite;
     m_maxHealth: number;
     m_sprite: Laya.Sprite;
-    collider: Laya.BoxCollider;
-    rigidbody: Laya.RigidBody;
+    m_collider: Laya.BoxCollider;
+    m_rigidbody: Laya.RigidBody;
     m_script: Laya.Script;
     m_player: Laya.Sprite;
 
     m_isFacingRight: boolean = true;
 
     spawn(player: Laya.Sprite, id: string): void {
-        this.sprite = new Laya.Sprite();
-        this.sprite.loadImage(this.m_imgSrc);
-        this.sprite.pos(player.x - 170, player.y - (player.height / 2));
-        this.sprite.width = player.width * 2 / 3;
-        this.sprite.height = player.height;
-        this.sprite.pivotX = this.sprite.width / 2;
-        this.sprite.pivotY = this.sprite.height / 2;
-        this.m_maxHealth = this.m_health;
-
         this.m_sprite = new Laya.Sprite();
         this.m_sprite.loadImage(this.m_imgSrc);
         this.m_sprite.pos(player.x - 170, player.y - (player.height / 2));
         this.m_sprite.width = player.width * 2 / 3;
         this.m_sprite.height = player.height;
+        this.m_sprite.pivotX = this.m_sprite.width / 2;
+        this.m_sprite.pivotY = this.m_sprite.height / 2;
+        this.m_maxHealth = this.m_health;
 
-        this.collider = this.m_sprite.addComponent(Laya.BoxCollider);
-        this.rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
+        this.m_collider = this.m_sprite.addComponent(Laya.BoxCollider);
+        this.m_rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
         this.m_script = this.m_sprite.addComponent(Laya.Script);
         this.m_script.onUpdate = () => { this.pursuitPlayer() }
 
 
-        this.collider.width = this.m_sprite.width;
-        this.collider.height = this.m_sprite.height
-        this.collider.label = id;
-        this.collider.tag = 'Enemy';
-        this.rigidbody.allowRotation = false;
+        this.m_collider.width = this.m_sprite.width;
+        this.m_collider.height = this.m_sprite.height
+        this.m_collider.label = id;
+        this.m_collider.tag = 'Enemy';
+        this.m_rigidbody.allowRotation = false;
 
         this.m_player = player;
 
@@ -79,7 +72,7 @@ abstract class Enemy extends Laya.Script {
         return this.m_speed;
     };
     setLabel(index: string): void {
-        this.collider.label = index;
+        this.m_collider.label = index;
     };
 
     private showHealth(enemy: Laya.Sprite) {
@@ -124,8 +117,8 @@ abstract class Enemy extends Laya.Script {
         bloodEffect.play();
     }
     public pursuitPlayer() {
-        let dir: number = this.m_player.x - this.sprite.x;
-        this.sprite.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
+        let dir: number = this.m_player.x - this.m_sprite.x;
+        this.m_sprite.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
         this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false
         if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
             this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
@@ -133,20 +126,12 @@ abstract class Enemy extends Laya.Script {
             this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
         }
 
-        // this.m_speed = (Math.abs(this.m_moveVelocity["Vx"]) < this.m_speed) ? (this.m_moveVelocity["Vx"] += (dir > 0) ? 0.1 : -0.1) : this.m_speed;
-        // if(this.playerRangeCheck(2 * this.m_attackRange)){
-        //     setTimeout(() => {
-        //         this.attack();
-        //     }, 1000);
-        // }
-
         console.log(this.m_moveVelocity["Vx"]);
         this.applyMoveX();
     }
-
     private playerRangeCheck(detectRange: number): boolean {
         //取得角色與敵人的最短路徑長度
-        let dist: number = Math.sqrt(Math.pow((this.m_player.x - this.sprite.x), 2) + Math.pow((this.m_player.y - this.sprite.y), 2));
+        let dist: number = Math.sqrt(Math.pow((this.m_player.x - this.m_sprite.x), 2) + Math.pow((this.m_player.y - this.m_sprite.y), 2));
         return (dist <= detectRange) ? true : false;
     }
     private attack() {
@@ -156,17 +141,17 @@ abstract class Enemy extends Laya.Script {
             this.m_moveVelocity["Vx"] = 0;
             let atkCircle = new Laya.Sprite();
             let x_offset: number = this.m_isFacingRight
-                ? (this.sprite.width * 1) / 2 + 3
-                : (this.sprite.width * 5) / 4 + 3;
+                ? (this.m_sprite.width * 1) / 2 + 3
+                : (this.m_sprite.width * 5) / 4 + 3;
             if (this.m_isFacingRight) {
                 atkCircle.pos(
                     // this.sprite.x + x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                    this.sprite.x + this.sprite.width / 2, this.sprite.y - this.sprite.height / 2
+                    this.m_sprite.x + this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2
                 );
             } else {
                 atkCircle.pos(
                     // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                    this.sprite.x - 3 * this.sprite.width / 2, this.sprite.y - this.sprite.height / 2
+                    this.m_sprite.x - 3 * this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2
                 );
             }
             let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
@@ -199,24 +184,20 @@ abstract class Enemy extends Laya.Script {
             setTimeout(() => {
                 this.m_atkCd = true;
             }, 500);
-
         }
-
     }
-
     private applyMoveX(): void {
-        this.rigidbody.setVelocity({
+        this.m_rigidbody.setVelocity({
             x: this.m_moveVelocity["Vx"],
-            y: this.rigidbody.linearVelocity.y,
+            y: this.m_rigidbody.linearVelocity.y,
         });
     }
     private applyMoveY(): void {
-        this.rigidbody.setVelocity({
-            x: this.rigidbody.linearVelocity.x,
+        this.m_rigidbody.setVelocity({
+            x: this.m_rigidbody.linearVelocity.x,
             y: this.m_moveVelocity["Vy"],
         });
     }
-
 }
 export class EnemyNormal extends Enemy {
     m_name = '普通敵人';
