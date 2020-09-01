@@ -1,42 +1,52 @@
 abstract class Enemy extends Laya.Script{
-    m_name: string = '';
-    m_health: number = 1000;
-    m_armor: number = 0;
-    m_speed: number = 3;
-    m_imgSrc: string = '';
-    m_tag: string = '';
+    abstract m_name: string = '';
+    abstract m_health: number = 1000;
+    abstract m_armor: number = 0;
+    abstract m_speed: number = 3;
+    abstract m_imgSrc: string = '';
+    abstract m_tag: string = '';
 
-    sprite: Laya.Sprite;
+    m_maxHealth: number;
+    m_sprite: Laya.Sprite;
     collider: Laya.BoxCollider;
     rigidbody: Laya.RigidBody;
+    m_script:Laya.Script;
+    m_player:Laya.Sprite;
 
     spawn(player: Laya.Sprite, id: string): void {
-        this.sprite = new Laya.Sprite();
-        this.sprite.loadImage(this.m_imgSrc);
-        this.sprite.pos(player.x - 170, player.y - (player.height / 2));
-        this.sprite.width = player.width * 2 / 3;
-        this.sprite.height = player.height;
+        this.m_maxHealth = this.m_health;
 
-        this.collider = this.sprite.addComponent(Laya.BoxCollider);
-        this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
+        this.m_sprite = new Laya.Sprite();
+        this.m_sprite.loadImage(this.m_imgSrc);
+        this.m_sprite.pos(player.x - 170, player.y - (player.height / 2));
+        this.m_sprite.width = player.width * 2 / 3;
+        this.m_sprite.height = player.height;
 
-        this.collider.width = this.sprite.width;
-        this.collider.height = this.sprite.height
+        this.collider = this.m_sprite.addComponent(Laya.BoxCollider);
+        this.rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
+        this.m_script = this.m_sprite.addComponent(Laya.Script);
+        this.m_script.onUpdate = ()=>{this.pursuitPlayer()}
+        
+
+        this.collider.width = this.m_sprite.width;
+        this.collider.height = this.m_sprite.height
         this.collider.label = id;
         this.collider.tag = 'Enemy';
         this.rigidbody.allowRotation = false;
 
-        Laya.stage.addChild(this.sprite);
-        this.showHealth(this.sprite);
+        this.m_player = player; 
+
+        Laya.stage.addChild(this.m_sprite);
+        this.showHealth(this.m_sprite);
     };
     destroy(): void {
-        this.sprite.destroy();
+        this.m_sprite.destroy();
     };
     setHealth(amount: number): void {
         this.m_health = amount;
         if (this.m_health <= 0) {
-            this.bloodSplitEffect(this.sprite);
-            this.sprite.destroy();
+            this.bloodSplitEffect(this.m_sprite);
+            this.m_sprite.destroy();
         }
     }
     getHealth(): number {
@@ -57,25 +67,24 @@ abstract class Enemy extends Laya.Script{
     setLabel(index: string): void {
         this.collider.label = index;
     };
-    private showHealth(enemy: Laya.Sprite) {
-        let enemyHealthText = new Laya.Text();
-        enemyHealthText.pos(enemy.x, enemy.y - 40);
-        enemyHealthText.width = 100;
-        enemyHealthText.height = 60;
-        enemyHealthText.color = "#efefef";
-        enemyHealthText.fontSize = 40;
-        enemyHealthText.text = '' + String(this.m_health);
 
-        Laya.stage.addChild(enemyHealthText);
+    private showHealth(enemy: Laya.Sprite) {
+        let healthBar = new Laya.ProgressBar();
+        healthBar.pos(enemy.x, enemy.y - 10);
+        healthBar.height = 10;
+        healthBar.width = 90;
+        healthBar.skin = "comp/progress.png";
+        healthBar.value = 1;
+        Laya.stage.addChild(healthBar);
 
         setInterval((() => {
             if (enemy.destroyed) {
-                enemyHealthText.destroy();
-                enemyHealthText.destroyed = true;
+                healthBar.destroy();
+                healthBar.destroyed = true;
                 return;
             }
-            enemyHealthText.pos(enemy.x, enemy.y - 40);
-            enemyHealthText.text = '' + String(this.m_health);
+            healthBar.pos(enemy.x, enemy.y - 10);
+            healthBar.value = this.m_health / this.m_maxHealth;
         }), 30);
     }
     private bloodSplitEffect(enemy: Laya.Sprite) {
@@ -100,10 +109,24 @@ abstract class Enemy extends Laya.Script{
         Laya.stage.addChild(bloodEffect);
         bloodEffect.play();
     }
+    public pursuitPlayer(){
+        let dir:number = this.m_player.x - this.m_sprite.x;
+        if(dir > 0){
+            this.m_sprite.x += this.m_speed;
+        }else if(dir < 0){
+            this.m_sprite.x += -this.m_speed;
+        }
+    }
+    private playerRangeCheck(){
+        let dist:number = 0;
+    }
+    private attack(){
+    }
 }
 export class EnemyNormal extends Enemy{
     m_name = '普通敵人';
     m_health = 1000;
+    m_armor = 100;
     m_speed = 2;
     m_imgSrc = "comp/monster_normal.png";
     m_tag = 'n';

@@ -57,31 +57,35 @@
             this.m_tag = '';
         }
         spawn(player, id) {
-            this.sprite = new Laya.Sprite();
-            this.sprite.loadImage(this.m_imgSrc);
-            this.sprite.pos(player.x - 170, player.y - (player.height / 2));
-            this.sprite.width = player.width * 2 / 3;
-            this.sprite.height = player.height;
-            this.collider = this.sprite.addComponent(Laya.BoxCollider);
-            this.rigidbody = this.sprite.addComponent(Laya.RigidBody);
-            this.collider.width = this.sprite.width;
-            this.collider.height = this.sprite.height;
+            this.m_maxHealth = this.m_health;
+            this.m_sprite = new Laya.Sprite();
+            this.m_sprite.loadImage(this.m_imgSrc);
+            this.m_sprite.pos(player.x - 170, player.y - (player.height / 2));
+            this.m_sprite.width = player.width * 2 / 3;
+            this.m_sprite.height = player.height;
+            this.collider = this.m_sprite.addComponent(Laya.BoxCollider);
+            this.rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
+            this.m_script = this.m_sprite.addComponent(Laya.Script);
+            this.m_script.onUpdate = () => { this.pursuitPlayer(); };
+            this.collider.width = this.m_sprite.width;
+            this.collider.height = this.m_sprite.height;
             this.collider.label = id;
             this.collider.tag = 'Enemy';
             this.rigidbody.allowRotation = false;
-            Laya.stage.addChild(this.sprite);
-            this.showHealth(this.sprite);
+            this.m_player = player;
+            Laya.stage.addChild(this.m_sprite);
+            this.showHealth(this.m_sprite);
         }
         ;
         destroy() {
-            this.sprite.destroy();
+            this.m_sprite.destroy();
         }
         ;
         setHealth(amount) {
             this.m_health = amount;
             if (this.m_health <= 0) {
-                this.bloodSplitEffect(this.sprite);
-                this.sprite.destroy();
+                this.bloodSplitEffect(this.m_sprite);
+                this.m_sprite.destroy();
             }
         }
         getHealth() {
@@ -109,22 +113,21 @@
         }
         ;
         showHealth(enemy) {
-            let enemyHealthText = new Laya.Text();
-            enemyHealthText.pos(enemy.x, enemy.y - 40);
-            enemyHealthText.width = 100;
-            enemyHealthText.height = 60;
-            enemyHealthText.color = "#efefef";
-            enemyHealthText.fontSize = 40;
-            enemyHealthText.text = '' + String(this.m_health);
-            Laya.stage.addChild(enemyHealthText);
+            let healthBar = new Laya.ProgressBar();
+            healthBar.pos(enemy.x, enemy.y - 10);
+            healthBar.height = 10;
+            healthBar.width = 90;
+            healthBar.skin = "comp/progress.png";
+            healthBar.value = 1;
+            Laya.stage.addChild(healthBar);
             setInterval((() => {
                 if (enemy.destroyed) {
-                    enemyHealthText.destroy();
-                    enemyHealthText.destroyed = true;
+                    healthBar.destroy();
+                    healthBar.destroyed = true;
                     return;
                 }
-                enemyHealthText.pos(enemy.x, enemy.y - 40);
-                enemyHealthText.text = '' + String(this.m_health);
+                healthBar.pos(enemy.x, enemy.y - 10);
+                healthBar.value = this.m_health / this.m_maxHealth;
             }), 30);
         }
         bloodSplitEffect(enemy) {
@@ -147,12 +150,27 @@
             Laya.stage.addChild(bloodEffect);
             bloodEffect.play();
         }
+        pursuitPlayer() {
+            let dir = this.m_player.x - this.m_sprite.x;
+            if (dir > 0) {
+                this.m_sprite.x += this.m_speed;
+            }
+            else if (dir < 0) {
+                this.m_sprite.x += -this.m_speed;
+            }
+        }
+        playerRangeCheck() {
+            let dist = 0;
+        }
+        attack() {
+        }
     }
     class EnemyNormal extends Enemy {
         constructor() {
             super(...arguments);
             this.m_name = '普通敵人';
             this.m_health = 1000;
+            this.m_armor = 100;
             this.m_speed = 2;
             this.m_imgSrc = "comp/monster_normal.png";
             this.m_tag = 'n';
@@ -178,6 +196,7 @@
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();
             console.log(this.enemyPool);
+            return enemy;
         }
         static decideEnemyType(enemyType) {
             switch (enemyType) {
@@ -192,6 +211,26 @@
         }
         static takeDamage(enemy, amount) {
             enemy.setHealth(enemy.getHealth() - amount);
+            let damageText = new Laya.Text();
+            damageText.text = String(amount);
+            damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
+            damageText.fontSize = 25;
+            damageText.bold = true;
+            damageText.align = "center";
+            damageText.color = "red";
+            Laya.stage.addChild(damageText);
+            setInterval((() => {
+                if (damageText.destroyed)
+                    return;
+                damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
+                damageText.align = "center";
+            }), 10);
+            setTimeout((() => {
+                if (damageText.destroyed)
+                    return;
+                damageText.destroy();
+                damageText.destroyed = true;
+            }), 500);
         }
         static getEnemiesCount() {
             return (this.enemyPool = this.enemyPool.filter(data => data._ent.collider.owner != null)).length;
@@ -213,6 +252,8 @@
             this.timestamp = true;
             this.cd_ray = true;
             this.cd_atk = true;
+            this.playerHp = 0;
+            this.playerDef = 0;
             this.characterNode = null;
             this.characterSprite = null;
             this.xMaxVelocity = 5;
@@ -363,9 +404,7 @@
         }
         createAttackCircle(player) {
             let atkCircle = new Laya.Sprite();
-            let x_offset = this.isFacingRight
-                ? (player.width * 1) / 2 + 3
-                : (player.width * 5) / 4 + 3;
+            let x_offset = this.isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
             if (this.isFacingRight) {
                 atkCircle.pos(player.x + x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8);
             }
@@ -385,8 +424,8 @@
             };
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
-            Laya.stage.addChild(atkCircle);
             atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
+            Laya.stage.addChild(atkCircle);
             setTimeout(() => {
                 atkCircle.destroy();
                 atkCircle.destroyed = true;
@@ -451,7 +490,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = true;
+    GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 
