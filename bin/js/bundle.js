@@ -151,6 +151,7 @@
     class EnemyNormal extends Enemy {
         constructor() {
             super(...arguments);
+            this.m_name = '普通敵人';
             this.m_health = 1000;
             this.m_speed = 2;
             this.m_imgSrc = "comp/monster_normal.png";
