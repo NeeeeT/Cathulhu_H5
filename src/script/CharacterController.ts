@@ -17,8 +17,8 @@ export default class CharacterController extends Laya.Script {
   private cd_ray: boolean = true; //空白鍵射線CD
   private cd_atk: boolean = true; //CTRL攻擊CD
 
-  private playerHp:number = 0;
-  private playerDef:number = 0;
+  private playerHp: number = 0;
+  private playerDef: number = 0;
 
   /** @prop {name:characterNode,tips:"放入角色Node",type:Node}*/
   characterNode: Laya.Node = null;
@@ -183,7 +183,7 @@ export default class CharacterController extends Laya.Script {
         this.cd_ray = true;
       }, 500);
       //敵人生成測試
-      EnemyHandler.generator(this.characterSprite, this.isFacingRight? 1 : 2, 0);
+      EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
     }
     if (this.keyDownList[17]) {
       if (!this.cd_atk) return;
@@ -198,7 +198,7 @@ export default class CharacterController extends Laya.Script {
         this.characterAnim.interval = 500;
         this.characterAnim.source = "character/player_01.png,character/player_02.png";
       });
-      setTimeout(() => { 
+      setTimeout(() => {
         this.cd_atk = true;
       }, 500);
     }
@@ -239,11 +239,11 @@ export default class CharacterController extends Laya.Script {
 
     atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
 
-    atkCircleScript.onTriggerEnter = function (col:Laya.BoxCollider) {
-      if(col.tag === 'Enemy'){
+    atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
+      if (col.tag === 'Enemy') {
         let eh = EnemyHandler;//敵人控制器
         let victim = eh.getEnemyByLabel(col.label);
-        eh.takeDamage(victim, 600);
+        eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
       }
     };
     atkBoxCollider.isSensor = true;
