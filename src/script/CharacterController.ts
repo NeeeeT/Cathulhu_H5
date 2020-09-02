@@ -19,7 +19,7 @@ export default class CharacterController extends Laya.Script {
 
   private playerHp: number;
   private playerDef: number;
-  
+
   public playerBp: number;
 
 
@@ -270,12 +270,13 @@ export default class CharacterController extends Laya.Script {
   private createAttackEffect(player: Laya.Sprite) {
     // Laya.SoundManager.playSound("Audio/SlashAudio0.wav", 1);
     let slashEffect: Laya.Animation = new Laya.Animation();
+    let colorNum: number = Math.floor(Math.random() * 3) + 2;
     //濾鏡
     let colorMat: Array<number> =
       [
-        2, 0, 0, 0, -100, //R
-        0, 1, 0, 0, -100, //G
-        0, 0, 2, 0, -100, //B
+        colorNum, 0, 0, 0, -100, //R
+        0, Math.floor(Math.random() * 2) + 1, 0, 0, -100, //G
+        0, 0, colorNum, 0, -100, //B
         0, 0, 0, 1, 0, //A
       ];
     let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
