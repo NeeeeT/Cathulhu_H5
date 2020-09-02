@@ -21,6 +21,15 @@ abstract class Enemy extends Laya.Script{
     m_isFacingRight: boolean = true;
 
     spawn(player: Laya.Sprite, id: string): void {
+        // let x = new Laya.Animation();
+        // x.width = 100;
+        // x.height = 100;
+        // x.pos(1341, 544);
+        // x.autoPlay = true
+        // x.source = "";
+        // Laya.stage.addChild(x);
+
+
         this.m_sprite = new Laya.Sprite();
         this.m_sprite.loadImage(this.m_imgSrc);
         this.m_sprite.pos(player.x - 170, player.y - (player.height / 2));
