@@ -512,10 +512,11 @@
         }
         createAttackEffect(player) {
             let slashEffect = new Laya.Animation();
+            let colorNum = Math.floor(Math.random() * 3) + 2;
             let colorMat = [
-                2, 0, 0, 0, -100,
-                0, 1, 0, 0, -100,
-                0, 0, 2, 0, -100,
+                colorNum, 0, 0, 0, -100,
+                0, Math.floor(Math.random() * 2) + 1, 0, 0, -100,
+                0, 0, colorNum, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
