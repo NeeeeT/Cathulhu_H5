@@ -69,11 +69,10 @@ P 5FD17798 vscroll.png
 P DDDDFB9E vslider$bar.png
 P 01BAE7F5 vslider.png
 D goblin
-R 0DA319C0 Attack.png
-R 59FB3171 Death.png
-R 0A3F30AD idle.png
-R 9836C8FB Run.png
-R 1578A181 Take Hit.png
+P 235C1C24 idle_01.png
+P 6A939ECA idle_02.png
+P 5D47BFA4 idle_03.png
+P 5296CA7B idle_04.png
 D Character(0902)/Run
 P 1FA57DAB character_run_1.png
 P F8D5FE13 character_run_2.png
@@ -87,8 +86,3 @@ R 60DEB618 Slash_0032.png
 R 13FB1308 Slash_0033.png
 R 36563627 Slash_0034.png
 R 97BACC82 Slash_0035.png
-D goblin/images
-P 235C1C24 idle_01.png
-P 6A939ECA idle_02.png
-P 5D47BFA4 idle_03.png
-P 5296CA7B idle_04.png

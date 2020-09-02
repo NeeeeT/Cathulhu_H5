@@ -1,18 +1,20 @@
+import { EnemyStatus } from "./IStateController";
+
 abstract class Enemy extends Laya.Script {
     abstract m_name: string = '';
     abstract m_health: number = 1000;
     abstract m_armor: number = 0;
     abstract m_speed: number = 3;
-    abstract m_imgSrc: string = '';
+    abstract m_animSrc: string;
     abstract m_tag: string = '';
 
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
+    m_maxHealth: number;
     m_attackRange: number = 100;
     m_atkCd: boolean = true;
     m_atkTimer: number = 0;
 
-    m_maxHealth: number;
-    m_sprite: Laya.Sprite;
+    m_animation: Laya.Animation;
     m_collider: Laya.BoxCollider;
     m_rigidbody: Laya.RigidBody;
     m_script: Laya.Script;
@@ -21,50 +23,50 @@ abstract class Enemy extends Laya.Script {
     m_isFacingRight: boolean = true;
 
     spawn(player: Laya.Sprite, id: string): void {
-        // let x = new Laya.Animation();
-        // x.width = 100;
-        // x.height = 100;
-        // x.pos(1341, 544);
-        // x.autoPlay = true
-        // x.source = "";
-        // Laya.stage.addChild(x);
+        this.m_animation = new Laya.Animation();
+        this.m_animation.scaleX = 4;
+        this.m_animation.scaleY = 4;
+        
+        this.m_animation.width = 35;
+        this.m_animation.height = 35;
+        this.m_animation.pivotX = this.m_animation.width / 2;
+        this.m_animation.pivotY = this.m_animation.height / 2;
 
-
-        this.m_sprite = new Laya.Sprite();
-        this.m_sprite.loadImage(this.m_imgSrc);
-        this.m_sprite.pos(player.x - 170, player.y - (player.height / 2));
-        this.m_sprite.width = player.width * 2 / 3;
-        this.m_sprite.height = player.height;
-        this.m_sprite.pivotX = this.m_sprite.width / 2;
-        this.m_sprite.pivotY = this.m_sprite.height / 2;
+        this.m_animation.pos(player.x - 170, player.y - (player.height / 2));
+        this.m_animation.autoPlay = true;
+        this.m_animation.source = this.m_animSrc;
+        this.m_animation.interval = 500;
+        
         this.m_maxHealth = this.m_health;
-
-        this.m_collider = this.m_sprite.addComponent(Laya.BoxCollider);
-        this.m_rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
-        this.m_script = this.m_sprite.addComponent(Laya.Script);
+        
+        this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
+        this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
+        this.m_script = this.m_animation.addComponent(Laya.Script);
         this.m_script.onUpdate = () => {
             this.enemyAIMain();
         }
-
-        this.m_collider.width = this.m_sprite.width;
-        this.m_collider.height = this.m_sprite.height
+        
+        this.m_collider.width = this.m_animation.width;
+        this.m_collider.height = this.m_animation.height;
+        this.m_collider.x -= 13;
+        this.m_collider.y -= 10;
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
         this.m_rigidbody.allowRotation = false;
-
+        
         this.m_player = player;
-
-        Laya.stage.addChild(this.m_sprite);
-        this.showHealth(this.m_sprite);
+        
+        Laya.stage.addChild(this.m_animation);
+        this.showHealth(this.m_animation);
     };
     destroy(): void {
-        this.m_sprite.destroy();
+        this.m_animation.destroy();
     };
     setHealth(amount: number): void {
         this.m_health = amount;
         if (this.m_health <= 0) {
-            this.bloodSplitEffect(this.m_sprite);
-            this.m_sprite.destroy();
+            this.bloodSplitEffect(this.m_animation);
+            this.m_animation.destroy();
         }
     }
     getHealth(): number {
@@ -88,9 +90,9 @@ abstract class Enemy extends Laya.Script {
 
     private showHealth(enemy: Laya.Sprite) {
         let healthBar = new Laya.ProgressBar();
-        healthBar.pos(enemy.x - this.m_sprite.width / 2, (enemy.y - this.m_sprite.height / 2) - 20);
+        healthBar.pos(enemy.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10 , (enemy.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
         healthBar.height = 10;
-        healthBar.width = 90;
+        healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
         healthBar.skin = "comp/progress.png";
         healthBar.value = 1;
         Laya.stage.addChild(healthBar);
@@ -101,7 +103,7 @@ abstract class Enemy extends Laya.Script {
                 healthBar.destroyed = true;
                 return;
             }
-            healthBar.pos(enemy.x - this.m_sprite.width / 2, (enemy.y - this.m_sprite.height / 2) - 20);
+            healthBar.pos(enemy.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (enemy.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
             healthBar.value = this.m_health / this.m_maxHealth;
         }), 10);
     }
@@ -141,8 +143,8 @@ abstract class Enemy extends Laya.Script {
     }
 
     public pursuitPlayer() {
-        let dir: number = this.m_player.x - this.m_sprite.x;
-        this.m_sprite.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
+        let dir: number = this.m_player.x - this.m_animation.x;
+        this.m_animation.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
         this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false
         if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
             this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
@@ -153,7 +155,7 @@ abstract class Enemy extends Laya.Script {
     }
     private playerRangeCheck(detectRange: number): boolean {
         //取得角色與敵人的最短路徑長度
-        let dist: number = Math.sqrt(Math.pow((this.m_player.x - this.m_sprite.x), 2) + Math.pow((this.m_player.y - this.m_sprite.y), 2));
+        let dist: number = Math.sqrt(Math.pow((this.m_player.x - this.m_animation.x), 2) + Math.pow((this.m_player.y - this.m_animation.y), 2));
         return (dist <= detectRange) ? true : false;
     }
     private tryAttack() {
@@ -163,17 +165,17 @@ abstract class Enemy extends Laya.Script {
         this.m_moveVelocity["Vx"] = 0;
         let atkCircle = new Laya.Sprite();
         let x_offset: number = this.m_isFacingRight
-            ? (this.m_sprite.width * 1) / 2 + 3
-            : (this.m_sprite.width * 5) / 4 + 3;
+            ? (this.m_animation.width * 1) / 2 + 3
+            : (this.m_animation.width * 5) / 4 + 3;
         if (this.m_isFacingRight) {
             atkCircle.pos(
                 // this.sprite.x + x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                this.m_sprite.x + this.m_sprite.width / 2 + 30, this.m_sprite.y - this.m_sprite.height / 2
+                this.m_animation.x + this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2
             );
         } else {
             atkCircle.pos(
                 // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                this.m_sprite.x - 3 * this.m_sprite.width / 2 + 30, this.m_sprite.y - this.m_sprite.height / 2
+                this.m_animation.x - 3 * this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2
             );
         }
         let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
@@ -227,16 +229,16 @@ export class EnemyNormal extends Enemy {
     m_health = 1000;
     m_armor = 100;
     m_speed = 2;
-    m_imgSrc = "comp/monster_normal.png";
     m_tag = 'n';
     m_attackRange = 100;
+    m_animSrc = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
 }
 export class EnemyShield extends Enemy {
     m_name = '裝甲敵人';
     m_armor = 500;
     m_health = 1500;
     m_speed = 1;
-    m_imgSrc = 'comp/monster_shield.png';
     m_tag = 's';
     m_attackRange = 100;
+    m_animSrc = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
 }
