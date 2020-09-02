@@ -15,13 +15,14 @@ P 05188180 Blood_0011.png
 P B251754D Blood_0012.png
 P F7503637 Blood_0013.png
 P 550FE1FA Blood_0014.png
-D cahracter
+D character
 P D32D8CC2 Player_attack_0.png
 P 643FA78E Player_attack_1.png
 P F62B59C8 Player_attack_2.png
 P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
+D Character(0902)
 D comp
 P 1DFA6065 box.png
 P 316AD948 btn_close.png
@@ -66,6 +67,11 @@ P 0587871F vscroll$up.png
 P 5FD17798 vscroll.png
 P DDDDFB9E vslider$bar.png
 P 01BAE7F5 vslider.png
+D Character(0902)/Run
+P 1FA57DAB character_run_1.png
+P F8D5FE13 character_run_2.png
+P A61368CC character_run_3.png
+P E23C2E0F character_run_4.png
 D comp/SlashEffects
 R 7E72A836 Slash_0029.png
 R 0A7C3187 Slash_0030.png

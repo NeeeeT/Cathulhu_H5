@@ -23,7 +23,7 @@ export default class EnemyHandler extends Laya.Script {
         switch (enemyType) {
             case 1: return new EnemyNormal();
             case 2: return new EnemyShield();
-            default: return new EnemyNormal()
+            default: return new EnemyNormal();
         };
     }
     private static updateEnemies(): any {
@@ -31,40 +31,33 @@ export default class EnemyHandler extends Laya.Script {
     }
     public static takeDamage(enemy: EnemyType, amount: number) {
         let damageText = new Laya.Text();
-        let x = new Number();
-        x = Math.random() * 100;
-        if (x <= 50) {
-            amount *= 5;
-            damageText.text = String(amount);
-            damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 45, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
-            damageText.fontSize = 45;
-            damageText.bold = true;
-            damageText.align = "center";
-            damageText.color = "red";
-        }
-        else {
-            damageText.text = String(amount);
-            damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 20, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
-            damageText.fontSize = 25;
-            damageText.bold = false;
-            damageText.align = "center";
-            damageText.color = "white";
-        }
+        let fakeNum = Math.random() * 100;
+        let critical:boolean = (fakeNum <= 50);
+        
+        damageText.text = String(amount);
+        damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 45, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
+        damageText.bold = true;
+        damageText.align = "center";
+        damageText.alpha = 1;
+
+        amount *= critical ? 5:1;
+        damageText.fontSize = critical ? 40:16;
+        damageText.color = critical ? "red":"white";
+
         enemy.setHealth(enemy.getHealth() - amount);
         Laya.stage.addChild(damageText);
-
-        setInterval((() => {
-            if (damageText.destroyed) return;
-
-            damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 20, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
-            damageText.align = "center";
-        }), 10);
+    
+        Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut,
+        Laya.Handler.create(this, ()=>{
+            Laya.Tween.to(damageText, {alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50}, 350, Laya.Ease.linearInOut, null, 0);
+        }), 0);
+        
         setTimeout((() => {
             if (damageText.destroyed) return;
 
             damageText.destroy();
             damageText.destroyed = true;
-        }), 500);
+        }), 550);
     }
     public static getEnemiesCount(): number {
         return (this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null)).length;

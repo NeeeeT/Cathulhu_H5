@@ -191,10 +191,10 @@
                 ? (this.m_sprite.width * 1) / 2 + 3
                 : (this.m_sprite.width * 5) / 4 + 3;
             if (this.m_isFacingRight) {
-                atkCircle.pos(this.m_sprite.x + this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2);
+                atkCircle.pos(this.m_sprite.x + this.m_sprite.width / 2 + 30, this.m_sprite.y - this.m_sprite.height / 2);
             }
             else {
-                atkCircle.pos(this.m_sprite.x - 3 * this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2);
+                atkCircle.pos(this.m_sprite.x - 3 * this.m_sprite.width / 2 + 30, this.m_sprite.y - this.m_sprite.height / 2);
             }
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
@@ -279,39 +279,32 @@
         }
         static takeDamage(enemy, amount) {
             let damageText = new Laya.Text();
-            let x = new Number();
-            x = Math.random() * 100;
-            if (x <= 50) {
+            let fakeNum = Math.random() * 100;
+            damageText.text = String(amount);
+            damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 45, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
+            damageText.bold = true;
+            damageText.align = "center";
+            damageText.alpha = 1;
+            if (fakeNum <= 50) {
                 amount *= 5;
-                damageText.text = String(amount);
-                damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 45, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
-                damageText.fontSize = 45;
-                damageText.bold = true;
-                damageText.align = "center";
+                damageText.fontSize = 40;
                 damageText.color = "red";
             }
             else {
-                damageText.text = String(amount);
-                damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 20, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
-                damageText.fontSize = 25;
-                damageText.bold = false;
-                damageText.align = "center";
+                damageText.fontSize = 16;
                 damageText.color = "white";
             }
             enemy.setHealth(enemy.getHealth() - amount);
             Laya.stage.addChild(damageText);
-            setInterval((() => {
-                if (damageText.destroyed)
-                    return;
-                damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 20, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
-                damageText.align = "center";
-            }), 10);
+            Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+            }), 0);
             setTimeout((() => {
                 if (damageText.destroyed)
                     return;
                 damageText.destroy();
                 damageText.destroyed = true;
-            }), 500);
+            }), 550);
         }
         static getEnemiesCount() {
             return (this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null)).length;
