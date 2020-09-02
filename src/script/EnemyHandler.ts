@@ -35,7 +35,9 @@ export default class EnemyHandler extends Laya.Script {
 
         amount *= critical ? 5 : 1;
         enemy.setHealth(enemy.getHealth() - amount);
-
+        if (amount >= 200) {
+            enemy.m_animation.x--;
+        }
         this.damageTextEffect(enemy, amount, critical);
     }
     private static damageTextEffect(enemy: EnemyType, amount: number, critical: boolean): void {

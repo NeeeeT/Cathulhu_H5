@@ -71,7 +71,7 @@
             this.m_animation.pos(player.x - 170, player.y - (player.height / 2));
             this.m_animation.autoPlay = true;
             this.m_animation.source = this.m_animSrc;
-            this.m_animation.interval = 500;
+            this.m_animation.interval = 100;
             this.m_maxHealth = this.m_health;
             this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
             this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
@@ -288,6 +288,9 @@
             let critical = (fakeNum <= 50);
             amount *= critical ? 5 : 1;
             enemy.setHealth(enemy.getHealth() - amount);
+            if (amount >= 200) {
+                enemy.m_animation.x--;
+            }
             this.damageTextEffect(enemy, amount, critical);
         }
         static damageTextEffect(enemy, amount, critical) {
