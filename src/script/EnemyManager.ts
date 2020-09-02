@@ -1,4 +1,4 @@
-abstract class Enemy extends Laya.Script {
+abstract class Enemy extends Laya.Script{
     abstract m_name: string = '';
     abstract m_health: number = 1000;
     abstract m_armor: number = 0;
@@ -36,7 +36,6 @@ abstract class Enemy extends Laya.Script {
         this.m_script.onUpdate = () => { 
             this.enemyAIMain();
         }
-
 
         this.m_collider.width = this.m_sprite.width;
         this.m_collider.height = this.m_sprite.height
