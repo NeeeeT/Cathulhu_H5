@@ -224,6 +224,7 @@ export default class CharacterController extends Laya.Script {
   private createAttackCircle(player: Laya.Sprite) {
     let atkCircle = new Laya.Sprite();
     let x_offset: number = this.isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
+    let soundNum: number = Math.floor(Math.random() * 2);
     if (this.isFacingRight) {
       atkCircle.pos(
         player.x + x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8
@@ -246,6 +247,7 @@ export default class CharacterController extends Laya.Script {
         eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
       }
     };
+    Laya.SoundManager.playSound("Audio/Attack/Attack" + soundNum + ".wav", 1);
     atkBoxCollider.isSensor = true;
     atkCircleRigid.gravityScale = 0;
     atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
@@ -259,7 +261,7 @@ export default class CharacterController extends Laya.Script {
   }
 
   private createAttackEffect(player: Laya.Sprite) {
-    Laya.SoundManager.playSound("Audio/SlashAudio.wav", 1);
+    // Laya.SoundManager.playSound("Audio/SlashAudio0.wav", 1);
     let slashEffect: Laya.Animation = new Laya.Animation();
     //濾鏡
     let colorMat: Array<number> =

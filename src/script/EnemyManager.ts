@@ -119,13 +119,13 @@ abstract class Enemy extends Laya.Script {
     }
 
     //敵人行為主邏輯
-    public enemyAIMain(){
+    public enemyAIMain() {
 
         this.pursuitPlayer();
         this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
         console.log(this.m_atkTimer);
-        
-        if(this.playerRangeCheck(this.m_attackRange * 2)){
+
+        if (this.playerRangeCheck(this.m_attackRange * 2)) {
             this.tryAttack();
         }
     }
@@ -147,7 +147,7 @@ abstract class Enemy extends Laya.Script {
         return (dist <= detectRange) ? true : false;
     }
     private tryAttack() {
-        if(this.m_atkTimer > 0) return;
+        if (this.m_atkTimer > 0) return;
         this.m_atkCd = false;
         // this.rigidbody.setVelocity({x:0, y:this.rigidbody.linearVelocity.y});
         this.m_moveVelocity["Vx"] = 0;

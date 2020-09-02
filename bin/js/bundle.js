@@ -279,22 +279,19 @@
         }
         static takeDamage(enemy, amount) {
             let damageText = new Laya.Text();
+            let soundNum = Math.floor(Math.random() * 2);
             let fakeNum = Math.random() * 100;
-            damageText.text = String(amount);
+            let critical = (fakeNum <= 50);
             damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 45, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
             damageText.bold = true;
             damageText.align = "center";
             damageText.alpha = 1;
-            if (fakeNum <= 50) {
-                amount *= 5;
-                damageText.fontSize = 40;
-                damageText.color = "red";
-            }
-            else {
-                damageText.fontSize = 16;
-                damageText.color = "white";
-            }
+            amount *= critical ? 5 : 1;
+            damageText.fontSize = critical ? 40 : 16;
+            damageText.color = critical ? "red" : "white";
+            damageText.text = String(amount);
             enemy.setHealth(enemy.getHealth() - amount);
+            Laya.SoundManager.playSound("Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
             Laya.stage.addChild(damageText);
             Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
@@ -479,6 +476,7 @@
         createAttackCircle(player) {
             let atkCircle = new Laya.Sprite();
             let x_offset = this.isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
+            let soundNum = Math.floor(Math.random() * 2);
             if (this.isFacingRight) {
                 atkCircle.pos(player.x + x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8);
             }
@@ -496,6 +494,7 @@
                     eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));
                 }
             };
+            Laya.SoundManager.playSound("Audio/Attack/Attack" + soundNum + ".wav", 1);
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
             atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
@@ -506,7 +505,6 @@
             }, 100);
         }
         createAttackEffect(player) {
-            Laya.SoundManager.playSound("Audio/SlashAudio.wav", 1);
             let slashEffect = new Laya.Animation();
             let colorMat = [
                 2, 0, 0, 0, -100,
