@@ -35,7 +35,7 @@ abstract class Enemy extends Laya.Script {
         this.m_animation.pos(player.x - 170, player.y - (player.height / 2));
         this.m_animation.autoPlay = true;
         this.m_animation.source = this.m_animSrc;
-        this.m_animation.interval = 500;
+        this.m_animation.interval = 100;
         
         this.m_maxHealth = this.m_health;
         
@@ -188,10 +188,6 @@ abstract class Enemy extends Laya.Script {
             //攻擊擊中判定
             if (col.label === 'Player') {
                 console.log("打到玩家了");
-
-                //     let eh = EnemyHandler;//敵人控制器
-                //     let victim = eh.getEnemyByLabel(col.label);
-                //     eh.takeDamage(victim, 600);
             }
         };
         atkBoxCollider.isSensor = true;
