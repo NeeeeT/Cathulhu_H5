@@ -58,6 +58,7 @@
             this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
             this.m_attackRange = 100;
             this.m_atkCd = true;
+            this.m_atkTimer = 0;
             this.m_isFacingRight = true;
         }
         spawn(player, id) {
@@ -72,7 +73,7 @@
             this.m_collider = this.m_sprite.addComponent(Laya.BoxCollider);
             this.m_rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
             this.m_script = this.m_sprite.addComponent(Laya.Script);
-            this.m_script.onUpdate = () => { this.pursuitPlayer(); };
+            this.m_script.onUpdate = () => { this.enemyAIMain(); };
             this.m_collider.width = this.m_sprite.width;
             this.m_collider.height = this.m_sprite.height;
             this.m_collider.label = id;
@@ -120,7 +121,7 @@
         ;
         showHealth(enemy) {
             let healthBar = new Laya.ProgressBar();
-            healthBar.pos(enemy.x, enemy.y - 10);
+            healthBar.pos(enemy.x - this.m_sprite.width / 2, (enemy.y - this.m_sprite.height / 2) - 20);
             healthBar.height = 10;
             healthBar.width = 90;
             healthBar.skin = "comp/progress.png";
@@ -132,7 +133,7 @@
                     healthBar.destroyed = true;
                     return;
                 }
-                healthBar.pos(enemy.x, enemy.y - 10);
+                healthBar.pos(enemy.x - this.m_sprite.width / 2, (enemy.y - this.m_sprite.height / 2) - 20);
                 healthBar.value = this.m_health / this.m_maxHealth;
             }), 30);
         }
@@ -156,6 +157,14 @@
             Laya.stage.addChild(bloodEffect);
             bloodEffect.play();
         }
+        enemyAIMain() {
+            this.pursuitPlayer();
+            this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer;
+            console.log(this.m_atkTimer);
+            if (this.playerRangeCheck(this.m_attackRange * 2)) {
+                this.tryAttack();
+            }
+        }
         pursuitPlayer() {
             let dir = this.m_player.x - this.m_sprite.x;
             this.m_sprite.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
@@ -166,48 +175,48 @@
             else {
                 this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
             }
-            console.log(this.m_moveVelocity["Vx"]);
             this.applyMoveX();
         }
         playerRangeCheck(detectRange) {
             let dist = Math.sqrt(Math.pow((this.m_player.x - this.m_sprite.x), 2) + Math.pow((this.m_player.y - this.m_sprite.y), 2));
             return (dist <= detectRange) ? true : false;
         }
-        attack() {
-            if (this.m_atkCd) {
-                this.m_atkCd = false;
-                this.m_moveVelocity["Vx"] = 0;
-                let atkCircle = new Laya.Sprite();
-                let x_offset = this.m_isFacingRight
-                    ? (this.m_sprite.width * 1) / 2 + 3
-                    : (this.m_sprite.width * 5) / 4 + 3;
-                if (this.m_isFacingRight) {
-                    atkCircle.pos(this.m_sprite.x + this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2);
-                }
-                else {
-                    atkCircle.pos(this.m_sprite.x - 3 * this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2);
-                }
-                let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
-                let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
-                let atkCircleScript = atkCircle.addComponent(Laya.Script);
-                atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
-                atkCircleScript.onTriggerEnter = function (col) {
-                    if (col.label === 'Player') {
-                        console.log("打到玩家了");
-                    }
-                };
-                atkBoxCollider.isSensor = true;
-                atkCircleRigid.gravityScale = 0;
-                atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
-                Laya.stage.addChild(atkCircle);
-                setTimeout(() => {
-                    atkCircle.destroy();
-                    atkCircle.destroyed = true;
-                }, 100);
-                setTimeout(() => {
-                    this.m_atkCd = true;
-                }, 500);
+        tryAttack() {
+            if (this.m_atkTimer > 0)
+                return;
+            this.m_atkCd = false;
+            this.m_moveVelocity["Vx"] = 0;
+            let atkCircle = new Laya.Sprite();
+            let x_offset = this.m_isFacingRight
+                ? (this.m_sprite.width * 1) / 2 + 3
+                : (this.m_sprite.width * 5) / 4 + 3;
+            if (this.m_isFacingRight) {
+                atkCircle.pos(this.m_sprite.x + this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2);
             }
+            else {
+                atkCircle.pos(this.m_sprite.x - 3 * this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2);
+            }
+            let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
+            let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
+            let atkCircleScript = atkCircle.addComponent(Laya.Script);
+            atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
+            atkCircleScript.onTriggerEnter = function (col) {
+                if (col.label === 'Player') {
+                    console.log("打到玩家了");
+                }
+            };
+            atkBoxCollider.isSensor = true;
+            atkCircleRigid.gravityScale = 0;
+            atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
+            Laya.stage.addChild(atkCircle);
+            this.m_atkTimer = 100;
+            setTimeout(() => {
+                atkCircle.destroy();
+                atkCircle.destroyed = true;
+            }, 100);
+            setTimeout(() => {
+                this.m_atkCd = true;
+            }, 500);
         }
         applyMoveX() {
             this.m_rigidbody.setVelocity({
@@ -269,19 +278,32 @@
             return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
         }
         static takeDamage(enemy, amount) {
-            enemy.setHealth(enemy.getHealth() - amount);
             let damageText = new Laya.Text();
-            damageText.text = String(amount);
-            damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
-            damageText.fontSize = 25;
-            damageText.bold = true;
-            damageText.align = "center";
-            damageText.color = "red";
+            let x = new Number();
+            x = Math.random() * 100;
+            if (x <= 50) {
+                amount *= 5;
+                damageText.text = String(amount);
+                damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 45, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
+                damageText.fontSize = 45;
+                damageText.bold = true;
+                damageText.align = "center";
+                damageText.color = "red";
+            }
+            else {
+                damageText.text = String(amount);
+                damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 20, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
+                damageText.fontSize = 25;
+                damageText.bold = false;
+                damageText.align = "center";
+                damageText.color = "white";
+            }
+            enemy.setHealth(enemy.getHealth() - amount);
             Laya.stage.addChild(damageText);
             setInterval((() => {
                 if (damageText.destroyed)
                     return;
-                damageText.pos(enemy.m_sprite.x + 20, enemy.m_sprite.y - 5);
+                damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 20, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
                 damageText.align = "center";
             }), 10);
             setTimeout((() => {
@@ -478,7 +500,7 @@
                 if (col.tag === 'Enemy') {
                     let eh = EnemyHandler;
                     let victim = eh.getEnemyByLabel(col.label);
-                    eh.takeDamage(victim, 600);
+                    eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));
                 }
             };
             atkBoxCollider.isSensor = true;

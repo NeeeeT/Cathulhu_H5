@@ -9,6 +9,7 @@ abstract class Enemy extends Laya.Script {
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
     m_attackRange: number = 100;
     m_atkCd: boolean = true;
+    m_atkTimer: number = 0;
 
     m_maxHealth: number;
     m_sprite: Laya.Sprite;
@@ -32,7 +33,7 @@ abstract class Enemy extends Laya.Script {
         this.m_collider = this.m_sprite.addComponent(Laya.BoxCollider);
         this.m_rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
         this.m_script = this.m_sprite.addComponent(Laya.Script);
-        this.m_script.onUpdate = () => { this.pursuitPlayer() }
+        this.m_script.onUpdate = () => { this.enemyAIMain() }
 
 
         this.m_collider.width = this.m_sprite.width;
@@ -116,6 +117,19 @@ abstract class Enemy extends Laya.Script {
         Laya.stage.addChild(bloodEffect);
         bloodEffect.play();
     }
+
+    //敵人行為主邏輯
+    public enemyAIMain(){
+
+        this.pursuitPlayer();
+        this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
+        console.log(this.m_atkTimer);
+        
+        if(this.playerRangeCheck(this.m_attackRange * 2)){
+            this.tryAttack();
+        }
+    }
+
     public pursuitPlayer() {
         let dir: number = this.m_player.x - this.m_sprite.x;
         this.m_sprite.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
@@ -125,8 +139,6 @@ abstract class Enemy extends Laya.Script {
         } else {
             this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
         }
-
-        console.log(this.m_moveVelocity["Vx"]);
         this.applyMoveX();
     }
     private playerRangeCheck(detectRange: number): boolean {
@@ -134,57 +146,58 @@ abstract class Enemy extends Laya.Script {
         let dist: number = Math.sqrt(Math.pow((this.m_player.x - this.m_sprite.x), 2) + Math.pow((this.m_player.y - this.m_sprite.y), 2));
         return (dist <= detectRange) ? true : false;
     }
-    private attack() {
-        if (this.m_atkCd) {
-            this.m_atkCd = false;
-            // this.rigidbody.setVelocity({x:0, y:this.rigidbody.linearVelocity.y});
-            this.m_moveVelocity["Vx"] = 0;
-            let atkCircle = new Laya.Sprite();
-            let x_offset: number = this.m_isFacingRight
-                ? (this.m_sprite.width * 1) / 2 + 3
-                : (this.m_sprite.width * 5) / 4 + 3;
-            if (this.m_isFacingRight) {
-                atkCircle.pos(
-                    // this.sprite.x + x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                    this.m_sprite.x + this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2
-                );
-            } else {
-                atkCircle.pos(
-                    // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                    this.m_sprite.x - 3 * this.m_sprite.width / 2, this.m_sprite.y - this.m_sprite.height / 2
-                );
-            }
-            let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
-            let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(Laya.RigidBody) as Laya.RigidBody;
-            let atkCircleScript: Laya.Script = atkCircle.addComponent(Laya.Script) as Laya.Script;
-
-            atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
-
-            atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
-                //攻擊擊中判定
-                if (col.label === 'Player') {
-                    console.log("打到玩家了");
-
-                    //     let eh = EnemyHandler;//敵人控制器
-                    //     let victim = eh.getEnemyByLabel(col.label);
-                    //     eh.takeDamage(victim, 600);
-                }
-            };
-            atkBoxCollider.isSensor = true;
-            atkCircleRigid.gravityScale = 0;
-
-            atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
-            Laya.stage.addChild(atkCircle);
-
-            setTimeout(() => {
-                atkCircle.destroy();
-                atkCircle.destroyed = true;
-            }, 100);
-
-            setTimeout(() => {
-                this.m_atkCd = true;
-            }, 500);
+    private tryAttack() {
+        if(this.m_atkTimer > 0) return;
+        this.m_atkCd = false;
+        // this.rigidbody.setVelocity({x:0, y:this.rigidbody.linearVelocity.y});
+        this.m_moveVelocity["Vx"] = 0;
+        let atkCircle = new Laya.Sprite();
+        let x_offset: number = this.m_isFacingRight
+            ? (this.m_sprite.width * 1) / 2 + 3
+            : (this.m_sprite.width * 5) / 4 + 3;
+        if (this.m_isFacingRight) {
+            atkCircle.pos(
+                // this.sprite.x + x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
+                this.m_sprite.x + this.m_sprite.width / 2 + 30, this.m_sprite.y - this.m_sprite.height / 2
+            );
+        } else {
+            atkCircle.pos(
+                // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
+                this.m_sprite.x - 3 * this.m_sprite.width / 2 + 30, this.m_sprite.y - this.m_sprite.height / 2
+            );
         }
+        let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
+        let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(Laya.RigidBody) as Laya.RigidBody;
+        let atkCircleScript: Laya.Script = atkCircle.addComponent(Laya.Script) as Laya.Script;
+
+        atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
+
+        atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
+            //攻擊擊中判定
+            if (col.label === 'Player') {
+                console.log("打到玩家了");
+
+                //     let eh = EnemyHandler;//敵人控制器
+                //     let victim = eh.getEnemyByLabel(col.label);
+                //     eh.takeDamage(victim, 600);
+            }
+        };
+        atkBoxCollider.isSensor = true;
+        atkCircleRigid.gravityScale = 0;
+
+        atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
+        Laya.stage.addChild(atkCircle);
+
+        this.m_atkTimer = 100;
+
+        setTimeout(() => {
+            atkCircle.destroy();
+            atkCircle.destroyed = true;
+        }, 100);
+
+        setTimeout(() => {
+            this.m_atkCd = true;
+        }, 500);
     }
     private applyMoveX(): void {
         this.m_rigidbody.setVelocity({
