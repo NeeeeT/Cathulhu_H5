@@ -1,4 +1,4 @@
-abstract class Enemy extends Laya.Script{
+abstract class Enemy extends Laya.Script {
     abstract m_name: string = '';
     abstract m_health: number = 1000;
     abstract m_armor: number = 0;
@@ -42,7 +42,7 @@ abstract class Enemy extends Laya.Script{
         this.m_collider = this.m_sprite.addComponent(Laya.BoxCollider);
         this.m_rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
         this.m_script = this.m_sprite.addComponent(Laya.Script);
-        this.m_script.onUpdate = () => { 
+        this.m_script.onUpdate = () => {
             this.enemyAIMain();
         }
 
@@ -129,13 +129,13 @@ abstract class Enemy extends Laya.Script{
     }
 
     //敵人行為主邏輯
-    public enemyAIMain(){
+    public enemyAIMain() {
 
         this.pursuitPlayer();
         this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
         // console.log(this.m_atkTimer);
-        
-        if(this.playerRangeCheck(this.m_attackRange * 2)){
+
+        if (this.playerRangeCheck(this.m_attackRange * 2)) {
             this.tryAttack();
         }
     }
@@ -157,7 +157,7 @@ abstract class Enemy extends Laya.Script{
         return (dist <= detectRange) ? true : false;
     }
     private tryAttack() {
-        if(this.m_atkTimer > 0) return;
+        if (this.m_atkTimer > 0) return;
         this.m_atkCd = false;
         // this.rigidbody.setVelocity({x:0, y:this.rigidbody.linearVelocity.y});
         this.m_moveVelocity["Vx"] = 0;

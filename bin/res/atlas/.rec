@@ -54,8 +54,9 @@ P BA28BD65 img_blank.png
 P BA2A0579 label.png
 P 9F43D29D monster_normal.png
 P 69ADCFE4 monster_shield.png
-P B017E53E progress$bar.png
-P C05839CD progress.png
+P A2078EC0 progress$bar.png
+P 7BEC43FB progress.png
+P C05839CD progressYellow.png
 P 3C493DD4 radio.png
 P 3C493DD4 radiogroup.png
 P 5BA25C15 tab.png
