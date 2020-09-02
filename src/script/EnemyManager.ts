@@ -33,8 +33,9 @@ abstract class Enemy extends Laya.Script {
         this.m_collider = this.m_sprite.addComponent(Laya.BoxCollider);
         this.m_rigidbody = this.m_sprite.addComponent(Laya.RigidBody);
         this.m_script = this.m_sprite.addComponent(Laya.Script);
-        this.m_script.onUpdate = () => { this.enemyAIMain() }
-
+        this.m_script.onUpdate = () => {
+            this.enemyAIMain();
+        }
 
         this.m_collider.width = this.m_sprite.width;
         this.m_collider.height = this.m_sprite.height
@@ -93,7 +94,7 @@ abstract class Enemy extends Laya.Script {
             }
             healthBar.pos(enemy.x - this.m_sprite.width / 2, (enemy.y - this.m_sprite.height / 2) - 20);
             healthBar.value = this.m_health / this.m_maxHealth;
-        }), 30);
+        }), 10);
     }
     private bloodSplitEffect(enemy: Laya.Sprite) {
         let bloodEffect: Laya.Animation = new Laya.Animation();
@@ -123,7 +124,7 @@ abstract class Enemy extends Laya.Script {
 
         this.pursuitPlayer();
         this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
-        console.log(this.m_atkTimer);
+        // console.log(this.m_atkTimer);
 
         if (this.playerRangeCheck(this.m_attackRange * 2)) {
             this.tryAttack();

@@ -17,8 +17,12 @@ export default class CharacterController extends Laya.Script {
   private cd_ray: boolean = true; //空白鍵射線CD
   private cd_atk: boolean = true; //CTRL攻擊CD
 
-  private playerHp: number = 0;
-  private playerDef: number = 0;
+  private playerHp: number;
+  private playerDef: number;
+  
+  public playerBp: number;
+
+
 
   /** @prop {name:characterNode,tips:"放入角色Node",type:Node}*/
   characterNode: Laya.Node = null;
@@ -62,6 +66,9 @@ export default class CharacterController extends Laya.Script {
     this.characterAnim = this.characterNode as Laya.Animation;
     this.characterAnim.source = "character/player_01.png,character/player_02.png";
 
+    this.playerHp = 100;
+    this.playerBp = 0;
+    this.playerDef = 100;
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
 

@@ -1,4 +1,4 @@
-abstract class SkillManager extends Laya.Script{
+abstract class Skill extends Laya.Script{
     abstract m_name: string;
     abstract m_damage: number;
     abstract m_cost: number;
@@ -6,7 +6,7 @@ abstract class SkillManager extends Laya.Script{
 
     m_sprite: Laya.Sprite;
     m_rigidbody: Laya.RigidBody;
-    m_collider: Laya.BoxCollider | Laya.CircleCollider;
+    m_collider: Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider;
 
     skillUse(): void{
     }
@@ -14,7 +14,7 @@ abstract class SkillManager extends Laya.Script{
     }
 }
 
-class SkillSpike extends SkillManager{
+class SkillSpike extends Skill{
     m_name = '突刺斬';
     m_damage = 100;
     m_cost = 0;

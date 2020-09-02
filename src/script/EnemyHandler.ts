@@ -30,11 +30,15 @@ export default class EnemyHandler extends Laya.Script {
         return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
     }
     public static takeDamage(enemy: EnemyType, amount: number) {
-        let damageText = new Laya.Text();
-        let soundNum: number = Math.floor(Math.random() * 2);
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 50);
 
+        amount *= critical ? 5 : 1;
+        this.damageTextEffect(enemy, amount, critical);
+    }
+    private static damageTextEffect(enemy: EnemyType, amount: number, critical: boolean): void {
+        let damageText = new Laya.Text();
+        let soundNum: number = Math.floor(Math.random() * 2);
         damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 45, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
         damageText.bold = true;
         damageText.align = "center";
@@ -44,6 +48,8 @@ export default class EnemyHandler extends Laya.Script {
         damageText.fontSize = critical ? 40 : 16;
         damageText.color = critical ? "red" : "white";
         damageText.text = String(amount);
+        damageText.font = "opensans-bold";
+
         enemy.setHealth(enemy.getHealth() - amount);
         Laya.SoundManager.playSound("Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
         Laya.stage.addChild(damageText);

@@ -1,13 +1,7 @@
 interface IStateController extends Laya.Script{
-
-    
-
-
 }
 
 export class CharacterStateController extends Laya.Script implements IStateController{
-    
-
 }
 
 export enum CharacterEnum{
@@ -18,4 +12,17 @@ export enum CharacterEnum{
     Hurt = 1 << 3,
     Attack = 1 << 4,
     SpellSkill = 1 << 5,
+}
+
+export enum EnemyStatus{
+    idle = 0,
+    leftMove,
+    jump,
+    rightMove,
+    down,
+    attack,
+    useSkill,
+    hurt,
+    defend,
+    death
 }
