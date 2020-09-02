@@ -30,20 +30,24 @@ export default class EnemyHandler extends Laya.Script {
         return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
     }
     public static takeDamage(enemy: EnemyType, amount: number) {
-        let damageText = new Laya.Text();
         let fakeNum = Math.random() * 100;
         let critical:boolean = (fakeNum <= 50);
-        
-        damageText.text = String(amount);
+
+        amount *= critical ? 5:1;
+        this.damageTextEffect(enemy, amount, critical);
+    }
+    private static damageTextEffect(enemy: EnemyType, amount: number, critical: boolean): void{
+        let damageText = new Laya.Text();
         damageText.pos((enemy.m_sprite.x - enemy.m_sprite.width / 2) + 45, (enemy.m_sprite.y - enemy.m_sprite.height) - 5);
         damageText.bold = true;
         damageText.align = "center";
         damageText.alpha = 1;
-
-        amount *= critical ? 5:1;
+        damageText.font = "opensans-bold";
+        
         damageText.fontSize = critical ? 40:16;
         damageText.color = critical ? "red":"white";
-
+        damageText.text = String(amount);
+        
         enemy.setHealth(enemy.getHealth() - amount);
         Laya.stage.addChild(damageText);
     
@@ -51,7 +55,7 @@ export default class EnemyHandler extends Laya.Script {
         Laya.Handler.create(this, ()=>{
             Laya.Tween.to(damageText, {alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50}, 350, Laya.Ease.linearInOut, null, 0);
         }), 0);
-        
+
         setTimeout((() => {
             if (damageText.destroyed) return;
 
