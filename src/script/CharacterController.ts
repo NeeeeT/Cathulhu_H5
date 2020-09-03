@@ -254,7 +254,7 @@ export default class CharacterController extends Laya.Script {
         eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
       }
     };
-    Laya.SoundManager.playSound("Audio/Attack/Attack" + soundNum + ".wav", 1);
+    this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);//loop:0為循環播放
     atkBoxCollider.isSensor = true;
     atkCircleRigid.gravityScale = 0;
     atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
@@ -268,7 +268,6 @@ export default class CharacterController extends Laya.Script {
   }
 
   private createAttackEffect(player: Laya.Sprite) {
-    // Laya.SoundManager.playSound("Audio/SlashAudio0.wav", 1);
     let slashEffect: Laya.Animation = new Laya.Animation();
     let colorNum: number = Math.floor(Math.random() * 3) + 2;
     //濾鏡
@@ -298,5 +297,10 @@ export default class CharacterController extends Laya.Script {
     });
     Laya.stage.addChild(slashEffect);
     slashEffect.play();
+  }
+
+  private setSound(volume: number, url: string, loop: number) {
+    Laya.SoundManager.playSound(url, loop);
+    Laya.SoundManager.setSoundVolume(volume, url);
   }
 }

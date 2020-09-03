@@ -45,7 +45,7 @@ abstract class Enemy extends Laya.Script {
         this.m_animation = new Laya.Animation();
         this.m_animation.scaleX = 4;
         this.m_animation.scaleY = 4;
-        
+
         this.m_animation.width = 35;
         this.m_animation.height = 35;
         this.m_animation.pivotX = this.m_animation.width / 2;
@@ -61,14 +61,14 @@ abstract class Enemy extends Laya.Script {
         })
         
         this.m_maxHealth = this.m_health;
-        
+
         this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
         this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
         this.m_script = this.m_animation.addComponent(Laya.Script);
         this.m_script.onUpdate = () => {
             this.enemyAIMain();
         }
-        
+
         this.m_collider.width = this.m_animation.width;
         this.m_collider.height = this.m_animation.height;
         this.m_collider.x -= 13;
@@ -76,9 +76,9 @@ abstract class Enemy extends Laya.Script {
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
         this.m_rigidbody.allowRotation = false;
-        
+
         this.m_player = player;
-        
+
         Laya.stage.addChild(this.m_animation);
         this.showHealth(this.m_animation);
     };
@@ -88,6 +88,7 @@ abstract class Enemy extends Laya.Script {
     setHealth(amount: number): void {
         this.m_health = amount;
         if (this.m_health <= 0) {
+            this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)//loop:0為循環播放;
             this.bloodSplitEffect(this.m_animation);
             this.m_animation.destroy();
         }
@@ -113,7 +114,7 @@ abstract class Enemy extends Laya.Script {
 
     private showHealth(enemy: Laya.Sprite) {
         let healthBar = new Laya.ProgressBar();
-        healthBar.pos(enemy.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10 , (enemy.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+        healthBar.pos(enemy.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (enemy.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
         healthBar.height = 10;
         healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
         healthBar.skin = "comp/progress.png";
@@ -153,6 +154,10 @@ abstract class Enemy extends Laya.Script {
         bloodEffect.play();
     }
 
+    private setSound(volume: number, url: string, loop: number) {
+        Laya.SoundManager.playSound(url, loop);
+        Laya.SoundManager.setSoundVolume(volume, url);
+    }
     //敵人行為主邏輯
     public enemyAIMain() {
 
