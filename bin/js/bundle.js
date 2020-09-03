@@ -98,6 +98,7 @@
         setHealth(amount) {
             this.m_health = amount;
             if (this.m_health <= 0) {
+                this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1);
                 this.bloodSplitEffect(this.m_animation);
                 this.m_animation.destroy();
             }
@@ -163,6 +164,10 @@
             });
             Laya.stage.addChild(bloodEffect);
             bloodEffect.play();
+        }
+        setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
         }
         enemyAIMain() {
             this.pursuitPlayer();
@@ -288,14 +293,17 @@
             let critical = (fakeNum <= 50);
             amount *= critical ? 5 : 1;
             enemy.setHealth(enemy.getHealth() - amount);
-            if (amount >= 200) {
-                enemy.m_animation.x--;
-            }
             this.damageTextEffect(enemy, amount, critical);
+            if (critical)
+                enemy.m_animation.x--;
+        }
+        static setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
         }
         static damageTextEffect(enemy, amount, critical) {
             let damageText = new Laya.Text();
-            let soundNum = Math.floor(Math.random() * 2);
+            let soundNum;
             damageText.pos((enemy.m_animation.x - enemy.m_animation.width / 2) + 45, (enemy.m_animation.y - enemy.m_animation.height) - 5);
             damageText.bold = true;
             damageText.align = "center";
@@ -304,7 +312,8 @@
             damageText.color = critical ? "red" : "white";
             damageText.text = String(amount);
             damageText.font = "opensans-bold";
-            Laya.SoundManager.playSound("Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
+            soundNum = critical ? 0 : 1;
+            this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
             Laya.stage.addChild(damageText);
             Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
@@ -508,7 +517,7 @@
                     eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));
                 }
             };
-            Laya.SoundManager.playSound("Audio/Attack/Attack" + soundNum + ".wav", 1);
+            this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
             atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
@@ -546,6 +555,10 @@
             });
             Laya.stage.addChild(slashEffect);
             slashEffect.play();
+        }
+        setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
         }
     }
 

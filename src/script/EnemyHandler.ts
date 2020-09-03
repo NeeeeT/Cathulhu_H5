@@ -35,14 +35,16 @@ export default class EnemyHandler extends Laya.Script {
 
         amount *= critical ? 5 : 1;
         enemy.setHealth(enemy.getHealth() - amount);
-        if (amount >= 200) {
-            enemy.m_animation.x--;
-        }
         this.damageTextEffect(enemy, amount, critical);
+        if (critical) enemy.m_animation.x--;
+    }
+    private static setSound(volume: number, url: string, loop: number) {
+        Laya.SoundManager.playSound(url, loop);
+        Laya.SoundManager.setSoundVolume(volume, url);
     }
     private static damageTextEffect(enemy: EnemyType, amount: number, critical: boolean): void {
         let damageText = new Laya.Text();
-        let soundNum: number = Math.floor(Math.random() * 2);
+        let soundNum: number;
 
         damageText.pos((enemy.m_animation.x - enemy.m_animation.width / 2) + 45, (enemy.m_animation.y - enemy.m_animation.height) - 5);
         damageText.bold = true;
@@ -53,8 +55,8 @@ export default class EnemyHandler extends Laya.Script {
         damageText.color = critical ? "red" : "white";
         damageText.text = String(amount);
         damageText.font = "opensans-bold";
-
-        Laya.SoundManager.playSound("Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
+        soundNum = critical ? 0 : 1;
+        this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
 
         Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut,
