@@ -46,6 +46,18 @@
         }
     }
 
+    var EnemyStatus;
+    (function (EnemyStatus) {
+        EnemyStatus[EnemyStatus["idle"] = 0] = "idle";
+        EnemyStatus[EnemyStatus["run"] = 1] = "run";
+        EnemyStatus[EnemyStatus["jump"] = 2] = "jump";
+        EnemyStatus[EnemyStatus["down"] = 3] = "down";
+        EnemyStatus[EnemyStatus["attack"] = 4] = "attack";
+        EnemyStatus[EnemyStatus["useSkill"] = 5] = "useSkill";
+        EnemyStatus[EnemyStatus["hurt"] = 6] = "hurt";
+        EnemyStatus[EnemyStatus["defend"] = 7] = "defend";
+        EnemyStatus[EnemyStatus["death"] = 8] = "death";
+    })(EnemyStatus || (EnemyStatus = {}));
     class Enemy extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -57,8 +69,9 @@
             this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
             this.m_attackRange = 100;
             this.m_atkCd = true;
-            this.m_atkTimer = 0;
             this.m_isFacingRight = true;
+            this.m_animationChanging = false;
+            this.m_state = EnemyStatus.idle;
         }
         spawn(player, id) {
             this.m_animation = new Laya.Animation();
@@ -70,8 +83,12 @@
             this.m_animation.pivotY = this.m_animation.height / 2;
             this.m_animation.pos(player.x - 170, player.y - (player.height / 2));
             this.m_animation.autoPlay = true;
-            this.m_animation.source = this.m_animSrc;
+            this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
             this.m_animation.interval = 100;
+            this.m_animation.loop = true;
+            this.m_animation.on(Laya.Event.COMPLETE, this, () => {
+                this.m_animationChanging = false;
+            });
             this.m_maxHealth = this.m_health;
             this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
             this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
@@ -187,6 +204,8 @@
                 this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
             }
             this.applyMoveX();
+            if (!this.m_animationChanging)
+                this.updateAnimation(this.m_state, EnemyStatus.run);
         }
         playerRangeCheck(detectRange) {
             let dist = Math.sqrt(Math.pow((this.m_player.x - this.m_animation.x), 2) + Math.pow((this.m_player.y - this.m_animation.y), 2));
@@ -218,6 +237,7 @@
             };
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
+            this.updateAnimation(this.m_state, EnemyStatus.attack);
             atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
             Laya.stage.addChild(atkCircle);
             this.m_atkTimer = 100;
@@ -241,6 +261,33 @@
                 y: this.m_moveVelocity["Vy"],
             });
         }
+        updateAnimation(from, to, onCallBack) {
+            if (this.m_state === to || this.m_animationChanging)
+                return;
+            this.m_state = to;
+            console.log(from, 'convert to ', to);
+            switch (this.m_state) {
+                case EnemyStatus.attack:
+                    this.m_animationChanging = true;
+                    this.m_animation.interval = 100;
+                    this.m_animation.source = 'goblin/attack_05.png,goblin/attack_06.png,goblin/attack_07.png,goblin/attack_08.png';
+                    this.m_animation.play();
+                    break;
+                case EnemyStatus.idle:
+                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                    break;
+                case EnemyStatus.run:
+                    this.m_animation.source = 'goblin/run_01.png,goblin/run_02.png,goblin/run_03.png,goblin/run_04.png,goblin/run_05.png,goblin/run_06.png,goblin/run_07.png,goblin/run_08.png';
+                    this.m_animation.interval = 100;
+                    this.m_animation.play();
+                    break;
+                default:
+                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                    break;
+            }
+            if (typeof onCallBack === 'function')
+                onCallBack();
+        }
     }
     class EnemyNormal extends Enemy {
         constructor() {
@@ -251,7 +298,6 @@
             this.m_speed = 2;
             this.m_tag = 'n';
             this.m_attackRange = 100;
-            this.m_animSrc = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
         }
     }
     class EnemyShield extends Enemy {
@@ -263,7 +309,6 @@
             this.m_speed = 1;
             this.m_tag = 's';
             this.m_attackRange = 100;
-            this.m_animSrc = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
         }
     }
 
@@ -309,7 +354,7 @@
             damageText.align = "center";
             damageText.alpha = 1;
             damageText.fontSize = critical ? 40 : 16;
-            damageText.color = critical ? "red" : "white";
+            damageText.color = critical ? 'orange' : "white";
             damageText.text = String(amount);
             damageText.font = "opensans-bold";
             soundNum = critical ? 0 : 1;
@@ -567,7 +612,12 @@
             super();
         }
         onAwake() {
-            Laya.stage.bgColor = 'gray';
+            Laya.stage.bgColor = '#000';
+            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+        }
+        setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
         }
     }
 
@@ -590,7 +640,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = true;
+    GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 
