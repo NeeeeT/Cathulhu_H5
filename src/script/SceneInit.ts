@@ -3,6 +3,6 @@ export default class SceneInit extends Laya.Script{
         super();
     }
     onAwake(){
-        Laya.stage.bgColor = 'gray';
+        Laya.stage.bgColor = '#000';
     }
 }

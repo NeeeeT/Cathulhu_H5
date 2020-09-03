@@ -16,9 +16,8 @@ export enum CharacterEnum{
 
 export enum EnemyStatus{
     idle = 0,
-    leftMove,
+    run,
     jump,
-    rightMove,
     down,
     attack,
     useSkill,

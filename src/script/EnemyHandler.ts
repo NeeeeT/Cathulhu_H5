@@ -50,7 +50,7 @@ export default class EnemyHandler extends Laya.Script {
         damageText.alpha = 1;
 
         damageText.fontSize = critical ? 40 : 16;
-        damageText.color = critical ? "red" : "white";
+        damageText.color = critical ? 'orange' : "white";
         damageText.text = String(amount);
         damageText.font = "opensans-bold";
 
