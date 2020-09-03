@@ -46,9 +46,9 @@ export default class EnemyHandler extends Laya.Script {
         let damageText = new Laya.Text();
         let soundNum: number;
 
-        damageText.pos((enemy.m_animation.x - enemy.m_animation.width / 2) + 45, (enemy.m_animation.y - enemy.m_animation.height) - 5);
+        damageText.pos((enemy.m_animation.x - enemy.m_animation.width / 2) - 20, (enemy.m_animation.y - enemy.m_animation.height) - 110);
         damageText.bold = true;
-        damageText.align = "center";
+        damageText.align = "left";
         damageText.alpha = 1;
 
         damageText.fontSize = critical ? 40 : 16;
