@@ -73,6 +73,8 @@ P 235C1C24 idle_01.png
 P 6A939ECA idle_02.png
 P 5D47BFA4 idle_03.png
 P 5296CA7B idle_04.png
+D Village
+R D137205B Village.png
 D Character(0902)/Run
 P 1FA57DAB character_run_1.png
 P F8D5FE13 character_run_2.png

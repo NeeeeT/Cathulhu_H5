@@ -571,6 +571,30 @@
         }
     }
 
+    class Village extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.reinforceBtn = null;
+            this.templeBtn = null;
+            this.battleBtn = null;
+        }
+        onStart() {
+            this.reinforceBtn = this.owner.getChildByName("Reinforce");
+            this.templeBtn = this.owner.getChildByName("Temple");
+            this.battleBtn = this.owner.getChildByName("Battle");
+            this.reinforceBtn.on(Laya.Event.CLICK, this, function () {
+                console.log("reinforce");
+            });
+            this.templeBtn.on(Laya.Event.CLICK, this, function () {
+                console.log("temple");
+            });
+            this.battleBtn.on(Laya.Event.CLICK, this, function () {
+                console.log("battle");
+                Laya.Scene.open("First.scene");
+            });
+        }
+    }
+
     class GameConfig {
         constructor() {
         }
@@ -578,6 +602,7 @@
             var reg = Laya.ClassUtils.regClass;
             reg("script/CharacterController.ts", CharacterController);
             reg("script/SceneInit.ts", SceneInit);
+            reg("script/Village.ts", Village);
         }
     }
     GameConfig.width = 1366;
@@ -586,7 +611,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "First.scene";
+    GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
