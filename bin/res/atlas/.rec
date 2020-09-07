@@ -69,12 +69,28 @@ P 5FD17798 vscroll.png
 P DDDDFB9E vslider$bar.png
 P 01BAE7F5 vslider.png
 D goblin
+P DA11B657 attack_01.png
+P B8CD0FFF attack_02.png
+P E2399FED attack_03.png
+P A22802F3 attack_04.png
+P A9C93F16 attack_05.png
+P F671131E attack_06.png
+P 35EB2DD3 attack_07.png
+P 61DF29C8 attack_08.png
 P 235C1C24 idle_01.png
 P 6A939ECA idle_02.png
 P 5D47BFA4 idle_03.png
 P 5296CA7B idle_04.png
 D Village
 R D137205B Village.png
+P 071AB02F run_01.png
+P B9B76937 run_02.png
+P 5947D120 run_03.png
+P DD2A9ECA run_04.png
+P 0D25E4AD run_05.png
+P 5DDD39F6 run_06.png
+P E9366A50 run_07.png
+P 479C85CB run_08.png
 D Character(0902)/Run
 P 1FA57DAB character_run_1.png
 P F8D5FE13 character_run_2.png
