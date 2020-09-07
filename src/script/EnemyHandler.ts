@@ -1,4 +1,5 @@
 import { EnemyNormal, EnemyShield } from "./EnemyManager";
+import CharacterController from "./CharacterController";
 
 type EnemyType = EnemyNormal | EnemyShield;//會使用到的敵人類型
 
@@ -36,6 +37,7 @@ export default class EnemyHandler extends Laya.Script {
         amount *= critical ? 5 : 1;
         enemy.setHealth(enemy.getHealth() - amount);
         this.damageTextEffect(enemy, amount, critical);
+
         if (critical) enemy.m_animation.x--;
     }
     private static setSound(volume: number, url: string, loop: number) {

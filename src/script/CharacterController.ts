@@ -17,10 +17,12 @@ export default class CharacterController extends Laya.Script {
   private cd_ray: boolean = true; //空白鍵射線CD
   private cd_atk: boolean = true; //CTRL攻擊CD
 
-  private playerHp: number;
-  private playerDef: number;
+  public playerHp: number;
+  public playerMaxHp: number = 1000;
+  public playerDef: number;
 
   public playerBp: number;
+  public playerMaxBp: number = 1000;
 
 
 
@@ -66,11 +68,14 @@ export default class CharacterController extends Laya.Script {
     this.characterAnim = this.characterNode as Laya.Animation;
     this.characterAnim.source = "character/player_01.png,character/player_02.png";
 
-    this.playerHp = 100;
-    this.playerBp = 0;
+    this.playerHp = 1000;
+    this.playerBp = 500;
     this.playerDef = 100;
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
+
+    this.showBar('hp');
+    this.showBar('bp');
 
     this.listenKeyboard();
   }
@@ -298,7 +303,27 @@ export default class CharacterController extends Laya.Script {
     Laya.stage.addChild(slashEffect);
     slashEffect.play();
   }
+  private showBar(tag: string): void{
+    let type:boolean = tag === "hp" ? true : false;
+    let bar = new Laya.ProgressBar;
+    bar.height = 20;
+    bar.width = 300;
+    bar.skin = type ? "comp/progress.png" : "comp/progressYellow.png";
+    bar.value = 1;
+    Laya.stage.addChild(bar);
 
+    setInterval((() => {
+        if (this.characterAnim.destroyed) {
+          bar.destroy();
+          bar.destroyed = true;
+            return;
+        }
+        bar.pos(this.characterAnim.x - 600, type ? this.characterAnim.y - 340 : this.characterAnim.y - 300);
+        bar.value = type ? (this.playerHp / this.playerMaxHp) : (this.playerBp / this.playerMaxBp);
+    }), 10);
+    console.log(type?"healthBar added":"Bp added");
+    
+  }
   private setSound(volume: number, url: string, loop: number) {
     Laya.SoundManager.playSound(url, loop);
     Laya.SoundManager.setSoundVolume(volume, url);

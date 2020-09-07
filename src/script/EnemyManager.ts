@@ -114,7 +114,6 @@ abstract class Enemy extends Laya.Script {
 
     private showHealth(enemy: Laya.Sprite) {
         let healthBar = new Laya.ProgressBar();
-        healthBar.pos(enemy.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (enemy.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
         healthBar.height = 10;
         healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
         healthBar.skin = "comp/progress.png";
@@ -179,9 +178,11 @@ abstract class Enemy extends Laya.Script {
         } else {
             this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
         }
-        this.applyMoveX();
         if(!this.m_animationChanging)
             this.updateAnimation(this.m_state, EnemyStatus.run);
+        else
+            this.m_moveVelocity["Vx"] = 0;
+        this.applyMoveX();            
     }
     private playerRangeCheck(detectRange: number): boolean {
         //取得角色與敵人的最短路徑長度

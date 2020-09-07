@@ -22,7 +22,7 @@ P F62B59C8 Player_attack_2.png
 P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
-D Character(0902)
+D Character(0904)
 D comp
 P 1DFA6065 box.png
 P 316AD948 btn_close.png
@@ -56,7 +56,8 @@ P 9F43D29D monster_normal.png
 P 69ADCFE4 monster_shield.png
 P A2078EC0 progress$bar.png
 P 7BEC43FB progress.png
-P C05839CD progressYellow.png
+P C05839CD progressYellow$bar.png
+P 7BEC43FB progressYellow.png
 P 3C493DD4 radio.png
 P 3C493DD4 radiogroup.png
 P 5BA25C15 tab.png
@@ -89,11 +90,16 @@ P 0D25E4AD run_05.png
 P 5DDD39F6 run_06.png
 P E9366A50 run_07.png
 P 479C85CB run_08.png
-D Character(0902)/Run
-P 1FA57DAB character_run_1.png
-P F8D5FE13 character_run_2.png
-P A61368CC character_run_3.png
-P E23C2E0F character_run_4.png
+D Character(0904)/Run
+P E6D601D9 character_run_1.png
+P 19DBFBFA character_run_2.png
+P 752FC247 character_run_3.png
+P 8BC4427D character_run_4.png
+D Character(0904)/Stand
+P 7F4F883E character_stand_1.png
+P 21FAEDBE character_stand_2.png
+P D275C0EA character_stand_3.png
+P 10778F13 character_stand_4.png
 D comp/SlashEffects
 R 7E72A836 Slash_0029.png
 R 0A7C3187 Slash_0030.png
