@@ -12,8 +12,6 @@ export default class CharacterController extends Laya.Script {
   private isFacingRight: boolean = true;
   private canMove: boolean = false;
   private canJump: boolean = false;
-  private timestamp: boolean = true;
-  private hanlder: TimerHandler;
 
   private cd_ray: boolean = true; //空白鍵射線CD
   private cd_atk: boolean = true; //CTRL攻擊CD

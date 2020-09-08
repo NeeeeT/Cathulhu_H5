@@ -1,4 +1,5 @@
 import { CharacterIdleState } from "./CharacterState";
+import CharacterController from "./CharacterController";
 
 export enum EnemyStatus{
     idle = 0,
@@ -81,6 +82,7 @@ abstract class Enemy extends Laya.Script {
 
         Laya.stage.addChild(this.m_animation);
         this.showHealth(this.m_animation);
+
     };
     destroy(): void {
         this.m_animation.destroy();
