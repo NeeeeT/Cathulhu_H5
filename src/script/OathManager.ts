@@ -19,7 +19,7 @@ export default class OathManager extends Laya.Script{
         oathBar.skin = "comp/progress.png";
         oathBar.value = 50;
         setInterval((() => {
-            oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 50);
+            oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 100);
             oathBar.value = this.currentBloodyPoint / this.maxBloodyPoint;
         }), 10);
         Laya.stage.addChild(oathBar);

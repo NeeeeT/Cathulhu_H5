@@ -146,7 +146,6 @@
         ;
         showHealth(enemy) {
             let healthBar = new Laya.ProgressBar();
-            healthBar.pos(enemy.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (enemy.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
             healthBar.height = 10;
             healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
             healthBar.skin = "comp/progress.png";
@@ -203,9 +202,11 @@
             else {
                 this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
             }
-            this.applyMoveX();
             if (!this.m_animationChanging)
                 this.updateAnimation(this.m_state, EnemyStatus.run);
+            else
+                this.m_moveVelocity["Vx"] = 0;
+            this.applyMoveX();
         }
         playerRangeCheck(detectRange) {
             let dist = Math.sqrt(Math.pow((this.m_player.x - this.m_animation.x), 2) + Math.pow((this.m_player.y - this.m_animation.y), 2));
@@ -397,11 +398,10 @@
             oathBar.skin = "comp/progress.png";
             oathBar.value = 50;
             setInterval((() => {
-                oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 50);
+                oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 100);
                 oathBar.value = this.currentBloodyPoint / this.maxBloodyPoint;
             }), 10);
             Laya.stage.addChild(oathBar);
-            console.log(this.currentBloodyPoint);
         }
     }
     OathManager.currentBloodyPoint = 50;
@@ -417,6 +417,8 @@
             this.timestamp = true;
             this.cd_ray = true;
             this.cd_atk = true;
+            this.playerMaxHp = 1000;
+            this.playerMaxBp = 1000;
             this.characterNode = null;
             this.characterSprite = null;
             this.xMaxVelocity = 5;
@@ -441,11 +443,13 @@
             this.characterSprite = this.characterNode;
             this.characterAnim = this.characterNode;
             this.characterAnim.source = "character/player_01.png,character/player_02.png";
-            this.playerHp = 100;
+            this.playerHp = 1000;
+            this.playerBp = 500;
             this.playerDef = 100;
             this.playerVelocity = { Vx: 0, Vy: 0 };
             this.playerRig = this.owner.getComponent(Laya.RigidBody);
             OathManager.showBloodyPoint(this.characterAnim);
+            this.showBar('hp');
             this.listenKeyboard();
         }
         listenKeyboard() {
@@ -630,6 +634,25 @@
             Laya.stage.addChild(slashEffect);
             slashEffect.play();
         }
+        showBar(tag) {
+            let type = tag === "hp" ? true : false;
+            let bar = new Laya.ProgressBar;
+            bar.height = 20;
+            bar.width = 300;
+            bar.skin = type ? "comp/progress.png" : "comp/progressYellow.png";
+            bar.value = 1;
+            Laya.stage.addChild(bar);
+            setInterval((() => {
+                if (this.characterAnim.destroyed) {
+                    bar.destroy();
+                    bar.destroyed = true;
+                    return;
+                }
+                bar.pos(this.characterAnim.x - 600, type ? this.characterAnim.y - 340 : this.characterAnim.y - 300);
+                bar.value = type ? (this.playerHp / this.playerMaxHp) : (this.playerBp / this.playerMaxBp);
+            }), 10);
+            console.log(type ? "healthBar added" : "Bp added");
+        }
         setSound(volume, url, loop) {
             Laya.SoundManager.playSound(url, loop);
             Laya.SoundManager.setSoundVolume(volume, url);
@@ -693,7 +716,7 @@
     GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
-    GameConfig.stat = true;
+    GameConfig.stat = false;
     GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
