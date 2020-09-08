@@ -349,9 +349,9 @@
         static damageTextEffect(enemy, amount, critical) {
             let damageText = new Laya.Text();
             let soundNum;
-            damageText.pos((enemy.m_animation.x - enemy.m_animation.width / 2) + 45, (enemy.m_animation.y - enemy.m_animation.height) - 5);
+            damageText.pos((enemy.m_animation.x - enemy.m_animation.width / 2) - 20, (enemy.m_animation.y - enemy.m_animation.height) - 110);
             damageText.bold = true;
-            damageText.align = "center";
+            damageText.align = "left";
             damageText.alpha = 1;
             damageText.fontSize = critical ? 40 : 16;
             damageText.color = critical ? 'orange' : "white";
@@ -380,6 +380,33 @@
     }
     EnemyHandler.enemyIndex = 0;
     EnemyHandler.enemyPool = [];
+
+    class OathManager extends Laya.Script {
+        static getBloodyPoint() {
+            return OathManager.currentBloodyPoint;
+        }
+        static setBloodyPoint(amount) {
+            OathManager.currentBloodyPoint = (amount > this.maxBloodyPoint) ? this.maxBloodyPoint : amount;
+            return OathManager.currentBloodyPoint;
+        }
+        static showBloodyPoint(player) {
+            let oathBar = new Laya.ProgressBar();
+            oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 50);
+            oathBar.height = 50;
+            oathBar.width = 300;
+            oathBar.skin = "comp/progress.png";
+            oathBar.value = 50;
+            setInterval((() => {
+                oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 50);
+                oathBar.value = this.currentBloodyPoint / this.maxBloodyPoint;
+            }), 10);
+            Laya.stage.addChild(oathBar);
+            console.log(this.currentBloodyPoint);
+        }
+    }
+    OathManager.currentBloodyPoint = 50;
+    OathManager.maxBloodyPoint = 100;
+    OathManager.increaseBloodyPoint = 10;
 
     class CharacterController extends Laya.Script {
         constructor() {
@@ -415,10 +442,10 @@
             this.characterAnim = this.characterNode;
             this.characterAnim.source = "character/player_01.png,character/player_02.png";
             this.playerHp = 100;
-            this.playerBp = 0;
             this.playerDef = 100;
             this.playerVelocity = { Vx: 0, Vy: 0 };
             this.playerRig = this.owner.getComponent(Laya.RigidBody);
+            OathManager.showBloodyPoint(this.characterAnim);
             this.listenKeyboard();
         }
         listenKeyboard() {
@@ -504,6 +531,7 @@
                     this.cd_ray = true;
                 }, 500);
                 EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
+                OathManager.setBloodyPoint(OathManager.getBloodyPoint() - 10);
             }
             if (this.keyDownList[17]) {
                 if (!this.cd_atk)
@@ -560,6 +588,7 @@
                     let eh = EnemyHandler;
                     let victim = eh.getEnemyByLabel(col.label);
                     eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));
+                    OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
                 }
             };
             this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
@@ -661,7 +690,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

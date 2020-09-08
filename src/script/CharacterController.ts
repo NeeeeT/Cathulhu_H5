@@ -3,6 +3,7 @@ import Raycast from "./Raycast";
 import CameraHandler from "./CameraHandler";
 import { EnemyNormal, EnemyShield } from "./EnemyManager";
 import EnemyHandler from "./EnemyHandler";
+import OathManager from "./OathManager";
 
 export default class CharacterController extends Laya.Script {
   private playerRig: Laya.RigidBody;
@@ -19,8 +20,6 @@ export default class CharacterController extends Laya.Script {
 
   private playerHp: number;
   private playerDef: number;
-
-  public playerBp: number;
 
 
 
@@ -60,18 +59,20 @@ export default class CharacterController extends Laya.Script {
     if (this.playerVelocity["Vx"] > this.xMaxVelocity) this.playerVelocity["Vx"] = this.xMaxVelocity;
     this.characterMove();
   }
-
+  
   setup(): void {
     this.characterSprite = this.characterNode as Laya.Sprite;
     this.characterAnim = this.characterNode as Laya.Animation;
     this.characterAnim.source = "character/player_01.png,character/player_02.png";
 
     this.playerHp = 100;
-    this.playerBp = 0;
     this.playerDef = 100;
     this.playerVelocity = { Vx: 0, Vy: 0 };
     this.playerRig = this.owner.getComponent(Laya.RigidBody);
-
+    
+    
+    OathManager.showBloodyPoint(this.characterAnim);
+    
     this.listenKeyboard();
   }
 
@@ -191,6 +192,9 @@ export default class CharacterController extends Laya.Script {
       }, 500);
       //敵人生成測試
       EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
+      
+      //誓約系統測試
+      OathManager.setBloodyPoint(OathManager.getBloodyPoint() - 10);
     }
     if (this.keyDownList[17]) {
       if (!this.cd_atk) return;
@@ -252,6 +256,9 @@ export default class CharacterController extends Laya.Script {
         let eh = EnemyHandler;//敵人控制器
         let victim = eh.getEnemyByLabel(col.label);
         eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
+
+        //誓約系統測試
+        OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
       }
     };
     this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);//loop:0為循環播放
