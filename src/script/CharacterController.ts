@@ -1,6 +1,5 @@
 import DrawCmd from "./DrawCmd";
 import Raycast from "./Raycast";
-import CameraHandler from "./CameraHandler";
 import { EnemyNormal, EnemyShield } from "./EnemyManager";
 import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
@@ -53,7 +52,7 @@ export default class CharacterController extends Laya.Script {
   }
   onStart() {
     this.setup();
-    CameraHandler.CameraFollower(this.characterSprite); //初始化相機
+    // CameraHandler.CameraFollower(this.characterSprite); //初始化相機
   }
 
   onUpdate() {
@@ -97,7 +96,6 @@ export default class CharacterController extends Laya.Script {
     var keyCode: number = e["keyCode"];
     this.keyDownList[keyCode] = true;
   }
-
   onKeyUp(e: Laya.Event): void {
     // 因為friction設為0，為了在平地不會因慣性持續前進，而將x速度做重置
     if (this.canJump) {
