@@ -24,7 +24,7 @@ export default class CharacterInit extends Laya.Script{
         CharacterInit.playerEnt = player;
     }
     initSetting(player: Character): void{
-        player.m_health = this.health;
+        player.m_maxHealth = player.m_health = this.health;
         player.m_xMaxVelocity = this.xMaxVelocity;
         player.m_yMaxVelocity = this.yMaxVelocity;
         player.m_velocityMultiplier = this.velocityMultiplier;

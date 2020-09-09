@@ -59,8 +59,8 @@ abstract class Enemy extends Laya.Script {
         
         this.m_maxHealth = this.m_health;
 
-        this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
         this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
+        this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
         this.m_script = this.m_animation.addComponent(Laya.Script);
         this.m_script.onUpdate = () => {
             this.enemyAIMain();
@@ -72,6 +72,10 @@ abstract class Enemy extends Laya.Script {
         this.m_collider.y -= 10;
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
+        
+        // this.m_rigidbody.mask = 0;
+        this.m_rigidbody.category = 8;
+        this.m_rigidbody.mask = 4 | 2;
         this.m_rigidbody.allowRotation = false;
 
         this.m_player = player;
@@ -110,7 +114,7 @@ abstract class Enemy extends Laya.Script {
         this.m_collider.label = index;
     };
 
-    private showHealth(enemy: Laya.Sprite) {
+    private showHealth(enemy: Laya.Animation) {
         let healthBar = new Laya.ProgressBar();
         healthBar.height = 10;
         healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
@@ -169,7 +173,9 @@ abstract class Enemy extends Laya.Script {
 
     public pursuitPlayer() {
         let dir: number = this.m_player.x - this.m_animation.x;
-        this.m_animation.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
+        // this.m_animation.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
+        let rightSide: boolean = (this.m_player.x - this.m_animation.x) > 0;
+        this.m_animation.skewY = rightSide ? 0 : 180;
         this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false
         if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
             this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
@@ -193,9 +199,9 @@ abstract class Enemy extends Laya.Script {
         // this.rigidbody.setVelocity({x:0, y:this.rigidbody.linearVelocity.y});
         this.m_moveVelocity["Vx"] = 0;
         let atkCircle = new Laya.Sprite();
-        let x_offset: number = this.m_isFacingRight
-            ? (this.m_animation.width * 1) / 2 + 3
-            : (this.m_animation.width * 5) / 4 + 3;
+        // let x_offset: number = this.m_isFacingRight
+        //     ? (this.m_animation.width * 1) / 2 + 3
+        //     : (this.m_animation.width * 5) / 4 + 3;
         if (this.m_isFacingRight) {
             atkCircle.pos(
                 // this.sprite.x + x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
@@ -212,15 +218,18 @@ abstract class Enemy extends Laya.Script {
         let atkCircleScript: Laya.Script = atkCircle.addComponent(Laya.Script) as Laya.Script;
 
         atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
+        atkCircleRigid.category = 8;
+        atkCircleRigid.mask = 4;
 
         atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
-            if (col.label === 'Player') {
+            if (col.tag === 'Player') {
                 console.log("打到玩家了");
             }
         };
         atkBoxCollider.isSensor = true;
         atkCircleRigid.gravityScale = 0;
         this.updateAnimation(this.m_state, EnemyStatus.attack);
+        // this.m_animation.skew
         atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
         Laya.stage.addChild(atkCircle);
 
@@ -247,10 +256,10 @@ abstract class Enemy extends Laya.Script {
             y: this.m_moveVelocity["Vy"],
         });
     }
-    private updateAnimation(from: EnemyStatus, to: EnemyStatus, onCallBack?: () => void): void{
+    private updateAnimation(from: EnemyStatus, to: EnemyStatus, onCallBack: () => void = null, force: boolean = false): void{
         if(this.m_state === to || this.m_animationChanging) return;
         this.m_state = to;
-        console.log(from, 'convert to ', to);
+        // console.log(from, 'convert to ', to);
         switch(this.m_state){
             case EnemyStatus.attack:
                 this.m_animationChanging = true;
