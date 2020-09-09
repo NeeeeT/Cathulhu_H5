@@ -1,15 +1,21 @@
 (function () {
     'use strict';
 
-    class DrawCmd extends Laya.Script {
+    class SceneInit extends Laya.Script {
         constructor() {
             super();
         }
-        static DrawLine(startX, startY, endX, endY, color, width) {
-            Laya.stage.graphics.drawLine(startX, startY, endX, endY, color, width);
+        onAwake() {
+            Laya.stage.bgColor = '#000';
+            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+        }
+        generator() {
+        }
+        setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
         }
     }
-    ;
 
     class Raycast extends Laya.Script {
         static _RayCast(startX, startY, endX, endY, direction) {
@@ -32,19 +38,15 @@
     }
     ;
 
-    class CameraHandler extends Laya.Script {
+    class DrawCmd extends Laya.Script {
         constructor() {
             super();
         }
-        static CameraFollower(sprite) {
-            setInterval(() => {
-                let player_pivot_x = Laya.stage.width / 2;
-                let player_pivot_y = Laya.stage.height / 2;
-                Laya.stage.x = player_pivot_x - sprite.x;
-                Laya.stage.y = player_pivot_y - sprite.y;
-            }, 10);
+        static DrawLine(startX, startY, endX, endY, color, width) {
+            Laya.stage.graphics.drawLine(startX, startY, endX, endY, color, width);
         }
     }
+    ;
 
     var EnemyStatus;
     (function (EnemyStatus) {
@@ -409,7 +411,6 @@
                     return;
                 this.currentBloodyPoint -= 20;
                 this.isCharging = true;
-                return;
             }
         }
         static chargeAttack(enemyLabel) {
@@ -426,118 +427,132 @@
     OathManager.increaseBloodyPoint = 10;
     OathManager.isCharging = false;
 
-    class CharacterController extends Laya.Script {
+    var CharacterStatus;
+    (function (CharacterStatus) {
+        CharacterStatus[CharacterStatus["idle"] = 0] = "idle";
+        CharacterStatus[CharacterStatus["run"] = 1] = "run";
+        CharacterStatus[CharacterStatus["jump"] = 2] = "jump";
+        CharacterStatus[CharacterStatus["down"] = 3] = "down";
+        CharacterStatus[CharacterStatus["attack"] = 4] = "attack";
+        CharacterStatus[CharacterStatus["useSkill"] = 5] = "useSkill";
+        CharacterStatus[CharacterStatus["hurt"] = 6] = "hurt";
+        CharacterStatus[CharacterStatus["defend"] = 7] = "defend";
+        CharacterStatus[CharacterStatus["death"] = 8] = "death";
+    })(CharacterStatus || (CharacterStatus = {}));
+    class CharacterManager extends Laya.Script {
         constructor() {
-            super();
-            this.isFacingRight = true;
-            this.canMove = false;
-            this.canJump = false;
-            this.cd_ray = true;
-            this.cd_atk = true;
-            this.playerMaxHp = 1000;
-            this.playerMaxBp = 1000;
-            this.characterNode = null;
-            this.characterSprite = null;
-            this.xMaxVelocity = 5;
-            this.yMaxVelocity = 5;
-            this.velocityMultiplier = 5;
-            this.attackBoxRange = 100;
+            super(...arguments);
+            this.m_isFacingRight = true;
+            this.m_canJump = true;
+            this.m_canAttack = true;
         }
-        onAwake() {
+        spawn() {
+            this.m_state = CharacterStatus.idle;
+            this.m_animation = new Laya.Animation();
+            this.m_animation.scaleX = 1;
+            this.m_animation.scaleY = 1;
+            this.m_animation.width = 130;
+            this.m_animation.height = 130;
+            this.m_animation.pivotX = this.m_animation.width / 2;
+            this.m_animation.pivotY = this.m_animation.height / 2;
+            this.m_animation.pos(1345, 544);
+            this.m_animation.autoPlay = true;
+            this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+            this.m_animation.interval = 200;
+            this.m_animation.loop = true;
+            this.m_animation.on(Laya.Event.COMPLETE, this, () => {
+                this.m_animationChanging = false;
+            });
+            this.m_maxHealth = this.m_health;
+            this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
+            this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
+            this.m_script = this.m_animation.addComponent(Laya.Script);
+            this.m_script.onAwake = () => {
+                this.m_playerVelocity = { Vx: 0, Vy: 0 };
+                this.listenKeyBoard();
+            };
+            this.m_script.onUpdate = () => {
+                if (this.m_playerVelocity["Vx"] < -this.m_xMaxVelocity)
+                    this.m_playerVelocity["Vx"] = -this.m_xMaxVelocity;
+                if (this.m_playerVelocity["Vx"] > this.m_xMaxVelocity)
+                    this.m_playerVelocity["Vx"] = this.m_xMaxVelocity;
+                this.characterMove();
+            };
+            this.m_script.onTriggerEnter = (col) => {
+                if (col.label == "BoxCollider") {
+                    this.resetMove();
+                    this.m_canJump = true;
+                }
+            };
+            this.m_script.onKeyUp = (e) => {
+                if (this.m_canJump) {
+                    this.m_playerVelocity["Vx"] = 0;
+                    this.applyMoveX();
+                }
+                delete this.m_keyDownList[e["keyCode"]];
+            };
+            this.m_script.onKeyDown = (e) => {
+                let keyCode = e["keyCode"];
+                this.m_keyDownList[keyCode] = true;
+            };
+            this.m_collider.width = this.m_animation.width;
+            this.m_collider.height = this.m_animation.height;
+            this.m_collider.x -= 5;
+            this.m_collider.y -= 5;
+            this.m_collider.tag = 'Player';
+            this.m_collider.friction = 0;
+            this.m_rigidbody.allowRotation = false;
+            this.m_rigidbody.gravityScale = 3;
+            Laya.stage.addChild(this.m_animation);
+            OathManager.showBloodyPoint(this.m_animation);
+            this.CameraFollower();
         }
-        onStart() {
-            this.setup();
-            CameraHandler.CameraFollower(this.characterSprite);
-        }
-        onUpdate() {
-            if (this.playerVelocity["Vx"] < -this.xMaxVelocity)
-                this.playerVelocity["Vx"] = -this.xMaxVelocity;
-            if (this.playerVelocity["Vx"] > this.xMaxVelocity)
-                this.playerVelocity["Vx"] = this.xMaxVelocity;
-            this.characterMove();
-        }
-        setup() {
-            this.characterSprite = this.characterNode;
-            this.characterAnim = this.characterNode;
-            this.characterAnim.source = "character/player_01.png,character/player_02.png";
-            this.playerHp = 1000;
-            this.playerBp = 500;
-            this.playerDef = 100;
-            this.playerVelocity = { Vx: 0, Vy: 0 };
-            this.playerRig = this.owner.getComponent(Laya.RigidBody);
-            OathManager.showBloodyPoint(this.characterAnim);
-            this.showBar('hp');
-            this.listenKeyboard();
-        }
-        listenKeyboard() {
-            this.keyDownList = [];
+        listenKeyBoard() {
+            this.m_keyDownList = [];
             Laya.stage.on(Laya.Event.KEY_DOWN, this, this.onKeyDown);
             Laya.stage.on(Laya.Event.KEY_UP, this, this.onKeyUp);
         }
-        onTriggerEnter(col) {
-            if (col.label == "BoxCollider") {
-                this.resetMove();
-                this.canJump = true;
-                this.canMove = true;
-            }
-        }
-        onKeyDown(e) {
-            var keyCode = e["keyCode"];
-            this.keyDownList[keyCode] = true;
-        }
-        onKeyUp(e) {
-            if (this.canJump) {
-                this.playerVelocity["Vx"] = 0;
-                this.applyMoveX();
-            }
-            delete this.keyDownList[e["keyCode"]];
-        }
         characterMove() {
-            if (this.keyDownList[37]) {
-                this.playerVelocity["Vx"] += -1 * this.velocityMultiplier;
-                this.characterAnim.source =
-                    "character/player_walk_01.png,character/player_walk_02.png";
-                this.characterAnim.interval = 100;
+            if (this.m_keyDownList[37]) {
+                this.m_playerVelocity["Vx"] += -1 * this.m_velocityMultiplier;
+                this.m_animation.source = "character/player_run_01.png,character/player_run_02.png,character/player_run_03.png,character/player_run_04.png";
+                this.m_animation.interval = 200;
                 this.applyMoveX();
-                if (this.isFacingRight) {
-                    this.playerVelocity["Vx"] = 0;
+                if (this.m_isFacingRight) {
+                    this.m_playerVelocity["Vx"] = 0;
                     this.applyMoveX();
-                    this.characterSprite.skewY = 180;
-                    this.isFacingRight = false;
+                    this.m_animation.skewY = 180;
+                    this.m_isFacingRight = false;
                 }
             }
-            if (this.keyDownList[38]) {
-                if (this.canJump) {
-                    this.playerVelocity["Vy"] += -10;
+            if (this.m_keyDownList[38]) {
+                if (this.m_canJump) {
+                    this.m_playerVelocity["Vy"] += -10;
                     this.applyMoveY();
-                    this.canJump = false;
+                    this.m_canJump = false;
                 }
             }
-            if (this.keyDownList[39]) {
-                this.playerVelocity["Vx"] += 1 * this.velocityMultiplier;
-                this.characterAnim.source =
-                    "character/player_walk_01.png,character/player_walk_02.png";
-                this.characterAnim.interval = 100;
+            if (this.m_keyDownList[39]) {
+                this.m_playerVelocity["Vx"] += 1 * this.m_velocityMultiplier;
+                this.m_animation.source = "character/player_run_01.png,character/player_run_02.png,character/player_run_03.png,character/player_run_04.png";
+                this.m_animation.interval = 100;
                 this.applyMoveX();
-                if (!this.isFacingRight) {
-                    this.playerVelocity["Vx"] = 0;
+                if (!this.m_isFacingRight) {
+                    this.m_playerVelocity["Vx"] = 0;
                     this.applyMoveX();
-                    this.characterSprite.skewY = 0;
-                    this.isFacingRight = true;
+                    this.m_animation.skewY = 0;
+                    this.m_isFacingRight = true;
                 }
             }
-            if (this.keyDownList[40]) {
+            if (this.m_keyDownList[40]) {
             }
-            if (this.keyDownList[32]) {
-                if (!this.cd_ray)
-                    return;
-                this.cd_ray = false;
-                let width_offset = (this.characterSprite.width / 2.5) * (this.isFacingRight ? 1 : -1);
-                let raycast_range = 300 * (this.isFacingRight ? 1 : -1);
+            if (this.m_keyDownList[32]) {
+                let width_offset = (this.m_animation.width / 2.5) * (this.m_isFacingRight ? 1 : -1);
+                let raycast_range = 300 * (this.m_isFacingRight ? 1 : -1);
                 let random_color = "#" + (((1 << 24) * Math.random()) | 0).toString(16);
-                let direction = this.isFacingRight ? 1 : 0;
-                let Raycast_return = Raycast._RayCast(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, direction);
-                DrawCmd.DrawLine(this.characterSprite.x + width_offset, this.characterSprite.y, this.characterSprite.x + width_offset + raycast_range, this.characterSprite.y, random_color, 2);
+                let direction = this.m_isFacingRight ? 1 : 0;
+                let Raycast_return = Raycast._RayCast(this.m_animation.x + width_offset, this.m_animation.y, this.m_animation.x + width_offset + raycast_range, this.m_animation.y, direction);
+                DrawCmd.DrawLine(this.m_animation.x + width_offset, this.m_animation.y, this.m_animation.x + width_offset + raycast_range, this.m_animation.y, random_color, 2);
                 if (Raycast_return["Hit"]) {
                     let rig = Raycast_return["Rigidbody"];
                     let spr = Raycast_return["Sprite"];
@@ -549,66 +564,40 @@
                 }
                 setTimeout(() => {
                     Laya.stage.graphics.clear();
-                    this.cd_ray = true;
                 }, 500);
-                EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
-                if (OathManager.getBloodyPoint() <= 0)
-                    return;
-                OathManager.setBloodyPoint(OathManager.getBloodyPoint() - 10);
             }
-            if (this.keyDownList[17]) {
-                if (!this.cd_atk)
+            if (this.m_keyDownList[17]) {
+                if (!this.m_canAttack)
                     return;
-                this.characterAnim.interval = 20;
-                this.characterAnim.source =
-                    "cahracter/Player_attack_0.png,cahracter/Player_attack_1.png,cahracter/Player_attack_2.png,cahracter/Player_attack_3.png,cahracter/Player_attack_4.png,cahracter/Player_attack_5.png";
-                this.createAttackCircle(this.characterSprite);
-                this.createAttackEffect(this.characterSprite);
-                this.cd_atk = false;
-                this.characterAnim.on(Laya.Event.COMPLETE, this, function () {
-                    this.characterAnim.interval = 500;
-                    this.characterAnim.source = "character/player_01.png,character/player_02.png";
+                this.m_animation.interval = 100;
+                this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+                this.createAttackCircle(this.m_animation);
+                this.createAttackEffect(this.m_animation);
+                this.m_canAttack = false;
+                this.m_animation.on(Laya.Event.COMPLETE, this, function () {
+                    this.m_animation.interval = 200;
+                    this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
                 });
                 setTimeout(() => {
-                    this.cd_atk = true;
+                    this.m_canAttack = true;
                 }, 500);
             }
-            if (this.keyDownList[16]) {
-                OathManager.charge();
-            }
-        }
-        resetMove() {
-            this.playerVelocity["Vx"] = 0;
-            this.playerVelocity["Vy"] = 0;
-            this.applyMoveX();
-            this.applyMoveY();
-        }
-        applyMoveX() {
-            this.playerRig.setVelocity({
-                x: this.playerVelocity["Vx"],
-                y: this.playerRig.linearVelocity.y,
-            });
-        }
-        applyMoveY() {
-            this.playerRig.setVelocity({
-                x: this.playerRig.linearVelocity.x,
-                y: this.playerVelocity["Vy"],
-            });
         }
         createAttackCircle(player) {
             let atkCircle = new Laya.Sprite();
-            let x_offset = this.isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
+            let x_offset = this.m_isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
             let soundNum = Math.floor(Math.random() * 2);
-            if (this.isFacingRight) {
-                atkCircle.pos(player.x + x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8);
+            if (this.m_isFacingRight) {
+                atkCircle.pos(player.x + x_offset, player.y - (this.m_animation.height * 1) / 2 + (this.m_animation.height * 1) / 8);
             }
             else {
-                atkCircle.pos(player.x - x_offset, player.y - (this.characterSprite.height * 1) / 2 + (this.characterSprite.height * 1) / 8);
+                atkCircle.pos(player.x - x_offset, player.y - (this.m_animation.height * 1) / 2 + (this.m_animation.height * 1) / 8);
             }
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
             let atkCircleScript = atkCircle.addComponent(Laya.Script);
-            atkBoxCollider.height = atkBoxCollider.width = this.attackBoxRange;
+            atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
+            CharacterManager.setCameraShake(50);
             atkCircleScript.onTriggerEnter = function (col) {
                 if (col.tag === 'Enemy') {
                     let eh = EnemyHandler;
@@ -625,6 +614,7 @@
             this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
+            atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
             Laya.stage.addChild(atkCircle);
             setTimeout(() => {
                 atkCircle.destroy();
@@ -656,7 +646,7 @@
                 let glowFilter_charge = new Laya.GlowFilter("#F7F706", 20, 0, 0);
                 slashEffect.filters = [colorFilter_charge, glowFilter_charge];
             }
-            if (this.isFacingRight) {
+            if (this.m_isFacingRight) {
                 slashEffect.skewY = 0;
                 slashEffect.pos(player.x - 100, player.y - 250 + 30);
             }
@@ -673,51 +663,97 @@
             Laya.stage.addChild(slashEffect);
             slashEffect.play();
         }
-        showBar(tag) {
-            let type = tag === "hp" ? true : false;
-            let bar = new Laya.ProgressBar;
-            bar.height = 20;
-            bar.width = 300;
-            bar.skin = type ? "comp/progress.png" : "comp/progressYellow.png";
-            bar.value = 1;
-            Laya.stage.addChild(bar);
-            setInterval((() => {
-                if (this.characterAnim.destroyed) {
-                    bar.destroy();
-                    bar.destroyed = true;
-                    return;
-                }
-                bar.pos(this.characterAnim.x - 600, type ? this.characterAnim.y - 340 : this.characterAnim.y - 300);
-                bar.value = type ? (this.playerHp / this.playerMaxHp) : (this.playerBp / this.playerMaxBp);
-            }), 10);
-            console.log(type ? "healthBar added" : "Bp added");
+        resetMove() {
+            this.m_playerVelocity["Vx"] = 0;
+            this.m_playerVelocity["Vy"] = 0;
+            this.applyMoveX();
+            this.applyMoveY();
+        }
+        applyMoveX() {
+            this.m_rigidbody.setVelocity({
+                x: this.m_playerVelocity["Vx"],
+                y: this.m_rigidbody.linearVelocity.y,
+            });
+        }
+        applyMoveY() {
+            this.m_rigidbody.setVelocity({
+                x: this.m_rigidbody.linearVelocity.x,
+                y: this.m_playerVelocity["Vy"],
+            });
         }
         setSound(volume, url, loop) {
             Laya.SoundManager.playSound(url, loop);
             Laya.SoundManager.setSoundVolume(volume, url);
         }
-    }
-
-    class Character extends Laya.Script {
-        constructor() {
-            super();
+        CameraFollower() {
+            let player_pivot_x = Laya.stage.width / 2;
+            let player_pivot_y = Laya.stage.height / 2;
+            setInterval(() => {
+                if (CharacterManager.m_cameraShakingTimer > 0) {
+                    let randomSign = (Math.floor(Math.random() * 2) == 1) ? 1 : -1;
+                    Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * 10 * randomSign;
+                    Laya.stage.y = (player_pivot_y - this.m_animation.y) + Math.random() * 10 * randomSign;
+                    CharacterManager.m_cameraShakingTimer--;
+                }
+                else {
+                    Laya.stage.x = player_pivot_x - this.m_animation.x;
+                    Laya.stage.y = player_pivot_y - this.m_animation.y;
+                }
+            }, 10);
+        }
+        static setCameraShake(timer) {
+            CharacterManager.m_cameraShakingTimer = timer;
+        }
+        updateAnimation(from, to, onCallBack = null, force = false) {
+            if (this.m_state === to || this.m_animationChanging)
+                return;
+            this.m_state = to;
+            console.log(from, 'convert to ', to);
+            switch (this.m_state) {
+                case CharacterStatus.attack:
+                    this.m_animationChanging = true;
+                    this.m_animation.interval = 100;
+                    this.m_animation.source = 'goblin/attack_05.png,goblin/attack_06.png,goblin/attack_07.png,goblin/attack_08.png';
+                    this.m_animation.play();
+                    break;
+                case CharacterStatus.idle:
+                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                    break;
+                case CharacterStatus.run:
+                    this.m_animation.source = 'goblin/run_01.png,goblin/run_02.png,goblin/run_03.png,goblin/run_04.png,goblin/run_05.png,goblin/run_06.png,goblin/run_07.png,goblin/run_08.png';
+                    this.m_animation.interval = 100;
+                    this.m_animation.play();
+                    break;
+                default:
+                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                    break;
+            }
+            onCallBack();
         }
     }
+    CharacterManager.m_cameraShakingTimer = 0;
 
-    class SceneInit extends Laya.Script {
+    class CharacterInit extends Laya.Script {
         constructor() {
             super();
-            this.charcc = new Character();
+            this.health = 1000;
+            this.xMaxVelocity = 5;
+            this.yMaxVelocity = 5;
+            this.velocityMultiplier = 5;
+            this.attackRange = 100;
         }
         onAwake() {
-            Laya.stage.bgColor = '#000';
-            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+            let player = new CharacterManager();
+            this.initSetting(player);
+            player.spawn();
         }
-        generator() {
-        }
-        setSound(volume, url, loop) {
-            Laya.SoundManager.playSound(url, loop);
-            Laya.SoundManager.setSoundVolume(volume, url);
+        initSetting(player) {
+            player.m_health = this.health;
+            player.m_xMaxVelocity = this.xMaxVelocity;
+            player.m_yMaxVelocity = this.yMaxVelocity;
+            player.m_velocityMultiplier = this.velocityMultiplier;
+            player.m_attackRange = this.attackRange;
+            console.log(this.attackRange);
         }
     }
 
@@ -750,8 +786,8 @@
         }
         static init() {
             var reg = Laya.ClassUtils.regClass;
-            reg("script/CharacterController.ts", CharacterController);
             reg("script/SceneInit.ts", SceneInit);
+            reg("script/CharacterInit.ts", CharacterInit);
             reg("script/Village.ts", Village);
         }
     }
@@ -765,7 +801,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = false;
-    GameConfig.physicsDebug = false;
+    GameConfig.physicsDebug = true;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

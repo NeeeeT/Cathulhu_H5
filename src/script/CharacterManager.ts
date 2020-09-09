@@ -1,6 +1,7 @@
 import Raycast from "./Raycast";
 import DrawCmd from "./DrawCmd";
 import EnemyHandler from "./EnemyHandler";
+import OathManager from "./OathManager";
 
 export enum CharacterStatus{
     idle = 0,
@@ -33,6 +34,8 @@ export default class CharacterManager extends Laya.Script{
     m_canJump: boolean = true;
     m_canAttack: boolean = true;
     m_animationChanging: boolean;
+
+    public static m_cameraShakingTimer: number = 0;
 
     m_keyDownList: Array<boolean>;
 
@@ -104,6 +107,9 @@ export default class CharacterManager extends Laya.Script{
         this.m_rigidbody.gravityScale = 3;
 
         Laya.stage.addChild(this.m_animation);
+
+        OathManager.showBloodyPoint(this.m_animation);
+
         this.CameraFollower();
     }
     private listenKeyBoard(): void {
@@ -230,15 +236,23 @@ export default class CharacterManager extends Laya.Script{
         let atkCircleScript: Laya.Script = atkCircle.addComponent(Laya.Script) as Laya.Script;
 
         atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
-
+        CharacterManager.setCameraShake(50);
         atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
             if (col.tag === 'Enemy') {
             let eh = EnemyHandler;//敵人控制器
             let victim = eh.getEnemyByLabel(col.label);
-            eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
-
+            // eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
+            
             //誓約系統測試
             // OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+              if(!OathManager.isCharging){
+                eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
+        
+                //誓約系統測試
+                OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+              }else{
+                OathManager.chargeAttack(col.label);
+              }
             }
         };
         this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);//loop:0為循環播放
@@ -264,9 +278,22 @@ export default class CharacterManager extends Laya.Script{
             0, 0, colorNum, 0, -100, //B
             0, 0, 0, 1, 0, //A
             ];
-        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
-        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        slashEffect.filters = [colorFilter, glowFilter];
+            let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
+            let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+        if(!OathManager.isCharging){
+          slashEffect.filters = [colorFilter, glowFilter];
+        }else{
+          let colorMat_charge: Array<number> =
+          [
+            5, 0, 0, 0, -100, //R
+            5, 0, 0, 0, -100, //G
+            0, 0, 0, 0, -100, //B
+            0, 0, 0, 1, 0, //A
+          ];
+          let colorFilter_charge: Laya.ColorFilter = new Laya.ColorFilter(colorMat_charge);
+          let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#F7F706", 20, 0, 0);
+          slashEffect.filters = [colorFilter_charge, glowFilter_charge];
+        }
         //濾鏡
         if (this.m_isFacingRight) {
             slashEffect.skewY = 0;
@@ -307,12 +334,23 @@ export default class CharacterManager extends Laya.Script{
         Laya.SoundManager.setSoundVolume(volume, url);
     }
     private CameraFollower(): void {
+      let player_pivot_x: number = Laya.stage.width / 2;
+      let player_pivot_y: number = Laya.stage.height / 2;
+
         setInterval(() => {
-          let player_pivot_x: number = Laya.stage.width / 2;
-          let player_pivot_y: number = Laya.stage.height / 2;
-          Laya.stage.x = player_pivot_x - this.m_animation.x;
-          Laya.stage.y = player_pivot_y - this.m_animation.y;
-        }, 10);
+          if(CharacterManager.m_cameraShakingTimer > 0){
+            let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
+            Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * 10 * randomSign;
+            Laya.stage.y = (player_pivot_y - this.m_animation.y) + Math.random() * 10 * randomSign;
+            CharacterManager.m_cameraShakingTimer--;
+          }else{
+            Laya.stage.x = player_pivot_x - this.m_animation.x;
+            Laya.stage.y = player_pivot_y - this.m_animation.y;
+          }
+        }, 10); 
+    }
+    public static setCameraShake(timer: number){
+      CharacterManager.m_cameraShakingTimer = timer;
     }
     private updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void{
         if(this.m_state === to || this.m_animationChanging) return;

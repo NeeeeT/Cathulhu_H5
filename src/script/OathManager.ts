@@ -33,7 +33,6 @@ export default class OathManager extends Laya.Script{
             if(this.currentBloodyPoint < 20) return;
             this.currentBloodyPoint -= 20;
             this.isCharging = true;
-            return;
         }
     }
 
