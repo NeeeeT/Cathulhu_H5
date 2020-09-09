@@ -1,8 +1,11 @@
+import EnemyHandler from "./EnemyHandler";
+
 export default class OathManager extends Laya.Script{
 
     public static currentBloodyPoint: number = 50;
     public static maxBloodyPoint: number = 100;
     public static increaseBloodyPoint: number = 10;
+    public static isCharging: boolean = false;
 
     public static getBloodyPoint(){
         return OathManager.currentBloodyPoint;
@@ -25,5 +28,24 @@ export default class OathManager extends Laya.Script{
         Laya.stage.addChild(oathBar);
     }
     
+    public static charge(){
+        if(!this.isCharging){
+            if(this.currentBloodyPoint < 20) return;
+            this.currentBloodyPoint -= 20;
+            this.isCharging = true;
+            return;
+        }
+    }
+
+    public static chargeAttack(enemyLabel: string){
+        if(!this.isCharging) return;
+        
+        let victim = EnemyHandler.getEnemyByLabel(enemyLabel);
+        
+        EnemyHandler.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 1000));
+        console.log("ChargeAttack!");
+        this.isCharging = false;
+        
+    }
     
 }

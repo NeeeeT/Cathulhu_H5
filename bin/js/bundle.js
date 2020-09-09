@@ -403,10 +403,28 @@
             }), 10);
             Laya.stage.addChild(oathBar);
         }
+        static charge() {
+            if (!this.isCharging) {
+                if (this.currentBloodyPoint < 20)
+                    return;
+                this.currentBloodyPoint -= 20;
+                this.isCharging = true;
+                return;
+            }
+        }
+        static chargeAttack(enemyLabel) {
+            if (!this.isCharging)
+                return;
+            let victim = EnemyHandler.getEnemyByLabel(enemyLabel);
+            EnemyHandler.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 1000));
+            console.log("ChargeAttack!");
+            this.isCharging = false;
+        }
     }
     OathManager.currentBloodyPoint = 50;
     OathManager.maxBloodyPoint = 100;
     OathManager.increaseBloodyPoint = 10;
+    OathManager.isCharging = false;
 
     class CharacterController extends Laya.Script {
         constructor() {
@@ -414,7 +432,6 @@
             this.isFacingRight = true;
             this.canMove = false;
             this.canJump = false;
-            this.timestamp = true;
             this.cd_ray = true;
             this.cd_atk = true;
             this.playerMaxHp = 1000;
@@ -556,6 +573,9 @@
                     this.cd_atk = true;
                 }, 500);
             }
+            if (this.keyDownList[16]) {
+                OathManager.charge();
+            }
         }
         resetMove() {
             this.playerVelocity["Vx"] = 0;
@@ -593,14 +613,18 @@
                 if (col.tag === 'Enemy') {
                     let eh = EnemyHandler;
                     let victim = eh.getEnemyByLabel(col.label);
-                    eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));
-                    OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+                    if (!OathManager.isCharging) {
+                        eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));
+                        OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+                    }
+                    else {
+                        OathManager.chargeAttack(col.label);
+                    }
                 }
             };
             this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
-            atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
             Laya.stage.addChild(atkCircle);
             setTimeout(() => {
                 atkCircle.destroy();
@@ -618,7 +642,20 @@
             ];
             let glowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            slashEffect.filters = [colorFilter, glowFilter];
+            if (!OathManager.isCharging) {
+                slashEffect.filters = [colorFilter, glowFilter];
+            }
+            else {
+                let colorMat_charge = [
+                    5, 0, 0, 0, -100,
+                    5, 0, 0, 0, -100,
+                    0, 0, 0, 0, -100,
+                    0, 0, 0, 1, 0,
+                ];
+                let colorFilter_charge = new Laya.ColorFilter(colorMat_charge);
+                let glowFilter_charge = new Laya.GlowFilter("#F7F706", 20, 0, 0);
+                slashEffect.filters = [colorFilter_charge, glowFilter_charge];
+            }
             if (this.isFacingRight) {
                 slashEffect.skewY = 0;
                 slashEffect.pos(player.x - 100, player.y - 250 + 30);
@@ -661,13 +698,22 @@
         }
     }
 
+    class Character extends Laya.Script {
+        constructor() {
+            super();
+        }
+    }
+
     class SceneInit extends Laya.Script {
         constructor() {
             super();
+            this.charcc = new Character();
         }
         onAwake() {
             Laya.stage.bgColor = '#000';
             this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+        }
+        generator() {
         }
         setSound(volume, url, loop) {
             Laya.SoundManager.playSound(url, loop);

@@ -219,6 +219,9 @@ export default class CharacterController extends Laya.Script {
         this.cd_atk = true;
       }, 500);
     }
+    if(this.keyDownList[16]){
+      OathManager.charge();
+    }
   }
   private resetMove(): void {
     this.playerVelocity["Vx"] = 0;
@@ -261,16 +264,20 @@ export default class CharacterController extends Laya.Script {
       if (col.tag === 'Enemy') {
         let eh = EnemyHandler;//敵人控制器
         let victim = eh.getEnemyByLabel(col.label);
-        eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
-
-        //誓約系統測試
-        OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+        if(!OathManager.isCharging){
+          eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
+  
+          //誓約系統測試
+          OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+        }else{
+          OathManager.chargeAttack(col.label);
+        }
       }
     };
     this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);//loop:0為循環播放
     atkBoxCollider.isSensor = true;
     atkCircleRigid.gravityScale = 0;
-    atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
+    // atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     Laya.stage.addChild(atkCircle);
 
@@ -291,9 +298,24 @@ export default class CharacterController extends Laya.Script {
         0, 0, colorNum, 0, -100, //B
         0, 0, 0, 1, 0, //A
       ];
+          //濾鏡
+
     let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
     let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-    slashEffect.filters = [colorFilter, glowFilter];
+    if(!OathManager.isCharging){
+      slashEffect.filters = [colorFilter, glowFilter];
+    }else{
+      let colorMat_charge: Array<number> =
+      [
+        5, 0, 0, 0, -100, //R
+        5, 0, 0, 0, -100, //G
+        0, 0, 0, 0, -100, //B
+        0, 0, 0, 1, 0, //A
+      ];
+      let colorFilter_charge: Laya.ColorFilter = new Laya.ColorFilter(colorMat_charge);
+      let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#F7F706", 20, 0, 0);
+      slashEffect.filters = [colorFilter_charge, glowFilter_charge];
+    }
     //濾鏡
     if (this.isFacingRight) {
       slashEffect.skewY = 0;
