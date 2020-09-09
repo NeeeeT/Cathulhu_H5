@@ -201,6 +201,7 @@ export default class CharacterController extends Laya.Script {
       EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
       
       //誓約系統測試
+      if(OathManager.getBloodyPoint() <= 0) return;
       OathManager.setBloodyPoint(OathManager.getBloodyPoint() - 10);
     }
     if (this.keyDownList[17]) {

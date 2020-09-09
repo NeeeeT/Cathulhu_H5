@@ -535,6 +535,8 @@
                     this.cd_ray = true;
                 }, 500);
                 EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
+                if (OathManager.getBloodyPoint() <= 0)
+                    return;
                 OathManager.setBloodyPoint(OathManager.getBloodyPoint() - 10);
             }
             if (this.keyDownList[17]) {
