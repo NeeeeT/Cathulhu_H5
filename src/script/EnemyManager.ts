@@ -13,10 +13,6 @@ export enum EnemyStatus{
     death
 }
 
-interface FiniteStateMachine{
-    
-}
-
 abstract class Enemy extends Laya.Script {
     abstract m_name: string = '';
     abstract m_health: number = 1000;
@@ -38,11 +34,11 @@ abstract class Enemy extends Laya.Script {
     m_collider: Laya.BoxCollider;
     m_rigidbody: Laya.RigidBody;
     m_script: Laya.Script;
-    m_player: Laya.Sprite;
+    m_player: Laya.Animation;
 
     m_state = EnemyStatus.idle;
 
-    spawn(player: Laya.Sprite, id: string): void {
+    spawn(player: Laya.Animation, id: string): void {
         this.m_animation = new Laya.Animation();
         this.m_animation.scaleX = 4;
         this.m_animation.scaleY = 4;

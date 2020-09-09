@@ -2,11 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":211,
+    "selecteID":212,
     "searchKey":"Scene",
     "props":{"x":0,"width":3000,"skewY":0,"skewX":0,"sceneColor":"#000000","pivotX":0,"height":768},
     "nodeParent":-1,
-    "maxID":212,
+    "maxID":213,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -89,6 +89,23 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":211,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Script",
+            "switchAble":true,
+            "source":"src/script/EnemyInit.ts",
+            "searchKey":"Script,EnemyInit",
+            "removeAble":true,
+            "props":{},
+            "nodeParent":2,
+            "label":"EnemyInit",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":212,
             "child":[
                 ]
         }],

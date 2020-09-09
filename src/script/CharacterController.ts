@@ -194,7 +194,7 @@ export default class CharacterController extends Laya.Script {
         this.cd_ray = true;
       }, 500);
       //敵人生成測試
-      EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
+      // EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
       
       //誓約系統測試
       if(OathManager.getBloodyPoint() <= 0) return;
