@@ -1,9 +1,17 @@
 import { EnemyNormal } from "./EnemyManager";
-import Character from "./CharacterManager";
 import EnemyHandler from "./EnemyHandler";
+import CharacterManager from "./CharacterManager"
 
 export default class SceneInit extends Laya.Script {
-    public charcc = new Character();
+    /** @prop {name:xMaxVelocity,tips:"x軸速度上限",type:int,default:5}*/
+    xMaxVelocity: number;
+    /** @prop {name:yMaxVelocity,tips:"y軸速度上限",type:int,default:5}*/
+    yMaxVelocity: number;
+    /** @prop {name:velocityMultiplier,tips:"改變角色速度增加幅度",type:int,default:5}*/
+    velocityMultiplier: number;
+    /** @prop {name:attackBoxRange,tips:"調整攻擊範圍方塊距離",type:int,default:100}*/
+    attackBoxRange: number;
+
     constructor() {
         super();
     }

@@ -24,6 +24,4 @@ export default class OathManager extends Laya.Script{
         }), 10);
         Laya.stage.addChild(oathBar);
     }
-    
-    
 }

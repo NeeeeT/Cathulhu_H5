@@ -23,6 +23,7 @@ P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
 D Character(0904)
+D Character(0904) - 複製
 D comp
 P 1DFA6065 box.png
 P 316AD948 btn_close.png
@@ -98,6 +99,16 @@ P 19DBFBFA character_run_2.png
 P 752FC247 character_run_3.png
 P 8BC4427D character_run_4.png
 D Character(0904)/Stand
+P 7F4F883E character_stand_1.png
+P 21FAEDBE character_stand_2.png
+P D275C0EA character_stand_3.png
+P 10778F13 character_stand_4.png
+D Character(0904) - 複製/Run
+P E6D601D9 character_run_1.png
+P 19DBFBFA character_run_2.png
+P 752FC247 character_run_3.png
+P 8BC4427D character_run_4.png
+D Character(0904) - 複製/Stand
 P 7F4F883E character_stand_1.png
 P 21FAEDBE character_stand_2.png
 P D275C0EA character_stand_3.png
