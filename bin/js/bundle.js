@@ -1,22 +1,6 @@
 (function () {
     'use strict';
 
-    class SceneInit extends Laya.Script {
-        constructor() {
-            super();
-        }
-        onAwake() {
-            Laya.stage.bgColor = '#000';
-            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
-        }
-        generator() {
-        }
-        setSound(volume, url, loop) {
-            Laya.SoundManager.playSound(url, loop);
-            Laya.SoundManager.setSoundVolume(volume, url);
-        }
-    }
-
     class Raycast extends Laya.Script {
         static _RayCast(startX, startY, endX, endY, direction) {
             let world = Laya.Physics.I.world;
@@ -386,11 +370,11 @@
 
     class OathManager extends Laya.Script {
         static getBloodyPoint() {
-            return OathManager.currentBloodyPoint;
+            return CharacterInit.playerEnt.m_bloodPoint;
         }
         static setBloodyPoint(amount) {
-            OathManager.currentBloodyPoint = (amount > this.maxBloodyPoint) ? this.maxBloodyPoint : amount;
-            return OathManager.currentBloodyPoint;
+            CharacterInit.playerEnt.m_bloodPoint = (amount > CharacterInit.playerEnt.m_maxBloodPoint) ? CharacterInit.playerEnt.m_maxBloodPoint : amount;
+            return CharacterInit.playerEnt.m_bloodPoint;
         }
         static showBloodyPoint(player) {
             let oathBar = new Laya.ProgressBar();
@@ -398,18 +382,17 @@
             oathBar.height = 50;
             oathBar.width = 300;
             oathBar.skin = "comp/progress.png";
-            oathBar.value = 50;
             setInterval((() => {
                 oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 100);
-                oathBar.value = this.currentBloodyPoint / this.maxBloodyPoint;
+                oathBar.value = CharacterInit.playerEnt.m_bloodPoint / CharacterInit.playerEnt.m_maxBloodPoint;
             }), 10);
             Laya.stage.addChild(oathBar);
         }
         static charge() {
             if (!this.isCharging) {
-                if (this.currentBloodyPoint < 20)
+                if (CharacterInit.playerEnt.m_bloodPoint < 20)
                     return;
-                this.currentBloodyPoint -= 20;
+                CharacterInit.playerEnt.m_bloodPoint -= 20;
                 this.isCharging = true;
             }
         }
@@ -422,8 +405,6 @@
             this.isCharging = false;
         }
     }
-    OathManager.currentBloodyPoint = 50;
-    OathManager.maxBloodyPoint = 100;
     OathManager.increaseBloodyPoint = 10;
     OathManager.isCharging = false;
 
@@ -439,7 +420,7 @@
         CharacterStatus[CharacterStatus["defend"] = 7] = "defend";
         CharacterStatus[CharacterStatus["death"] = 8] = "death";
     })(CharacterStatus || (CharacterStatus = {}));
-    class CharacterManager extends Laya.Script {
+    class Character extends Laya.Script {
         constructor() {
             super(...arguments);
             this.m_isFacingRight = true;
@@ -455,6 +436,8 @@
             this.m_animation.height = 130;
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
+            this.m_bloodPoint = 50;
+            this.m_maxBloodPoint = 100;
             this.m_animation.pos(1345, 544);
             this.m_animation.autoPlay = true;
             this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
@@ -582,6 +565,8 @@
                     this.m_canAttack = true;
                 }, 500);
             }
+            if (this.m_keyDownList[16])
+                OathManager.charge();
         }
         createAttackCircle(player) {
             let atkCircle = new Laya.Sprite();
@@ -597,17 +582,18 @@
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
             let atkCircleScript = atkCircle.addComponent(Laya.Script);
             atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
-            CharacterManager.setCameraShake(50);
             atkCircleScript.onTriggerEnter = function (col) {
                 if (col.tag === 'Enemy') {
                     let eh = EnemyHandler;
                     let victim = eh.getEnemyByLabel(col.label);
                     if (!OathManager.isCharging) {
                         eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));
+                        Character.setCameraShake(10, 3);
                         OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
                     }
                     else {
                         OathManager.chargeAttack(col.label);
+                        Character.setCameraShake(50, 10);
                     }
                 }
             };
@@ -689,11 +675,11 @@
             let player_pivot_x = Laya.stage.width / 2;
             let player_pivot_y = Laya.stage.height / 2;
             setInterval(() => {
-                if (CharacterManager.m_cameraShakingTimer > 0) {
+                if (Character.m_cameraShakingTimer > 0) {
                     let randomSign = (Math.floor(Math.random() * 2) == 1) ? 1 : -1;
-                    Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * 10 * randomSign;
-                    Laya.stage.y = (player_pivot_y - this.m_animation.y) + Math.random() * 10 * randomSign;
-                    CharacterManager.m_cameraShakingTimer--;
+                    Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
+                    Laya.stage.y = (player_pivot_y - this.m_animation.y) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
+                    Character.m_cameraShakingTimer--;
                 }
                 else {
                     Laya.stage.x = player_pivot_x - this.m_animation.x;
@@ -701,8 +687,9 @@
                 }
             }, 10);
         }
-        static setCameraShake(timer) {
-            CharacterManager.m_cameraShakingTimer = timer;
+        static setCameraShake(timer, multiplier) {
+            Character.m_cameraShakingMultiplyer = multiplier;
+            Character.m_cameraShakingTimer = timer;
         }
         updateAnimation(from, to, onCallBack = null, force = false) {
             if (this.m_state === to || this.m_animationChanging)
@@ -731,7 +718,8 @@
             onCallBack();
         }
     }
-    CharacterManager.m_cameraShakingTimer = 0;
+    Character.m_cameraShakingTimer = 0;
+    Character.m_cameraShakingMultiplyer = 1;
 
     class CharacterInit extends Laya.Script {
         constructor() {
@@ -743,9 +731,10 @@
             this.attackRange = 100;
         }
         onAwake() {
-            let player = new CharacterManager();
+            let player = new Character();
             this.initSetting(player);
             player.spawn();
+            CharacterInit.playerEnt = player;
         }
         initSetting(player) {
             player.m_health = this.health;
@@ -753,7 +742,39 @@
             player.m_yMaxVelocity = this.yMaxVelocity;
             player.m_velocityMultiplier = this.velocityMultiplier;
             player.m_attackRange = this.attackRange;
-            console.log(this.attackRange);
+        }
+    }
+
+    class SceneInit extends Laya.Script {
+        constructor() {
+            super();
+        }
+        onAwake() {
+            Laya.stage.bgColor = '#000';
+            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+            setTimeout((() => {
+                console.log(CharacterInit.playerEnt);
+            }), 5000);
+        }
+        generator() {
+        }
+        setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
+        }
+    }
+
+    class EnemyInit extends Laya.Script {
+        constructor() {
+            super();
+            this.EnemyGenerateTime = 3000;
+        }
+        onAwake() {
+            let player = CharacterInit.playerEnt.m_animation;
+            let isFacingRight = CharacterInit.playerEnt.m_isFacingRight;
+            setInterval(() => {
+                EnemyHandler.generator(player, isFacingRight ? 1 : 2, 0);
+            }, this.EnemyGenerateTime);
         }
     }
 
@@ -788,6 +809,7 @@
             var reg = Laya.ClassUtils.regClass;
             reg("script/SceneInit.ts", SceneInit);
             reg("script/CharacterInit.ts", CharacterInit);
+            reg("script/EnemyInit.ts", EnemyInit);
             reg("script/Village.ts", Village);
         }
     }

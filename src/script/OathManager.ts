@@ -1,18 +1,18 @@
 import EnemyHandler from "./EnemyHandler";
 
+import CharacterInit from "./CharacterInit";
+
 export default class OathManager extends Laya.Script{
 
-    public static currentBloodyPoint: number = 50;
-    public static maxBloodyPoint: number = 100;
     public static increaseBloodyPoint: number = 10;
     public static isCharging: boolean = false;
 
     public static getBloodyPoint(){
-        return OathManager.currentBloodyPoint;
+        return CharacterInit.playerEnt.m_bloodPoint;
     }
     public static setBloodyPoint(amount: number){
-        OathManager.currentBloodyPoint = (amount > this.maxBloodyPoint) ? this.maxBloodyPoint : amount;
-        return OathManager.currentBloodyPoint;
+        CharacterInit.playerEnt.m_bloodPoint = (amount > CharacterInit.playerEnt.m_maxBloodPoint) ? CharacterInit.playerEnt.m_maxBloodPoint : amount;
+        return CharacterInit.playerEnt.m_bloodPoint;
     }
     public static showBloodyPoint(player: Laya.Animation) {
         let oathBar = new Laya.ProgressBar();
@@ -20,18 +20,17 @@ export default class OathManager extends Laya.Script{
         oathBar.height = 50;
         oathBar.width = 300;
         oathBar.skin = "comp/progress.png";
-        oathBar.value = 50;
         setInterval((() => {
             oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 100);
-            oathBar.value = this.currentBloodyPoint / this.maxBloodyPoint;
+            oathBar.value = CharacterInit.playerEnt.m_bloodPoint / CharacterInit.playerEnt.m_maxBloodPoint;
         }), 10);
         Laya.stage.addChild(oathBar);
     }
     
     public static charge(){
         if(!this.isCharging){
-            if(this.currentBloodyPoint < 20) return;
-            this.currentBloodyPoint -= 20;
+            if(CharacterInit.playerEnt.m_bloodPoint < 20) return;
+            CharacterInit.playerEnt.m_bloodPoint -= 20;
             this.isCharging = true;
         }
     }

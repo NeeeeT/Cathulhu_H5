@@ -36,6 +36,7 @@ export default class Character extends Laya.Script{
     m_animationChanging: boolean;
 
     public static m_cameraShakingTimer: number = 0;
+    public static m_cameraShakingMultiplyer: number = 1;
 
     m_keyDownList: Array<boolean>;
 
@@ -55,6 +56,9 @@ export default class Character extends Laya.Script{
         this.m_animation.height = 130;
         this.m_animation.pivotX = this.m_animation.width / 2;
         this.m_animation.pivotY = this.m_animation.height / 2;
+
+        this.m_bloodPoint = 50;
+        this.m_maxBloodPoint = 100;
 
         this.m_animation.pos(1345, 544);
         this.m_animation.autoPlay = true;
@@ -217,6 +221,7 @@ export default class Character extends Laya.Script{
             this.m_canAttack = true;
           }, 500);
         }
+        if(this.m_keyDownList[16]) OathManager.charge();
     }
     private createAttackCircle(player: Laya.Sprite) {
         let atkCircle = new Laya.Sprite();
@@ -236,7 +241,7 @@ export default class Character extends Laya.Script{
         let atkCircleScript: Laya.Script = atkCircle.addComponent(Laya.Script) as Laya.Script;
 
         atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
-        CharacterManager.setCameraShake(50);
+        
         atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
             if (col.tag === 'Enemy') {
             let eh = EnemyHandler;//敵人控制器
@@ -247,11 +252,12 @@ export default class Character extends Laya.Script{
             // OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
               if(!OathManager.isCharging){
                 eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
-        
+                Character.setCameraShake(10, 3);
                 //誓約系統測試
                 OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
               }else{
                 OathManager.chargeAttack(col.label);
+                Character.setCameraShake(50, 10);
               }
             }
         };
@@ -338,19 +344,20 @@ export default class Character extends Laya.Script{
       let player_pivot_y: number = Laya.stage.height / 2;
 
         setInterval(() => {
-          if(CharacterManager.m_cameraShakingTimer > 0){
+          if(Character.m_cameraShakingTimer > 0){
             let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
-            Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * 10 * randomSign;
-            Laya.stage.y = (player_pivot_y - this.m_animation.y) + Math.random() * 10 * randomSign;
-            CharacterManager.m_cameraShakingTimer--;
+            Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
+            Laya.stage.y = (player_pivot_y - this.m_animation.y) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
+            Character.m_cameraShakingTimer--;
           }else{
             Laya.stage.x = player_pivot_x - this.m_animation.x;
             Laya.stage.y = player_pivot_y - this.m_animation.y;
           }
         }, 10); 
     }
-    public static setCameraShake(timer: number){
-      CharacterManager.m_cameraShakingTimer = timer;
+    public static setCameraShake(timer: number, multiplier: number){
+      Character.m_cameraShakingMultiplyer = multiplier;
+      Character.m_cameraShakingTimer = timer;
     }
     private updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void{
         if(this.m_state === to || this.m_animationChanging) return;
