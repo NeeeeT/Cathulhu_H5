@@ -14,7 +14,7 @@ export enum CharacterStatus{
     death
 }
 
-export default class CharacterManager extends Laya.Script{
+export default class Character extends Laya.Script{
     m_state: number;
     m_name: string;
     m_health: number;

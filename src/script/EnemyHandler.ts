@@ -7,7 +7,7 @@ export default class EnemyHandler extends Laya.Script {
     public static enemyIndex: number = 0;
     public static enemyPool = [];
 
-    public static generator(player: Laya.Sprite, enemyType: number, spawnPoint: number): EnemyType {
+    public static generator(player: Laya.Animation, enemyType: number, spawnPoint: number): EnemyType {
         let enemy: EnemyType = this.decideEnemyType(enemyType);
         let id: string = enemy.m_tag + String(++this.enemyIndex);
 
