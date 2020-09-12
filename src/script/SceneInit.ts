@@ -5,7 +5,7 @@ export default class SceneInit extends Laya.Script {
         super();
     }
     onAwake() {
-        Laya.stage.bgColor = '#000';
+        Laya.stage.bgColor = '#4a4a4a';//9/12更改
         this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
 
         setTimeout((()=>{

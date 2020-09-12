@@ -16,15 +16,28 @@ export default class OathManager extends Laya.Script{
     }
     public static showBloodyPoint(player: Laya.Animation) {
         let oathBar = new Laya.ProgressBar();
-        oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 50);
-        oathBar.height = 50;
+        oathBar.pos(player.x - Laya.stage.width / 2 + 160, player.y - Laya.stage.height / 2 + 50);
+        oathBar.height = 40;
         oathBar.width = 300;
         oathBar.skin = "comp/progress.png";
         setInterval((() => {
-            oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 100);
+            oathBar.pos(player.x - Laya.stage.width / 2 + 140, player.y - Laya.stage.height / 2 + 80);
             oathBar.value = CharacterInit.playerEnt.m_bloodPoint / CharacterInit.playerEnt.m_maxBloodPoint;
         }), 10);
         Laya.stage.addChild(oathBar);
+    }
+    //9/12新增邪貓logo
+    public static showBloodyLogo(player: Laya.Animation,url:string) {
+        let catLogo : Laya.Animation = new Laya.Animation();
+        catLogo.scaleX = 0.6;
+        catLogo.scaleY = 0.6;
+        catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 40);
+        catLogo.source = url;
+        setInterval((() => {
+            catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
+        }), 10);
+        Laya.stage.addChild(catLogo);
+        catLogo.play();
     }
     
     public static charge(){

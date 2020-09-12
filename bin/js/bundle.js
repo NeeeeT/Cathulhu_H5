@@ -67,7 +67,8 @@
             this.m_animation.height = 35;
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
-            this.m_animation.pos(player.x - 170, player.y - (player.height / 2));
+            let enemyPos = [-200, 200];
+            this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));
             this.m_animation.autoPlay = true;
             this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
             this.m_animation.interval = 100;
@@ -211,7 +212,7 @@
                 atkCircle.pos(this.m_animation.x + this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2);
             }
             else {
-                atkCircle.pos(this.m_animation.x - 3 * this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2);
+                atkCircle.pos(this.m_animation.x - 3 * this.m_animation.width / 2 - 70, this.m_animation.y - this.m_animation.height / 2);
             }
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
@@ -379,15 +380,27 @@
         }
         static showBloodyPoint(player) {
             let oathBar = new Laya.ProgressBar();
-            oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 50);
-            oathBar.height = 50;
+            oathBar.pos(player.x - Laya.stage.width / 2 + 160, player.y - Laya.stage.height / 2 + 50);
+            oathBar.height = 40;
             oathBar.width = 300;
             oathBar.skin = "comp/progress.png";
             setInterval((() => {
-                oathBar.pos(player.x - Laya.stage.width / 2 + 50, player.y - Laya.stage.height / 2 + 100);
+                oathBar.pos(player.x - Laya.stage.width / 2 + 140, player.y - Laya.stage.height / 2 + 80);
                 oathBar.value = CharacterInit.playerEnt.m_bloodPoint / CharacterInit.playerEnt.m_maxBloodPoint;
             }), 10);
             Laya.stage.addChild(oathBar);
+        }
+        static showBloodyLogo(player, url) {
+            let catLogo = new Laya.Animation();
+            catLogo.scaleX = 0.6;
+            catLogo.scaleY = 0.6;
+            catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 40);
+            catLogo.source = url;
+            setInterval((() => {
+                catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
+            }), 10);
+            Laya.stage.addChild(catLogo);
+            catLogo.play();
         }
         static charge() {
             if (!this.isCharging) {
@@ -490,6 +503,7 @@
             this.m_rigidbody.mask = 8 | 2;
             Laya.stage.addChild(this.m_animation);
             OathManager.showBloodyPoint(this.m_animation);
+            OathManager.showBloodyLogo(this.m_animation, "comp/Cat.png");
             this.CameraFollower();
         }
         listenKeyBoard() {
@@ -749,7 +763,7 @@
             super();
         }
         onAwake() {
-            Laya.stage.bgColor = '#000';
+            Laya.stage.bgColor = '#4a4a4a';
             this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
             setTimeout((() => {
                 console.log(CharacterInit.playerEnt);
@@ -821,7 +835,7 @@
     GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
-    GameConfig.stat = false;
+    GameConfig.stat = true;
     GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();

@@ -1,5 +1,4 @@
 import { EnemyNormal, EnemyShield } from "./EnemyManager";
-import CharacterController from "./CharacterController";
 
 type EnemyType = EnemyNormal | EnemyShield;//會使用到的敵人類型
 

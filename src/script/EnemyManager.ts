@@ -1,5 +1,4 @@
 import { CharacterIdleState } from "./CharacterState";
-import CharacterController from "./CharacterController";
 
 export enum EnemyStatus{
     idle = 0,
@@ -47,8 +46,8 @@ abstract class Enemy extends Laya.Script {
         this.m_animation.height = 35;
         this.m_animation.pivotX = this.m_animation.width / 2;
         this.m_animation.pivotY = this.m_animation.height / 2;
-
-        this.m_animation.pos(player.x - 170, player.y - (player.height / 2));
+        let enemyPos : number[] = [-200,200];//9/12新增
+        this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));//9/12更改
         this.m_animation.autoPlay = true;
         this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
         this.m_animation.interval = 100;
@@ -210,7 +209,7 @@ abstract class Enemy extends Laya.Script {
         } else {
             atkCircle.pos(
                 // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                this.m_animation.x - 3 * this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2
+                this.m_animation.x - 3 * this.m_animation.width / 2 - 70, this.m_animation.y - this.m_animation.height / 2//9/12更改
             );
         }
         let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;

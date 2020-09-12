@@ -117,6 +117,8 @@ export default class Character extends Laya.Script{
 
         OathManager.showBloodyPoint(this.m_animation);
 
+        OathManager.showBloodyLogo(this.m_animation,"comp/Cat.png");//邪貓方法
+
         this.CameraFollower();
     }
     private listenKeyBoard(): void {
