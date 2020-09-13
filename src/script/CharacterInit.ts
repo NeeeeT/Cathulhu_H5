@@ -48,6 +48,6 @@ export default class CharacterInit extends Laya.Script {
             ];
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 20, 0, 0);
-        CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodPoint >= CharacterInit.playerEnt.m_maxBloodPoint) ? [glowFilter_charge, colorFilter] : [];
+        CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
     }
 }

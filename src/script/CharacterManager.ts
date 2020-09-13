@@ -193,33 +193,7 @@ export default class Character extends Laya.Script {
         ] as Laya.RigidBody[];
         let spr: Laya.Sprite[] = Raycast_return["Sprite"] as Laya.Sprite[];
         let world = Laya.Physics.I.world;
-
-        atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
-        atkCircleRigid.category = 2;
-        atkCircleRigid.mask = 8;
         
-        atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
-            if (col.tag === 'Enemy') {
-            let victim = EnemyHandler.getEnemyByLabel(col.label);
-            // eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
-            
-            //誓約系統測試
-            // OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
-              if(!OathManager.isCharging){
-                victim.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
-                Character.setCameraShake(10, 3);
-                //誓約系統測試
-                OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
-              }else{
-                OathManager.chargeAttack(col.label);
-                Character.setCameraShake(50, 10);
-              }
-            }
-        };
-        this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);//loop:0為循環播放
-        atkBoxCollider.isSensor = true;
-        atkCircleRigid.gravityScale = 0;
-        atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
         //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
         spr.forEach((e) => {
           e.destroy();
