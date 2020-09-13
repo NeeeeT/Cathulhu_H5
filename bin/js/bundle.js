@@ -375,7 +375,7 @@
             return CharacterInit.playerEnt.m_bloodPoint;
         }
         static setBloodyPoint(amount) {
-            CharacterInit.playerEnt.m_bloodPoint = (amount > CharacterInit.playerEnt.m_maxBloodPoint) ? CharacterInit.playerEnt.m_maxBloodPoint : amount;
+            CharacterInit.playerEnt.m_bloodPoint = (amount >= CharacterInit.playerEnt.m_maxBloodPoint) ? CharacterInit.playerEnt.m_maxBloodPoint : amount;
             return CharacterInit.playerEnt.m_bloodPoint;
         }
         static showBloodyPoint(player) {
@@ -394,7 +394,6 @@
             let catLogo = new Laya.Animation();
             catLogo.scaleX = 0.6;
             catLogo.scaleY = 0.6;
-            catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 40);
             catLogo.source = url;
             setInterval((() => {
                 catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
@@ -755,6 +754,18 @@
             player.m_yMaxVelocity = this.yMaxVelocity;
             player.m_velocityMultiplier = this.velocityMultiplier;
             player.m_attackRange = this.attackRange;
+        }
+        onUpdate() {
+            let colorNum = 2;
+            let colorMat = [
+                Math.floor(Math.random() * 2) + 1, 0, 0, 0, -100,
+                0, Math.floor(Math.random() * 2) + 1, 0, 0, -100,
+                0, 0, Math.floor(Math.random() * 2) + 1, 0, -100,
+                0, 0, 0, 1, 0,
+            ];
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 20, 0, 0);
+            CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodPoint >= CharacterInit.playerEnt.m_maxBloodPoint) ? [glowFilter_charge, colorFilter] : [];
         }
     }
 

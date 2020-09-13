@@ -2,16 +2,16 @@ import EnemyHandler from "./EnemyHandler";
 
 import CharacterInit from "./CharacterInit";
 
-export default class OathManager extends Laya.Script{
+export default class OathManager extends Laya.Script {
 
     public static increaseBloodyPoint: number = 10;
     public static isCharging: boolean = false;
 
-    public static getBloodyPoint(){
+    public static getBloodyPoint() {
         return CharacterInit.playerEnt.m_bloodPoint;
     }
-    public static setBloodyPoint(amount: number){
-        CharacterInit.playerEnt.m_bloodPoint = (amount > CharacterInit.playerEnt.m_maxBloodPoint) ? CharacterInit.playerEnt.m_maxBloodPoint : amount;
+    public static setBloodyPoint(amount: number) {
+        CharacterInit.playerEnt.m_bloodPoint = (amount >= CharacterInit.playerEnt.m_maxBloodPoint) ? CharacterInit.playerEnt.m_maxBloodPoint : amount;
         return CharacterInit.playerEnt.m_bloodPoint;
     }
     public static showBloodyPoint(player: Laya.Animation) {
@@ -27,11 +27,10 @@ export default class OathManager extends Laya.Script{
         Laya.stage.addChild(oathBar);
     }
     //9/12新增邪貓logo
-    public static showBloodyLogo(player: Laya.Animation,url:string) {
-        let catLogo : Laya.Animation = new Laya.Animation();
+    public static showBloodyLogo(player: Laya.Animation, url: string) {
+        let catLogo: Laya.Animation = new Laya.Animation();
         catLogo.scaleX = 0.6;
         catLogo.scaleY = 0.6;
-        catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 40);
         catLogo.source = url;
         setInterval((() => {
             catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
@@ -39,24 +38,24 @@ export default class OathManager extends Laya.Script{
         Laya.stage.addChild(catLogo);
         catLogo.play();
     }
-    
-    public static charge(){
-        if(!this.isCharging){
-            if(CharacterInit.playerEnt.m_bloodPoint < 20) return;
+
+    public static charge() {
+        if (!this.isCharging) {
+            if (CharacterInit.playerEnt.m_bloodPoint < 20) return;
             CharacterInit.playerEnt.m_bloodPoint -= 20;
             this.isCharging = true;
         }
     }
 
-    public static chargeAttack(enemyLabel: string){
-        if(!this.isCharging) return;
-        
+    public static chargeAttack(enemyLabel: string) {
+        if (!this.isCharging) return;
+
         let victim = EnemyHandler.getEnemyByLabel(enemyLabel);
-        
+
         EnemyHandler.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 1000));
         console.log("ChargeAttack!");
         this.isCharging = false;
-        
+
     }
-    
+
 }
