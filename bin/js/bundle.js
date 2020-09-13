@@ -308,7 +308,7 @@
             enemy.spawn(player, id);
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();
-            console.log(this.enemyPool);
+            console.log(this.decideEnemyType(enemyType));
             return enemy;
         }
         static decideEnemyType(enemyType) {
@@ -758,33 +758,14 @@
         onUpdate() {
             let colorNum = 2;
             let colorMat = [
-                Math.floor(Math.random() * 2) + 1, 0, 0, 0, -100,
-                0, Math.floor(Math.random() * 2) + 1, 0, 0, -100,
-                0, 0, Math.floor(Math.random() * 2) + 1, 0, -100,
+                Math.floor(Math.random() * 2) + 2, 0, 0, 0, -100,
+                0, Math.floor(Math.random() * 2) + 2, 0, 0, -100,
+                0, 0, Math.floor(Math.random() * 2) + 2, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let colorFilter = new Laya.ColorFilter(colorMat);
-            let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 20, 0, 0);
+            let glowFilter_charge = new Laya.GlowFilter("#9924f6", 20, 0, 0);
             CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodPoint >= CharacterInit.playerEnt.m_maxBloodPoint) ? [glowFilter_charge, colorFilter] : [];
-        }
-    }
-
-    class SceneInit extends Laya.Script {
-        constructor() {
-            super();
-        }
-        onAwake() {
-            Laya.stage.bgColor = '#4a4a4a';
-            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
-            setTimeout((() => {
-                console.log(CharacterInit.playerEnt);
-            }), 5000);
-        }
-        generator() {
-        }
-        setSound(volume, url, loop) {
-            Laya.SoundManager.playSound(url, loop);
-            Laya.SoundManager.setSoundVolume(volume, url);
         }
     }
 
@@ -799,6 +780,23 @@
             setInterval(() => {
                 EnemyHandler.generator(player, isFacingRight ? 1 : 2, 0);
             }, this.EnemyGenerateTime);
+        }
+    }
+
+    class SceneInit extends Laya.Script {
+        constructor() {
+            super();
+            this.sceneBackgroundColor = '#4a4a4a';
+        }
+        onAwake() {
+            Laya.stage.bgColor = this.sceneBackgroundColor;
+            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+        }
+        generator() {
+        }
+        setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
         }
     }
 
@@ -831,9 +829,9 @@
         }
         static init() {
             var reg = Laya.ClassUtils.regClass;
-            reg("script/SceneInit.ts", SceneInit);
             reg("script/CharacterInit.ts", CharacterInit);
             reg("script/EnemyInit.ts", EnemyInit);
+            reg("script/SceneInit.ts", SceneInit);
             reg("script/Village.ts", Village);
         }
     }
@@ -847,7 +845,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = false;
+    GameConfig.physicsDebug = true;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

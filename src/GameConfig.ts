@@ -13,7 +13,7 @@ export default class GameConfig{
     static screenMode:string="none";
     static alignV:string="middle";
     static alignH:string="center";
-    static startScene:any="First.scene";
+    static startScene:any="Village.scene";
     static sceneRoot:string="";
     static debug:boolean=false;
     static stat:boolean=true;
