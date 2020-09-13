@@ -228,7 +228,7 @@ export default class Character extends Laya.Script {
     }
     if (this.m_keyDownList[16]) OathManager.charge();
   }
-  private createAttackCircle(player: Laya.Sprite) {
+  private createAttackCircle(player: Laya.Animation) {
     let atkCircle = new Laya.Sprite();
     let x_offset: number = this.m_isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
     let soundNum: number = Math.floor(Math.random() * 2);
@@ -258,7 +258,7 @@ export default class Character extends Laya.Script {
         //誓約系統測試
         // OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
         if (!OathManager.isCharging) {
-          // eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
+          victim.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
           Character.setCameraShake(10, 3);
           //誓約系統測試
           OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
@@ -280,8 +280,9 @@ export default class Character extends Laya.Script {
       atkCircle.destroyed = true;
     }, 100);
   }
-  private createAttackEffect(player: Laya.Sprite) {
+  private createAttackEffect(player: Laya.Animation) {
     let slashEffect: Laya.Animation = new Laya.Animation();
+    slashEffect.source = "comp/SlashEffects/Slash_0029.png,comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
     let colorNum: number = Math.floor(Math.random() * 3) + 2;
     //濾鏡
     let colorMat: Array<number> =

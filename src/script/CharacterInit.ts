@@ -27,7 +27,7 @@ export default class CharacterInit extends Laya.Script {
         player.spawn();
         CharacterInit.playerEnt = player;
     }
-    private initSetting(player: Character): void{
+    private initSetting(player: Character): void {
         player.m_maxHealth = player.m_health = this.health;
         player.m_bloodyPoint = this.bloodyPoint;
         player.m_maxBloodyPoint = this.maxBloodyPoint;
@@ -41,9 +41,9 @@ export default class CharacterInit extends Laya.Script {
         let colorNum: number = 2;
         let colorMat: Array<number> =
             [
-                Math.floor(Math.random() * 2) + 1, 0, 0, 0, -100, //R
-                0, Math.floor(Math.random() * 2) + 1, 0, 0, -100, //G
-                0, 0, Math.floor(Math.random() * 2) + 1, 0, -100, //B
+                Math.floor(Math.random() * 2) + 2, 0, 0, 0, -100, //R
+                0, Math.floor(Math.random() * 2) + 2, 0, 0, -100, //G
+                0, 0, Math.floor(Math.random() * 2) + 2, 0, -100, //B
                 0, 0, 0, 1, 0, //A
             ];
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
