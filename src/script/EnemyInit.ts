@@ -9,7 +9,7 @@ export default class EnemyInit extends Laya.Script{
     constructor(){
         super();
     }
-    onAwake(){
+    onStart(){
         let player: Laya.Animation = CharacterInit.playerEnt.m_animation;
         let isFacingRight: boolean = CharacterInit.playerEnt.m_isFacingRight;
         setInterval(() =>{
