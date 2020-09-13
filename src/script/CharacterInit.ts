@@ -1,6 +1,6 @@
 import Character from "./CharacterManager";
 
-export default class CharacterInit extends Laya.Script{
+export default class CharacterInit extends Laya.Script {
     /** @prop {name:health,tips:"角色初始血量",type:int,default:1000}*/
     health: number = 1000;
     /** @prop {name:bloodyPoint,tips:"角色初始獻祭值",type:int,default:0}*/
@@ -18,10 +18,10 @@ export default class CharacterInit extends Laya.Script{
 
     public static playerEnt: Character;
 
-    constructor(){
+    constructor() {
         super();
     }
-    onAwake(){
+    onAwake() {
         let player: Character = new Character();
         this.initSetting(player);
         player.spawn();
@@ -35,5 +35,19 @@ export default class CharacterInit extends Laya.Script{
         player.m_yMaxVelocity = this.yMaxVelocity;
         player.m_velocityMultiplier = this.velocityMultiplier;
         player.m_attackRange = this.attackRange;
+    }
+    //9/13新增
+    onUpdate() {
+        let colorNum: number = 2;
+        let colorMat: Array<number> =
+            [
+                Math.floor(Math.random() * 2) + 1, 0, 0, 0, -100, //R
+                0, Math.floor(Math.random() * 2) + 1, 0, 0, -100, //G
+                0, 0, Math.floor(Math.random() * 2) + 1, 0, -100, //B
+                0, 0, 0, 1, 0, //A
+            ];
+        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+        let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 20, 0, 0);
+        CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodPoint >= CharacterInit.playerEnt.m_maxBloodPoint) ? [glowFilter_charge, colorFilter] : [];
     }
 }
