@@ -3,7 +3,7 @@ import Character from "./CharacterManager";
 import CharacterInit from "./CharacterInit";
 
 export default class EnemyInit extends Laya.Script{
-    /** @prop {name:EnemyGenerateTime,tips:"經過多少時間(ms)會生成1個敵人",type:int,default:3000}*/
+    /** @prop {name:enemyGenerateTime,tips:"經過多少時間(ms)會生成1個敵人",type:int,default:3000}*/
     enemyGenerateTime: number = 5000;
 
     constructor(){
