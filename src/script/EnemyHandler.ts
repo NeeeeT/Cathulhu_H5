@@ -15,13 +15,14 @@ export default class EnemyHandler extends Laya.Script {
         this.enemyPool.push({ '_id': id, '_ent': enemy });
         this.updateEnemies();
 
-        console.log(this.enemyPool);
+        // console.log(this.enemyPool);
+        console.log(this.decideEnemyType(enemyType));
 
         return enemy;
     }
     private static decideEnemyType(enemyType: number) {
         switch (enemyType) {
-            case 1: return new EnemyNormal();
+            case 1: return new EnemyNormal(); 
             case 2: return new EnemyShield();
             default: return new EnemyNormal();
         };
