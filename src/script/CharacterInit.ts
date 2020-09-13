@@ -1,4 +1,5 @@
 import Character from "./CharacterManager";
+import OathManager from "./OathManager";
 
 export default class CharacterInit extends Laya.Script {
     /** @prop {name:health,tips:"角色初始血量",type:int,default:1000}*/
@@ -42,12 +43,13 @@ export default class CharacterInit extends Laya.Script {
         let colorMat: Array<number> =
             [
                 Math.floor(Math.random() * 2) + 2, 0, 0, 0, -100, //R
-                0, Math.floor(Math.random() * 2) + 2, 0, 0, -100, //G
+                0, Math.floor(Math.random() * 2) + 1, 0, 0, -100, //G
                 0, 0, Math.floor(Math.random() * 2) + 2, 0, -100, //B
                 0, 0, 0, 1, 0, //A
             ];
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 20, 0, 0);
+        let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 40, 0, 0);
         CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
+        OathManager.catLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
     }
 }

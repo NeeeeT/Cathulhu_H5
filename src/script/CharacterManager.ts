@@ -316,6 +316,14 @@ export default class Character extends Laya.Script {
       slashEffect.skewY = 180;
       slashEffect.pos(player.x + 100, player.y - 250 + 30);
     }
+    slashEffect.source =
+    "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
+    slashEffect.on(Laya.Event.COMPLETE, this, function () {
+    slashEffect.destroy();
+    slashEffect.destroyed = true;
+  });
+    Laya.stage.addChild(slashEffect);
+    slashEffect.play();
   }
   private resetMove(): void {
     this.m_playerVelocity["Vx"] = 0;

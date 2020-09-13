@@ -7,6 +7,8 @@ export default class OathManager extends Laya.Script {
     public static increaseBloodyPoint: number = 10;
     public static isCharging: boolean = false;
 
+    public static catLogo : Laya.Animation;
+
     public static getBloodyPoint(){
         return CharacterInit.playerEnt.m_bloodyPoint;
     }
@@ -28,15 +30,15 @@ export default class OathManager extends Laya.Script {
     }
     //9/12新增邪貓logo
     public static showBloodyLogo(player: Laya.Animation, url: string) {
-        let catLogo: Laya.Animation = new Laya.Animation();
-        catLogo.scaleX = 0.6;
-        catLogo.scaleY = 0.6;
-        catLogo.source = url;
+        this.catLogo = new Laya.Animation();
+        this.catLogo.scaleX = 0.6;
+        this.catLogo.scaleY = 0.6;
+        this.catLogo.source = url;
         setInterval((() => {
-            catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
+            this.catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
         }), 10);
-        Laya.stage.addChild(catLogo);
-        catLogo.play();
+        Laya.stage.addChild(this.catLogo);
+        this.catLogo.play();
     }
     
     public static charge(){

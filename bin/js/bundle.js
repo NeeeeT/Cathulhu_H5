@@ -408,15 +408,15 @@
             Laya.stage.addChild(oathBar);
         }
         static showBloodyLogo(player, url) {
-            let catLogo = new Laya.Animation();
-            catLogo.scaleX = 0.6;
-            catLogo.scaleY = 0.6;
-            catLogo.source = url;
+            this.catLogo = new Laya.Animation();
+            this.catLogo.scaleX = 0.6;
+            this.catLogo.scaleY = 0.6;
+            this.catLogo.source = url;
             setInterval((() => {
-                catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
+                this.catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
             }), 10);
-            Laya.stage.addChild(catLogo);
-            catLogo.play();
+            Laya.stage.addChild(this.catLogo);
+            this.catLogo.play();
         }
         static charge() {
             if (!this.isCharging) {
@@ -665,6 +665,14 @@
                 slashEffect.skewY = 180;
                 slashEffect.pos(player.x + 100, player.y - 250 + 30);
             }
+            slashEffect.source =
+                "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
+            slashEffect.on(Laya.Event.COMPLETE, this, function () {
+                slashEffect.destroy();
+                slashEffect.destroyed = true;
+            });
+            Laya.stage.addChild(slashEffect);
+            slashEffect.play();
         }
         resetMove() {
             this.m_playerVelocity["Vx"] = 0;
@@ -770,13 +778,14 @@
             let colorNum = 2;
             let colorMat = [
                 Math.floor(Math.random() * 2) + 2, 0, 0, 0, -100,
-                0, Math.floor(Math.random() * 2) + 2, 0, 0, -100,
+                0, Math.floor(Math.random() * 2) + 1, 0, 0, -100,
                 0, 0, Math.floor(Math.random() * 2) + 2, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let colorFilter = new Laya.ColorFilter(colorMat);
-            let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 20, 0, 0);
+            let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 40, 0, 0);
             CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
+            OathManager.catLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
         }
     }
 
@@ -835,7 +844,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "First.scene";
+    GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
