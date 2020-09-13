@@ -20,8 +20,8 @@ export default class Character extends Laya.Script {
   m_name: string;
   m_health: number;
   m_maxHealth: number;
-  m_bloodPoint: number;
-  m_maxBloodPoint: number;
+  m_bloodyPoint: number;
+  m_maxBloodyPoint: number;
   m_defense: number;
   m_xMaxVelocity: number;
   m_yMaxVelocity: number;
@@ -57,8 +57,8 @@ export default class Character extends Laya.Script {
     this.m_animation.pivotX = this.m_animation.width / 2;
     this.m_animation.pivotY = this.m_animation.height / 2;
 
-    this.m_bloodPoint = 50;
-    this.m_maxBloodPoint = 100;
+      // this.m_bloodyPoint;
+      // this.m_maxBloodyPoint;
 
     this.m_animation.pos(1345, 544);
     this.m_animation.autoPlay = true;
@@ -193,7 +193,7 @@ export default class Character extends Laya.Script {
         ] as Laya.RigidBody[];
         let spr: Laya.Sprite[] = Raycast_return["Sprite"] as Laya.Sprite[];
         let world = Laya.Physics.I.world;
-
+        
         //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
         spr.forEach((e) => {
           e.destroy();
@@ -258,7 +258,7 @@ export default class Character extends Laya.Script {
         //誓約系統測試
         // OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
         if (!OathManager.isCharging) {
-          eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
+          // eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
           Character.setCameraShake(10, 3);
           //誓約系統測試
           OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
@@ -315,14 +315,6 @@ export default class Character extends Laya.Script {
       slashEffect.skewY = 180;
       slashEffect.pos(player.x + 100, player.y - 250 + 30);
     }
-    slashEffect.source =
-      "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
-    slashEffect.on(Laya.Event.COMPLETE, this, function () {
-      slashEffect.destroy();
-      slashEffect.destroyed = true;
-    });
-    Laya.stage.addChild(slashEffect);
-    slashEffect.play();
   }
   private resetMove(): void {
     this.m_playerVelocity["Vx"] = 0;
@@ -368,30 +360,30 @@ export default class Character extends Laya.Script {
     Character.m_cameraShakingMultiplyer = multiplier;
     Character.m_cameraShakingTimer = timer;
   }
-  private updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void {
-    if (this.m_state === to || this.m_animationChanging) return;
+  private updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void{
+    if(this.m_state === to || this.m_animationChanging) return;
     this.m_state = to;
-    console.log('Player status from', from, 'convert to ', to);
-    switch (this.m_state) {
-      case CharacterStatus.attack:
-        this.m_animationChanging = true;
-        this.m_animation.interval = 100;
-        this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
-        this.m_animation.play();
-        break;
-      case CharacterStatus.idle:
-        this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
-        break;
-      case CharacterStatus.run:
-        this.m_animation.source = 'character/player_run_01.png,character/player_run_02.png,character/player_run_03.png,character/player_run_04.png';
-        this.m_animation.interval = 100;
-        this.m_animation.play();
-        break;
-      default:
-        this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
-        break;
+    // console.log('Player status from', from, 'convert to ', to);
+    switch(this.m_state){
+        case CharacterStatus.attack:
+            this.m_animationChanging = true;
+            this.m_animation.interval = 100;
+            this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+            this.m_animation.play();
+            break;
+        case CharacterStatus.idle:
+            this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+            break;
+        case CharacterStatus.run:
+            this.m_animation.source = 'character/player_run_01.png,character/player_run_02.png,character/player_run_03.png,character/player_run_04.png';
+            this.m_animation.interval = 100;
+            this.m_animation.play();
+            break;
+        default:
+            this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+            break;
     }
-    if (typeof onCallBack === 'function')
+    if(typeof onCallBack === 'function')
       onCallBack();
   }
 }
