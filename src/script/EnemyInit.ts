@@ -13,7 +13,7 @@ export default class EnemyInit extends Laya.Script{
         let player: Laya.Animation = CharacterInit.playerEnt.m_animation;
         let isFacingRight: boolean = CharacterInit.playerEnt.m_isFacingRight;
         setInterval(() =>{
-            EnemyHandler.generator(player, isFacingRight ? 1 : 2, 0);
+            EnemyHandler.generator(player, 1, 0);
         }, this.enemyGenerateTime)
     }
 }

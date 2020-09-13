@@ -278,7 +278,6 @@ abstract class Enemy extends Laya.Script {
             atkCircle.destroy();
             atkCircle.destroyed = true;
         }, 100);
-
         setTimeout(() => {
             this.m_atkCd = true;
         }, 500);
