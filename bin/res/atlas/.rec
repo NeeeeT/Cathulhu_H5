@@ -1,4 +1,5 @@
 D .
+D Background(0912)
 D Blood
 P C1E52BA3 Blood_0000.png
 P DD533C61 Blood_0001.png
@@ -22,7 +23,6 @@ P F62B59C8 Player_attack_2.png
 P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
-D Character(0903)
 D Character(0904)
 D Character(0904) - 複製
 D comp
@@ -95,6 +95,16 @@ P E9366A50 run_07.png
 P 479C85CB run_08.png
 D Village
 R D137205B Village.png
+D Background(0912)/Red Forest
+R DADB2C9D 0.red forest_bgrd.png
+R 1096387D 1.red forest_bgrd_tree1.png
+R 6C214CAD 2.red forest_bgrd_tree2.png
+R 1EADE52D 3.red forest_bgrd_tree3.png
+R DC0A49E3 4.red forest_grass.png
+R 43D88A94 5.red forest_ground.png
+R 818528A3 6.red forest_black.png
+R 5083A16C Red Forest(0912).png
+S 17172344 Red Forest(x3)(0912).png
 D Character(0904)/Run
 P E6D601D9 character_run_1.png
 P 19DBFBFA character_run_2.png

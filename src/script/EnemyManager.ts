@@ -72,7 +72,6 @@ abstract class Enemy extends Laya.Script {
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
         
-        // this.m_rigidbody.mask = 0;
         this.m_rigidbody.category = 8;
         this.m_rigidbody.mask = 4 | 2;
         this.m_rigidbody.allowRotation = false;
