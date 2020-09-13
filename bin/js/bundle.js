@@ -94,11 +94,12 @@
             this.m_rigidbody.allowRotation = false;
             this.m_player = player;
             Laya.stage.addChild(this.m_animation);
-            this.showHealth(this.m_animation);
+            this.showHealth();
         }
         ;
         destroy() {
             this.m_animation.destroy();
+            this.m_animation.destroyed = true;
         }
         ;
         setHealth(amount) {
@@ -107,6 +108,7 @@
                 this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1);
                 this.bloodSplitEffect(this.m_animation);
                 this.m_animation.destroy();
+                this.m_animation.destroyed = true;
             }
         }
         getHealth() {
@@ -133,7 +135,42 @@
             this.m_collider.label = index;
         }
         ;
-        showHealth(enemy) {
+        takeDamage(amount) {
+            let fakeNum = Math.random() * 100;
+            let critical = (fakeNum <= 50);
+            amount *= critical ? 5 : 1;
+            this.setHealth(this.getHealth() - amount);
+            this.damageTextEffect(amount, critical);
+            if (critical) {
+                this.m_animation.x--;
+                this.m_animation.y++;
+            }
+        }
+        damageTextEffect(amount, critical) {
+            let damageText = new Laya.Text();
+            let soundNum;
+            damageText.pos((this.m_animation.x - this.m_animation.width / 2) - 20, (this.m_animation.y - this.m_animation.height) - 110);
+            damageText.bold = true;
+            damageText.align = "left";
+            damageText.alpha = 1;
+            damageText.fontSize = critical ? 40 : 16;
+            damageText.color = critical ? 'orange' : "white";
+            damageText.text = String(amount);
+            damageText.font = "opensans-bold";
+            soundNum = critical ? 0 : 1;
+            this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
+            Laya.stage.addChild(damageText);
+            Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+            }), 0);
+            setTimeout((() => {
+                if (damageText.destroyed)
+                    return;
+                damageText.destroy();
+                damageText.destroyed = true;
+            }), 550);
+        }
+        showHealth() {
             let healthBar = new Laya.ProgressBar();
             healthBar.height = 10;
             healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
@@ -141,12 +178,12 @@
             healthBar.value = 1;
             Laya.stage.addChild(healthBar);
             setInterval((() => {
-                if (enemy.destroyed) {
+                if (this.m_animation.destroyed) {
                     healthBar.destroy();
                     healthBar.destroyed = true;
                     return;
                 }
-                healthBar.pos(enemy.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (enemy.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+                healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
                 healthBar.value = this.m_health / this.m_maxHealth;
             }), 10);
         }
@@ -308,7 +345,7 @@
             enemy.spawn(player, id);
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();
-            console.log(this.enemyPool);
+            console.log(this.decideEnemyType(enemyType));
             return enemy;
         }
         static decideEnemyType(enemyType) {
@@ -321,43 +358,6 @@
         }
         static updateEnemies() {
             return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
-        }
-        static takeDamage(enemy, amount) {
-            let fakeNum = Math.random() * 100;
-            let critical = (fakeNum <= 50);
-            amount *= critical ? 5 : 1;
-            enemy.setHealth(enemy.getHealth() - amount);
-            this.damageTextEffect(enemy, amount, critical);
-            if (critical)
-                enemy.m_animation.x--;
-        }
-        static setSound(volume, url, loop) {
-            Laya.SoundManager.playSound(url, loop);
-            Laya.SoundManager.setSoundVolume(volume, url);
-        }
-        static damageTextEffect(enemy, amount, critical) {
-            let damageText = new Laya.Text();
-            let soundNum;
-            damageText.pos((enemy.m_animation.x - enemy.m_animation.width / 2) - 20, (enemy.m_animation.y - enemy.m_animation.height) - 110);
-            damageText.bold = true;
-            damageText.align = "left";
-            damageText.alpha = 1;
-            damageText.fontSize = critical ? 40 : 16;
-            damageText.color = critical ? 'orange' : "white";
-            damageText.text = String(amount);
-            damageText.font = "opensans-bold";
-            soundNum = critical ? 0 : 1;
-            this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
-            Laya.stage.addChild(damageText);
-            Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
-            }), 0);
-            setTimeout((() => {
-                if (damageText.destroyed)
-                    return;
-                damageText.destroy();
-                damageText.destroyed = true;
-            }), 550);
         }
         static getEnemiesCount() {
             return (this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null)).length;
@@ -372,11 +372,11 @@
 
     class OathManager extends Laya.Script {
         static getBloodyPoint() {
-            return CharacterInit.playerEnt.m_bloodPoint;
+            return CharacterInit.playerEnt.m_bloodyPoint;
         }
         static setBloodyPoint(amount) {
-            CharacterInit.playerEnt.m_bloodPoint = (amount > CharacterInit.playerEnt.m_maxBloodPoint) ? CharacterInit.playerEnt.m_maxBloodPoint : amount;
-            return CharacterInit.playerEnt.m_bloodPoint;
+            CharacterInit.playerEnt.m_bloodyPoint = (amount > CharacterInit.playerEnt.m_maxBloodyPoint) ? CharacterInit.playerEnt.m_maxBloodyPoint : amount;
+            return CharacterInit.playerEnt.m_bloodyPoint;
         }
         static showBloodyPoint(player) {
             let oathBar = new Laya.ProgressBar();
@@ -386,7 +386,7 @@
             oathBar.skin = "comp/progress.png";
             setInterval((() => {
                 oathBar.pos(player.x - Laya.stage.width / 2 + 140, player.y - Laya.stage.height / 2 + 80);
-                oathBar.value = CharacterInit.playerEnt.m_bloodPoint / CharacterInit.playerEnt.m_maxBloodPoint;
+                oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
             }), 10);
             Laya.stage.addChild(oathBar);
         }
@@ -404,9 +404,9 @@
         }
         static charge() {
             if (!this.isCharging) {
-                if (CharacterInit.playerEnt.m_bloodPoint < 20)
+                if (CharacterInit.playerEnt.m_bloodyPoint < 20)
                     return;
-                CharacterInit.playerEnt.m_bloodPoint -= 20;
+                CharacterInit.playerEnt.m_bloodyPoint -= 20;
                 this.isCharging = true;
             }
         }
@@ -414,7 +414,7 @@
             if (!this.isCharging)
                 return;
             let victim = EnemyHandler.getEnemyByLabel(enemyLabel);
-            EnemyHandler.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 1000));
+            victim.takeDamage(Math.round(Math.floor(Math.random() * 51) + 1000));
             console.log("ChargeAttack!");
             this.isCharging = false;
         }
@@ -450,8 +450,6 @@
             this.m_animation.height = 130;
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
-            this.m_bloodPoint = 50;
-            this.m_maxBloodPoint = 100;
             this.m_animation.pos(1345, 544);
             this.m_animation.autoPlay = true;
             this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
@@ -594,10 +592,9 @@
             atkCircleRigid.mask = 8;
             atkCircleScript.onTriggerEnter = function (col) {
                 if (col.tag === 'Enemy') {
-                    let eh = EnemyHandler;
-                    let victim = eh.getEnemyByLabel(col.label);
+                    let victim = EnemyHandler.getEnemyByLabel(col.label);
                     if (!OathManager.isCharging) {
-                        eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));
+                        victim.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
                         Character.setCameraShake(10, 3);
                         OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
                     }
@@ -707,7 +704,6 @@
             if (this.m_state === to || this.m_animationChanging)
                 return;
             this.m_state = to;
-            console.log('Player status from', from, 'convert to ', to);
             switch (this.m_state) {
                 case CharacterStatus.attack:
                     this.m_animationChanging = true;
@@ -738,6 +734,8 @@
         constructor() {
             super();
             this.health = 1000;
+            this.bloodyPoint = 0;
+            this.maxBloodyPoint = 100;
             this.xMaxVelocity = 5;
             this.yMaxVelocity = 5;
             this.velocityMultiplier = 5;
@@ -751,6 +749,8 @@
         }
         initSetting(player) {
             player.m_maxHealth = player.m_health = this.health;
+            player.m_bloodyPoint = this.bloodyPoint;
+            player.m_maxBloodyPoint = this.maxBloodyPoint;
             player.m_xMaxVelocity = this.xMaxVelocity;
             player.m_yMaxVelocity = this.yMaxVelocity;
             player.m_velocityMultiplier = this.velocityMultiplier;
@@ -761,13 +761,11 @@
     class SceneInit extends Laya.Script {
         constructor() {
             super();
+            this.sceneBackgroundColor = '4a4a4a';
         }
         onAwake() {
-            Laya.stage.bgColor = '#4a4a4a';
+            Laya.stage.bgColor = this.sceneBackgroundColor;
             this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
-            setTimeout((() => {
-                console.log(CharacterInit.playerEnt);
-            }), 5000);
         }
         generator() {
         }
@@ -780,14 +778,14 @@
     class EnemyInit extends Laya.Script {
         constructor() {
             super();
-            this.EnemyGenerateTime = 5000;
+            this.enemyGenerateTime = 5000;
         }
         onAwake() {
             let player = CharacterInit.playerEnt.m_animation;
             let isFacingRight = CharacterInit.playerEnt.m_isFacingRight;
             setInterval(() => {
                 EnemyHandler.generator(player, isFacingRight ? 1 : 2, 0);
-            }, this.EnemyGenerateTime);
+            }, this.enemyGenerateTime);
         }
     }
 
@@ -820,8 +818,8 @@
         }
         static init() {
             var reg = Laya.ClassUtils.regClass;
-            reg("script/SceneInit.ts", SceneInit);
             reg("script/CharacterInit.ts", CharacterInit);
+            reg("script/SceneInit.ts", SceneInit);
             reg("script/EnemyInit.ts", EnemyInit);
             reg("script/Village.ts", Village);
         }
@@ -832,11 +830,11 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = false;
+    GameConfig.physicsDebug = true;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

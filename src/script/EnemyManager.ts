@@ -79,11 +79,12 @@ abstract class Enemy extends Laya.Script {
         this.m_player = player;
 
         Laya.stage.addChild(this.m_animation);
-        this.showHealth(this.m_animation);
+        this.showHealth();
 
     };
     destroy(): void {
         this.m_animation.destroy();
+        this.m_animation.destroyed = true;
     };
     setHealth(amount: number): void {
         this.m_health = amount;
@@ -91,6 +92,7 @@ abstract class Enemy extends Laya.Script {
             this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)//loop:0為循環播放;
             this.bloodSplitEffect(this.m_animation);
             this.m_animation.destroy();
+            this.m_animation.destroyed = true;
         }
     }
     getHealth(): number {
@@ -111,8 +113,49 @@ abstract class Enemy extends Laya.Script {
     setLabel(index: string): void {
         this.m_collider.label = index;
     };
+    takeDamage(amount: number) {
+        let fakeNum = Math.random() * 100;
+        let critical: boolean = (fakeNum <= 50);
 
-    private showHealth(enemy: Laya.Animation) {
+        amount *= critical ? 5 : 1;
+        this.setHealth(this.getHealth() - amount);
+        this.damageTextEffect(amount, critical);
+
+        if (critical){
+            this.m_animation.x--;
+            this.m_animation.y++;
+        }
+    }
+    private damageTextEffect(amount: number, critical: boolean): void {
+        let damageText = new Laya.Text();
+        let soundNum: number;
+
+        damageText.pos((this.m_animation.x - this.m_animation.width / 2) - 20, (this.m_animation.y - this.m_animation.height) - 110);
+        damageText.bold = true;
+        damageText.align = "left";
+        damageText.alpha = 1;
+
+        damageText.fontSize = critical ? 40 : 16;
+        damageText.color = critical ? 'orange' : "white";
+        damageText.text = String(amount);
+        damageText.font = "opensans-bold";
+        soundNum = critical ? 0 : 1;
+        this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
+        Laya.stage.addChild(damageText);
+
+        Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut,
+            Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+            }), 0);
+
+        setTimeout((() => {
+            if (damageText.destroyed) return;
+
+            damageText.destroy();
+            damageText.destroyed = true;
+        }), 550);
+    }
+    private showHealth() {
         let healthBar = new Laya.ProgressBar();
         healthBar.height = 10;
         healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
@@ -121,12 +164,12 @@ abstract class Enemy extends Laya.Script {
         Laya.stage.addChild(healthBar);
 
         setInterval((() => {
-            if (enemy.destroyed) {
+            if (this.m_animation.destroyed) {
                 healthBar.destroy();
                 healthBar.destroyed = true;
                 return;
             }
-            healthBar.pos(enemy.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (enemy.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+            healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
             healthBar.value = this.m_health / this.m_maxHealth;
         }), 10);
     }
@@ -152,14 +195,12 @@ abstract class Enemy extends Laya.Script {
         Laya.stage.addChild(bloodEffect);
         bloodEffect.play();
     }
-
     private setSound(volume: number, url: string, loop: number) {
         Laya.SoundManager.playSound(url, loop);
         Laya.SoundManager.setSoundVolume(volume, url);
     }
     //敵人行為主邏輯
     public enemyAIMain() {
-
         this.pursuitPlayer();
         this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
         // console.log(this.m_atkTimer);
@@ -169,7 +210,7 @@ abstract class Enemy extends Laya.Script {
         }
     }
 
-    public pursuitPlayer() {
+    private pursuitPlayer() {
         let dir: number = this.m_player.x - this.m_animation.x;
         // this.m_animation.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
         let rightSide: boolean = (this.m_player.x - this.m_animation.x) > 0;

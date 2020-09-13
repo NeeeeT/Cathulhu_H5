@@ -20,8 +20,8 @@ export default class Character extends Laya.Script{
     m_name: string;
     m_health: number;
     m_maxHealth: number;
-    m_bloodPoint: number;
-    m_maxBloodPoint: number;
+    m_bloodyPoint: number;
+    m_maxBloodyPoint: number;
     m_defense: number;
     m_xMaxVelocity: number;
     m_yMaxVelocity: number;
@@ -57,8 +57,8 @@ export default class Character extends Laya.Script{
         this.m_animation.pivotX = this.m_animation.width / 2;
         this.m_animation.pivotY = this.m_animation.height / 2;
 
-        this.m_bloodPoint = 50;
-        this.m_maxBloodPoint = 100;
+        // this.m_bloodyPoint;
+        // this.m_maxBloodyPoint;
 
         this.m_animation.pos(1345, 544);
         this.m_animation.autoPlay = true;
@@ -251,14 +251,13 @@ export default class Character extends Laya.Script{
         
         atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
             if (col.tag === 'Enemy') {
-            let eh = EnemyHandler;//敵人控制器
-            let victim = eh.getEnemyByLabel(col.label);
+            let victim = EnemyHandler.getEnemyByLabel(col.label);
             // eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
             
             //誓約系統測試
             // OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
               if(!OathManager.isCharging){
-                eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
+                victim.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
                 Character.setCameraShake(10, 3);
                 //誓約系統測試
                 OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
@@ -371,7 +370,7 @@ export default class Character extends Laya.Script{
     private updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void{
         if(this.m_state === to || this.m_animationChanging) return;
         this.m_state = to;
-        console.log('Player status from', from, 'convert to ', to);
+        // console.log('Player status from', from, 'convert to ', to);
         switch(this.m_state){
             case CharacterStatus.attack:
                 this.m_animationChanging = true;
