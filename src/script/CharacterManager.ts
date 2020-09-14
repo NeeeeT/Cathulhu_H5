@@ -18,6 +18,8 @@ export enum CharacterStatus {
 export default class Character extends Laya.Script {
   m_state: number;
   m_name: string;
+  
+  //當前使用數值
   m_health: number;
   m_maxHealth: number;
   m_bloodyPoint: number;
@@ -27,6 +29,17 @@ export default class Character extends Laya.Script {
   m_yMaxVelocity: number;
   m_velocityMultiplier: number;
   m_attackRange: number;
+  m_attackCdTime: number;
+
+  //基礎數值
+  m_basic_xMaxVelocity: number;
+  // m_basic_velocityMultiplier: number;
+  m_basic_attackCdTime: number;
+
+  //誓約強化數值
+  m_buff_xMaxVelocity: number;
+  // m_buff_velocityMultiplier: number;
+  m_buff_attackCdTime: number;
 
   m_playerVelocity: object;
 
@@ -224,7 +237,7 @@ export default class Character extends Laya.Script {
       // });
       setTimeout(() => {
         this.m_canAttack = true;
-      }, 500);
+      }, this.m_attackCdTime);
     }
     if (this.m_keyDownList[16]) OathManager.charge();
   }

@@ -420,7 +420,7 @@
         }
         static charge() {
             if (!this.isCharging) {
-                if (CharacterInit.playerEnt.m_bloodyPoint < 20)
+                if (CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint < 0.3)
                     return;
                 CharacterInit.playerEnt.m_bloodyPoint -= 20;
                 this.isCharging = true;
@@ -433,6 +433,19 @@
             victim.takeDamage(Math.round(Math.floor(Math.random() * 51) + 1000));
             console.log("ChargeAttack!");
             this.isCharging = false;
+        }
+        static oathChargeDetect() {
+            return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? true : false;
+        }
+        static oathBuffUpdate() {
+            if (OathManager.oathChargeDetect()) {
+                CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_buff_xMaxVelocity;
+                CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_buff_attackCdTime;
+            }
+            else {
+                CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_basic_xMaxVelocity;
+                CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_basic_attackCdTime;
+            }
         }
     }
     OathManager.increaseBloodyPoint = 10;
@@ -585,7 +598,7 @@
                 this.m_canAttack = false;
                 setTimeout(() => {
                     this.m_canAttack = true;
-                }, 500);
+                }, this.m_attackCdTime);
             }
             if (this.m_keyDownList[16])
                 OathManager.charge();
@@ -755,9 +768,12 @@
             this.bloodyPoint = 0;
             this.maxBloodyPoint = 100;
             this.xMaxVelocity = 5;
+            this.buff_xMaxVelocity = 5.75;
             this.yMaxVelocity = 5;
             this.velocityMultiplier = 5;
             this.attackRange = 100;
+            this.attackCdTime = 500;
+            this.buff_attackCdTime = 425;
         }
         onAwake() {
             let player = new Character();
@@ -769,10 +785,13 @@
             player.m_maxHealth = player.m_health = this.health;
             player.m_bloodyPoint = this.bloodyPoint;
             player.m_maxBloodyPoint = this.maxBloodyPoint;
-            player.m_xMaxVelocity = this.xMaxVelocity;
+            player.m_basic_xMaxVelocity = this.xMaxVelocity;
+            player.m_buff_xMaxVelocity = this.buff_xMaxVelocity;
             player.m_yMaxVelocity = this.yMaxVelocity;
             player.m_velocityMultiplier = this.velocityMultiplier;
             player.m_attackRange = this.attackRange;
+            player.m_basic_attackCdTime = this.attackCdTime;
+            player.m_buff_attackCdTime = this.buff_attackCdTime;
         }
         onUpdate() {
             let colorNum = 2;
@@ -786,6 +805,7 @@
             let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 40, 0, 0);
             CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
             OathManager.catLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
+            OathManager.oathBuffUpdate();
         }
     }
 

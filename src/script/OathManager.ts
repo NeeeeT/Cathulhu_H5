@@ -44,7 +44,7 @@ export default class OathManager extends Laya.Script {
     public static charge(){
         if(!this.isCharging){
             //當獻祭值超過最大值的30%才能施放技能
-            if(CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint > 0.3) return;
+            if(CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint < 0.3) return;
             CharacterInit.playerEnt.m_bloodyPoint -= 20;
             this.isCharging = true;
         }
@@ -58,8 +58,20 @@ export default class OathManager extends Laya.Script {
         this.isCharging = false;
 
     }
-    public static oathBuff(speed: number, atkSpeed: number){
-        CharacterInit.playerEnt.m_xMaxVelocity = speed;
+    public static oathChargeDetect(): boolean{
+        return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? true : false;
+    }
+
+    public static oathBuffUpdate(){
+        if(OathManager.oathChargeDetect()){
+            CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_buff_xMaxVelocity;
+            // CharacterInit.playerEnt.m_velocityMultiplier = CharacterInit.playerEnt.m_buff_velocityMultiplier;
+            CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_buff_attackCdTime;
+        }else{
+            CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_basic_xMaxVelocity;
+            // CharacterInit.playerEnt.m_velocityMultiplier = CharacterInit.playerEnt.m_basic_velocityMultiplier;
+            CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_basic_attackCdTime;
+        }
     }
 
 }
