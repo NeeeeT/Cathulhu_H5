@@ -43,7 +43,8 @@ export default class OathManager extends Laya.Script {
     
     public static charge(){
         if(!this.isCharging){
-            if(CharacterInit.playerEnt.m_bloodyPoint < 20) return;
+            //當獻祭值超過最大值的30%才能施放技能
+            if(CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint > 0.3) return;
             CharacterInit.playerEnt.m_bloodyPoint -= 20;
             this.isCharging = true;
         }
@@ -56,6 +57,9 @@ export default class OathManager extends Laya.Script {
         console.log("ChargeAttack!");
         this.isCharging = false;
 
+    }
+    public static oathBuff(speed: number, atkSpeed: number){
+        CharacterInit.playerEnt.m_xMaxVelocity = speed;
     }
 
 }

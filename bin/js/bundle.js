@@ -798,7 +798,7 @@
             let player = CharacterInit.playerEnt.m_animation;
             let isFacingRight = CharacterInit.playerEnt.m_isFacingRight;
             setInterval(() => {
-                EnemyHandler.generator(player, isFacingRight ? 1 : 2, 0);
+                EnemyHandler.generator(player, 1, 0);
             }, this.enemyGenerateTime);
         }
     }
@@ -844,7 +844,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
