@@ -296,14 +296,14 @@ export default class Character extends Laya.Script {
           OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
         } else {
           OathManager.chargeAttack(col.label);
-          Character.setCameraShake(50, 10);
+          Character.setCameraShake(50, 5);
         }
       }
     };
     this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);//loop:0為循環播放
     atkBoxCollider.isSensor = true;
     atkCircleRigid.gravityScale = 0;
-    atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
+    // atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     Laya.stage.addChild(atkCircle);
 
@@ -389,12 +389,14 @@ export default class Character extends Laya.Script {
       if (Character.m_cameraShakingTimer > 0) {
         let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
         Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-        Laya.stage.y = (player_pivot_y - this.m_animation.y) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
+        Laya.stage.y = /*(player_pivot_y - this.m_animation.y + 150)*/0 + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
         Character.m_cameraShakingTimer--;
       } else {
+        
         Laya.stage.x = player_pivot_x - this.m_animation.x;
-        Laya.stage.y = player_pivot_y - this.m_animation.y;
+        // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
       }
+      
     }, 10);
   }
   public static setCameraShake(timer: number, multiplier: number) {
@@ -408,11 +410,12 @@ export default class Character extends Laya.Script {
     switch(this.m_state){
         case CharacterStatus.attack:
             this.m_animationChanging = true;
-            this.m_animation.interval = 100;
+            this.m_animation.interval = 300;
             this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
             this.m_animation.play();
             break;
         case CharacterStatus.idle:
+          this.m_animation.interval = 500;
             this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
             break;
         case CharacterStatus.run:

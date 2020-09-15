@@ -23,7 +23,7 @@ export default class OathManager extends Laya.Script {
         oathBar.width = 300;
         oathBar.skin = "comp/progress.png";
         setInterval((() => {
-            oathBar.pos(player.x - Laya.stage.width / 2 + 140, player.y - Laya.stage.height / 2 + 80);
+            oathBar.pos(player.x - Laya.stage.width / 2 + 140, /*player.y - Laya.stage.height / 2*/100);
             oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
         }), 10);
         Laya.stage.addChild(oathBar);
@@ -35,7 +35,7 @@ export default class OathManager extends Laya.Script {
         this.catLogo.scaleY = 0.6;
         this.catLogo.source = url;
         setInterval((() => {
-            this.catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
+            this.catLogo.pos(player.x - Laya.stage.width / 2 + 30, /*player.y - Laya.stage.height / 2 - 35*/-35 + 100);
         }), 10);
         Laya.stage.addChild(this.catLogo);
         this.catLogo.play();

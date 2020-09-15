@@ -249,7 +249,7 @@ abstract class Enemy extends Laya.Script {
         } else {
             atkCircle.pos(
                 // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                this.m_animation.x - 3 * this.m_animation.width / 2 - 70, this.m_animation.y - this.m_animation.height / 2//9/12更改
+                this.m_animation.x - 3 * this.m_animation.width / 2 - 80, this.m_animation.y - this.m_animation.height / 2//9/15更改
             );
         }
         let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
@@ -269,7 +269,7 @@ abstract class Enemy extends Laya.Script {
         atkCircleRigid.gravityScale = 0;
         this.updateAnimation(this.m_state, EnemyStatus.attack);
         // this.m_animation.skew
-        atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
+        // atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
         Laya.stage.addChild(atkCircle);
 
         this.m_atkTimer = 100;

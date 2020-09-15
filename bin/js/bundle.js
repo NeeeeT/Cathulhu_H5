@@ -235,7 +235,7 @@
                 atkCircle.pos(this.m_animation.x + this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2);
             }
             else {
-                atkCircle.pos(this.m_animation.x - 3 * this.m_animation.width / 2 - 70, this.m_animation.y - this.m_animation.height / 2);
+                atkCircle.pos(this.m_animation.x - 3 * this.m_animation.width / 2 - 80, this.m_animation.y - this.m_animation.height / 2);
             }
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
@@ -251,7 +251,6 @@
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
             this.updateAnimation(this.m_state, EnemyStatus.attack);
-            atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
             Laya.stage.addChild(atkCircle);
             this.m_atkTimer = 100;
             setTimeout(() => {
@@ -401,7 +400,7 @@
             oathBar.width = 300;
             oathBar.skin = "comp/progress.png";
             setInterval((() => {
-                oathBar.pos(player.x - Laya.stage.width / 2 + 140, player.y - Laya.stage.height / 2 + 80);
+                oathBar.pos(player.x - Laya.stage.width / 2 + 140, 100);
                 oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
             }), 10);
             Laya.stage.addChild(oathBar);
@@ -412,7 +411,7 @@
             this.catLogo.scaleY = 0.6;
             this.catLogo.source = url;
             setInterval((() => {
-                this.catLogo.pos(player.x - Laya.stage.width / 2 + 30, player.y - Laya.stage.height / 2 + 45);
+                this.catLogo.pos(player.x - Laya.stage.width / 2 + 30, -35 + 100);
             }), 10);
             Laya.stage.addChild(this.catLogo);
             this.catLogo.play();
@@ -451,10 +450,6 @@
     OathManager.isCharging = false;
 
     class Skill extends Laya.Script {
-        constructor() {
-            super(...arguments);
-            this.m_canUse = true;
-        }
         cast(position) {
         }
         takeDamage(damage) {
@@ -467,11 +462,8 @@
             this.m_damage = 100;
             this.m_cost = 0;
             this.m_id = 1;
-            this.m_cd = 2;
         }
         cast(position) {
-            if (!this.m_canUse)
-                return;
             this.m_animation = new Laya.Animation();
             this.m_animation.width = 328;
             this.m_animation.height = 130;
@@ -485,11 +477,7 @@
             this.m_collider.height = this.m_animation.height;
             this.m_rigidbody.gravityScale = 0;
             this.m_rigidbody.allowRotation = false;
-            this.m_canUse = false;
             Laya.stage.addChild(this.m_animation);
-            setTimeout(() => {
-                this.m_canUse = true;
-            }, 3000);
         }
     }
 
@@ -511,6 +499,7 @@
             this.m_isFacingRight = true;
             this.m_canJump = true;
             this.m_canAttack = true;
+            this.m_canUseSpike = true;
         }
         spawn() {
             this.m_state = CharacterStatus.idle;
@@ -645,11 +634,18 @@
             if (this.m_keyDownList[16])
                 OathManager.charge();
             if (this.m_keyDownList[49]) {
+                if (!this.m_canUseSpike)
+                    return;
+                this.m_canUseSpike = false;
                 let spike = new SkillSpike();
                 spike.cast({
                     x: this.m_animation.x - 65,
                     y: this.m_animation.y - 65,
                 });
+                setTimeout(() => {
+                    this.m_canUseSpike = true;
+                    console.log('Its time to use!');
+                }, 3000);
             }
         }
         createAttackCircle(player) {
@@ -679,14 +675,13 @@
                     }
                     else {
                         OathManager.chargeAttack(col.label);
-                        Character.setCameraShake(50, 10);
+                        Character.setCameraShake(50, 5);
                     }
                 }
             };
             this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
-            atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
             Laya.stage.addChild(atkCircle);
             setTimeout(() => {
                 atkCircle.destroy();
@@ -767,12 +762,11 @@
                 if (Character.m_cameraShakingTimer > 0) {
                     let randomSign = (Math.floor(Math.random() * 2) == 1) ? 1 : -1;
                     Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-                    Laya.stage.y = (player_pivot_y - this.m_animation.y) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
+                    Laya.stage.y = 0 + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
                     Character.m_cameraShakingTimer--;
                 }
                 else {
                     Laya.stage.x = player_pivot_x - this.m_animation.x;
-                    Laya.stage.y = player_pivot_y - this.m_animation.y;
                 }
             }, 10);
         }
@@ -787,11 +781,12 @@
             switch (this.m_state) {
                 case CharacterStatus.attack:
                     this.m_animationChanging = true;
-                    this.m_animation.interval = 100;
+                    this.m_animation.interval = 300;
                     this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.idle:
+                    this.m_animation.interval = 500;
                     this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
                     break;
                 case CharacterStatus.run:
@@ -917,7 +912,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = true;
+    GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 
