@@ -331,7 +331,6 @@
             enemy.spawn(player, id);
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();
-            console.log(this.decideEnemyType(enemyType));
             return enemy;
         }
         static decideEnemyType(enemyType) {
@@ -450,6 +449,49 @@
     }
     OathManager.increaseBloodyPoint = 10;
     OathManager.isCharging = false;
+
+    class Skill extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.m_canUse = true;
+        }
+        cast(position) {
+        }
+        takeDamage(damage) {
+        }
+    }
+    class SkillSpike extends Skill {
+        constructor() {
+            super(...arguments);
+            this.m_name = '突進斬';
+            this.m_damage = 100;
+            this.m_cost = 0;
+            this.m_id = 1;
+            this.m_cd = 2;
+        }
+        cast(position) {
+            if (!this.m_canUse)
+                return;
+            this.m_animation = new Laya.Animation();
+            this.m_animation.width = 328;
+            this.m_animation.height = 130;
+            this.m_animation.pos(position['x'], position['y']);
+            this.m_animation.source = "Skill/spike.png";
+            this.m_animation.autoPlay = true;
+            this.m_animation.interval = 100;
+            this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
+            this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
+            this.m_collider.width = this.m_animation.width;
+            this.m_collider.height = this.m_animation.height;
+            this.m_rigidbody.gravityScale = 0;
+            this.m_rigidbody.allowRotation = false;
+            this.m_canUse = false;
+            Laya.stage.addChild(this.m_animation);
+            setTimeout(() => {
+                this.m_canUse = true;
+            }, 3000);
+        }
+    }
 
     var CharacterStatus;
     (function (CharacterStatus) {
@@ -602,6 +644,13 @@
             }
             if (this.m_keyDownList[16])
                 OathManager.charge();
+            if (this.m_keyDownList[49]) {
+                let spike = new SkillSpike();
+                spike.cast({
+                    x: this.m_animation.x - 65,
+                    y: this.m_animation.y - 65,
+                });
+            }
         }
         createAttackCircle(player) {
             let atkCircle = new Laya.Sprite();

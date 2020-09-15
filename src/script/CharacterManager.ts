@@ -2,6 +2,7 @@ import Raycast from "./Raycast";
 import DrawCmd from "./DrawCmd";
 import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
+import { SkillSpike } from "./SkillManager";
 
 export enum CharacterStatus {
   idle = 0,
@@ -240,6 +241,13 @@ export default class Character extends Laya.Script {
       }, this.m_attackCdTime);
     }
     if (this.m_keyDownList[16]) OathManager.charge();
+    if (this.m_keyDownList[49]){
+      let spike: SkillSpike = new SkillSpike();
+      spike.cast({
+        x: this.m_animation.x - 65,
+        y: this.m_animation.y - 65,
+      });
+    }
   }
   private createAttackCircle(player: Laya.Animation) {
     let atkCircle = new Laya.Sprite();
