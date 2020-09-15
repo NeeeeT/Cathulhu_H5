@@ -54,6 +54,9 @@ export default class Character extends Laya.Script {
 
   m_keyDownList: Array<boolean>;
 
+  //special settings for skill 0915 柏昇
+  m_canUseSpike: boolean = true; 
+
   m_animation: Laya.Animation;
   m_rigidbody: Laya.RigidBody;
   m_collider: Laya.BoxCollider;
@@ -242,11 +245,19 @@ export default class Character extends Laya.Script {
     }
     if (this.m_keyDownList[16]) OathManager.charge();
     if (this.m_keyDownList[49]){
+      if(!this.m_canUseSpike) return;
+
+      this.m_canUseSpike = false;
       let spike: SkillSpike = new SkillSpike();
       spike.cast({
         x: this.m_animation.x - 65,
         y: this.m_animation.y - 65,
       });
+      
+      setTimeout(()=>{
+        this.m_canUseSpike = true;
+        console.log('Its time to use!');
+      }, 3000);
     }
   }
   private createAttackCircle(player: Laya.Animation) {
