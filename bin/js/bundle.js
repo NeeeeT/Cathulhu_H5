@@ -146,7 +146,7 @@
             soundNum = critical ? 0 : 1;
             this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
             Laya.stage.addChild(damageText);
-            Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+            Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
             }), 0);
             setTimeout((() => {
@@ -154,7 +154,7 @@
                     return;
                 damageText.destroy();
                 damageText.destroyed = true;
-            }), 550);
+            }), 700);
         }
         showHealth() {
             let healthBar = new Laya.ProgressBar();
@@ -452,8 +452,6 @@
     class Skill extends Laya.Script {
         cast(position) {
         }
-        takeDamage(damage) {
-        }
     }
     class SkillSpike extends Skill {
         constructor() {
@@ -465,13 +463,15 @@
         }
         cast(position) {
             let player = CharacterInit.playerEnt;
+            let rightSide = player.m_isFacingRight;
             this.m_animation = new Laya.Animation();
             this.m_animation.width = 328;
             this.m_animation.height = 130;
-            this.m_animation.pos(position['x'], position['y']);
+            this.m_animation.pos(rightSide ? position['x'] + 100 : position['x'] - 150, position['y']);
             this.m_animation.source = "Skill/spike.png";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 100;
+            this.m_animation.skewY = rightSide ? 0 : 180;
             this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
             this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
             this.m_script = this.m_animation.addComponent(Laya.Script);
@@ -492,7 +492,7 @@
             setTimeout(() => {
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
-            }, 500);
+            }, 200);
             player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 1 : -1);
         }
     }
@@ -660,8 +660,7 @@
                 });
                 setTimeout(() => {
                     this.m_canUseSpike = true;
-                    console.log('Its time to use!');
-                }, 3000);
+                }, 1000);
             }
         }
         createAttackCircle(player) {
@@ -928,7 +927,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = true;
+    GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

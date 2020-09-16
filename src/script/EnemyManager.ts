@@ -143,7 +143,7 @@ abstract class Enemy extends Laya.Script {
         this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
 
-        Laya.Tween.to(damageText, { alpha: 0.5, fontSize: damageText.fontSize + 30, }, 200, Laya.Ease.linearInOut,
+        Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
             }), 0);
@@ -153,7 +153,7 @@ abstract class Enemy extends Laya.Script {
 
             damageText.destroy();
             damageText.destroyed = true;
-        }), 550);
+        }), 700);
     }
     private showHealth() {
         let healthBar = new Laya.ProgressBar();

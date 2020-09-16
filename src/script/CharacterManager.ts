@@ -256,8 +256,7 @@ export default class Character extends Laya.Script {
       
       setTimeout(()=>{
         this.m_canUseSpike = true;
-        console.log('Its time to use!');
-      }, 3000);
+      }, 1000);
     }
   }
   private createAttackCircle(player: Laya.Animation) {

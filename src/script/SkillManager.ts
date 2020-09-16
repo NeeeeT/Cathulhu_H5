@@ -24,15 +24,18 @@ export class SkillSpike extends Skill{
     m_id = 1;
 
     cast(position: object):void{
-        let player:Character = CharacterInit.playerEnt;
+        let player: Character = CharacterInit.playerEnt;
+        let rightSide: boolean = player.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
         this.m_animation.width = 328;
         this.m_animation.height = 130;
-        this.m_animation.pos(position['x'], position['y']);
+        this.m_animation.pos(rightSide ? position['x'] + 100 : position['x'] - 150, position['y']);
         this.m_animation.source = "Skill/spike.png";
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 100;
+
+        this.m_animation.skewY = rightSide ? 0 : 180;
 
         this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
         this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
