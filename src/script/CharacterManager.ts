@@ -55,7 +55,7 @@ export default class Character extends Laya.Script {
   m_keyDownList: Array<boolean>;
 
   //special settings for skill 0915 柏昇
-  m_canUseSpike: boolean = true; 
+  m_canUseSpike: boolean = true;
 
   m_animation: Laya.Animation;
   m_rigidbody: Laya.RigidBody;
