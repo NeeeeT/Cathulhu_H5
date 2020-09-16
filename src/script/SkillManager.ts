@@ -1,3 +1,7 @@
+import CharacterInit from "./CharacterInit";
+import Character from "./CharacterManager";
+import EnemyHandler from "./EnemyHandler";
+
 abstract class Skill extends Laya.Script{
     abstract m_name: string;
     abstract m_damage: number;
@@ -6,11 +10,10 @@ abstract class Skill extends Laya.Script{
 
     m_animation: Laya.Animation;
     m_rigidbody: Laya.RigidBody;
+    m_script: Laya.Script;
     m_collider;
 
     cast(position: object): void{ 
-    }
-    takeDamage(damage: number): void{
     }
 }
 
@@ -21,6 +24,8 @@ export class SkillSpike extends Skill{
     m_id = 1;
 
     cast(position: object):void{
+        let player:Character = CharacterInit.playerEnt;
+
         this.m_animation = new Laya.Animation()
         this.m_animation.width = 328;
         this.m_animation.height = 130;
@@ -31,14 +36,30 @@ export class SkillSpike extends Skill{
 
         this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
         this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
+        this.m_script = this.m_animation.addComponent(Laya.Script);
 
+        this.m_script.onTriggerEnter = (col:Laya.BoxCollider) => {
+            if(col.tag === 'Enemy'){
+                let victim = EnemyHandler.getEnemyByLabel(col.label)
+                victim.takeDamage(777);
+            }
+        }
         this.m_collider.width = this.m_animation.width;
         this.m_collider.height = this.m_animation.height;
+        this.m_collider.isSensor = true;
 
         this.m_rigidbody.gravityScale = 0;
         this.m_rigidbody.allowRotation = false;
 
+        this.m_rigidbody.category = 2;
+        this.m_rigidbody.mask = 8;
 
         Laya.stage.addChild(this.m_animation);
+
+        setTimeout(() => {
+            this.m_animation.destroy();
+            this.m_animation.destroyed = true;
+        }, 200);
+        player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 1 : -1);
     }
 }

@@ -17,7 +17,7 @@ export default class GameConfig{
     static sceneRoot:string="";
     static debug:boolean=false;
     static stat:boolean=true;
-    static physicsDebug:boolean=false;
+    static physicsDebug:boolean=true;
     static exportSceneToJson:boolean=true;
     constructor(){}
     static init(){

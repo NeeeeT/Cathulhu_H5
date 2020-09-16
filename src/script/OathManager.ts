@@ -25,7 +25,7 @@ export default class OathManager extends Laya.Script {
         setInterval((() => {
             oathBar.pos(player.x - Laya.stage.width / 2 + 140, /*player.y - Laya.stage.height / 2*/100);
             oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
-        }), 10);
+        }), 5);
         Laya.stage.addChild(oathBar);
     }
     //9/12新增邪貓logo
