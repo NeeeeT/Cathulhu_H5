@@ -127,6 +127,7 @@
             amount *= critical ? 5 : 1;
             this.setHealth(this.getHealth() - amount);
             this.damageTextEffect(amount, critical);
+            this.m_healthBar.alpha = 1;
             if (critical) {
                 this.m_animation.x--;
                 this.m_animation.y++;
@@ -157,20 +158,22 @@
             }), 700);
         }
         showHealth() {
-            let healthBar = new Laya.ProgressBar();
-            healthBar.height = 10;
-            healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
-            healthBar.skin = "comp/progress.png";
-            healthBar.value = 1;
-            Laya.stage.addChild(healthBar);
+            this.m_healthBar = new Laya.ProgressBar();
+            this.m_healthBar.height = 10;
+            this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
+            this.m_healthBar.skin = "comp/progress.png";
+            this.m_healthBar.value = 1;
+            this.m_healthBar.alpha = 1;
+            Laya.stage.addChild(this.m_healthBar);
             setInterval((() => {
                 if (this.m_animation.destroyed) {
-                    healthBar.destroy();
-                    healthBar.destroyed = true;
+                    this.m_healthBar.destroy();
+                    this.m_healthBar.destroyed = true;
                     return;
                 }
-                healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
-                healthBar.value = this.m_health / this.m_maxHealth;
+                this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0) ? 0.007 : 0;
+                this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+                this.m_healthBar.value = this.m_health / this.m_maxHealth;
             }), 10);
         }
         bloodSplitEffect(enemy) {
