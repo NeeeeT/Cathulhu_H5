@@ -663,7 +663,7 @@
             }
             if (this.m_keyDownList[16])
                 OathManager.charge();
-            if (this.m_keyDownList[49]) {
+            if (this.m_keyDownList[49] && this.m_keyDownList[37] || this.m_keyDownList[49] && this.m_keyDownList[39]) {
                 if (!this.m_canUseSpike)
                     return;
                 this.m_canUseSpike = false;
