@@ -18,345 +18,6 @@
         }
     }
 
-    var EnemyStatus;
-    (function (EnemyStatus) {
-        EnemyStatus[EnemyStatus["idle"] = 0] = "idle";
-        EnemyStatus[EnemyStatus["run"] = 1] = "run";
-        EnemyStatus[EnemyStatus["jump"] = 2] = "jump";
-        EnemyStatus[EnemyStatus["down"] = 3] = "down";
-        EnemyStatus[EnemyStatus["attack"] = 4] = "attack";
-        EnemyStatus[EnemyStatus["useSkill"] = 5] = "useSkill";
-        EnemyStatus[EnemyStatus["hurt"] = 6] = "hurt";
-        EnemyStatus[EnemyStatus["defend"] = 7] = "defend";
-        EnemyStatus[EnemyStatus["death"] = 8] = "death";
-    })(EnemyStatus || (EnemyStatus = {}));
-    class Enemy extends Laya.Script {
-        constructor() {
-            super(...arguments);
-            this.m_name = '';
-            this.m_health = 1000;
-            this.m_armor = 0;
-            this.m_speed = 3;
-            this.m_tag = '';
-            this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
-            this.m_attackRange = 100;
-            this.m_atkCd = true;
-            this.m_isFacingRight = true;
-            this.m_animationChanging = false;
-            this.m_state = EnemyStatus.idle;
-        }
-        spawn(player, id) {
-            this.m_animation = new Laya.Animation();
-            this.m_animation.scaleX = 4;
-            this.m_animation.scaleY = 4;
-            this.m_animation.width = 35;
-            this.m_animation.height = 35;
-            this.m_animation.pivotX = this.m_animation.width / 2;
-            this.m_animation.pivotY = this.m_animation.height / 2;
-            let enemyPos = [-200, 200];
-            this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));
-            this.m_animation.autoPlay = true;
-            this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
-            this.m_animation.interval = 100;
-            this.m_animation.loop = true;
-            this.m_animation.on(Laya.Event.COMPLETE, this, () => {
-                this.m_animationChanging = false;
-            });
-            this.m_maxHealth = this.m_health;
-            this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
-            this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
-            this.m_script = this.m_animation.addComponent(Laya.Script);
-            this.m_script.onUpdate = () => {
-                this.enemyAIMain();
-            };
-            this.m_collider.width = this.m_animation.width;
-            this.m_collider.height = this.m_animation.height;
-            this.m_collider.x -= 13;
-            this.m_collider.y -= 10;
-            this.m_collider.label = id;
-            this.m_collider.tag = 'Enemy';
-            this.m_rigidbody.category = 8;
-            this.m_rigidbody.mask = 4 | 2;
-            this.m_rigidbody.allowRotation = false;
-            this.m_player = player;
-            Laya.stage.addChild(this.m_animation);
-            this.showHealth();
-        }
-        ;
-        destroy() {
-            this.m_animation.destroy();
-            this.m_animation.destroyed = true;
-        }
-        ;
-        setHealth(amount) {
-            this.m_health = amount;
-            if (this.m_health <= 0) {
-                this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1);
-                this.bloodSplitEffect(this.m_animation);
-                this.m_animation.destroy();
-                this.m_animation.destroyed = true;
-            }
-        }
-        getHealth() {
-            return this.m_health;
-        }
-        ;
-        setArmor(amount) {
-            this.m_armor = amount;
-        }
-        ;
-        getArmor() {
-            return this.m_armor;
-        }
-        ;
-        setSpeed(amount) {
-            this.m_speed = amount;
-        }
-        ;
-        getSpeed() {
-            return this.m_speed;
-        }
-        ;
-        setLabel(index) {
-            this.m_collider.label = index;
-        }
-        ;
-        takeDamage(amount) {
-            let fakeNum = Math.random() * 100;
-            let critical = (fakeNum <= 50);
-            amount *= critical ? 5 : 1;
-            this.setHealth(this.getHealth() - amount);
-            this.damageTextEffect(amount, critical);
-            this.m_healthBar.alpha = 1;
-            if (critical) {
-                this.m_animation.x--;
-                this.m_animation.y++;
-            }
-        }
-        damageTextEffect(amount, critical) {
-            let damageText = new Laya.Text();
-            let soundNum;
-            damageText.pos((this.m_animation.x - this.m_animation.width / 2) - 20, (this.m_animation.y - this.m_animation.height) - 110);
-            damageText.bold = true;
-            damageText.align = "left";
-            damageText.alpha = 1;
-            damageText.fontSize = critical ? 40 : 16;
-            damageText.color = critical ? 'orange' : "white";
-            damageText.text = String(amount);
-            damageText.font = "opensans-bold";
-            soundNum = critical ? 0 : 1;
-            this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
-            Laya.stage.addChild(damageText);
-            Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
-            }), 0);
-            setTimeout((() => {
-                if (damageText.destroyed)
-                    return;
-                damageText.destroy();
-                damageText.destroyed = true;
-            }), 700);
-        }
-        showHealth() {
-            this.m_healthBar = new Laya.ProgressBar();
-            this.m_healthBar.height = 10;
-            this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
-            this.m_healthBar.skin = "comp/progress.png";
-            this.m_healthBar.value = 1;
-            this.m_healthBar.alpha = 1;
-            Laya.stage.addChild(this.m_healthBar);
-            setInterval((() => {
-                if (this.m_animation.destroyed) {
-                    this.m_healthBar.destroy();
-                    this.m_healthBar.destroyed = true;
-                    return;
-                }
-                this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0) ? 0.007 : 0;
-                this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
-                this.m_healthBar.value = this.m_health / this.m_maxHealth;
-            }), 10);
-        }
-        bloodSplitEffect(enemy) {
-            let bloodEffect = new Laya.Animation();
-            let colorMat = [
-                2, 0, 0, 0, -100,
-                0, 1, 0, 0, -100,
-                0, 0, 1, 0, -100,
-                0, 0, 0, 1, 0,
-            ];
-            let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
-            let colorFilter = new Laya.ColorFilter(colorMat);
-            bloodEffect.filters = [colorFilter, glowFilter];
-            bloodEffect.pos(enemy.x - 250, enemy.y - 250 + 30);
-            bloodEffect.source = "comp/Blood/Blood_0000.png,comp/Blood/Blood_0001.png,comp/Blood/Blood_0002.png,comp/Blood/Blood_0003.png,comp/Blood/Blood_0004.png,comp/Blood/Blood_0005.png,comp/Blood/Blood_0006.png,comp/Blood/Blood_0007.png,comp/Blood/Blood_0008.png,comp/Blood/Blood_0009.png,comp/Blood/Blood_0010.png,comp/Blood/Blood_0011.png,comp/Blood/Blood_0012.png,comp/Blood/Blood_0013.png,comp/Blood/Blood_0014.png";
-            bloodEffect.on(Laya.Event.COMPLETE, this, function () {
-                bloodEffect.destroy();
-                bloodEffect.destroyed = true;
-            });
-            Laya.stage.addChild(bloodEffect);
-            bloodEffect.play();
-        }
-        setSound(volume, url, loop) {
-            Laya.SoundManager.playSound(url, loop);
-            Laya.SoundManager.setSoundVolume(volume, url);
-        }
-        enemyAIMain() {
-            this.pursuitPlayer();
-            this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer;
-            if (this.playerRangeCheck(this.m_attackRange * 2)) {
-                this.tryAttack();
-            }
-        }
-        pursuitPlayer() {
-            let dir = this.m_player.x - this.m_animation.x;
-            let rightSide = (this.m_player.x - this.m_animation.x) > 0;
-            this.m_animation.skewY = rightSide ? 0 : 180;
-            this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false;
-            if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
-                this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
-            }
-            else {
-                this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
-            }
-            if (!this.m_animationChanging)
-                this.updateAnimation(this.m_state, EnemyStatus.run);
-            else
-                this.m_moveVelocity["Vx"] = 0;
-            this.applyMoveX();
-        }
-        playerRangeCheck(detectRange) {
-            let dist = Math.sqrt(Math.pow((this.m_player.x - this.m_animation.x), 2) + Math.pow((this.m_player.y - this.m_animation.y), 2));
-            return (dist <= detectRange) ? true : false;
-        }
-        tryAttack() {
-            if (this.m_atkTimer > 0)
-                return;
-            this.m_atkCd = false;
-            this.m_moveVelocity["Vx"] = 0;
-            let atkCircle = new Laya.Sprite();
-            if (this.m_isFacingRight) {
-                atkCircle.pos(this.m_animation.x + this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2);
-            }
-            else {
-                atkCircle.pos(this.m_animation.x - 3 * this.m_animation.width / 2 - 80, this.m_animation.y - this.m_animation.height / 2);
-            }
-            let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
-            let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
-            let atkCircleScript = atkCircle.addComponent(Laya.Script);
-            atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
-            atkCircleRigid.category = 8;
-            atkCircleRigid.mask = 4;
-            atkCircleScript.onTriggerEnter = function (col) {
-                if (col.tag === 'Player') {
-                    console.log("打到玩家了");
-                }
-            };
-            atkBoxCollider.isSensor = true;
-            atkCircleRigid.gravityScale = 0;
-            this.updateAnimation(this.m_state, EnemyStatus.attack);
-            Laya.stage.addChild(atkCircle);
-            this.m_atkTimer = 100;
-            setTimeout(() => {
-                atkCircle.destroy();
-                atkCircle.destroyed = true;
-            }, 100);
-            setTimeout(() => {
-                this.m_atkCd = true;
-            }, 500);
-        }
-        applyMoveX() {
-            this.m_rigidbody.setVelocity({
-                x: this.m_moveVelocity["Vx"],
-                y: this.m_rigidbody.linearVelocity.y,
-            });
-        }
-        applyMoveY() {
-            this.m_rigidbody.setVelocity({
-                x: this.m_rigidbody.linearVelocity.x,
-                y: this.m_moveVelocity["Vy"],
-            });
-        }
-        updateAnimation(from, to, onCallBack = null, force = false) {
-            if (this.m_state === to || this.m_animationChanging)
-                return;
-            this.m_state = to;
-            switch (this.m_state) {
-                case EnemyStatus.attack:
-                    this.m_animationChanging = true;
-                    this.m_animation.interval = 100;
-                    this.m_animation.source = 'goblin/attack_05.png,goblin/attack_06.png,goblin/attack_07.png,goblin/attack_08.png';
-                    this.m_animation.play();
-                    break;
-                case EnemyStatus.idle:
-                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
-                    break;
-                case EnemyStatus.run:
-                    this.m_animation.source = 'goblin/run_01.png,goblin/run_02.png,goblin/run_03.png,goblin/run_04.png,goblin/run_05.png,goblin/run_06.png,goblin/run_07.png,goblin/run_08.png';
-                    this.m_animation.interval = 100;
-                    this.m_animation.play();
-                    break;
-                default:
-                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
-                    break;
-            }
-            if (typeof onCallBack === 'function')
-                onCallBack();
-        }
-    }
-    class EnemyNormal extends Enemy {
-        constructor() {
-            super(...arguments);
-            this.m_name = '普通敵人';
-            this.m_health = 1000;
-            this.m_armor = 100;
-            this.m_speed = 2;
-            this.m_tag = 'n';
-            this.m_attackRange = 100;
-        }
-    }
-    class EnemyShield extends Enemy {
-        constructor() {
-            super(...arguments);
-            this.m_name = '裝甲敵人';
-            this.m_armor = 500;
-            this.m_health = 1500;
-            this.m_speed = 1;
-            this.m_tag = 's';
-            this.m_attackRange = 100;
-        }
-    }
-
-    class EnemyHandler extends Laya.Script {
-        static generator(player, enemyType, spawnPoint) {
-            let enemy = this.decideEnemyType(enemyType);
-            let id = enemy.m_tag + String(++this.enemyIndex);
-            enemy.spawn(player, id);
-            this.enemyPool.push({ '_id': id, '_ent': enemy });
-            this.updateEnemies();
-            return enemy;
-        }
-        static decideEnemyType(enemyType) {
-            switch (enemyType) {
-                case 1: return new EnemyNormal();
-                case 2: return new EnemyShield();
-                default: return new EnemyNormal();
-            }
-            ;
-        }
-        static updateEnemies() {
-            return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
-        }
-        static getEnemiesCount() {
-            return (this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null)).length;
-        }
-        static getEnemyByLabel(label) {
-            return this.enemyPool.filter(data => data._id === label)[0]['_ent'];
-            ;
-        }
-    }
-    EnemyHandler.enemyIndex = 0;
-    EnemyHandler.enemyPool = [];
-
     class Raycast extends Laya.Script {
         static _RayCast(startX, startY, endX, endY, direction) {
             let world = Laya.Physics.I.world;
@@ -497,6 +158,7 @@
             };
             this.m_collider.width = this.m_animation.width;
             this.m_collider.height = this.m_animation.height;
+            this.m_collider.x = rightSide ? 100 : -500;
             this.m_collider.isSensor = true;
             this.m_rigidbody.gravityScale = 0;
             this.m_rigidbody.allowRotation = false;
@@ -507,7 +169,7 @@
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
             }, 200);
-            player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 1 : -1);
+            player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 0.5 : -0.5);
         }
     }
 
@@ -592,12 +254,72 @@
             Laya.stage.addChild(this.m_animation);
             OathManager.showBloodyPoint(this.m_animation);
             OathManager.showBloodyLogo(this.m_animation, "comp/Cat.png");
-            this.CameraFollower();
+            this.cameraFollower();
+            this.showHealth();
+        }
+        ;
+        setHealth(amount) {
+            this.m_health = amount;
+            if (this.m_health <= 0) {
+                this.m_animation.destroy();
+                this.m_animation.destroyed = true;
+            }
+        }
+        getHealth() {
+            return this.m_health;
+        }
+        ;
+        takeDamage(amount) {
+            let fakeNum = Math.random() * 100;
+            let critical = (fakeNum <= 33);
+            amount *= critical ? 3 : 1;
+            this.setHealth(this.getHealth() - amount);
+            this.damageTextEffect(amount, critical);
+        }
+        damageTextEffect(amount, critical) {
+            let damageText = new Laya.Text();
+            let soundNum;
+            damageText.pos((this.m_animation.x - this.m_animation.width / 2) + 15, (this.m_animation.y - this.m_animation.height) - 3);
+            damageText.bold = true;
+            damageText.align = "left";
+            damageText.alpha = 1;
+            damageText.fontSize = critical ? 42 : 17;
+            damageText.color = critical ? '#ff31c8' : "red";
+            damageText.text = String(amount);
+            damageText.font = "opensans-bold";
+            Laya.stage.addChild(damageText);
+            Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+            }), 0);
+            setTimeout((() => {
+                if (damageText.destroyed)
+                    return;
+                damageText.destroy();
+                damageText.destroyed = true;
+            }), 700);
         }
         listenKeyBoard() {
             this.m_keyDownList = [];
             Laya.stage.on(Laya.Event.KEY_DOWN, this, this.onKeyDown);
             Laya.stage.on(Laya.Event.KEY_UP, this, this.onKeyUp);
+        }
+        showHealth() {
+            this.m_healthBar = new Laya.ProgressBar();
+            this.m_healthBar.height = 13;
+            this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
+            this.m_healthBar.skin = "comp/progress.png";
+            this.m_healthBar.value = 1;
+            this.m_healthBar.alpha = 1;
+            Laya.stage.addChild(this.m_healthBar);
+            setInterval((() => {
+                if (this.m_animation.destroyed) {
+                    this.m_healthBar.destroy();
+                    this.m_healthBar.destroyed = true;
+                    return;
+                }
+                this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+                this.m_healthBar.value = this.m_health / this.m_maxHealth;
+            }), 10);
         }
         characterMove() {
             if (this.m_keyDownList[37]) {
@@ -784,7 +506,7 @@
             Laya.SoundManager.playSound(url, loop);
             Laya.SoundManager.setSoundVolume(volume, url);
         }
-        CameraFollower() {
+        cameraFollower() {
             let player_pivot_x = Laya.stage.width / 2;
             let player_pivot_y = Laya.stage.height / 2;
             setInterval(() => {
@@ -867,6 +589,8 @@
             player.m_buff_attackCdTime = this.buff_attackCdTime;
         }
         onUpdate() {
+            if (CharacterInit.playerEnt.m_animation.destroyed)
+                return;
             let colorNum = 2;
             let colorMat = [
                 Math.floor(Math.random() * 2) + 2, 0, 0, 0, -100,
@@ -881,6 +605,364 @@
             OathManager.oathBuffUpdate();
         }
     }
+
+    var EnemyStatus;
+    (function (EnemyStatus) {
+        EnemyStatus[EnemyStatus["idle"] = 0] = "idle";
+        EnemyStatus[EnemyStatus["run"] = 1] = "run";
+        EnemyStatus[EnemyStatus["jump"] = 2] = "jump";
+        EnemyStatus[EnemyStatus["down"] = 3] = "down";
+        EnemyStatus[EnemyStatus["attack"] = 4] = "attack";
+        EnemyStatus[EnemyStatus["useSkill"] = 5] = "useSkill";
+        EnemyStatus[EnemyStatus["hurt"] = 6] = "hurt";
+        EnemyStatus[EnemyStatus["defend"] = 7] = "defend";
+        EnemyStatus[EnemyStatus["death"] = 8] = "death";
+    })(EnemyStatus || (EnemyStatus = {}));
+    class Enemy extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.m_name = '';
+            this.m_health = 1000;
+            this.m_armor = 0;
+            this.m_speed = 3;
+            this.m_tag = '';
+            this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
+            this.m_attackRange = 100;
+            this.m_hurtDelay = 0;
+            this.m_atkCd = true;
+            this.m_isFacingRight = true;
+            this.m_animationChanging = false;
+            this.m_state = EnemyStatus.idle;
+        }
+        spawn(player, id) {
+            this.m_animation = new Laya.Animation();
+            this.m_animation.scaleX = 4;
+            this.m_animation.scaleY = 4;
+            this.m_animation.width = 35;
+            this.m_animation.height = 35;
+            this.m_animation.pivotX = this.m_animation.width / 2;
+            this.m_animation.pivotY = this.m_animation.height / 2;
+            let enemyPos = [-200, 200];
+            this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));
+            this.m_animation.autoPlay = true;
+            this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+            this.m_animation.interval = 100;
+            this.m_animation.loop = true;
+            this.m_animation.on(Laya.Event.COMPLETE, this, () => {
+                this.m_animationChanging = false;
+            });
+            this.m_maxHealth = this.m_health;
+            this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
+            this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
+            this.m_script = this.m_animation.addComponent(Laya.Script);
+            this.m_script.onUpdate = () => {
+                this.enemyAIMain();
+            };
+            this.m_collider.width = this.m_animation.width;
+            this.m_collider.height = this.m_animation.height;
+            this.m_collider.x -= 13;
+            this.m_collider.y -= 10;
+            this.m_collider.label = id;
+            this.m_collider.tag = 'Enemy';
+            this.m_rigidbody.category = 8;
+            this.m_rigidbody.mask = 4 | 2;
+            this.m_rigidbody.allowRotation = false;
+            this.m_player = player;
+            Laya.stage.addChild(this.m_animation);
+            this.showHealth();
+        }
+        ;
+        destroy() {
+            this.m_animation.destroy();
+            this.m_animation.destroyed = true;
+        }
+        ;
+        setHealth(amount) {
+            this.m_health = amount;
+            if (this.m_health <= 0) {
+                this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1);
+                this.bloodSplitEffect(this.m_animation);
+                this.m_animation.destroy();
+                this.m_animation.destroyed = true;
+            }
+        }
+        getHealth() {
+            return this.m_health;
+        }
+        ;
+        setArmor(amount) {
+            this.m_armor = amount;
+        }
+        ;
+        getArmor() {
+            return this.m_armor;
+        }
+        ;
+        setSpeed(amount) {
+            this.m_speed = amount;
+        }
+        ;
+        getSpeed() {
+            return this.m_speed;
+        }
+        ;
+        setLabel(index) {
+            this.m_collider.label = index;
+        }
+        ;
+        takeDamage(amount) {
+            let fakeNum = Math.random() * 100;
+            let critical = (fakeNum <= 50);
+            amount *= critical ? 5 : 1;
+            this.setHealth(this.getHealth() - amount);
+            this.damageTextEffect(amount, critical);
+            this.m_healthBar.alpha = 1;
+            if (critical) {
+                this.m_animation.x--;
+                this.m_animation.y++;
+            }
+            if (this.m_hurtDelay) {
+                this.m_hurtDelay += 2.0;
+            }
+            else {
+                this.m_hurtDelay = 2.0;
+                setInterval(() => {
+                    if (this.m_hurtDelay < 0) {
+                        this.m_hurtDelay = 0;
+                        return;
+                    }
+                    this.m_hurtDelay -= 0.1;
+                }, 100);
+            }
+        }
+        damageTextEffect(amount, critical) {
+            let damageText = new Laya.Text();
+            let soundNum;
+            damageText.pos((this.m_animation.x - this.m_animation.width / 2) - 20, (this.m_animation.y - this.m_animation.height) - 110);
+            damageText.bold = true;
+            damageText.align = "left";
+            damageText.alpha = 1;
+            damageText.fontSize = critical ? 40 : 16;
+            damageText.color = critical ? 'orange' : "white";
+            damageText.text = String(amount);
+            damageText.font = "opensans-bold";
+            soundNum = critical ? 0 : 1;
+            this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
+            Laya.stage.addChild(damageText);
+            Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+            }), 0);
+            setTimeout((() => {
+                if (damageText.destroyed)
+                    return;
+                damageText.destroy();
+                damageText.destroyed = true;
+            }), 700);
+        }
+        showHealth() {
+            this.m_healthBar = new Laya.ProgressBar();
+            this.m_healthBar.height = 10;
+            this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
+            this.m_healthBar.skin = "comp/progress.png";
+            this.m_healthBar.value = 1;
+            this.m_healthBar.alpha = 1;
+            Laya.stage.addChild(this.m_healthBar);
+            setInterval((() => {
+                if (this.m_animation.destroyed) {
+                    this.m_healthBar.destroy();
+                    this.m_healthBar.destroyed = true;
+                    return;
+                }
+                this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && !this.m_hurtDelay) ? 0.02 : 0;
+                this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+                this.m_healthBar.value = this.m_health / this.m_maxHealth;
+            }), 10);
+        }
+        bloodSplitEffect(enemy) {
+            let bloodEffect = new Laya.Animation();
+            let colorMat = [
+                2, 0, 0, 0, -100,
+                0, 1, 0, 0, -100,
+                0, 0, 1, 0, -100,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            bloodEffect.filters = [colorFilter, glowFilter];
+            bloodEffect.pos(enemy.x - 250, enemy.y - 250 + 30);
+            bloodEffect.source = "comp/Blood/Blood_0000.png,comp/Blood/Blood_0001.png,comp/Blood/Blood_0002.png,comp/Blood/Blood_0003.png,comp/Blood/Blood_0004.png,comp/Blood/Blood_0005.png,comp/Blood/Blood_0006.png,comp/Blood/Blood_0007.png,comp/Blood/Blood_0008.png,comp/Blood/Blood_0009.png,comp/Blood/Blood_0010.png,comp/Blood/Blood_0011.png,comp/Blood/Blood_0012.png,comp/Blood/Blood_0013.png,comp/Blood/Blood_0014.png";
+            bloodEffect.on(Laya.Event.COMPLETE, this, function () {
+                bloodEffect.destroy();
+                bloodEffect.destroyed = true;
+            });
+            Laya.stage.addChild(bloodEffect);
+            bloodEffect.play();
+        }
+        setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
+        }
+        enemyAIMain() {
+            this.pursuitPlayer();
+            this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer;
+            if (this.playerRangeCheck(this.m_attackRange * 2)) {
+                this.tryAttack();
+            }
+        }
+        pursuitPlayer() {
+            if (CharacterInit.playerEnt.m_animation.destroyed) {
+                this.updateAnimation(this.m_state, EnemyStatus.idle);
+                return;
+            }
+            let dir = this.m_player.x - this.m_animation.x;
+            let rightSide = (this.m_player.x - this.m_animation.x) > 0;
+            this.m_animation.skewY = rightSide ? 0 : 180;
+            this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false;
+            if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
+                this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
+            }
+            else {
+                this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
+            }
+            if (!this.m_animationChanging)
+                this.updateAnimation(this.m_state, EnemyStatus.run);
+            else
+                this.m_moveVelocity["Vx"] = 0;
+            this.applyMoveX();
+        }
+        playerRangeCheck(detectRange) {
+            let dist = Math.sqrt(Math.pow((this.m_player.x - this.m_animation.x), 2) + Math.pow((this.m_player.y - this.m_animation.y), 2));
+            return (dist <= detectRange) ? true : false;
+        }
+        tryAttack() {
+            if (this.m_atkTimer > 0 || CharacterInit.playerEnt.m_animation.destroyed)
+                return;
+            this.m_atkCd = false;
+            this.m_moveVelocity["Vx"] = 0;
+            let atkCircle = new Laya.Sprite();
+            if (this.m_isFacingRight) {
+                atkCircle.pos(this.m_animation.x + this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2);
+            }
+            else {
+                atkCircle.pos(this.m_animation.x - 3 * this.m_animation.width / 2 - 80, this.m_animation.y - this.m_animation.height / 2);
+            }
+            let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
+            let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
+            let atkCircleScript = atkCircle.addComponent(Laya.Script);
+            atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
+            atkCircleRigid.category = 8;
+            atkCircleRigid.mask = 4;
+            atkCircleScript.onTriggerEnter = function (col) {
+                if (col.tag === 'Player') {
+                    let victim = CharacterInit.playerEnt;
+                    victim.takeDamage(30);
+                }
+            };
+            atkBoxCollider.isSensor = true;
+            atkCircleRigid.gravityScale = 0;
+            this.updateAnimation(this.m_state, EnemyStatus.attack);
+            Laya.stage.addChild(atkCircle);
+            this.m_atkTimer = 100;
+            setTimeout(() => {
+                atkCircle.destroy();
+                atkCircle.destroyed = true;
+            }, 100);
+            setTimeout(() => {
+                this.m_atkCd = true;
+            }, 500);
+        }
+        applyMoveX() {
+            this.m_rigidbody.setVelocity({
+                x: this.m_moveVelocity["Vx"],
+                y: this.m_rigidbody.linearVelocity.y,
+            });
+        }
+        applyMoveY() {
+            this.m_rigidbody.setVelocity({
+                x: this.m_rigidbody.linearVelocity.x,
+                y: this.m_moveVelocity["Vy"],
+            });
+        }
+        updateAnimation(from, to, onCallBack = null, force = false) {
+            if (this.m_state === to || this.m_animationChanging)
+                return;
+            this.m_state = to;
+            switch (this.m_state) {
+                case EnemyStatus.attack:
+                    this.m_animationChanging = true;
+                    this.m_animation.interval = 100;
+                    this.m_animation.source = 'goblin/attack_05.png,goblin/attack_06.png,goblin/attack_07.png,goblin/attack_08.png';
+                    this.m_animation.play();
+                    break;
+                case EnemyStatus.idle:
+                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                    break;
+                case EnemyStatus.run:
+                    this.m_animation.source = 'goblin/run_01.png,goblin/run_02.png,goblin/run_03.png,goblin/run_04.png,goblin/run_05.png,goblin/run_06.png,goblin/run_07.png,goblin/run_08.png';
+                    this.m_animation.interval = 100;
+                    this.m_animation.play();
+                    break;
+                default:
+                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                    break;
+            }
+            if (typeof onCallBack === 'function')
+                onCallBack();
+        }
+    }
+    class EnemyNormal extends Enemy {
+        constructor() {
+            super(...arguments);
+            this.m_name = '普通敵人';
+            this.m_health = 1000;
+            this.m_armor = 100;
+            this.m_speed = 2;
+            this.m_tag = 'n';
+            this.m_attackRange = 100;
+        }
+    }
+    class EnemyShield extends Enemy {
+        constructor() {
+            super(...arguments);
+            this.m_name = '裝甲敵人';
+            this.m_armor = 500;
+            this.m_health = 1500;
+            this.m_speed = 1;
+            this.m_tag = 's';
+            this.m_attackRange = 100;
+        }
+    }
+
+    class EnemyHandler extends Laya.Script {
+        static generator(player, enemyType, spawnPoint) {
+            let enemy = this.decideEnemyType(enemyType);
+            let id = enemy.m_tag + String(++this.enemyIndex);
+            enemy.spawn(player, id);
+            this.enemyPool.push({ '_id': id, '_ent': enemy });
+            this.updateEnemies();
+            return enemy;
+        }
+        static decideEnemyType(enemyType) {
+            switch (enemyType) {
+                case 1: return new EnemyNormal();
+                case 2: return new EnemyShield();
+                default: return new EnemyNormal();
+            }
+            ;
+        }
+        static updateEnemies() {
+            return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
+        }
+        static getEnemiesCount() {
+            return (this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null)).length;
+        }
+        static getEnemyByLabel(label) {
+            return this.enemyPool.filter(data => data._id === label)[0]['_ent'];
+            ;
+        }
+    }
+    EnemyHandler.enemyIndex = 0;
+    EnemyHandler.enemyPool = [];
 
     class EnemyInit extends Laya.Script {
         constructor() {

@@ -51,6 +51,9 @@ export default class CharacterInit extends Laya.Script {
     }
     //9/13新增
     onUpdate() {
+        if(CharacterInit.playerEnt.m_animation.destroyed)
+            return;
+            
         let colorNum: number = 2;
         let colorMat: Array<number> =
             [

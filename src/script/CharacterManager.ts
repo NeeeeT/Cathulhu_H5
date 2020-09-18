@@ -61,6 +61,7 @@ export default class Character extends Laya.Script {
   m_rigidbody: Laya.RigidBody;
   m_collider: Laya.BoxCollider;
   m_script: Laya.Script;
+  m_healthBar: Laya.ProgressBar;
 
   spawn() {
     this.m_state = CharacterStatus.idle;
@@ -136,12 +137,82 @@ export default class Character extends Laya.Script {
 
     OathManager.showBloodyLogo(this.m_animation, "comp/Cat.png");//邪貓方法
 
-    this.CameraFollower();
+    this.cameraFollower();
+    this.showHealth();
+  };
+  setHealth(amount: number): void {
+    this.m_health = amount;
+    if (this.m_health <= 0) {
+        // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)//loop:0為循環播放;
+        // this.bloodSplitEffect(this.m_animation);
+        this.m_animation.destroy();
+        this.m_animation.destroyed = true;
+    }
+  }
+  getHealth(): number {
+      return this.m_health;
+  };
+  takeDamage(amount: number) {
+    let fakeNum = Math.random() * 100;
+    let critical: boolean = (fakeNum <= 33);
+
+    amount *= critical ? 3 : 1;
+    this.setHealth(this.getHealth() - amount);
+    this.damageTextEffect(amount, critical);
+  }
+  private damageTextEffect(amount: number, critical: boolean): void {
+    let damageText = new Laya.Text();
+    let soundNum: number;
+
+    damageText.pos((this.m_animation.x - this.m_animation.width / 2) + 15, (this.m_animation.y - this.m_animation.height) - 3);
+    damageText.bold = true;
+    damageText.align = "left";
+    damageText.alpha = 1;
+
+    damageText.fontSize = critical ? 42 : 17;
+    damageText.color = critical ? '#ff31c8' : "red";
+    damageText.text = String(amount);
+    damageText.font = "opensans-bold";
+    // soundNum = critical ? 0 : 1;
+    // this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
+    Laya.stage.addChild(damageText);
+
+    Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut,
+        Laya.Handler.create(this, () => {
+            Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+        }), 0);
+
+    setTimeout((() => {
+        if (damageText.destroyed) return;
+
+        damageText.destroy();
+        damageText.destroyed = true;
+    }), 700);
   }
   private listenKeyBoard(): void {
     this.m_keyDownList = [];
     Laya.stage.on(Laya.Event.KEY_DOWN, this, this.onKeyDown);
     Laya.stage.on(Laya.Event.KEY_UP, this, this.onKeyUp);
+  }
+  private showHealth() {
+    this.m_healthBar = new Laya.ProgressBar();
+    this.m_healthBar.height = 13;
+    this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
+    this.m_healthBar.skin = "comp/progress.png";
+    this.m_healthBar.value = 1;
+    this.m_healthBar.alpha = 1;
+    Laya.stage.addChild(this.m_healthBar);
+
+    setInterval((() => {
+        if (this.m_animation.destroyed) {
+            this.m_healthBar.destroy();
+            this.m_healthBar.destroyed = true;
+            return;
+        }
+        // this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0) ? 0.007 : 0;
+        this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+        this.m_healthBar.value = this.m_health / this.m_maxHealth;
+    }), 10);
   }
   private characterMove() {
     //Left
@@ -380,7 +451,7 @@ export default class Character extends Laya.Script {
     Laya.SoundManager.playSound(url, loop);
     Laya.SoundManager.setSoundVolume(volume, url);
   }
-  private CameraFollower(): void {
+  private cameraFollower(): void {
     let player_pivot_x: number = Laya.stage.width / 2;
     let player_pivot_y: number = Laya.stage.height / 2;
 

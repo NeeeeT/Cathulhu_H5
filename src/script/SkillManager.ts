@@ -11,7 +11,7 @@ abstract class Skill extends Laya.Script{
     m_animation: Laya.Animation;
     m_rigidbody: Laya.RigidBody;
     m_script: Laya.Script;
-    m_collider;
+    m_collider: Laya.BoxCollider;
 
     cast(position: object): void{ 
     }
@@ -62,6 +62,7 @@ export class SkillSpike extends Skill{
         }
         this.m_collider.width = this.m_animation.width;
         this.m_collider.height = this.m_animation.height;
+        this.m_collider.x = rightSide ? 100 : - 500;
         this.m_collider.isSensor = true;
 
         this.m_rigidbody.gravityScale = 0;
@@ -76,7 +77,14 @@ export class SkillSpike extends Skill{
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
         }, 200);
-        player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 1 : -1);
+        // let dash = setInterval(() => {
+        //     player.m_playerVelocity["Vx"] += (player.m_isFacingRight ? 1 : -1);
+        // }, 10)
+
+        // setTimeout(() => {
+        //     clearInterval(dash);
+        // }, 200);
+        player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 0.5 : -0.5);
     }
 
 }

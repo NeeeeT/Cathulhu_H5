@@ -1,3 +1,4 @@
+import CharacterInit from "./CharacterInit";
 import { CharacterIdleState } from "./CharacterState";
 
 export enum EnemyStatus{
@@ -23,6 +24,7 @@ abstract class Enemy extends Laya.Script {
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
     m_maxHealth: number;
     m_attackRange: number = 100;
+    m_hurtDelay: number = 0;
     m_atkCd: boolean = true;
     m_atkTimer: number;
     m_isFacingRight: boolean = true;
@@ -127,6 +129,19 @@ abstract class Enemy extends Laya.Script {
             this.m_animation.x--;
             this.m_animation.y++;
         }
+        if(this.m_hurtDelay){
+            this.m_hurtDelay += 2.0;
+        }
+        else{
+            this.m_hurtDelay = 2.0;
+            setInterval(()=>{
+                if(this.m_hurtDelay < 0){
+                    this.m_hurtDelay = 0;
+                    return;
+                }
+                this.m_hurtDelay -= 0.1;
+            }, 100);
+        }
     }
     private damageTextEffect(amount: number, critical: boolean): void {
         let damageText = new Laya.Text();
@@ -172,7 +187,7 @@ abstract class Enemy extends Laya.Script {
                 this.m_healthBar.destroyed = true;
                 return;
             }
-            this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0) ? 0.007 : 0;
+            this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && !this.m_hurtDelay) ? 0.02 : 0;
             this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
         }), 10);
@@ -215,6 +230,11 @@ abstract class Enemy extends Laya.Script {
     }
 
     private pursuitPlayer() {
+        if(CharacterInit.playerEnt.m_animation.destroyed){
+            this.updateAnimation(this.m_state, EnemyStatus.idle);
+            return;
+        }
+
         let dir: number = this.m_player.x - this.m_animation.x;
         // this.m_animation.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
         let rightSide: boolean = (this.m_player.x - this.m_animation.x) > 0;
@@ -237,7 +257,7 @@ abstract class Enemy extends Laya.Script {
         return (dist <= detectRange) ? true : false;
     }
     private tryAttack() {
-        if (this.m_atkTimer > 0) return;
+        if (this.m_atkTimer > 0 || CharacterInit.playerEnt.m_animation.destroyed) return;
         this.m_atkCd = false;
         // this.rigidbody.setVelocity({x:0, y:this.rigidbody.linearVelocity.y});
         this.m_moveVelocity["Vx"] = 0;
@@ -266,7 +286,9 @@ abstract class Enemy extends Laya.Script {
 
         atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
             if (col.tag === 'Player') {
-                console.log("打到玩家了");
+                let victim = CharacterInit.playerEnt;
+                // victim.m_health -= 50;
+                victim.takeDamage(30);
             }
         };
         atkBoxCollider.isSensor = true;
