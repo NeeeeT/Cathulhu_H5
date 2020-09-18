@@ -250,7 +250,7 @@ export default class Character extends Laya.Script {
       this.m_canUseSpike = false;
       let spike: SkillSpike = new SkillSpike();
       spike.cast({
-        x: this.m_animation.x - 10,
+        x: this.m_animation.x,
         y: this.m_animation.y - 65,
       });
       

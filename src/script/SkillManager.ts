@@ -28,12 +28,25 @@ export class SkillSpike extends Skill{
         let rightSide: boolean = player.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
-        this.m_animation.width = 328;
-        this.m_animation.height = 130;
-        this.m_animation.pos(rightSide ? position['x'] + 100 : position['x'] - 150, position['y']);
-        this.m_animation.source = "Skill/spike.png";
+        this.m_animation.width = 400;
+        this.m_animation.height = 200;
+        this.m_animation.scaleX = 2;
+        this.m_animation.scaleY = 2;
+        this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 130);
+        this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
         this.m_animation.autoPlay = true;
-        this.m_animation.interval = 100;
+        this.m_animation.interval = 20;
+
+        let colorMat: Array<number> =
+        [
+          2, 0, 0, 0, -100, //R
+          0, 4, 0, 0, -100, //G
+          0, 0, Math.floor(Math.random() * 2) + 1, 0, -100, //B
+          0, 0, 0, 1, 0, //A
+        ];
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
+        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+        this.m_animation.filters = [glowFilter,colorFilter];
 
         this.m_animation.skewY = rightSide ? 0 : 180;
 
@@ -65,4 +78,5 @@ export class SkillSpike extends Skill{
         }, 200);
         player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 1 : -1);
     }
+
 }
