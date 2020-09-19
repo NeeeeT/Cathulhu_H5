@@ -23,6 +23,10 @@ export default class OathManager extends Laya.Script {
         oathBar.width = 300;
         oathBar.skin = "comp/progress.png";
         setInterval((() => {
+            // if(player.destroyed){
+            //     oathBar.destroy();
+            //     oathBar.destroyed = true;
+            // }
             oathBar.pos(player.x - Laya.stage.width / 2 + 140, /*player.y - Laya.stage.height / 2*/100);
             oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
         }), 5);
@@ -30,11 +34,16 @@ export default class OathManager extends Laya.Script {
     }
     //9/12新增邪貓logo
     public static showBloodyLogo(player: Laya.Animation, url: string) {
+
         this.catLogo = new Laya.Animation();
         this.catLogo.scaleX = 0.6;
         this.catLogo.scaleY = 0.6;
         this.catLogo.source = url;
         setInterval((() => {
+            // if(player.destroyed){
+            //     this.catLogo.destroy();
+            //     this.catLogo.destroyed = true;
+            // }
             this.catLogo.pos(player.x - Laya.stage.width / 2 + 30, /*player.y - Laya.stage.height / 2 - 35*/-35 + 100);
         }), 10);
         Laya.stage.addChild(this.catLogo);
@@ -63,6 +72,8 @@ export default class OathManager extends Laya.Script {
     }
 
     public static oathBuffUpdate(){
+        if(CharacterInit.playerEnt.m_animation.destroyed) return;
+
         if(OathManager.oathChargeDetect()){
             CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_buff_xMaxVelocity;
             // CharacterInit.playerEnt.m_velocityMultiplier = CharacterInit.playerEnt.m_buff_velocityMultiplier;

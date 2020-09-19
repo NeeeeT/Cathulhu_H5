@@ -147,6 +147,9 @@ export default class Character extends Laya.Script {
         // this.bloodSplitEffect(this.m_animation);
         this.m_animation.destroy();
         this.m_animation.destroyed = true;
+        // setTimeout(()=>{
+        //   Laya.Scene.open("Village.scene");
+        // }, 1000)
     }
   }
   getHealth(): number {
@@ -452,10 +455,14 @@ export default class Character extends Laya.Script {
     Laya.SoundManager.setSoundVolume(volume, url);
   }
   private cameraFollower(): void {
+    if(this.m_animation.destroyed) return;
+
     let player_pivot_x: number = Laya.stage.width / 2;
     let player_pivot_y: number = Laya.stage.height / 2;
 
     setInterval(() => {
+      if(this.m_animation.destroyed) return;
+
       if (Character.m_cameraShakingTimer > 0) {
         let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
         Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;

@@ -100,6 +100,8 @@
             return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? true : false;
         }
         static oathBuffUpdate() {
+            if (CharacterInit.playerEnt.m_animation.destroyed)
+                return;
             if (OathManager.oathChargeDetect()) {
                 CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_buff_xMaxVelocity;
                 CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_buff_attackCdTime;
@@ -507,9 +509,13 @@
             Laya.SoundManager.setSoundVolume(volume, url);
         }
         cameraFollower() {
+            if (this.m_animation.destroyed)
+                return;
             let player_pivot_x = Laya.stage.width / 2;
             let player_pivot_y = Laya.stage.height / 2;
             setInterval(() => {
+                if (this.m_animation.destroyed)
+                    return;
                 if (Character.m_cameraShakingTimer > 0) {
                     let randomSign = (Math.floor(Math.random() * 2) == 1) ? 1 : -1;
                     Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
@@ -973,6 +979,8 @@
             let player = CharacterInit.playerEnt.m_animation;
             let isFacingRight = CharacterInit.playerEnt.m_isFacingRight;
             setInterval(() => {
+                if (CharacterInit.playerEnt.m_animation.destroyed)
+                    return;
                 EnemyHandler.generator(player, 1, 0);
             }, this.enemyGenerateTime);
         }
@@ -986,6 +994,8 @@
             this.battleBtn = null;
         }
         onStart() {
+            Laya.stage.x = 0;
+            Laya.stage.y = 0;
             this.reinforceBtn = this.owner.getChildByName("Reinforce");
             this.templeBtn = this.owner.getChildByName("Temple");
             this.battleBtn = this.owner.getChildByName("Battle");
@@ -999,6 +1009,7 @@
                 console.log("battle");
                 Laya.Scene.open("First.scene");
             });
+            console.log(Laya.stage.x, Laya.stage.y);
         }
     }
 
@@ -1019,7 +1030,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "First.scene";
+    GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
