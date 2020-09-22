@@ -155,6 +155,7 @@
             this.m_script.onTriggerEnter = (col) => {
                 if (col.tag === 'Enemy') {
                     let victim = EnemyHandler.getEnemyByLabel(col.label);
+                    victim.enemyInjuredColor();
                     victim.takeDamage(777);
                 }
             };
@@ -421,6 +422,7 @@
                 if (col.tag === 'Enemy') {
                     let eh = EnemyHandler;
                     let victim = eh.getEnemyByLabel(col.label);
+                    victim.enemyInjuredColor();
                     if (!OathManager.isCharging) {
                         victim.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
                         Character.setCameraShake(10, 3);
@@ -598,13 +600,13 @@
             if (CharacterInit.playerEnt.m_animation.destroyed)
                 return;
             let colorNum = 2;
-            let colorMat = [
+            let oathColorMat = [
                 Math.floor(Math.random() * 2) + 2, 0, 0, 0, -100,
                 0, Math.floor(Math.random() * 2) + 1, 0, 0, -100,
                 0, 0, Math.floor(Math.random() * 2) + 2, 0, -100,
                 0, 0, 0, 1, 0,
             ];
-            let colorFilter = new Laya.ColorFilter(colorMat);
+            let colorFilter = new Laya.ColorFilter(oathColorMat);
             let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 40, 0, 0);
             CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
             OathManager.catLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
@@ -642,6 +644,7 @@
         }
         spawn(player, id) {
             this.m_animation = new Laya.Animation();
+            this.m_animation.filters = [];
             this.m_animation.scaleX = 4;
             this.m_animation.scaleY = 4;
             this.m_animation.width = 35;
@@ -686,6 +689,7 @@
         setHealth(amount) {
             this.m_health = amount;
             if (this.m_health <= 0) {
+                this.m_animation.filters = null;
                 this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1);
                 this.bloodSplitEffect(this.m_animation);
                 this.m_animation.destroy();
@@ -861,7 +865,13 @@
             atkCircleScript.onTriggerEnter = function (col) {
                 if (col.tag === 'Player') {
                     let victim = CharacterInit.playerEnt;
+                    victim.m_animation.alpha = 0.3;
                     victim.takeDamage(30);
+                    setTimeout(() => {
+                        if (victim.m_animation.destroyed)
+                            return;
+                        victim.m_animation.alpha = 1;
+                    }, 150);
                 }
             };
             atkBoxCollider.isSensor = true;
@@ -914,6 +924,24 @@
             }
             if (typeof onCallBack === 'function')
                 onCallBack();
+        }
+        enemyInjuredColor() {
+            this.m_animation.alpha = 1;
+            let colorMat = [
+                4, 0, 0, 0, 10,
+                0, 1, 0, 0, 10,
+                0, 0, 4, 0, 10,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            this.m_animation.filters = [colorFilter, glowFilter];
+            setTimeout(() => {
+                if (this.m_animation.destroyed)
+                    return;
+                this.m_animation.alpha = 1;
+                this.m_animation.filters = null;
+            }, 200);
         }
     }
     class EnemyNormal extends Enemy {

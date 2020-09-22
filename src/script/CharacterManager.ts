@@ -3,6 +3,7 @@ import DrawCmd from "./DrawCmd";
 import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
 import { SkillSpike } from "./SkillManager";
+import EnemyInit from "./EnemyInit";
 
 export enum CharacterStatus {
   idle = 0,
@@ -358,6 +359,7 @@ export default class Character extends Laya.Script {
       if (col.tag === 'Enemy') {
         let eh = EnemyHandler;//敵人控制器
         let victim = eh.getEnemyByLabel(col.label);
+        victim.enemyInjuredColor();//0921新增
         // eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
 
         //誓約系統測試

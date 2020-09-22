@@ -57,6 +57,7 @@ export class SkillSpike extends Skill{
         this.m_script.onTriggerEnter = (col:Laya.BoxCollider) => {
             if(col.tag === 'Enemy'){
                 let victim = EnemyHandler.getEnemyByLabel(col.label)
+                victim.enemyInjuredColor();//0921新增
                 victim.takeDamage(777);
             }
         }
