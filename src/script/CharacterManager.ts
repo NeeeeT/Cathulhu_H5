@@ -306,8 +306,15 @@ export default class Character extends Laya.Script {
 
       // this.m_animation.interval = 100;
       // this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
-      this.createAttackCircle(this.m_animation);
+
+
+      
+      // this.createAttackCircle(this.m_animation);
       this.createAttackEffect(this.m_animation);
+      this.attackSimulation();//另類攻擊判定
+
+
+
       this.m_canAttack = false;
 
       // this.m_animation.on(Laya.Event.COMPLETE, this, function () {
@@ -359,7 +366,7 @@ export default class Character extends Laya.Script {
       if (col.tag === 'Enemy') {
         let eh = EnemyHandler;//敵人控制器
         let victim = eh.getEnemyByLabel(col.label);
-        victim.enemyInjuredColor();//0921新增
+        // victim.enemyInjuredColor();//0921新增
         // eh.takeDamage(victim, Math.round(Math.floor(Math.random() * 51) + 150));//Math.random() * Max-Min +1 ) + Min
 
         //誓約系統測試
@@ -378,7 +385,6 @@ export default class Character extends Laya.Script {
     this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);//loop:0為循環播放
     atkBoxCollider.isSensor = true;
     atkCircleRigid.gravityScale = 0;
-    // atkCircle.graphics.drawRect(0, 0, 100, 100, "gray", "gray", 1);
 
     Laya.stage.addChild(atkCircle);
 
@@ -387,6 +393,47 @@ export default class Character extends Laya.Script {
       atkCircle.destroyed = true;
     }, 100);
   }
+  private attackSimulation(): void{
+    let temp:Laya.Animation = this.m_animation;
+    let atkRange:number = 100;
+    let offsetX:number = this.m_isFacingRight ? (temp.x + (temp.width/2)) : (temp.x - (temp.width/2) - atkRange);
+    let offsetY:number = temp.y - (temp.height/3);
+    let soundNum: number = Math.floor(Math.random() * 2);
+
+    // Laya.stage.graphics.drawRect(offsetX, offsetY, atkRange, atkRange, 'red', 'red', 2);
+
+    this.attackRangeCheck({
+      'x0': offsetX,
+      'x1': offsetX + atkRange,
+      'y0': offsetY,
+      'y1': offsetY + atkRange,
+    }, 'rect');
+
+    this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
+  }
+  private attackRangeCheck(pos:object, type: string): void{
+    let enemy = EnemyHandler.enemyPool;
+    let player = this.m_animation;
+    switch (type) {
+      // return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
+      case 'rect':
+        let enemyFound = enemy.filter(data => this.rectIntersect(pos,data._ent.m_rectangle) === true);
+        enemyFound.forEach((e) => {
+          e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+        });
+        break;
+      default:
+        break;
+    }
+  }
+  public rectIntersect(r1, r2): boolean{
+    let aLeftOfB:boolean = r1.x1 < r2.x0;
+    let aRightOfB:boolean = r1.x0 > r2.x1;
+    let aAboveB:boolean = r1.y0 > r2.y1;
+    let aBelowB:boolean = r1.y1 < r2.y0;
+
+    return !( aLeftOfB || aRightOfB || aAboveB || aBelowB );
+}
   private createAttackEffect(player: Laya.Animation) {
     let slashEffect: Laya.Animation = new Laya.Animation();
     slashEffect.source = "comp/SlashEffects/Slash_0029.png,comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";

@@ -22,6 +22,7 @@ abstract class Enemy extends Laya.Script {
     m_animSheet: string;
 
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
+    m_rectangle: object = {"x0": 0, "x1": 0, "y0": 0, "y1": 0};
     m_maxHealth: number;
     m_attackRange: number = 100;
     m_hurtDelay: number = 0;
@@ -67,6 +68,7 @@ abstract class Enemy extends Laya.Script {
         this.m_script = this.m_animation.addComponent(Laya.Script);
         this.m_script.onUpdate = () => {
             this.enemyAIMain();
+            this.checkPosition();
         }
 
         this.m_collider.width = this.m_animation.width;
@@ -93,9 +95,10 @@ abstract class Enemy extends Laya.Script {
     setHealth(amount: number): void {
         this.m_health = amount;
         if (this.m_health <= 0) {
-            this.m_animation.filters = null;
-            this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)//loop:0為循環播放;
-            this.bloodSplitEffect(this.m_animation);
+            // this.m_animation.filters = null;
+
+            // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)
+            // this.bloodSplitEffect(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
         }
@@ -119,6 +122,8 @@ abstract class Enemy extends Laya.Script {
         this.m_collider.label = index;
     };
     takeDamage(amount: number) {
+        if(this.m_animation.destroyed) return;
+
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 50);
         
@@ -183,6 +188,8 @@ abstract class Enemy extends Laya.Script {
         Laya.stage.addChild(this.m_healthBar);
 
         setInterval((() => {
+            if(this.m_healthBar.destroyed)
+                return;
             if (this.m_animation.destroyed) {
                 this.m_healthBar.destroy();
                 this.m_healthBar.destroyed = true;
@@ -229,7 +236,12 @@ abstract class Enemy extends Laya.Script {
             this.tryAttack();
         }
     }
-
+    private checkPosition() {
+        this.m_rectangle['x0'] = this.m_animation.x - (this.m_animation.width/2);
+        this.m_rectangle['x1'] = this.m_animation.x + (this.m_animation.width/2);
+        this.m_rectangle['y0'] = this.m_animation.y - (this.m_animation.height/2);
+        this.m_rectangle['y1'] = this.m_animation.y + (this.m_animation.height/2);
+    }
     private pursuitPlayer() {
         if(CharacterInit.playerEnt.m_animation.destroyed){
             this.updateAnimation(this.m_state, EnemyStatus.idle);
