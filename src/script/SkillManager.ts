@@ -19,7 +19,7 @@ abstract class Skill extends Laya.Script{
 
 export class SkillSpike extends Skill{
     m_name = '突進斬';
-    m_damage = 100;
+    m_damage = 1;
     m_cost = 0;
     m_id = 1;
 
@@ -57,7 +57,8 @@ export class SkillSpike extends Skill{
         this.m_script.onTriggerEnter = (col:Laya.BoxCollider) => {
             if(col.tag === 'Enemy'){
                 let victim = EnemyHandler.getEnemyByLabel(col.label)
-                victim.takeDamage(777);
+                // victim.enemyInjuredColor();//0921新增
+                victim.takeDamage(this.m_damage);
             }
         }
         this.m_collider.width = this.m_animation.width;

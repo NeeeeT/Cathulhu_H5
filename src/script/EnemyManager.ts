@@ -22,6 +22,7 @@ abstract class Enemy extends Laya.Script {
     m_animSheet: string;
 
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
+    m_rectangle: object = {"x0": 0, "x1": 0, "y0": 0, "y1": 0};
     m_maxHealth: number;
     m_attackRange: number = 100;
     m_hurtDelay: number = 0;
@@ -42,6 +43,7 @@ abstract class Enemy extends Laya.Script {
 
     spawn(player: Laya.Animation, id: string): void {
         this.m_animation = new Laya.Animation();
+        this.m_animation.filters = [];
         this.m_animation.scaleX = 4;
         this.m_animation.scaleY = 4;
 
@@ -66,6 +68,7 @@ abstract class Enemy extends Laya.Script {
         this.m_script = this.m_animation.addComponent(Laya.Script);
         this.m_script.onUpdate = () => {
             this.enemyAIMain();
+            this.checkPosition();
         }
 
         this.m_collider.width = this.m_animation.width;
@@ -92,8 +95,10 @@ abstract class Enemy extends Laya.Script {
     setHealth(amount: number): void {
         this.m_health = amount;
         if (this.m_health <= 0) {
-            this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)//loop:0為循環播放;
-            this.bloodSplitEffect(this.m_animation);
+            // this.m_animation.filters = null;
+
+            // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)
+            // this.bloodSplitEffect(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
         }
@@ -117,14 +122,15 @@ abstract class Enemy extends Laya.Script {
         this.m_collider.label = index;
     };
     takeDamage(amount: number) {
+        if(this.m_animation.destroyed) return;
+
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 50);
-
+        
         amount *= critical ? 5 : 1;
         this.setHealth(this.getHealth() - amount);
         this.damageTextEffect(amount, critical);
         this.m_healthBar.alpha = 1;
-
         if (critical){
             this.m_animation.x--;
             this.m_animation.y++;
@@ -182,6 +188,8 @@ abstract class Enemy extends Laya.Script {
         Laya.stage.addChild(this.m_healthBar);
 
         setInterval((() => {
+            if(this.m_healthBar.destroyed)
+                return;
             if (this.m_animation.destroyed) {
                 this.m_healthBar.destroy();
                 this.m_healthBar.destroyed = true;
@@ -228,7 +236,12 @@ abstract class Enemy extends Laya.Script {
             this.tryAttack();
         }
     }
-
+    private checkPosition() {
+        this.m_rectangle['x0'] = this.m_animation.x - (this.m_animation.width/2);
+        this.m_rectangle['x1'] = this.m_animation.x + (this.m_animation.width/2);
+        this.m_rectangle['y0'] = this.m_animation.y - (this.m_animation.height/2);
+        this.m_rectangle['y1'] = this.m_animation.y + (this.m_animation.height/2);
+    }
     private pursuitPlayer() {
         if(CharacterInit.playerEnt.m_animation.destroyed){
             this.updateAnimation(this.m_state, EnemyStatus.idle);
@@ -287,8 +300,13 @@ abstract class Enemy extends Laya.Script {
         atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
             if (col.tag === 'Player') {
                 let victim = CharacterInit.playerEnt;
+                victim.m_animation.alpha = 0.3;//0921新增
                 // victim.m_health -= 50;
                 victim.takeDamage(30);
+                setTimeout(() => {
+                    if(victim.m_animation.destroyed) return
+                    victim.m_animation.alpha = 1;
+                }, 150);//0921新增
             }
         };
         atkBoxCollider.isSensor = true;
@@ -345,6 +363,25 @@ abstract class Enemy extends Laya.Script {
         }
         if(typeof onCallBack === 'function')
             onCallBack();
+    }
+    public enemyInjuredColor():void//0921新增
+    {
+        this.m_animation.alpha = 1;
+        let colorMat: Array<number> =
+            [
+                4, 0, 0, 0, 10, //R
+                0, 1, 0, 0, 10, //G
+                0, 0, 4, 0, 10, //B
+                0, 0, 0, 1, 0, //A
+            ];
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
+        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+        this.m_animation.filters = [colorFilter,glowFilter];
+        setTimeout(() => {
+          if(this.m_animation.destroyed) return;
+          this.m_animation.alpha = 1;
+          this.m_animation.filters = null;  
+        }, 200);
     }
 }
 export class EnemyNormal extends Enemy {

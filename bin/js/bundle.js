@@ -123,7 +123,7 @@
         constructor() {
             super(...arguments);
             this.m_name = '突進斬';
-            this.m_damage = 100;
+            this.m_damage = 1;
             this.m_cost = 0;
             this.m_id = 1;
         }
@@ -155,7 +155,7 @@
             this.m_script.onTriggerEnter = (col) => {
                 if (col.tag === 'Enemy') {
                     let victim = EnemyHandler.getEnemyByLabel(col.label);
-                    victim.takeDamage(777);
+                    victim.takeDamage(this.m_damage);
                 }
             };
             this.m_collider.width = this.m_animation.width;
@@ -378,8 +378,8 @@
             if (this.m_keyDownList[17]) {
                 if (!this.m_canAttack)
                     return;
-                this.createAttackCircle(this.m_animation);
                 this.createAttackEffect(this.m_animation);
+                this.attackSimulation();
                 this.m_canAttack = false;
                 setTimeout(() => {
                     this.m_canAttack = true;
@@ -440,6 +440,41 @@
                 atkCircle.destroy();
                 atkCircle.destroyed = true;
             }, 100);
+        }
+        attackSimulation() {
+            let temp = this.m_animation;
+            let atkRange = 100;
+            let offsetX = this.m_isFacingRight ? (temp.x + (temp.width / 2)) : (temp.x - (temp.width / 2) - atkRange);
+            let offsetY = temp.y - (temp.height / 3);
+            let soundNum = Math.floor(Math.random() * 2);
+            this.attackRangeCheck({
+                'x0': offsetX,
+                'x1': offsetX + atkRange,
+                'y0': offsetY,
+                'y1': offsetY + atkRange,
+            }, 'rect');
+            this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
+        }
+        attackRangeCheck(pos, type) {
+            let enemy = EnemyHandler.enemyPool;
+            let player = this.m_animation;
+            switch (type) {
+                case 'rect':
+                    let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
+                    enemyFound.forEach((e) => {
+                        e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+        rectIntersect(r1, r2) {
+            let aLeftOfB = r1.x1 < r2.x0;
+            let aRightOfB = r1.x0 > r2.x1;
+            let aAboveB = r1.y0 > r2.y1;
+            let aBelowB = r1.y1 < r2.y0;
+            return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
         }
         createAttackEffect(player) {
             let slashEffect = new Laya.Animation();
@@ -598,13 +633,13 @@
             if (CharacterInit.playerEnt.m_animation.destroyed)
                 return;
             let colorNum = 2;
-            let colorMat = [
+            let oathColorMat = [
                 Math.floor(Math.random() * 2) + 2, 0, 0, 0, -100,
                 0, Math.floor(Math.random() * 2) + 1, 0, 0, -100,
                 0, 0, Math.floor(Math.random() * 2) + 2, 0, -100,
                 0, 0, 0, 1, 0,
             ];
-            let colorFilter = new Laya.ColorFilter(colorMat);
+            let colorFilter = new Laya.ColorFilter(oathColorMat);
             let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 40, 0, 0);
             CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
             OathManager.catLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
@@ -633,6 +668,7 @@
             this.m_speed = 3;
             this.m_tag = '';
             this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
+            this.m_rectangle = { "x0": 0, "x1": 0, "y0": 0, "y1": 0 };
             this.m_attackRange = 100;
             this.m_hurtDelay = 0;
             this.m_atkCd = true;
@@ -642,6 +678,7 @@
         }
         spawn(player, id) {
             this.m_animation = new Laya.Animation();
+            this.m_animation.filters = [];
             this.m_animation.scaleX = 4;
             this.m_animation.scaleY = 4;
             this.m_animation.width = 35;
@@ -663,6 +700,7 @@
             this.m_script = this.m_animation.addComponent(Laya.Script);
             this.m_script.onUpdate = () => {
                 this.enemyAIMain();
+                this.checkPosition();
             };
             this.m_collider.width = this.m_animation.width;
             this.m_collider.height = this.m_animation.height;
@@ -686,8 +724,6 @@
         setHealth(amount) {
             this.m_health = amount;
             if (this.m_health <= 0) {
-                this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1);
-                this.bloodSplitEffect(this.m_animation);
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
             }
@@ -717,6 +753,8 @@
         }
         ;
         takeDamage(amount) {
+            if (this.m_animation.destroyed)
+                return;
             let fakeNum = Math.random() * 100;
             let critical = (fakeNum <= 50);
             amount *= critical ? 5 : 1;
@@ -774,6 +812,8 @@
             this.m_healthBar.alpha = 1;
             Laya.stage.addChild(this.m_healthBar);
             setInterval((() => {
+                if (this.m_healthBar.destroyed)
+                    return;
                 if (this.m_animation.destroyed) {
                     this.m_healthBar.destroy();
                     this.m_healthBar.destroyed = true;
@@ -814,6 +854,12 @@
             if (this.playerRangeCheck(this.m_attackRange * 2)) {
                 this.tryAttack();
             }
+        }
+        checkPosition() {
+            this.m_rectangle['x0'] = this.m_animation.x - (this.m_animation.width / 2);
+            this.m_rectangle['x1'] = this.m_animation.x + (this.m_animation.width / 2);
+            this.m_rectangle['y0'] = this.m_animation.y - (this.m_animation.height / 2);
+            this.m_rectangle['y1'] = this.m_animation.y + (this.m_animation.height / 2);
         }
         pursuitPlayer() {
             if (CharacterInit.playerEnt.m_animation.destroyed) {
@@ -861,7 +907,13 @@
             atkCircleScript.onTriggerEnter = function (col) {
                 if (col.tag === 'Player') {
                     let victim = CharacterInit.playerEnt;
+                    victim.m_animation.alpha = 0.3;
                     victim.takeDamage(30);
+                    setTimeout(() => {
+                        if (victim.m_animation.destroyed)
+                            return;
+                        victim.m_animation.alpha = 1;
+                    }, 150);
                 }
             };
             atkBoxCollider.isSensor = true;
@@ -914,6 +966,24 @@
             }
             if (typeof onCallBack === 'function')
                 onCallBack();
+        }
+        enemyInjuredColor() {
+            this.m_animation.alpha = 1;
+            let colorMat = [
+                4, 0, 0, 0, 10,
+                0, 1, 0, 0, 10,
+                0, 0, 4, 0, 10,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            this.m_animation.filters = [colorFilter, glowFilter];
+            setTimeout(() => {
+                if (this.m_animation.destroyed)
+                    return;
+                this.m_animation.alpha = 1;
+                this.m_animation.filters = null;
+            }, 200);
         }
     }
     class EnemyNormal extends Enemy {
@@ -1030,7 +1100,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
