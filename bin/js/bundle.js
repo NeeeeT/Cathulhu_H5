@@ -457,7 +457,6 @@
         }
         attackRangeCheck(pos, type) {
             let enemy = EnemyHandler.enemyPool;
-            let player = this.m_animation;
             switch (type) {
                 case 'rect':
                     let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);

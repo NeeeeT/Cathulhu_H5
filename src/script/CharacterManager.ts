@@ -39,8 +39,8 @@ export default class Character extends Laya.Script {
   m_basic_attackCdTime: number;
 
   //誓約強化數值
-  m_buff_xMaxVelocity: number;
   // m_buff_velocityMultiplier: number;
+  m_buff_xMaxVelocity: number;
   m_buff_attackCdTime: number;
 
   m_playerVelocity: object;
@@ -55,7 +55,7 @@ export default class Character extends Laya.Script {
 
   m_keyDownList: Array<boolean>;
 
-  //special settings for skill 0915 柏昇
+  //special settings for skill 0915 柏昇 it'll be deleted after skillBox adding.
   m_canUseSpike: boolean = true;
 
   m_animation: Laya.Animation;
@@ -413,11 +413,10 @@ export default class Character extends Laya.Script {
   }
   private attackRangeCheck(pos:object, type: string): void{
     let enemy = EnemyHandler.enemyPool;
-    let player = this.m_animation;
     switch (type) {
       // return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
       case 'rect':
-        let enemyFound = enemy.filter(data => this.rectIntersect(pos,data._ent.m_rectangle) === true);
+        let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
         enemyFound.forEach((e) => {
           e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
         });
