@@ -58,6 +58,8 @@ export default class Character extends Laya.Script {
   //special settings for skill 0915 柏昇 it'll be deleted after skillBox adding.
   m_canUseSpike: boolean = true;
 
+  m_skillPool: object = {"cat": null, "player": null};
+
   m_animation: Laya.Animation;
   m_rigidbody: Laya.RigidBody;
   m_collider: Laya.BoxCollider;

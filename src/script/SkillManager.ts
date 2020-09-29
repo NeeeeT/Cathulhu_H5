@@ -3,15 +3,23 @@ import Character from "./CharacterManager";
 import EnemyHandler from "./EnemyHandler";
 
 abstract class Skill extends Laya.Script{
+    /** 技能名稱 */
     abstract m_name: string;
+    /** 技能傷害 */
     abstract m_damage: number;
+    /** 技能獻祭值消耗 */
     abstract m_cost: number;
+    /** 技能ID */
     abstract m_id: number;
-
+    /** 技能冷卻時間 */
+    abstract m_cd: number;
+    
     m_animation: Laya.Animation;
     m_rigidbody: Laya.RigidBody;
     m_script: Laya.Script;
     m_collider: Laya.BoxCollider;
+
+    m_canUse: boolean = true;
 
     cast(position: object): void{ 
     }
@@ -22,8 +30,11 @@ export class SkillSpike extends Skill{
     m_damage = 1;
     m_cost = 0;
     m_id = 1;
+    m_cd = 3;
 
     cast(position: object):void{
+        if(!this.m_canUse) return;
+
         let player: Character = CharacterInit.playerEnt;
         let rightSide: boolean = player.m_isFacingRight;
 
@@ -36,6 +47,8 @@ export class SkillSpike extends Skill{
         this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 20;
+
+        this.m_canUse = false;
 
         let colorMat: Array<number> =
         [
@@ -86,6 +99,9 @@ export class SkillSpike extends Skill{
         //     clearInterval(dash);
         // }, 200);
         player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 0.5 : -0.5);
-    }
 
+        setTimeout(()=>{
+            this.m_canUse = true;
+        }, this.m_cd);
+    }
 }
