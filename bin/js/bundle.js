@@ -115,7 +115,7 @@
     OathManager.increaseBloodyPoint = 10;
     OathManager.isCharging = false;
 
-    class Skill extends Laya.Script {
+    class VirtualSkill extends Laya.Script {
         constructor() {
             super(...arguments);
             this.m_canUse = true;
@@ -123,7 +123,7 @@
         cast(position) {
         }
     }
-    class SkillSpike extends Skill {
+    class Spike extends VirtualSkill {
         constructor() {
             super(...arguments);
             this.m_name = '突進斬';
@@ -533,7 +533,7 @@
             slashEffect.play();
         }
         setSkill() {
-            this.m_playerSkill = new SkillSpike();
+            this.m_playerSkill = new Spike();
         }
         resetMove() {
             this.m_playerVelocity["Vx"] = 0;
@@ -675,7 +675,7 @@
         EnemyStatus[EnemyStatus["defend"] = 7] = "defend";
         EnemyStatus[EnemyStatus["death"] = 8] = "death";
     })(EnemyStatus || (EnemyStatus = {}));
-    class Enemy extends Laya.Script {
+    class VirtualEnemy extends Laya.Script {
         constructor() {
             super(...arguments);
             this.m_name = '';
@@ -1002,7 +1002,7 @@
             }, 200);
         }
     }
-    class EnemyNormal extends Enemy {
+    class Normal extends VirtualEnemy {
         constructor() {
             super(...arguments);
             this.m_name = '普通敵人';
@@ -1013,7 +1013,7 @@
             this.m_attackRange = 100;
         }
     }
-    class EnemyShield extends Enemy {
+    class Shield extends VirtualEnemy {
         constructor() {
             super(...arguments);
             this.m_name = '裝甲敵人';
@@ -1036,9 +1036,9 @@
         }
         static decideEnemyType(enemyType) {
             switch (enemyType) {
-                case 1: return new EnemyNormal();
-                case 2: return new EnemyShield();
-                default: return new EnemyNormal();
+                case 1: return new Normal();
+                case 2: return new Shield();
+                default: return new Normal();
             }
             ;
         }
@@ -1050,7 +1050,6 @@
         }
         static getEnemyByLabel(label) {
             return this.enemyPool.filter(data => data._id === label)[0]['_ent'];
-            ;
         }
     }
     EnemyHandler.enemyIndex = 0;

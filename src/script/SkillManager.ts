@@ -2,7 +2,8 @@ import CharacterInit from "./CharacterInit";
 import Character from "./CharacterManager";
 import EnemyHandler from "./EnemyHandler";
 
-export abstract class Skill extends Laya.Script{
+/** (虛擬)技能基礎設定 */
+export abstract class VirtualSkill extends Laya.Script{
     /** 技能名稱 */
     abstract m_name: string;
     /** 技能傷害 */
@@ -25,7 +26,7 @@ export abstract class Skill extends Laya.Script{
     }
 }
 
-export class SkillSpike extends Skill{
+export class Spike extends VirtualSkill{
     m_name = '突進斬';
     m_damage = 1;
     m_cost = 0;

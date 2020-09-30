@@ -2,7 +2,7 @@ import Raycast from "./Raycast";
 import DrawCmd from "./DrawCmd";
 import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
-import { Skill, SkillSpike } from "./SkillManager";
+import * as Skill from "./SkillManager";
 import EnemyInit from "./EnemyInit";
 
 export enum CharacterStatus {
@@ -55,8 +55,8 @@ export default class Character extends Laya.Script {
 
   m_keyDownList: Array<boolean>;
 
-  private m_catSkill: Skill = null;
-  private m_playerSkill: Skill = null;
+  private m_catSkill: Skill.VirtualSkill = null;
+  private m_playerSkill: Skill.VirtualSkill = null;
 
   m_animation: Laya.Animation;
   m_rigidbody: Laya.RigidBody;
@@ -477,7 +477,7 @@ export default class Character extends Laya.Script {
     slashEffect.play();
   }
   private setSkill(): void{
-    this.m_playerSkill = new SkillSpike();//設定人類技能為 "突進斬"
+    this.m_playerSkill = new Skill.Spike();//設定人類技能為 "突進斬"
   }
   private resetMove(): void {
     this.m_playerVelocity["Vx"] = 0;

@@ -1,5 +1,4 @@
 import CharacterInit from "./CharacterInit";
-import { CharacterIdleState } from "./CharacterState";
 
 export enum EnemyStatus{
     idle = 0,
@@ -12,8 +11,8 @@ export enum EnemyStatus{
     defend,
     death
 }
-
-abstract class Enemy extends Laya.Script {
+/** (虛擬)敵人基礎設定 */
+export abstract class VirtualEnemy extends Laya.Script {
     abstract m_name: string = '';
     abstract m_health: number = 1000;
     abstract m_armor: number = 0;
@@ -384,7 +383,7 @@ abstract class Enemy extends Laya.Script {
         }, 200);
     }
 }
-export class EnemyNormal extends Enemy {
+export class Normal extends VirtualEnemy {
     m_name = '普通敵人';
     m_health = 1000;
     m_armor = 100;
@@ -392,7 +391,7 @@ export class EnemyNormal extends Enemy {
     m_tag = 'n';
     m_attackRange = 100; 
 }
-export class EnemyShield extends Enemy {
+export class Shield extends VirtualEnemy {
     m_name = '裝甲敵人';
     m_armor = 500;
     m_health = 1500;

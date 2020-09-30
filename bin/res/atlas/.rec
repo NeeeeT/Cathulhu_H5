@@ -24,6 +24,7 @@ P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
 D Character(0904)
+D Character(0929)
 D comp
 P 1DFA6065 box.png
 P 316AD948 btn_close.png
@@ -117,6 +118,25 @@ P 7F4F883E character_stand_1.png
 P 21FAEDBE character_stand_2.png
 P D275C0EA character_stand_3.png
 P 10778F13 character_stand_4.png
+D Character(0929)/Attack
+P EB2A0F59 character_attack_1.png
+P E49CE9F2 character_attack_2.png
+P 1F59E3FF character_attack_3.png
+P DB4049DF character_attack_4.png
+P 7A414C84 character_attack_5.png
+P F9BEEA5B character_attack_6.png
+P 079FC355 character_attack_7.png
+P 45F31F18 character_attack_8.png
+D Character(0929)/Idle
+P C079B7BA character_idle_1.png
+P 4127B555 character_idle_2.png
+P CAEF3397 character_idle_3.png
+P 2F6F87C6 character_idle_4.png
+D Character(0929)/Walk
+P 5F8DC9F2 character_walk_1.png
+P 6FA7D3D5 character_walk_2.png
+P D4E53559 character_walk_3.png
+P F2E89D77 character_walk_4.png
 D comp/SlashEffects
 R 7E72A836 Slash_0029.png
 R 0A7C3187 Slash_0030.png
