@@ -28258,6 +28258,7 @@ window.box2d = box2d;
     }
     setVelocity(velocity) {
       if (!this._body) this._onAwake();
+      
       this._body.SetLinearVelocity(velocity);
     }
     setAngle(value) {

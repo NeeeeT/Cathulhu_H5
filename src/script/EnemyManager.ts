@@ -148,9 +148,8 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_hurtDelay = 2.0;
             this.m_hurtDelayTimer = setInterval(()=>{
                 if(this.m_hurtDelay <= 0){
-                    console.log('< 0!!!!');
                     clearInterval(this.m_hurtDelayTimer);
-                    this.m_hurtDelay = 0;
+                    this.m_hurtDelay = -1;
                 }
                 this.m_hurtDelay -= 0.1;
             }, 100);

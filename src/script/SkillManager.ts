@@ -1,5 +1,3 @@
-import EnemyHandler from "./EnemyHandler";
-
 export abstract class VirtualSkill extends Laya.Script{
     /** 技能名稱 */
     abstract m_name: string;
@@ -21,19 +19,19 @@ export abstract class VirtualSkill extends Laya.Script{
 
     cast(position: object): void{ 
     };
-    attackRangeCheck(pos:object, type: string): void{
-        let enemy = EnemyHandler.enemyPool;
-        switch (type) {
-          case 'rect':
-            let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
-            enemyFound.forEach((e) => {
-              e._ent.takeDamage(this.m_damage);
-            });
-            break;
-          default:
-            break;
-        }
-    }
+    // attackRangeCheck(pos:object, type: string): void{
+    //     let enemy = EnemyHandler.enemyPool;
+    //     switch (type) {
+    //       case 'rect':
+    //         let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
+    //         enemyFound.forEach((e) => {
+    //           e._ent.takeDamage(this.m_damage);
+    //         });
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    // }
     rectIntersect(r1, r2): boolean{
         let aLeftOfB:boolean = r1.x1 < r2.x0;
         let aRightOfB:boolean = r1.x0 > r2.x1;

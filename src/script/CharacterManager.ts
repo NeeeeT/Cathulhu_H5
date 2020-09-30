@@ -495,10 +495,9 @@ export default class Character extends Laya.Script {
         if(this.m_moveDelayValue <= 0){
           this.resetMove();
           clearInterval(this.m_moveDelayTimer);
-          this.m_moveDelayValue = 0;
+          this.m_moveDelayValue = -1;
         }
         this.m_moveDelayValue -= 0.1;
-        console.log('reducing move delay, now move delay: ', this.m_moveDelayValue);
       }, 100)
     }
   }
@@ -509,7 +508,7 @@ export default class Character extends Laya.Script {
     this.applyMoveY();
   }
   private applyMoveX(): void {
-    if(this.m_moveDelayValue > 0) return;
+    if(this.m_moveDelayValue > 0 || this.m_animation.destroyed) return;
     this.m_rigidbody.setVelocity({
       x: this.m_playerVelocity["Vx"],
       y: this.m_rigidbody.linearVelocity.y,

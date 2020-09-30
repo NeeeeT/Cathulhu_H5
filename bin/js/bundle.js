@@ -123,19 +123,6 @@
         cast(position) {
         }
         ;
-        attackRangeCheck(pos, type) {
-            let enemy = EnemyHandler.enemyPool;
-            switch (type) {
-                case 'rect':
-                    let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
-                    enemyFound.forEach((e) => {
-                        e._ent.takeDamage(this.m_damage);
-                    });
-                    break;
-                default:
-                    break;
-            }
-        }
         rectIntersect(r1, r2) {
             let aLeftOfB = r1.x1 < r2.x0;
             let aRightOfB = r1.x0 > r2.x1;
@@ -190,7 +177,7 @@
                 "x1": offsetX + this.m_animation.width,
                 "y0": offsetY,
                 "y1": offsetY + this.m_animation.height,
-            }, "rect");
+            });
             Laya.stage.addChild(this.m_animation);
             setTimeout(() => {
                 this.m_animation.destroy();
@@ -200,25 +187,20 @@
                 this.m_canUse = true;
             }, this.m_cd * 1000);
         }
-        attackRangeCheck(pos, type) {
+        attackRangeCheck(pos) {
             let enemy = EnemyHandler.enemyPool;
             let player = CharacterInit.playerEnt;
             let rightSide = player.m_isFacingRight;
-            switch (type) {
-                case 'rect':
-                    let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
-                    enemyFound.forEach((e) => {
-                        e._ent.m_rigidbody.setVelocity({
-                            x: rightSide ? 25 : -25,
-                            y: 0,
-                        });
-                        e._ent.takeDamage(this.m_damage);
-                        e._ent.delayMove(0.1);
-                    });
-                    break;
-                default:
-                    break;
-            }
+            let enemyFound = enemy.filter(data => (this.rectIntersect(pos, data._ent.m_rectangle) === true && data._ent.m_rigidbody !== null));
+            enemyFound.forEach((e) => {
+                if (e._ent.m_rigidbody === null || e === null || e._ent === null) {
+                    console.log("ERROR PREVENT!!!");
+                    return;
+                }
+                e._ent.delayMove(0.1);
+                e._ent.takeDamage(this.m_damage);
+                console.log(e);
+            });
         }
     }
 
@@ -542,10 +524,9 @@
                     if (this.m_moveDelayValue <= 0) {
                         this.resetMove();
                         clearInterval(this.m_moveDelayTimer);
-                        this.m_moveDelayValue = 0;
+                        this.m_moveDelayValue = -1;
                     }
                     this.m_moveDelayValue -= 0.1;
-                    console.log('reducing move delay, now move delay: ', this.m_moveDelayValue);
                 }, 100);
             }
         }
@@ -556,7 +537,7 @@
             this.applyMoveY();
         }
         applyMoveX() {
-            if (this.m_moveDelayValue > 0)
+            if (this.m_moveDelayValue > 0 || this.m_animation.destroyed)
                 return;
             this.m_rigidbody.setVelocity({
                 x: this.m_playerVelocity["Vx"],
@@ -807,9 +788,8 @@
                 this.m_hurtDelay = 2.0;
                 this.m_hurtDelayTimer = setInterval(() => {
                     if (this.m_hurtDelay <= 0) {
-                        console.log('< 0!!!!');
                         clearInterval(this.m_hurtDelayTimer);
-                        this.m_hurtDelay = 0;
+                        this.m_hurtDelay = -1;
                     }
                     this.m_hurtDelay -= 0.1;
                 }, 100);
@@ -982,7 +962,7 @@
             }
         }
         applyMoveX() {
-            if (this.m_moveDelayValue > 0)
+            if (this.m_moveDelayValue > 0 || this.m_animation.destroyed)
                 return;
             this.m_rigidbody.setVelocity({
                 x: this.m_moveVelocity["Vx"],
