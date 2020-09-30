@@ -2,7 +2,7 @@ import CharacterInit from "./CharacterInit";
 import Character from "./CharacterManager";
 import EnemyHandler from "./EnemyHandler";
 
-abstract class Skill extends Laya.Script{
+export abstract class Skill extends Laya.Script{
     /** 技能名稱 */
     abstract m_name: string;
     /** 技能傷害 */
@@ -102,6 +102,6 @@ export class SkillSpike extends Skill{
 
         setTimeout(()=>{
             this.m_canUse = true;
-        }, this.m_cd);
+        }, this.m_cd*1000);
     }
 }

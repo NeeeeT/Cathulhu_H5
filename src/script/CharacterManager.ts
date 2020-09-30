@@ -2,7 +2,7 @@ import Raycast from "./Raycast";
 import DrawCmd from "./DrawCmd";
 import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
-import { SkillSpike } from "./SkillManager";
+import { Skill, SkillSpike } from "./SkillManager";
 import EnemyInit from "./EnemyInit";
 
 export enum CharacterStatus {
@@ -55,10 +55,8 @@ export default class Character extends Laya.Script {
 
   m_keyDownList: Array<boolean>;
 
-  //special settings for skill 0915 柏昇 it'll be deleted after skillBox adding.
-  m_canUseSpike: boolean = true;
-
-  m_skillPool: object = {"cat": null, "player": null};
+  private m_catSkill: Skill = null;
+  private m_playerSkill: Skill = null;
 
   m_animation: Laya.Animation;
   m_rigidbody: Laya.RigidBody;
@@ -142,6 +140,7 @@ export default class Character extends Laya.Script {
 
     this.cameraFollower();
     this.showHealth();
+    this.setSkill();
   };
   setHealth(amount: number): void {
     this.m_health = amount;
@@ -258,6 +257,7 @@ export default class Character extends Laya.Script {
     }
     if (this.m_keyDownList[40]) {
       //Down
+      console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_playerSkill);
     }
     if (this.m_keyDownList[32]) {
       let width_offset: number =
@@ -298,10 +298,6 @@ export default class Character extends Laya.Script {
         Laya.stage.graphics.clear();
         // this.cd_ray = true;
       }, 500);
-      //敵人生成測試
-      //   EnemyHandler.generator(this.characterSprite, this.isFacingRight ? 1 : 2, 0);
-      //誓約系統測試
-      //   OathManager.setBloodyPoint(OathManager.getBloodyPoint() - 10);
     }
     if (this.m_keyDownList[17]) {
       if (!this.m_canAttack) return;
@@ -329,18 +325,10 @@ export default class Character extends Laya.Script {
     }
     if (this.m_keyDownList[16]) OathManager.charge();
     if (this.m_keyDownList[49]&&this.m_keyDownList[37] || this.m_keyDownList[49]&&this.m_keyDownList[39]){
-      if(!this.m_canUseSpike) return;
-
-      this.m_canUseSpike = false;
-      let spike: SkillSpike = new SkillSpike();
-      spike.cast({
+      this.m_playerSkill.cast({
         x: this.m_animation.x,
         y: this.m_animation.y - 65,
       });
-      
-      setTimeout(()=>{
-        this.m_canUseSpike = true;
-      }, 1000);
     }
   }
   private createAttackCircle(player: Laya.Animation) {
@@ -414,13 +402,21 @@ export default class Character extends Laya.Script {
     this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
   }
   private attackRangeCheck(pos:object, type: string): void{
+    //可做其他形狀的範圍偵測判斷 ex.三角形、圓形, etc...
     let enemy = EnemyHandler.enemyPool;
     switch (type) {
-      // return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
       case 'rect':
         let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
         enemyFound.forEach((e) => {
           e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+          if (!OathManager.isCharging) {
+            Character.setCameraShake(10, 3);
+            //誓約系統測試
+            OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+          } else {
+            // OathManager.chargeAttack(col.label);
+            Character.setCameraShake(50, 5);
+          }
         });
         break;
       default:
@@ -479,6 +475,9 @@ export default class Character extends Laya.Script {
   });
     Laya.stage.addChild(slashEffect);
     slashEffect.play();
+  }
+  private setSkill(): void{
+    this.m_playerSkill = new SkillSpike();//設定人類技能為 "突進斬"
   }
   private resetMove(): void {
     this.m_playerVelocity["Vx"] = 0;

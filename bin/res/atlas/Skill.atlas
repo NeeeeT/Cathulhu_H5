@@ -1,1 +1,1 @@
-{"frames":{"spike.png":{"frame":{"h":103,"idx":0,"w":295,"x":0,"y":0},"sourceSize":{"h":130,"w":328},"spriteSourceSize":{"x":16,"y":21}}},"meta":{"image":"Skill.png","prefix":"Skill/"}}
+{"frames":{"circle.png":{"frame":{"h":486,"idx":0,"w":486,"x":0,"y":0},"sourceSize":{"h":512,"w":512},"spriteSourceSize":{"x":13,"y":13}},"spike.png":{"frame":{"h":103,"idx":0,"w":295,"x":0,"y":487},"sourceSize":{"h":130,"w":328},"spriteSourceSize":{"x":16,"y":21}}},"meta":{"image":"Skill.png","prefix":"Skill/"}}

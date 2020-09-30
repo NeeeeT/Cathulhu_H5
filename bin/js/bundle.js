@@ -116,6 +116,10 @@
     OathManager.isCharging = false;
 
     class Skill extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.m_canUse = true;
+        }
         cast(position) {
         }
     }
@@ -126,8 +130,11 @@
             this.m_damage = 1;
             this.m_cost = 0;
             this.m_id = 1;
+            this.m_cd = 3;
         }
         cast(position) {
+            if (!this.m_canUse)
+                return;
             let player = CharacterInit.playerEnt;
             let rightSide = player.m_isFacingRight;
             this.m_animation = new Laya.Animation();
@@ -139,6 +146,7 @@
             this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
+            this.m_canUse = false;
             let colorMat = [
                 2, 0, 0, 0, -100,
                 0, 4, 0, 0, -100,
@@ -172,6 +180,9 @@
                 this.m_animation.destroyed = true;
             }, 200);
             player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 0.5 : -0.5);
+            setTimeout(() => {
+                this.m_canUse = true;
+            }, this.m_cd * 1000);
         }
     }
 
@@ -193,7 +204,8 @@
             this.m_isFacingRight = true;
             this.m_canJump = true;
             this.m_canAttack = true;
-            this.m_canUseSpike = true;
+            this.m_catSkill = null;
+            this.m_playerSkill = null;
         }
         spawn() {
             this.m_state = CharacterStatus.idle;
@@ -258,6 +270,7 @@
             OathManager.showBloodyLogo(this.m_animation, "comp/Cat.png");
             this.cameraFollower();
             this.showHealth();
+            this.setSkill();
         }
         ;
         setHealth(amount) {
@@ -354,6 +367,7 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false);
             }
             if (this.m_keyDownList[40]) {
+                console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_playerSkill);
             }
             if (this.m_keyDownList[32]) {
                 let width_offset = (this.m_animation.width / 2.5) * (this.m_isFacingRight ? 1 : -1);
@@ -388,17 +402,10 @@
             if (this.m_keyDownList[16])
                 OathManager.charge();
             if (this.m_keyDownList[49] && this.m_keyDownList[37] || this.m_keyDownList[49] && this.m_keyDownList[39]) {
-                if (!this.m_canUseSpike)
-                    return;
-                this.m_canUseSpike = false;
-                let spike = new SkillSpike();
-                spike.cast({
+                this.m_playerSkill.cast({
                     x: this.m_animation.x,
                     y: this.m_animation.y - 65,
                 });
-                setTimeout(() => {
-                    this.m_canUseSpike = true;
-                }, 1000);
             }
         }
         createAttackCircle(player) {
@@ -462,6 +469,13 @@
                     let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
                     enemyFound.forEach((e) => {
                         e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+                        if (!OathManager.isCharging) {
+                            Character.setCameraShake(10, 3);
+                            OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+                        }
+                        else {
+                            Character.setCameraShake(50, 5);
+                        }
                     });
                     break;
                 default:
@@ -517,6 +531,9 @@
             });
             Laya.stage.addChild(slashEffect);
             slashEffect.play();
+        }
+        setSkill() {
+            this.m_playerSkill = new SkillSpike();
         }
         resetMove() {
             this.m_playerVelocity["Vx"] = 0;
