@@ -1,5 +1,4 @@
 import EnemyHandler from "./EnemyHandler";
-
 import CharacterInit from "./CharacterInit";
 
 export default class OathManager extends Laya.Script {

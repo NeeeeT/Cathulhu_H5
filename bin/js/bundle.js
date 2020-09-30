@@ -122,15 +122,39 @@
         }
         cast(position) {
         }
+        ;
+        attackRangeCheck(pos, type) {
+            let enemy = EnemyHandler.enemyPool;
+            switch (type) {
+                case 'rect':
+                    let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
+                    enemyFound.forEach((e) => {
+                        e._ent.takeDamage(this.m_damage);
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+        rectIntersect(r1, r2) {
+            let aLeftOfB = r1.x1 < r2.x0;
+            let aRightOfB = r1.x0 > r2.x1;
+            let aAboveB = r1.y0 > r2.y1;
+            let aBelowB = r1.y1 < r2.y0;
+            return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
+        }
     }
+
     class Spike extends VirtualSkill {
         constructor() {
             super(...arguments);
             this.m_name = '突進斬';
-            this.m_damage = 1;
+            this.m_damage = 111;
             this.m_cost = 0;
             this.m_id = 1;
             this.m_cd = 3;
+            this.m_lasTime = 0.2;
+            this.m_spikeVec = 55.0;
         }
         cast(position) {
             if (!this.m_canUse)
@@ -143,6 +167,8 @@
             this.m_animation.scaleX = 2;
             this.m_animation.scaleY = 2;
             this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 130);
+            let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
+            let offsetY = position['y'] - this.m_animation.height / 2 + 20;
             this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
@@ -157,32 +183,42 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [glowFilter, colorFilter];
             this.m_animation.skewY = rightSide ? 0 : 180;
-            this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
-            this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
-            this.m_script = this.m_animation.addComponent(Laya.Script);
-            this.m_script.onTriggerEnter = (col) => {
-                if (col.tag === 'Enemy') {
-                    let victim = EnemyHandler.getEnemyByLabel(col.label);
-                    victim.takeDamage(this.m_damage);
-                }
-            };
-            this.m_collider.width = this.m_animation.width;
-            this.m_collider.height = this.m_animation.height;
-            this.m_collider.x = rightSide ? 100 : -500;
-            this.m_collider.isSensor = true;
-            this.m_rigidbody.gravityScale = 0;
-            this.m_rigidbody.allowRotation = false;
-            this.m_rigidbody.category = 2;
-            this.m_rigidbody.mask = 8;
+            player.delayMove(this.m_lasTime);
+            player.m_rigidbody.setVelocity({ x: rightSide ? this.m_spikeVec : -this.m_spikeVec, y: 0 });
+            this.attackRangeCheck({
+                "x0": offsetX,
+                "x1": offsetX + this.m_animation.width,
+                "y0": offsetY,
+                "y1": offsetY + this.m_animation.height,
+            }, "rect");
             Laya.stage.addChild(this.m_animation);
             setTimeout(() => {
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
             }, 200);
-            player.m_animation.x += this.m_animation.width * (player.m_isFacingRight ? 0.5 : -0.5);
             setTimeout(() => {
                 this.m_canUse = true;
             }, this.m_cd * 1000);
+        }
+        attackRangeCheck(pos, type) {
+            let enemy = EnemyHandler.enemyPool;
+            let player = CharacterInit.playerEnt;
+            let rightSide = player.m_isFacingRight;
+            switch (type) {
+                case 'rect':
+                    let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
+                    enemyFound.forEach((e) => {
+                        e._ent.m_rigidbody.setVelocity({
+                            x: rightSide ? 25 : -25,
+                            y: 0,
+                        });
+                        e._ent.takeDamage(this.m_damage);
+                        e._ent.delayMove(0.1);
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -201,11 +237,12 @@
     class Character extends Laya.Script {
         constructor() {
             super(...arguments);
+            this.m_moveDelayValue = 0;
             this.m_isFacingRight = true;
             this.m_canJump = true;
             this.m_canAttack = true;
             this.m_catSkill = null;
-            this.m_playerSkill = null;
+            this.m_humanSkill = null;
         }
         spawn() {
             this.m_state = CharacterStatus.idle;
@@ -367,7 +404,7 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false);
             }
             if (this.m_keyDownList[40]) {
-                console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_playerSkill);
+                console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
             }
             if (this.m_keyDownList[32]) {
                 let width_offset = (this.m_animation.width / 2.5) * (this.m_isFacingRight ? 1 : -1);
@@ -402,51 +439,11 @@
             if (this.m_keyDownList[16])
                 OathManager.charge();
             if (this.m_keyDownList[49] && this.m_keyDownList[37] || this.m_keyDownList[49] && this.m_keyDownList[39]) {
-                this.m_playerSkill.cast({
+                this.m_humanSkill.cast({
                     x: this.m_animation.x,
                     y: this.m_animation.y - 65,
                 });
             }
-        }
-        createAttackCircle(player) {
-            let atkCircle = new Laya.Sprite();
-            let x_offset = this.m_isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
-            let soundNum = Math.floor(Math.random() * 2);
-            if (this.m_isFacingRight) {
-                atkCircle.pos(player.x + x_offset, player.y - (this.m_animation.height * 1) / 2 + (this.m_animation.height * 1) / 8);
-            }
-            else {
-                atkCircle.pos(player.x - x_offset, player.y - (this.m_animation.height * 1) / 2 + (this.m_animation.height * 1) / 8);
-            }
-            let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
-            let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
-            let atkCircleScript = atkCircle.addComponent(Laya.Script);
-            atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
-            atkCircleRigid.category = 2;
-            atkCircleRigid.mask = 8;
-            atkCircleScript.onTriggerEnter = function (col) {
-                if (col.tag === 'Enemy') {
-                    let eh = EnemyHandler;
-                    let victim = eh.getEnemyByLabel(col.label);
-                    if (!OathManager.isCharging) {
-                        victim.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
-                        Character.setCameraShake(10, 3);
-                        OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
-                    }
-                    else {
-                        OathManager.chargeAttack(col.label);
-                        Character.setCameraShake(50, 5);
-                    }
-                }
-            };
-            this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
-            atkBoxCollider.isSensor = true;
-            atkCircleRigid.gravityScale = 0;
-            Laya.stage.addChild(atkCircle);
-            setTimeout(() => {
-                atkCircle.destroy();
-                atkCircle.destroyed = true;
-            }, 100);
         }
         attackSimulation() {
             let temp = this.m_animation;
@@ -533,7 +530,24 @@
             slashEffect.play();
         }
         setSkill() {
-            this.m_playerSkill = new Spike();
+            this.m_humanSkill = new Spike();
+        }
+        delayMove(time) {
+            if (this.m_moveDelayValue > 0) {
+                this.m_moveDelayValue += time;
+            }
+            else {
+                this.m_moveDelayValue = time;
+                this.m_moveDelayTimer = setInterval(() => {
+                    if (this.m_moveDelayValue <= 0) {
+                        this.resetMove();
+                        clearInterval(this.m_moveDelayTimer);
+                        this.m_moveDelayValue = 0;
+                    }
+                    this.m_moveDelayValue -= 0.1;
+                    console.log('reducing move delay, now move delay: ', this.m_moveDelayValue);
+                }, 100);
+            }
         }
         resetMove() {
             this.m_playerVelocity["Vx"] = 0;
@@ -542,6 +556,8 @@
             this.applyMoveY();
         }
         applyMoveX() {
+            if (this.m_moveDelayValue > 0)
+                return;
             this.m_rigidbody.setVelocity({
                 x: this.m_playerVelocity["Vx"],
                 y: this.m_rigidbody.linearVelocity.y,
@@ -682,6 +698,7 @@
             this.m_health = 1000;
             this.m_armor = 0;
             this.m_speed = 3;
+            this.m_mdelay = 0.5;
             this.m_tag = '';
             this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
             this.m_rectangle = { "x0": 0, "x1": 0, "y0": 0, "y1": 0 };
@@ -689,6 +706,7 @@
             this.m_hurtDelay = 0;
             this.m_atkCd = true;
             this.m_isFacingRight = true;
+            this.m_moveDelayValue = 0;
             this.m_animationChanging = false;
             this.m_state = EnemyStatus.idle;
         }
@@ -773,6 +791,7 @@
                 return;
             let fakeNum = Math.random() * 100;
             let critical = (fakeNum <= 50);
+            this.delayMove(this.m_mdelay);
             amount *= critical ? 5 : 1;
             this.setHealth(this.getHealth() - amount);
             this.damageTextEffect(amount, critical);
@@ -781,15 +800,16 @@
                 this.m_animation.x--;
                 this.m_animation.y++;
             }
-            if (this.m_hurtDelay) {
+            if (this.m_hurtDelay > 0) {
                 this.m_hurtDelay += 2.0;
             }
             else {
                 this.m_hurtDelay = 2.0;
-                setInterval(() => {
-                    if (this.m_hurtDelay < 0) {
+                this.m_hurtDelayTimer = setInterval(() => {
+                    if (this.m_hurtDelay <= 0) {
+                        console.log('< 0!!!!');
+                        clearInterval(this.m_hurtDelayTimer);
                         this.m_hurtDelay = 0;
-                        return;
                     }
                     this.m_hurtDelay -= 0.1;
                 }, 100);
@@ -835,7 +855,7 @@
                     this.m_healthBar.destroyed = true;
                     return;
                 }
-                this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && !this.m_hurtDelay) ? 0.02 : 0;
+                this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && this.m_hurtDelay <= 0) ? 0.02 : 0;
                 this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
                 this.m_healthBar.value = this.m_health / this.m_maxHealth;
             }), 10);
@@ -945,7 +965,25 @@
                 this.m_atkCd = true;
             }, 500);
         }
+        delayMove(time) {
+            if (this.m_moveDelayValue > 0) {
+                this.m_moveDelayValue += time;
+            }
+            else {
+                this.m_moveDelayValue = time;
+                this.m_moveDelayTimer = setInterval(() => {
+                    if (this.m_moveDelayValue <= 0) {
+                        this.m_moveVelocity["Vx"] = 0;
+                        clearInterval(this.m_moveDelayTimer);
+                        this.m_moveDelayValue = 0;
+                    }
+                    this.m_moveDelayValue -= 0.1;
+                }, 100);
+            }
+        }
         applyMoveX() {
+            if (this.m_moveDelayValue > 0)
+                return;
             this.m_rigidbody.setVelocity({
                 x: this.m_moveVelocity["Vx"],
                 y: this.m_rigidbody.linearVelocity.y,
@@ -1011,6 +1049,7 @@
             this.m_speed = 2;
             this.m_tag = 'n';
             this.m_attackRange = 100;
+            this.m_mdelay = 0.1;
         }
     }
     class Shield extends VirtualEnemy {
@@ -1022,6 +1061,7 @@
             this.m_speed = 1;
             this.m_tag = 's';
             this.m_attackRange = 100;
+            this.m_mdelay = 0.05;
         }
     }
 

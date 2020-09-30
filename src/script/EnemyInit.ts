@@ -1,5 +1,4 @@
 import EnemyHandler from "./EnemyHandler";
-import Character from "./CharacterManager";
 import CharacterInit from "./CharacterInit";
 
 export default class EnemyInit extends Laya.Script{

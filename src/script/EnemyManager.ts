@@ -17,6 +17,8 @@ export abstract class VirtualEnemy extends Laya.Script {
     abstract m_health: number = 1000;
     abstract m_armor: number = 0;
     abstract m_speed: number = 3;
+    /** 受到攻擊時的硬直秒數，單位:seconds。 */
+    abstract m_mdelay: number = 0.5;
     abstract m_tag: string = '';
     m_animSheet: string;
 
@@ -29,6 +31,9 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_atkTimer: number;
     m_isFacingRight: boolean = true;
 
+    m_moveDelayValue: number = 0;
+    m_moveDelayTimer;
+
     m_animationChanging: boolean = false;
 
     m_animation: Laya.Animation;
@@ -36,6 +41,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_rigidbody: Laya.RigidBody;
     m_script: Laya.Script;
     m_player: Laya.Animation;
+    m_hurtDelayTimer;
 
     m_healthBar: Laya.ProgressBar;
     m_state = EnemyStatus.idle;
@@ -126,6 +132,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 50);
         
+        this.delayMove(this.m_mdelay);
         amount *= critical ? 5 : 1;
         this.setHealth(this.getHealth() - amount);
         this.damageTextEffect(amount, critical);
@@ -134,15 +141,16 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_animation.x--;
             this.m_animation.y++;
         }
-        if(this.m_hurtDelay){
+        if(this.m_hurtDelay > 0){
             this.m_hurtDelay += 2.0;
         }
         else{
             this.m_hurtDelay = 2.0;
-            setInterval(()=>{
-                if(this.m_hurtDelay < 0){
+            this.m_hurtDelayTimer = setInterval(()=>{
+                if(this.m_hurtDelay <= 0){
+                    console.log('< 0!!!!');
+                    clearInterval(this.m_hurtDelayTimer);
                     this.m_hurtDelay = 0;
-                    return;
                 }
                 this.m_hurtDelay -= 0.1;
             }, 100);
@@ -194,7 +202,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                 this.m_healthBar.destroyed = true;
                 return;
             }
-            this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && !this.m_hurtDelay) ? 0.02 : 0;
+            this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && this.m_hurtDelay <= 0) ? 0.02 : 0;
             this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
         }), 10);
@@ -325,7 +333,24 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_atkCd = true;
         }, 500);
     }
+    public delayMove(time: number): void{
+        if(this.m_moveDelayValue > 0){
+          this.m_moveDelayValue += time;
+        }
+        else{
+          this.m_moveDelayValue = time;
+          this.m_moveDelayTimer = setInterval(()=>{
+            if(this.m_moveDelayValue <= 0){
+              this.m_moveVelocity["Vx"] = 0;
+              clearInterval(this.m_moveDelayTimer);
+              this.m_moveDelayValue = 0;
+            }
+            this.m_moveDelayValue -= 0.1;
+          }, 100)
+        }
+      }
     private applyMoveX(): void {
+        if(this.m_moveDelayValue > 0) return;
         this.m_rigidbody.setVelocity({
             x: this.m_moveVelocity["Vx"],
             y: this.m_rigidbody.linearVelocity.y,
@@ -390,6 +415,7 @@ export class Normal extends VirtualEnemy {
     m_speed = 2;
     m_tag = 'n';
     m_attackRange = 100; 
+    m_mdelay = 0.1;
 }
 export class Shield extends VirtualEnemy {
     m_name = '裝甲敵人';
@@ -398,4 +424,5 @@ export class Shield extends VirtualEnemy {
     m_speed = 1;
     m_tag = 's';
     m_attackRange = 100;
+    m_mdelay = 0.05;
 }

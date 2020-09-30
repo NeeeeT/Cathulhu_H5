@@ -1,9 +1,11 @@
 import Raycast from "./Raycast";
 import DrawCmd from "./DrawCmd";
-import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
-import * as Skill from "./SkillManager";
-import EnemyInit from "./EnemyInit";
+
+import { VirtualSkill } from "./SkillManager";
+import * as hSkill from "./SkillHuman";
+
+import EnemyHandler from "./EnemyHandler";
 
 export enum CharacterStatus {
   idle = 0,
@@ -33,6 +35,9 @@ export default class Character extends Laya.Script {
   m_attackRange: number;
   m_attackCdTime: number;
 
+  m_moveDelayValue: number = 0;
+  m_moveDelayTimer;
+
   //基礎數值
   m_basic_xMaxVelocity: number;
   // m_basic_velocityMultiplier: number;
@@ -55,8 +60,8 @@ export default class Character extends Laya.Script {
 
   m_keyDownList: Array<boolean>;
 
-  private m_catSkill: Skill.VirtualSkill = null;
-  private m_playerSkill: Skill.VirtualSkill = null;
+  private m_catSkill: VirtualSkill = null;
+  private m_humanSkill: VirtualSkill = null;
 
   m_animation: Laya.Animation;
   m_rigidbody: Laya.RigidBody;
@@ -257,7 +262,7 @@ export default class Character extends Laya.Script {
     }
     if (this.m_keyDownList[40]) {
       //Down
-      console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_playerSkill);
+      console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
     }
     if (this.m_keyDownList[32]) {
       let width_offset: number =
@@ -325,13 +330,13 @@ export default class Character extends Laya.Script {
     }
     if (this.m_keyDownList[16]) OathManager.charge();
     if (this.m_keyDownList[49]&&this.m_keyDownList[37] || this.m_keyDownList[49]&&this.m_keyDownList[39]){
-      this.m_playerSkill.cast({
+      this.m_humanSkill.cast({
         x: this.m_animation.x,
         y: this.m_animation.y - 65,
       });
     }
   }
-  private createAttackCircle(player: Laya.Animation) {
+  /*private createAttackCircle(player: Laya.Animation) {
     let atkCircle = new Laya.Sprite();
     let x_offset: number = this.m_isFacingRight ? (player.width * 1) / 2 + 3 : (player.width * 5) / 4 + 3;
     let soundNum: number = Math.floor(Math.random() * 2);
@@ -382,7 +387,7 @@ export default class Character extends Laya.Script {
       atkCircle.destroy();
       atkCircle.destroyed = true;
     }, 100);
-  }
+  }*/
   private attackSimulation(): void{
     let temp:Laya.Animation = this.m_animation;
     let atkRange:number = 100;
@@ -477,7 +482,25 @@ export default class Character extends Laya.Script {
     slashEffect.play();
   }
   private setSkill(): void{
-    this.m_playerSkill = new Skill.Spike();//設定人類技能為 "突進斬"
+    this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
+  }
+  /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
+  public delayMove(time: number): void{
+    if(this.m_moveDelayValue > 0){
+      this.m_moveDelayValue += time;
+    }
+    else{
+      this.m_moveDelayValue = time;
+      this.m_moveDelayTimer = setInterval(()=>{
+        if(this.m_moveDelayValue <= 0){
+          this.resetMove();
+          clearInterval(this.m_moveDelayTimer);
+          this.m_moveDelayValue = 0;
+        }
+        this.m_moveDelayValue -= 0.1;
+        console.log('reducing move delay, now move delay: ', this.m_moveDelayValue);
+      }, 100)
+    }
   }
   private resetMove(): void {
     this.m_playerVelocity["Vx"] = 0;
@@ -486,6 +509,7 @@ export default class Character extends Laya.Script {
     this.applyMoveY();
   }
   private applyMoveX(): void {
+    if(this.m_moveDelayValue > 0) return;
     this.m_rigidbody.setVelocity({
       x: this.m_playerVelocity["Vx"],
       y: this.m_rigidbody.linearVelocity.y,
