@@ -350,7 +350,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
       }
     private applyMoveX(): void {
-        if(this.m_moveDelayValue > 0) return;
+        if(this.m_moveDelayValue > 0 || this.m_animation.destroyed) return;
         this.m_rigidbody.setVelocity({
             x: this.m_moveVelocity["Vx"],
             y: this.m_rigidbody.linearVelocity.y,
