@@ -1,4 +1,3 @@
-import CharacterInit from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import { VirtualSkill } from "./SkillManager";
 
@@ -14,11 +13,10 @@ export class Spike extends VirtualSkill{
   /** 技能給予的衝量大小 */
   m_spikeVec: number = 55.0;
 
-  cast(position: object):void{
+  cast(owner: any, position: object):void{
       if(!this.m_canUse) return;
 
-      let player = CharacterInit.playerEnt;
-      let rightSide: boolean = player.m_isFacingRight;
+      let rightSide: boolean = owner.m_isFacingRight;
 
       this.m_animation = new Laya.Animation()
       this.m_animation.width = 400;
@@ -49,10 +47,11 @@ export class Spike extends VirtualSkill{
       this.m_animation.filters = [glowFilter,colorFilter];
       this.m_animation.skewY = rightSide ? 0 : 180;
       
-      player.delayMove(this.m_lasTime);
-      player.m_rigidbody.setVelocity({x: rightSide ? this.m_spikeVec : -this.m_spikeVec, y: 0});
+      owner.delayMove(this.m_lasTime);
+      owner.m_rigidbody.setVelocity({x: rightSide ? this.m_spikeVec : -this.m_spikeVec, y: 0});
       
-      this.attackRangeCheck({
+      this.attackRangeCheck(owner,
+      {
           "x0": offsetX,
           "x1": offsetX + this.m_animation.width,
           "y0": offsetY,
@@ -69,10 +68,9 @@ export class Spike extends VirtualSkill{
           this.m_canUse = true;
       }, this.m_cd*1000);
   }
-  attackRangeCheck(pos:object): void{
+  attackRangeCheck(owner: any, pos:object): void{
     let enemy = EnemyHandler.enemyPool;
-    let player = CharacterInit.playerEnt;
-    let rightSide: boolean = player.m_isFacingRight;
+    let rightSide: boolean = owner.m_isFacingRight;
     let enemyFound = enemy.filter(data => (this.rectIntersect(pos, data._ent.m_rectangle) === true && data._ent.m_rigidbody !== null));
     enemyFound.forEach((e) => {
       if(e._ent.m_rigidbody === null || e === null || e._ent === null) {

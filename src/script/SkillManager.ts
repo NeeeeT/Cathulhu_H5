@@ -17,21 +17,8 @@ export abstract class VirtualSkill extends Laya.Script{
 
     m_canUse: boolean = true;
 
-    cast(position: object): void{ 
+    cast(owner: any, position: object): void{ 
     };
-    // attackRangeCheck(pos:object, type: string): void{
-    //     let enemy = EnemyHandler.enemyPool;
-    //     switch (type) {
-    //       case 'rect':
-    //         let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
-    //         enemyFound.forEach((e) => {
-    //           e._ent.takeDamage(this.m_damage);
-    //         });
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    // }
     rectIntersect(r1, r2): boolean{
         let aLeftOfB:boolean = r1.x1 < r2.x0;
         let aRightOfB:boolean = r1.x0 > r2.x1;
