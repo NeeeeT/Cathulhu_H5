@@ -23,7 +23,7 @@ export class Spike extends VirtualSkill{
       this.m_animation.height = 200;
       this.m_animation.scaleX = 2;
       this.m_animation.scaleY = 2;
-      this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 130);
+      this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 195);
       
       let offsetX: number = rightSide ? position['x'] : position['x'] - this.m_animation.width;
       let offsetY: number = position['y'] - this.m_animation.height/2 + 20;
@@ -71,12 +71,8 @@ export class Spike extends VirtualSkill{
   attackRangeCheck(owner: any, pos:object): void{
     let enemy = EnemyHandler.enemyPool;
     let rightSide: boolean = owner.m_isFacingRight;
-    let enemyFound = enemy.filter(data => (this.rectIntersect(pos, data._ent.m_rectangle) === true && data._ent.m_rigidbody !== null));
+    let enemyFound = enemy.filter(data => (this.rectIntersect(pos, data._ent.m_rectangle) === true));
     enemyFound.forEach((e) => {
-      if(e._ent.m_rigidbody === null || e === null || e._ent === null) {
-        console.log("ERROR PREVENT!!!");
-        return;
-      }
       // e._ent.m_rigidbody.setVelocity({
       //   x: rightSide ? 25:-25,
       //   y: 0,

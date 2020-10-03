@@ -1,3 +1,5 @@
+import CharacterInit from "./CharacterInit";
+
 export enum EnemyStatus{
     idle = 0,
     run,
@@ -302,16 +304,16 @@ export abstract class VirtualEnemy extends Laya.Script {
         atkCircleRigid.mask = 4;
 
         atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
-            // if (col.tag === 'Player') {
-            //     let victim = CharacterInit.playerEnt;
-            //     victim.m_animation.alpha = 0.3;//0921新增
-            //     // victim.m_health -= 50;
-            //     victim.takeDamage(30);
-            //     setTimeout(() => {
-            //         if(victim.m_animation.destroyed) return
-            //         victim.m_animation.alpha = 1;
-            //     }, 150);//0921新增
-            // }
+            if (col.tag === 'Player') {
+                let victim = CharacterInit.playerEnt;
+                victim.m_animation.alpha = 0.3;//0921新增
+                // victim.m_health -= 50;
+                victim.takeDamage(30);
+                setTimeout(() => {
+                    if(victim.m_animation.destroyed) return
+                    victim.m_animation.alpha = 1;
+                }, 150);//0921新增
+            }
         };
         atkBoxCollider.isSensor = true;
         atkCircleRigid.gravityScale = 0;

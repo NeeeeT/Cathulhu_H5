@@ -279,6 +279,16 @@
             atkCircleRigid.category = 8;
             atkCircleRigid.mask = 4;
             atkCircleScript.onTriggerEnter = function (col) {
+                if (col.tag === 'Player') {
+                    let victim = CharacterInit.playerEnt;
+                    victim.m_animation.alpha = 0.3;
+                    victim.takeDamage(30);
+                    setTimeout(() => {
+                        if (victim.m_animation.destroyed)
+                            return;
+                        victim.m_animation.alpha = 1;
+                    }, 150);
+                }
             };
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
@@ -488,37 +498,6 @@
     OathManager.increaseBloodyPoint = 10;
     OathManager.isCharging = false;
 
-    class Raycast extends Laya.Script {
-        static _RayCast(startX, startY, endX, endY, direction) {
-            let world = Laya.Physics.I.world;
-            let hit = 0;
-            let sprite_arr = [];
-            world.RayCast(function (fixture, point, normal, fraction) {
-                let rigidbody = fixture.m_body;
-                let sprite = fixture.collider.owner;
-                sprite_arr.push(sprite);
-                hit++;
-            }, { x: startX / Laya.Physics.PIXEL_RATIO, y: startY / Laya.Physics.PIXEL_RATIO }, { x: endX / Laya.Physics.PIXEL_RATIO, y: endY / Laya.Physics.PIXEL_RATIO });
-            console.log('射中物體數: ', hit);
-            return {
-                'Hit': hit,
-                'Sprite': (direction) ? sprite_arr.sort((a, b) => a.x < b.x ? -1 : a.x > b.x ? 1 : 0) : sprite_arr.sort((a, b) => a.x > b.x ? -1 : a.x > b.x ? 1 : 0),
-            };
-        }
-        ;
-    }
-    ;
-
-    class DrawCmd extends Laya.Script {
-        constructor() {
-            super();
-        }
-        static DrawLine(startX, startY, endX, endY, color, width) {
-            Laya.stage.graphics.drawLine(startX, startY, endX, endY, color, width);
-        }
-    }
-    ;
-
     class VirtualSkill extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -556,7 +535,7 @@
             this.m_animation.height = 200;
             this.m_animation.scaleX = 2;
             this.m_animation.scaleY = 2;
-            this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 130);
+            this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 195);
             let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
             let offsetY = position['y'] - this.m_animation.height / 2 + 20;
             this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
@@ -593,15 +572,72 @@
         attackRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
             let rightSide = owner.m_isFacingRight;
-            let enemyFound = enemy.filter(data => (this.rectIntersect(pos, data._ent.m_rectangle) === true && data._ent.m_rigidbody !== null));
+            let enemyFound = enemy.filter(data => (this.rectIntersect(pos, data._ent.m_rectangle) === true));
             enemyFound.forEach((e) => {
-                if (e._ent.m_rigidbody === null || e === null || e._ent === null) {
-                    console.log("ERROR PREVENT!!!");
-                    return;
-                }
                 e._ent.delayMove(0.1);
                 e._ent.takeDamage(this.m_damage);
                 console.log(e);
+            });
+        }
+    }
+
+    class Slam extends VirtualSkill {
+        constructor() {
+            super(...arguments);
+            this.m_name = '猛擊';
+            this.m_damage = 125;
+            this.m_cost = 0;
+            this.m_id = 2;
+            this.m_cd = 1;
+            this.m_injuredEnemy = [];
+        }
+        cast(owner, position) {
+            if (!this.m_canUse)
+                return;
+            let rightSide = owner.m_isFacingRight;
+            this.m_animation = new Laya.Animation();
+            this.m_animation.width = 350;
+            this.m_animation.height = 200;
+            this.m_animation.scaleX = 2;
+            this.m_animation.scaleY = 2;
+            this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 130);
+            this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
+            this.m_animation.autoPlay = true;
+            this.m_animation.interval = 20;
+            let offsetX = rightSide ? position['x'] + 65 : position['x'] - this.m_animation.width - 65;
+            let offsetY = position['y'] - this.m_animation.height - 70;
+            let offsetInterval = 40;
+            let rangeY = 0;
+            this.m_canUse = false;
+            this.m_injuredEnemy = [];
+            let timer = setInterval(() => {
+                if (rangeY > offsetInterval) {
+                    console.log('Stopped');
+                    clearInterval(timer);
+                }
+                offsetY += rangeY;
+                Laya.stage.graphics.drawRect(offsetX, offsetY, this.m_animation.width, this.m_animation.height, 'red', 'red');
+                this.attackRangeCheck(owner, {
+                    "x0": offsetX,
+                    "x1": offsetX + this.m_animation.width,
+                    "y0": offsetY,
+                    "y1": offsetY + this.m_animation.height,
+                });
+                rangeY += 5;
+            }, 100);
+            setTimeout(() => {
+                this.m_canUse = true;
+                Laya.stage.graphics.clear();
+            }, this.m_cd * 1000);
+        }
+        attackRangeCheck(owner, pos) {
+            let enemy = EnemyHandler.enemyPool;
+            let enemyFound = enemy.filter(data => (this.rectIntersect(pos, data._ent.m_rectangle) === true && this.m_injuredEnemy.indexOf(data._id) === -1));
+            enemyFound.forEach((e) => {
+                e._ent.delayMove(0.3);
+                e._ent.takeDamage(this.m_damage);
+                this.m_injuredEnemy.push(e._id);
+                console.log(this.m_injuredEnemy);
             });
         }
     }
@@ -791,24 +827,6 @@
                 console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
             }
             if (this.m_keyDownList[32]) {
-                let width_offset = (this.m_animation.width / 2.5) * (this.m_isFacingRight ? 1 : -1);
-                let raycast_range = 300 * (this.m_isFacingRight ? 1 : -1);
-                let random_color = "#" + (((1 << 24) * Math.random()) | 0).toString(16);
-                let direction = this.m_isFacingRight ? 1 : 0;
-                let Raycast_return = Raycast._RayCast(this.m_animation.x + width_offset, this.m_animation.y, this.m_animation.x + width_offset + raycast_range, this.m_animation.y, direction);
-                DrawCmd.DrawLine(this.m_animation.x + width_offset, this.m_animation.y, this.m_animation.x + width_offset + raycast_range, this.m_animation.y, random_color, 2);
-                if (Raycast_return["Hit"]) {
-                    let rig = Raycast_return["Rigidbody"];
-                    let spr = Raycast_return["Sprite"];
-                    let world = Laya.Physics.I.world;
-                    spr.forEach((e) => {
-                        e.destroy();
-                        e.destroyed = true;
-                    });
-                }
-                setTimeout(() => {
-                    Laya.stage.graphics.clear();
-                }, 500);
             }
             if (this.m_keyDownList[17]) {
                 if (!this.m_canAttack)
@@ -825,7 +843,13 @@
             if (this.m_keyDownList[49] && this.m_keyDownList[37] || this.m_keyDownList[49] && this.m_keyDownList[39]) {
                 this.m_humanSkill.cast(CharacterInit.playerEnt, {
                     x: this.m_animation.x,
-                    y: this.m_animation.y - 65,
+                    y: this.m_animation.y,
+                });
+            }
+            if (this.m_keyDownList[50] && this.m_keyDownList[37] || this.m_keyDownList[50] && this.m_keyDownList[39]) {
+                this.m_catSkill.cast(CharacterInit.playerEnt, {
+                    x: this.m_animation.x,
+                    y: this.m_animation.y,
                 });
             }
         }
@@ -915,6 +939,7 @@
         }
         setSkill() {
             this.m_humanSkill = new Spike();
+            this.m_catSkill = new Slam();
         }
         delayMove(time) {
             if (this.m_moveDelayValue > 0) {
@@ -1070,8 +1095,6 @@
             let player = CharacterInit.playerEnt.m_animation;
             let isFacingRight = CharacterInit.playerEnt.m_isFacingRight;
             setInterval(() => {
-                if (CharacterInit.playerEnt.m_animation.destroyed)
-                    return;
                 EnemyHandler.generator(player, 1, 0);
             }, this.enemyGenerateTime);
         }

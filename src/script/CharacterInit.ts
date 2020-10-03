@@ -1,12 +1,14 @@
+// import Raycast from "./Raycast";
+// import DrawCmd from "./DrawCmd";
+
 import OathManager from "./OathManager";
-import Raycast from "./Raycast";
-import DrawCmd from "./DrawCmd";
+import EnemyHandler from "./EnemyHandler";
 
 import { VirtualSkill } from "./SkillManager";
 
 import * as hSkill from "./SkillHuman";
+import * as cSkill from "./SkillCat";
 
-import EnemyHandler from "./EnemyHandler";
 
 export enum CharacterStatus {
     idle = 0,
@@ -241,101 +243,106 @@ export class Character extends Laya.Script {
         }
         //Up
         if (this.m_keyDownList[38]) {
-        if (this.m_canJump) {
-            this.m_playerVelocity["Vy"] += -10;
-            this.applyMoveY();
-            this.m_canJump = false;
-        }
+            if (this.m_canJump) {
+                this.m_playerVelocity["Vy"] += -10;
+                this.applyMoveY();
+                this.m_canJump = false;
+            }
         }
         //Right
         if (this.m_keyDownList[39]) {
-        this.m_playerVelocity["Vx"] += 1 * this.m_velocityMultiplier;
+            this.m_playerVelocity["Vx"] += 1 * this.m_velocityMultiplier;
 
-        // this.m_animation.source = "character/player_run_01.png,character/player_run_02.png,character/player_run_03.png,character/player_run_04.png";
-        // this.m_animation.interval = 100;
-        if (!this.m_isFacingRight) {
-            this.m_playerVelocity["Vx"] = 0;
-            this.m_animation.skewY = 0;
-            this.m_isFacingRight = true;
-        }
-        this.applyMoveX();
-        if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false);
+            if (!this.m_isFacingRight) {
+                this.m_playerVelocity["Vx"] = 0;
+                this.m_animation.skewY = 0;
+                this.m_isFacingRight = true;
+            }
+            this.applyMoveX();
+            if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false);
         }
         if (this.m_keyDownList[40]) {
-        //Down
-        console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
+            //Down
+            console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
         }
         if (this.m_keyDownList[32]) {
-        let width_offset: number =
-            (this.m_animation.width / 2.5) * (this.m_isFacingRight ? 1 : -1);
-        let raycast_range: number = 300 * (this.m_isFacingRight ? 1 : -1);
-        let random_color: string =
-            "#" + (((1 << 24) * Math.random()) | 0).toString(16);
-        let direction: number = this.m_isFacingRight ? 1 : 0;
-        let Raycast_return: object = Raycast._RayCast(
-            this.m_animation.x + width_offset,
-            this.m_animation.y,
-            this.m_animation.x + width_offset + raycast_range,
-            this.m_animation.y,
-            direction
-        );
-        DrawCmd.DrawLine(
-            this.m_animation.x + width_offset,
-            this.m_animation.y,
-            this.m_animation.x + width_offset + raycast_range,
-            this.m_animation.y,
-            random_color,
-            2
-        );
-        if (Raycast_return["Hit"]) {
-            let rig: Laya.RigidBody[] = Raycast_return[
-            "Rigidbody"
-            ] as Laya.RigidBody[];
-            let spr: Laya.Sprite[] = Raycast_return["Sprite"] as Laya.Sprite[];
-            let world = Laya.Physics.I.world;
-            
-            //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
-            spr.forEach((e) => {
-            e.destroy();
-            e.destroyed = true;
-            });
-        }
-        setTimeout(() => {
-            Laya.stage.graphics.clear();
-            // this.cd_ray = true;
-        }, 500);
+            // let width_offset: number =
+            //     (this.m_animation.width / 2.5) * (this.m_isFacingRight ? 1 : -1);
+            // let raycast_range: number = 300 * (this.m_isFacingRight ? 1 : -1);
+            // let random_color: string =
+            //     "#" + (((1 << 24) * Math.random()) | 0).toString(16);
+            // let direction: number = this.m_isFacingRight ? 1 : 0;
+            // let Raycast_return: object = Raycast._RayCast(
+            //     this.m_animation.x + width_offset,
+            //     this.m_animation.y,
+            //     this.m_animation.x + width_offset + raycast_range,
+            //     this.m_animation.y,
+            //     direction
+            // );
+            // DrawCmd.DrawLine(
+            //     this.m_animation.x + width_offset,
+            //     this.m_animation.y,
+            //     this.m_animation.x + width_offset + raycast_range,
+            //     this.m_animation.y,
+            //     random_color,
+            //     2
+            // );
+            // if (Raycast_return["Hit"]) {
+            //     let rig: Laya.RigidBody[] = Raycast_return[
+            //     "Rigidbody"
+            //     ] as Laya.RigidBody[];
+            //     let spr: Laya.Sprite[] = Raycast_return["Sprite"] as Laya.Sprite[];
+            //     let world = Laya.Physics.I.world;
+                
+            //     //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
+            //     spr.forEach((e) => {
+            //     e.destroy();
+            //     e.destroyed = true;
+            //     });
+            // }
+            // setTimeout(() => {
+            //     Laya.stage.graphics.clear();
+            //     // this.cd_ray = true;
+            // }, 500);
         }
         if (this.m_keyDownList[17]) {
-        if (!this.m_canAttack) return;
+            if (!this.m_canAttack) return;
 
-        // this.m_animation.interval = 100;
-        // this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
-
-
-        
-        // this.createAttackCircle(this.m_animation);
-        this.createAttackEffect(this.m_animation);
-        this.attackSimulation();//另類攻擊判定
+            // this.m_animation.interval = 100;
+            // this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
 
 
+            
+            // this.createAttackCircle(this.m_animation);
+            this.createAttackEffect(this.m_animation);
+            this.attackSimulation();//另類攻擊判定
 
-        this.m_canAttack = false;
 
-        // this.m_animation.on(Laya.Event.COMPLETE, this, function () {
-        //   this.m_animation.interval = 200;
-        //   this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
-        // });
-        setTimeout(() => {
-            this.m_canAttack = true;
-        }, this.m_attackCdTime);
+
+            this.m_canAttack = false;
+
+            // this.m_animation.on(Laya.Event.COMPLETE, this, function () {
+            //   this.m_animation.interval = 200;
+            //   this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+            // });
+            setTimeout(() => {
+                this.m_canAttack = true;
+            }, this.m_attackCdTime);
         }
         if (this.m_keyDownList[16]) OathManager.charge();
         if (this.m_keyDownList[49]&&this.m_keyDownList[37] || this.m_keyDownList[49]&&this.m_keyDownList[39]){
-        this.m_humanSkill.cast(CharacterInit.playerEnt,
-        {
-            x: this.m_animation.x,
-            y: this.m_animation.y - 65,
-        });
+            this.m_humanSkill.cast(CharacterInit.playerEnt,
+            {
+                x: this.m_animation.x,
+                y: this.m_animation.y,
+            });
+        }
+        if (this.m_keyDownList[50]&&this.m_keyDownList[37] || this.m_keyDownList[50]&&this.m_keyDownList[39]){
+            this.m_catSkill.cast(CharacterInit.playerEnt,
+            {
+                x: this.m_animation.x,
+                y: this.m_animation.y,
+            });
         }
     }
     /*private createAttackCircle(player: Laya.Animation) {
@@ -485,6 +492,7 @@ export class Character extends Laya.Script {
     }
     private setSkill(): void{
         this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
+        this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
     public delayMove(time: number): void{
