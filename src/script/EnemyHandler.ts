@@ -23,7 +23,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_animSheet: string;
 
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
-    m_rectangle: object = {"x0": 0, "x1": 0, "y0": 0, "y1": 0};
+    m_rectangle: object = {"x0": 0, "x1": 0, "y0": 0, "y1": 0, "h": 0, "w": 0};
     m_maxHealth: number;
     m_attackRange: number = 100;
     m_hurtDelay: number = 0;
@@ -98,15 +98,15 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_animation.destroyed = true;
     };
     setHealth(amount: number): void {
-        this.m_health = amount;
-        if (this.m_health <= 0) {
+        if (amount <= 0) {
             // this.m_animation.filters = null;
-
             // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)
             // this.bloodSplitEffect(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
+            return;
         }
+        this.m_health = amount;
     }
     getHealth(): number {
         return this.m_health;
@@ -127,7 +127,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_collider.label = index;
     };
     takeDamage(amount: number) {
-        if(this.m_animation.destroyed) return;
+        if(this.m_animation.destroyed || amount <= 0) return;
 
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 50);
@@ -234,6 +234,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     }
     //敵人行為主邏輯
     public enemyAIMain() {
+        if(this.m_animation.destroyed) return;
         this.pursuitPlayer();
         this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
         // console.log(this.m_atkTimer);
@@ -247,6 +248,8 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_rectangle['x1'] = this.m_animation.x + (this.m_animation.width/2);
         this.m_rectangle['y0'] = this.m_animation.y - (this.m_animation.height/2);
         this.m_rectangle['y1'] = this.m_animation.y + (this.m_animation.height/2);
+        this.m_rectangle['w'] = this.m_animation.width;
+        this.m_rectangle['h'] = this.m_animation.height;
     }
     private pursuitPlayer() {
         if(this.m_player.destroyed){
@@ -347,7 +350,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_moveDelayValue -= 0.1;
           }, 100)
         }
-      }
+    }
     private applyMoveX(): void {
         if(this.m_moveDelayValue > 0 || this.m_animation.destroyed) return;
         this.m_rigidbody.setVelocity({

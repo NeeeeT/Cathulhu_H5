@@ -33,6 +33,7 @@ export class Spike extends VirtualSkill{
       this.m_animation.interval = 20;
 
       this.m_canUse = false;
+      this.castRoar(position);
 
       let colorMat: Array<number> =
       [
@@ -73,13 +74,15 @@ export class Spike extends VirtualSkill{
     let rightSide: boolean = owner.m_isFacingRight;
     let enemyFound = enemy.filter(data => (this.rectIntersect(pos, data._ent.m_rectangle) === true));
     enemyFound.forEach((e) => {
-      // e._ent.m_rigidbody.setVelocity({
-      //   x: rightSide ? 25:-25,
-      //   y: 0,
-      // })
-      e._ent.delayMove(0.1);
+      if(e._ent.m_animation.destroyed === true) return;
+
       e._ent.takeDamage(this.m_damage);
-      console.log(e);
+      e._ent.delayMove(0.1);
+
+      e._ent.m_rigidbody.setVelocity({
+        "x": rightSide ? 10:-10,
+        "y": 0,
+      });
     });
   }
 }

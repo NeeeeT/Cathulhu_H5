@@ -40,7 +40,7 @@
             this.m_mdelay = 0.5;
             this.m_tag = '';
             this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
-            this.m_rectangle = { "x0": 0, "x1": 0, "y0": 0, "y1": 0 };
+            this.m_rectangle = { "x0": 0, "x1": 0, "y0": 0, "y1": 0, "h": 0, "w": 0 };
             this.m_attackRange = 100;
             this.m_hurtDelay = 0;
             this.m_atkCd = true;
@@ -95,11 +95,12 @@
         }
         ;
         setHealth(amount) {
-            this.m_health = amount;
-            if (this.m_health <= 0) {
+            if (amount <= 0) {
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
+                return;
             }
+            this.m_health = amount;
         }
         getHealth() {
             return this.m_health;
@@ -126,7 +127,7 @@
         }
         ;
         takeDamage(amount) {
-            if (this.m_animation.destroyed)
+            if (this.m_animation.destroyed || amount <= 0)
                 return;
             let fakeNum = Math.random() * 100;
             let critical = (fakeNum <= 50);
@@ -223,6 +224,8 @@
             Laya.SoundManager.setSoundVolume(volume, url);
         }
         enemyAIMain() {
+            if (this.m_animation.destroyed)
+                return;
             this.pursuitPlayer();
             this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer;
             if (this.playerRangeCheck(this.m_attackRange * 2)) {
@@ -234,6 +237,8 @@
             this.m_rectangle['x1'] = this.m_animation.x + (this.m_animation.width / 2);
             this.m_rectangle['y0'] = this.m_animation.y - (this.m_animation.height / 2);
             this.m_rectangle['y1'] = this.m_animation.y + (this.m_animation.height / 2);
+            this.m_rectangle['w'] = this.m_animation.width;
+            this.m_rectangle['h'] = this.m_animation.height;
         }
         pursuitPlayer() {
             if (this.m_player.destroyed) {
@@ -506,12 +511,52 @@
         cast(owner, position) {
         }
         ;
+        castRoar(pos) {
+            let roarText = new Laya.Text();
+            roarText.pos(pos['x'] - 30, pos['y'] - 130);
+            roarText.bold = true;
+            roarText.align = "left";
+            roarText.alpha = 1;
+            roarText.fontSize = 30;
+            roarText.color = '#CC00FF';
+            roarText.text = this.m_name;
+            roarText.font = "opensans-bold";
+            Laya.stage.addChild(roarText);
+            Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 13, y: roarText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+            }), 0);
+            setTimeout((() => {
+                if (roarText.destroyed)
+                    return;
+                roarText.destroy();
+                roarText.destroyed = true;
+            }), 700);
+        }
         rectIntersect(r1, r2) {
             let aLeftOfB = r1.x1 < r2.x0;
             let aRightOfB = r1.x0 > r2.x1;
             let aAboveB = r1.y0 > r2.y1;
             let aBelowB = r1.y1 < r2.y0;
             return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
+        }
+        rectCircleIntersect(circle, rect) {
+            let distX = Math.abs(circle.x - rect.x0 - rect.w / 2);
+            let distY = Math.abs(circle.y - rect.y0 - rect.h / 2);
+            if (distX > (rect.w / 2 + circle.r)) {
+                return false;
+            }
+            if (distY > (rect.h / 2 + circle.r)) {
+                return false;
+            }
+            if (distX <= (rect.w / 2)) {
+                return true;
+            }
+            if (distY <= (rect.h / 2)) {
+                return true;
+            }
+            var dx = distX - rect.w / 2;
+            var dy = distY - rect.h / 2;
+            return (dx * dx + dy * dy <= (circle.r * circle.r));
         }
     }
 
@@ -542,6 +587,7 @@
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
             this.m_canUse = false;
+            this.castRoar(position);
             let colorMat = [
                 2, 0, 0, 0, -100,
                 0, 4, 0, 0, -100,
@@ -574,9 +620,14 @@
             let rightSide = owner.m_isFacingRight;
             let enemyFound = enemy.filter(data => (this.rectIntersect(pos, data._ent.m_rectangle) === true));
             enemyFound.forEach((e) => {
-                e._ent.delayMove(0.1);
+                if (e._ent.m_animation.destroyed === true)
+                    return;
                 e._ent.takeDamage(this.m_damage);
-                console.log(e);
+                e._ent.delayMove(0.1);
+                e._ent.m_rigidbody.setVelocity({
+                    "x": rightSide ? 10 : -10,
+                    "y": 0,
+                });
             });
         }
     }
@@ -609,10 +660,10 @@
             let offsetInterval = 40;
             let rangeY = 0;
             this.m_canUse = false;
+            this.castRoar(position);
             this.m_injuredEnemy = [];
             let timer = setInterval(() => {
                 if (rangeY > offsetInterval) {
-                    console.log('Stopped');
                     clearInterval(timer);
                 }
                 offsetY += rangeY;
@@ -637,7 +688,81 @@
                 e._ent.delayMove(0.3);
                 e._ent.takeDamage(this.m_damage);
                 this.m_injuredEnemy.push(e._id);
-                console.log(this.m_injuredEnemy);
+            });
+        }
+    }
+    class BlackHole extends VirtualSkill {
+        constructor() {
+            super(...arguments);
+            this.m_name = '深淵侵蝕';
+            this.m_damage = 333;
+            this.m_cost = 0;
+            this.m_id = 2;
+            this.m_cd = 3;
+            this.m_lastTime = 5;
+            this.m_radius = 100;
+        }
+        cast(owner, position) {
+            if (!this.m_canUse)
+                return;
+            let rightSide = owner.m_isFacingRight;
+            this.m_animation = new Laya.Animation();
+            this.m_animation.width = this.m_animation.height = this.m_radius;
+            this.m_animation.scaleX = 2;
+            this.m_animation.scaleY = 2;
+            this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 130);
+            this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
+            this.m_animation.autoPlay = true;
+            this.m_animation.interval = 20;
+            let offsetX = rightSide ? position['x'] + 140 : position['x'] - this.m_animation.width - 65;
+            let offsetY = position['y'] - this.m_animation.height / 2;
+            this.m_canUse = false;
+            this.castRoar(position);
+            Laya.stage.graphics.drawCircle(offsetX, offsetY, this.m_radius, 'black', 'white', 1);
+            Laya.stage.graphics.drawCircle(offsetX, offsetY, this.m_radius + 100, 'black', 'white', 1);
+            let count = 0;
+            let timer = setInterval(() => {
+                if (count >= this.m_lastTime * 1000) {
+                    this.attackRangeCheck(owner, {
+                        "x": offsetX,
+                        "y": offsetY,
+                        "r": this.m_radius,
+                    });
+                    clearInterval(timer);
+                }
+                this.attractRangeCheck(owner, {
+                    "x": offsetX,
+                    "y": offsetY,
+                    "r": this.m_radius + 100,
+                });
+                count += 100;
+            }, 100);
+            setTimeout(() => {
+                Laya.stage.graphics.clear();
+            }, this.m_lastTime * 1000);
+            setTimeout(() => {
+                this.m_canUse = true;
+            }, this.m_cd * 1000);
+        }
+        attractRangeCheck(owner, pos) {
+            let enemy = EnemyHandler.enemyPool;
+            let enemyFound = enemy.filter(data => (this.rectCircleIntersect(pos, data._ent.m_rectangle) === true));
+            enemyFound.forEach((e) => {
+                if (e._ent.m_animation.destroyed === true)
+                    return;
+                e._ent.delayMove(0.1);
+                e._ent.m_rigidbody.setVelocity({
+                    "x": (pos['x'] - (e._ent.m_rectangle['x0'] + e._ent.m_animation.width / 2)) * 0.25,
+                    "y": (pos['y'] - (e._ent.m_rectangle['y0'] + e._ent.m_animation.height / 2)) * 0.25,
+                });
+            });
+        }
+        attackRangeCheck(owner, pos) {
+            let enemy = EnemyHandler.enemyPool;
+            let enemyFound = enemy.filter(data => (this.rectCircleIntersect(pos, data._ent.m_rectangle) === true));
+            enemyFound.forEach((e) => {
+                e._ent.delayMove(0.3);
+                e._ent.takeDamage(this.m_damage);
             });
         }
     }
@@ -939,7 +1064,7 @@
         }
         setSkill() {
             this.m_humanSkill = new Spike();
-            this.m_catSkill = new Slam();
+            this.m_catSkill = new BlackHole();
         }
         delayMove(time) {
             if (this.m_moveDelayValue > 0) {

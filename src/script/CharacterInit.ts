@@ -492,7 +492,8 @@ export class Character extends Laya.Script {
     }
     private setSkill(): void{
         this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
-        this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
+        // this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
+        this.m_catSkill = new cSkill.BlackHole();
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
     public delayMove(time: number): void{
