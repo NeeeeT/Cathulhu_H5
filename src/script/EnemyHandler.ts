@@ -173,7 +173,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
 
         damageText.text = String(amount);
-        damageText.font = "opensans-bold";
+        damageText.font = "silver";
         soundNum = critical ? 0 : 1;
         this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);

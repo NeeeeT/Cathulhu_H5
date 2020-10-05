@@ -498,6 +498,8 @@ export class Character extends Laya.Script {
     }
     private setSkill(): void{
         this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
+        // this.m_humanSkill = new hSkill.Behead();
+
         // this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
         this.m_catSkill = new cSkill.BlackHole();
     }
@@ -572,15 +574,11 @@ export class Character extends Laya.Script {
     private updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void{
         if(this.m_state === to || this.m_animationChanging) return;
         this.m_state = to;
-        console.log('Player status from', from, 'convert to ', to);
+        // console.log('Player status from', from, 'convert to ', to);
         switch(this.m_state){
             case CharacterStatus.attack:
                 this.m_animationChanging = true;
                 this.m_animation.interval = 30;
-                // this.m_animation.on(Laya.Event.COMPLETE, this, function () {
-                //    this.m_animation.interval = 70;
-                //    this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
-                // });
                 this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
                 this.m_animation.play();
                 break;

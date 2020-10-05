@@ -165,7 +165,7 @@
                 damageText.color = "#00DDDD";
             }
             damageText.text = String(amount);
-            damageText.font = "opensans-bold";
+            damageText.font = "silver";
             soundNum = critical ? 0 : 1;
             this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
             Laya.stage.addChild(damageText);
@@ -572,7 +572,7 @@
             this.m_cost = 0;
             this.m_id = 1;
             this.m_cd = 3;
-            this.m_lasTime = 0.2;
+            this.m_lastTime = 0.2;
             this.m_spikeVec = 55.0;
         }
         cast(owner, position) {
@@ -602,7 +602,7 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [glowFilter, colorFilter];
             this.m_animation.skewY = rightSide ? 0 : 180;
-            owner.delayMove(this.m_lasTime);
+            owner.delayMove(this.m_lastTime);
             owner.m_rigidbody.setVelocity({ x: rightSide ? this.m_spikeVec : -this.m_spikeVec, y: 0 });
             this.attackRangeCheck(owner, {
                 "x0": offsetX,
@@ -628,7 +628,72 @@
                     return;
                 e._ent.takeDamage(this.m_damage);
                 e._ent.delayMove(0.1);
+                if (e._ent.m_health - this.m_damage > 0) {
+                    e._ent.m_rigidbody.setVelocity({
+                        "x": rightSide ? 25 : -25,
+                        "y": 0,
+                    });
+                }
             });
+        }
+    }
+    class Behead extends VirtualSkill {
+        constructor() {
+            super(...arguments);
+            this.m_name = '攻其不備';
+            this.m_damage = 99999;
+            this.m_cost = 0;
+            this.m_id = 1;
+            this.m_cd = 3;
+            this.m_preTime = 1.5;
+        }
+        cast(owner, position) {
+            if (!this.m_canUse)
+                return;
+            let rightSide = owner.m_isFacingRight;
+            this.m_animation = new Laya.Animation();
+            this.m_animation.width = owner.m_animation.width;
+            this.m_animation.height = owner.m_animation.height;
+            this.m_animation.scaleX = 1;
+            this.m_animation.scaleY = 1;
+            this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 195);
+            let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
+            let offsetY = position['y'] - this.m_animation.height / 2 + 20;
+            this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
+            this.m_animation.autoPlay = true;
+            this.m_animation.interval = 20;
+            this.m_canUse = false;
+            this.castRoar(position);
+            owner.delayMove(this.m_preTime);
+            owner.m_rigidbody.setVelocity({ x: 0, y: 0 });
+            Laya.stage.addChild(this.m_animation);
+            setTimeout(() => {
+                this.attackRangeCheck(owner, {
+                    "x0": offsetX,
+                    "x1": offsetX + this.m_animation.width,
+                    "y0": offsetY,
+                    "y1": offsetY + this.m_animation.height,
+                });
+            }, this.m_preTime * 1000);
+            setTimeout(() => {
+                this.m_animation.destroy();
+                this.m_animation.destroyed = true;
+            }, 200);
+            setTimeout(() => {
+                this.m_canUse = true;
+            }, this.m_cd * 1000);
+        }
+        attackRangeCheck(owner, pos) {
+            let enemy = EnemyHandler.enemyPool;
+            let targetEnemy = Math.floor(Math.random() * enemy.length);
+            if (enemy.length === 0) {
+                console.log('目前沒有敵人，無法使用 ', this.m_name);
+                return;
+            }
+            console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
+            owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 50 : -50);
+            owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y - 70;
+            enemy[targetEnemy]._ent.takeDamage(this.m_damage);
         }
     }
 
@@ -1147,7 +1212,6 @@
             if (this.m_state === to || this.m_animationChanging)
                 return;
             this.m_state = to;
-            console.log('Player status from', from, 'convert to ', to);
             switch (this.m_state) {
                 case CharacterStatus.attack:
                     this.m_animationChanging = true;
