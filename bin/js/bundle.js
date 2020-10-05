@@ -96,6 +96,7 @@
         ;
         setHealth(amount) {
             if (amount <= 0) {
+                this.bloodSplitEffect(this.m_animation);
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
                 return;
@@ -201,6 +202,8 @@
         }
         bloodSplitEffect(enemy) {
             let bloodEffect = new Laya.Animation();
+            bloodEffect.scaleX = 2;
+            bloodEffect.scaleY = 2;
             let colorMat = [
                 2, 0, 0, 0, -100,
                 0, 1, 0, 0, -100,
@@ -210,8 +213,8 @@
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             bloodEffect.filters = [colorFilter, glowFilter];
-            bloodEffect.pos(enemy.x - 250, enemy.y - 250 + 30);
-            bloodEffect.source = "comp/Blood/Blood_0000.png,comp/Blood/Blood_0001.png,comp/Blood/Blood_0002.png,comp/Blood/Blood_0003.png,comp/Blood/Blood_0004.png,comp/Blood/Blood_0005.png,comp/Blood/Blood_0006.png,comp/Blood/Blood_0007.png,comp/Blood/Blood_0008.png,comp/Blood/Blood_0009.png,comp/Blood/Blood_0010.png,comp/Blood/Blood_0011.png,comp/Blood/Blood_0012.png,comp/Blood/Blood_0013.png,comp/Blood/Blood_0014.png";
+            bloodEffect.pos(enemy.x - 500, enemy.y - 500 + 30);
+            bloodEffect.source = "comp/NewBlood/Blood_0000.png,comp/NewBlood/Blood_0001.png,comp/NewBlood/Blood_0002.png,comp/NewBlood/Blood_0003.png,comp/NewBlood/Blood_0004.png,comp/NewBlood/Blood_0005.png,comp/NewBlood/Blood_0006.png,comp/NewBlood/Blood_0007.png";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
                 bloodEffect.destroy();
                 bloodEffect.destroyed = true;
@@ -956,6 +959,8 @@
             if (this.m_keyDownList[17]) {
                 if (!this.m_canAttack)
                     return;
+                if (!this.m_animationChanging)
+                    this.updateAnimation(this.m_state, CharacterStatus.attack, null, false);
                 this.createAttackEffect(this.m_animation);
                 this.attackSimulation();
                 this.m_canAttack = false;
@@ -1021,7 +1026,9 @@
         }
         createAttackEffect(player) {
             let slashEffect = new Laya.Animation();
-            slashEffect.source = "comp/SlashEffects/Slash_0029.png,comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
+            slashEffect.source = "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
+            slashEffect.scaleX = 2;
+            slashEffect.scaleY = 2;
             let colorNum = Math.floor(Math.random() * 3) + 2;
             let colorMat = [
                 colorNum, 0, 0, 0, -100,
@@ -1047,14 +1054,14 @@
             }
             if (this.m_isFacingRight) {
                 slashEffect.skewY = 0;
-                slashEffect.pos(player.x - 100, player.y - 250 + 30);
+                slashEffect.pos(player.x - 275, player.y - 400 + 10);
             }
             else {
                 slashEffect.skewY = 180;
-                slashEffect.pos(player.x + 100, player.y - 250 + 30);
+                slashEffect.pos(player.x + 275, player.y - 400 + 10);
             }
             slashEffect.source =
-                "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
+                "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashEffect.destroy();
                 slashEffect.destroyed = true;
@@ -1138,8 +1145,8 @@
             switch (this.m_state) {
                 case CharacterStatus.attack:
                     this.m_animationChanging = true;
-                    this.m_animation.interval = 300;
-                    this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+                    this.m_animation.interval = 40;
+                    this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.idle:
@@ -1269,7 +1276,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "First.scene";
+    GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

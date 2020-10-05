@@ -101,7 +101,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         if (amount <= 0) {
             // this.m_animation.filters = null;
             // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)
-            // this.bloodSplitEffect(this.m_animation);
+            this.bloodSplitEffect(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
             return;
@@ -208,6 +208,8 @@ export abstract class VirtualEnemy extends Laya.Script {
     }
     private bloodSplitEffect(enemy: Laya.Sprite) {
         let bloodEffect: Laya.Animation = new Laya.Animation();
+        bloodEffect.scaleX = 2;
+        bloodEffect.scaleY = 2;
         let colorMat: Array<number> =
             [
                 2, 0, 0, 0, -100, //R
@@ -219,8 +221,8 @@ export abstract class VirtualEnemy extends Laya.Script {
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
 
         bloodEffect.filters = [colorFilter, glowFilter];
-        bloodEffect.pos(enemy.x - 250, enemy.y - 250 + 30);
-        bloodEffect.source = "comp/Blood/Blood_0000.png,comp/Blood/Blood_0001.png,comp/Blood/Blood_0002.png,comp/Blood/Blood_0003.png,comp/Blood/Blood_0004.png,comp/Blood/Blood_0005.png,comp/Blood/Blood_0006.png,comp/Blood/Blood_0007.png,comp/Blood/Blood_0008.png,comp/Blood/Blood_0009.png,comp/Blood/Blood_0010.png,comp/Blood/Blood_0011.png,comp/Blood/Blood_0012.png,comp/Blood/Blood_0013.png,comp/Blood/Blood_0014.png";
+        bloodEffect.pos(enemy.x - 500, enemy.y - 500 + 30);
+        bloodEffect.source = "comp/NewBlood/Blood_0000.png,comp/NewBlood/Blood_0001.png,comp/NewBlood/Blood_0002.png,comp/NewBlood/Blood_0003.png,comp/NewBlood/Blood_0004.png,comp/NewBlood/Blood_0005.png,comp/NewBlood/Blood_0006.png,comp/NewBlood/Blood_0007.png";
         bloodEffect.on(Laya.Event.COMPLETE, this, function () {
             bloodEffect.destroy();
             bloodEffect.destroyed = true;
