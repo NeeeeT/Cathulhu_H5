@@ -79,10 +79,10 @@ export class Spike extends VirtualSkill{
       e._ent.takeDamage(this.m_damage);
       e._ent.delayMove(0.1);
 
-      e._ent.m_rigidbody.setVelocity({
-        "x": rightSide ? 10:-10,
-        "y": 0,
-      });
+      // e._ent.m_rigidbody.setVelocity({
+      //   "x": rightSide ? 10:-10,
+      //   "y": 0,
+      // });
     });
   }
 }

@@ -136,10 +136,6 @@
             this.setHealth(this.getHealth() - amount);
             this.damageTextEffect(amount, critical);
             this.m_healthBar.alpha = 1;
-            if (critical) {
-                this.m_animation.x--;
-                this.m_animation.y++;
-            }
             if (this.m_hurtDelay > 0) {
                 this.m_hurtDelay += 2.0;
             }
@@ -163,6 +159,10 @@
             damageText.alpha = 1;
             damageText.fontSize = critical ? 40 : 16;
             damageText.color = critical ? 'orange' : "white";
+            if (amount >= 10000) {
+                damageText.fontSize = 65;
+                damageText.color = "#00DDDD";
+            }
             damageText.text = String(amount);
             damageText.font = "opensans-bold";
             soundNum = critical ? 0 : 1;
@@ -517,8 +517,8 @@
             roarText.bold = true;
             roarText.align = "left";
             roarText.alpha = 1;
-            roarText.fontSize = 30;
-            roarText.color = '#CC00FF';
+            roarText.fontSize = 50;
+            roarText.color = '#FF3333';
             roarText.text = this.m_name;
             roarText.font = "opensans-bold";
             Laya.stage.addChild(roarText);
@@ -624,10 +624,6 @@
                     return;
                 e._ent.takeDamage(this.m_damage);
                 e._ent.delayMove(0.1);
-                e._ent.m_rigidbody.setVelocity({
-                    "x": rightSide ? 10 : -10,
-                    "y": 0,
-                });
             });
         }
     }
@@ -695,7 +691,8 @@
         constructor() {
             super(...arguments);
             this.m_name = '深淵侵蝕';
-            this.m_damage = 333;
+            this.m_damage = 77777;
+            this.m_dotDamage = 5;
             this.m_cost = 0;
             this.m_id = 2;
             this.m_cd = 3;
@@ -727,7 +724,7 @@
                         "x": offsetX,
                         "y": offsetY,
                         "r": this.m_radius,
-                    });
+                    }, this.m_damage);
                     clearInterval(timer);
                 }
                 this.attractRangeCheck(owner, {
@@ -735,6 +732,11 @@
                     "y": offsetY,
                     "r": this.m_radius + 100,
                 });
+                this.attackRangeCheck(owner, {
+                    "x": offsetX,
+                    "y": offsetY,
+                    "r": this.m_radius + 100,
+                }, this.m_dotDamage);
                 count += 100;
             }, 100);
             setTimeout(() => {
@@ -752,17 +754,17 @@
                     return;
                 e._ent.delayMove(0.1);
                 e._ent.m_rigidbody.setVelocity({
-                    "x": (pos['x'] - (e._ent.m_rectangle['x0'] + e._ent.m_animation.width / 2)) * 0.25,
-                    "y": (pos['y'] - (e._ent.m_rectangle['y0'] + e._ent.m_animation.height / 2)) * 0.25,
+                    "x": (pos['x'] - (e._ent.m_rectangle['x0'] + e._ent.m_animation.width / 2)) * 0.05,
+                    "y": (pos['y'] - (e._ent.m_rectangle['y0'] + e._ent.m_animation.height / 2)) * 0.05,
                 });
             });
         }
-        attackRangeCheck(owner, pos) {
+        attackRangeCheck(owner, pos, dmg) {
             let enemy = EnemyHandler.enemyPool;
             let enemyFound = enemy.filter(data => (this.rectCircleIntersect(pos, data._ent.m_rectangle) === true));
             enemyFound.forEach((e) => {
                 e._ent.delayMove(0.3);
-                e._ent.takeDamage(this.m_damage);
+                e._ent.takeDamage(dmg);
             });
         }
     }

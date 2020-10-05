@@ -27,8 +27,8 @@ export abstract class VirtualSkill extends Laya.Script{
         roarText.align = "left";
         roarText.alpha = 1;
 
-        roarText.fontSize = 30;
-        roarText.color = '#CC00FF'
+        roarText.fontSize = 50;
+        roarText.color = '#FF3333'
         roarText.text = this.m_name;
         roarText.font = "opensans-bold";
 

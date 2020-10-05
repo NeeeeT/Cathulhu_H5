@@ -137,10 +137,10 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.setHealth(this.getHealth() - amount);
         this.damageTextEffect(amount, critical);
         this.m_healthBar.alpha = 1;
-        if (critical){
-            this.m_animation.x--;
-            this.m_animation.y++;
-        }
+        // if (critical){
+        //     this.m_animation.x--;
+        //     this.m_animation.y++;
+        // }
         if(this.m_hurtDelay > 0){
             this.m_hurtDelay += 2.0;
         }
@@ -166,6 +166,12 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         damageText.fontSize = critical ? 40 : 16;
         damageText.color = critical ? 'orange' : "white";
+
+        if(amount >= 10000){
+            damageText.fontSize = 65;   
+            damageText.color = "#00DDDD";
+        }
+
         damageText.text = String(amount);
         damageText.font = "opensans-bold";
         soundNum = critical ? 0 : 1;
