@@ -212,7 +212,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            bloodEffect.filters = [colorFilter, glowFilter];
+            bloodEffect.filters = [glowFilter, colorFilter];
             bloodEffect.pos(enemy.x - 500, enemy.y - 500 + 30);
             bloodEffect.source = "comp/NewBlood/Blood_0000.png,comp/NewBlood/Blood_0001.png,comp/NewBlood/Blood_0002.png,comp/NewBlood/Blood_0003.png,comp/NewBlood/Blood_0004.png,comp/NewBlood/Blood_0005.png,comp/NewBlood/Blood_0006.png,comp/NewBlood/Blood_0007.png";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -310,6 +310,7 @@
             setTimeout(() => {
                 this.m_atkCd = true;
             }, 500);
+            this.delayMove(0.3);
         }
         delayMove(time) {
             if (this.m_moveDelayValue > 0) {
@@ -810,6 +811,8 @@
             this.m_animation.loop = true;
             this.m_animation.on(Laya.Event.COMPLETE, this, () => {
                 this.m_animationChanging = false;
+                if (Math.abs(this.m_playerVelocity["Vx"]) <= 0)
+                    this.updateAnimation(this.m_state, CharacterStatus.idle);
             });
             this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
             this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
@@ -1144,10 +1147,11 @@
             if (this.m_state === to || this.m_animationChanging)
                 return;
             this.m_state = to;
+            console.log('Player status from', from, 'convert to ', to);
             switch (this.m_state) {
                 case CharacterStatus.attack:
                     this.m_animationChanging = true;
-                    this.m_animation.interval = 40;
+                    this.m_animation.interval = 30;
                     this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
                     this.m_animation.play();
                     break;
@@ -1278,7 +1282,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

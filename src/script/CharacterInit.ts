@@ -93,7 +93,9 @@ export class Character extends Laya.Script {
         this.m_animation.interval = 200;
         this.m_animation.loop = true;
         this.m_animation.on(Laya.Event.COMPLETE, this, () => {
-        this.m_animationChanging = false;
+            this.m_animationChanging = false;
+            if(Math.abs(this.m_playerVelocity["Vx"]) <= 0)
+                this.updateAnimation(this.m_state, CharacterStatus.idle);
         })
 
         // this.m_maxHealth = this.m_health;
@@ -570,11 +572,11 @@ export class Character extends Laya.Script {
     private updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void{
         if(this.m_state === to || this.m_animationChanging) return;
         this.m_state = to;
-        // console.log('Player status from', from, 'convert to ', to);
+        console.log('Player status from', from, 'convert to ', to);
         switch(this.m_state){
             case CharacterStatus.attack:
                 this.m_animationChanging = true;
-                this.m_animation.interval = 40;
+                this.m_animation.interval = 30;
                 // this.m_animation.on(Laya.Event.COMPLETE, this, function () {
                 //    this.m_animation.interval = 70;
                 //    this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
@@ -583,7 +585,7 @@ export class Character extends Laya.Script {
                 this.m_animation.play();
                 break;
             case CharacterStatus.idle:
-            this.m_animation.interval = 500;
+                this.m_animation.interval = 500;
                 this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
                 break;
             case CharacterStatus.run:

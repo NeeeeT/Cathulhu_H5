@@ -226,7 +226,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
 
-        bloodEffect.filters = [colorFilter, glowFilter];
+        bloodEffect.filters = [glowFilter, colorFilter];
         bloodEffect.pos(enemy.x - 500, enemy.y - 500 + 30);
         bloodEffect.source = "comp/NewBlood/Blood_0000.png,comp/NewBlood/Blood_0001.png,comp/NewBlood/Blood_0002.png,comp/NewBlood/Blood_0003.png,comp/NewBlood/Blood_0004.png,comp/NewBlood/Blood_0005.png,comp/NewBlood/Blood_0006.png,comp/NewBlood/Blood_0007.png";
         bloodEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -243,6 +243,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     //敵人行為主邏輯
     public enemyAIMain() {
         if(this.m_animation.destroyed) return;
+
         this.pursuitPlayer();
         this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
         // console.log(this.m_atkTimer);
@@ -342,6 +343,8 @@ export abstract class VirtualEnemy extends Laya.Script {
         setTimeout(() => {
             this.m_atkCd = true;
         }, 500);
+        
+        this.delayMove(0.3);
     }
     public delayMove(time: number): void{
         if(this.m_moveDelayValue > 0){

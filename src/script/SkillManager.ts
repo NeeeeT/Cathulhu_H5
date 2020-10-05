@@ -46,7 +46,7 @@ export abstract class VirtualSkill extends Laya.Script{
             roarText.destroyed = true;
         }), 700);
     }
-    /** 兩個矩形碰撞檢測 r1、r2分別傳入object類型x0, x1, y0, y1*/
+    /** 兩個矩形碰撞檢測 r1、r2分別傳入object類型{x0, x1, y0, y1}*/
     rectIntersect(r1, r2): boolean{
         let aLeftOfB:boolean = r1.x1 < r2.x0;
         let aRightOfB:boolean = r1.x0 > r2.x1;
