@@ -314,6 +314,7 @@ export class Character extends Laya.Script {
 
             
             // this.createAttackCircle(this.m_animation);
+            if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.attack, null, false);
             this.createAttackEffect(this.m_animation);
             this.attackSimulation();//另類攻擊判定
 
@@ -447,7 +448,10 @@ export class Character extends Laya.Script {
     }
     private createAttackEffect(player: Laya.Animation) {
         let slashEffect: Laya.Animation = new Laya.Animation();
-        slashEffect.source = "comp/SlashEffects/Slash_0029.png,comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
+        slashEffect.source = "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
+        slashEffect.scaleX = 2;
+        slashEffect.scaleY = 2;
+        //slashEffect.interval = 100;
         let colorNum: number = Math.floor(Math.random() * 3) + 2;
         //濾鏡
         let colorMat: Array<number> =
@@ -476,13 +480,13 @@ export class Character extends Laya.Script {
         //濾鏡
         if (this.m_isFacingRight) {
         slashEffect.skewY = 0;
-        slashEffect.pos(player.x - 100, player.y - 250 + 30);
+        slashEffect.pos(player.x - 275, player.y - 400 + 10);
         } else {
         slashEffect.skewY = 180;
-        slashEffect.pos(player.x + 100, player.y - 250 + 30);
+        slashEffect.pos(player.x + 275, player.y - 400 + 10);
         }
         slashEffect.source =
-        "comp/SlashEffects/Slash_0030.png,comp/SlashEffects/Slash_0031.png,comp/SlashEffects/Slash_0032.png,comp/SlashEffects/Slash_0033.png,comp/SlashEffects/Slash_0034.png,comp/SlashEffects/Slash_0035.png";
+        "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
         slashEffect.on(Laya.Event.COMPLETE, this, function () {
         slashEffect.destroy();
         slashEffect.destroyed = true;
@@ -570,8 +574,12 @@ export class Character extends Laya.Script {
         switch(this.m_state){
             case CharacterStatus.attack:
                 this.m_animationChanging = true;
-                this.m_animation.interval = 300;
-                this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+                this.m_animation.interval = 40;
+                // this.m_animation.on(Laya.Event.COMPLETE, this, function () {
+                //    this.m_animation.interval = 70;
+                //    this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
+                // });
+                this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
                 this.m_animation.play();
                 break;
             case CharacterStatus.idle:
