@@ -8,6 +8,10 @@ export default class SceneInit extends Laya.Script {
         super();
     }
     onAwake() {
+        Laya.loader.load(["font/silver.ttf"], Laya.Handler.create(this, ()=>{
+            console.log('字體加載完畢!!!');
+        }))//加載字體
+
         Laya.stage.bgColor = this.sceneBackgroundColor;
         this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
     }

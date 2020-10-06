@@ -7,6 +7,9 @@
             this.sceneBackgroundColor = '#4a4a4a';
         }
         onAwake() {
+            Laya.loader.load(["font/silver.ttf"], Laya.Handler.create(this, () => {
+                console.log('字體加載完畢!!!');
+            }));
             Laya.stage.bgColor = this.sceneBackgroundColor;
             this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
         }
@@ -131,7 +134,7 @@
             if (this.m_animation.destroyed || amount <= 0)
                 return;
             let fakeNum = Math.random() * 100;
-            let critical = (fakeNum <= 50);
+            let critical = (fakeNum <= 25);
             this.delayMove(this.m_mdelay);
             amount *= critical ? 5 : 1;
             this.setHealth(this.getHealth() - amount);
@@ -158,10 +161,10 @@
             damageText.bold = true;
             damageText.align = "left";
             damageText.alpha = 1;
-            damageText.fontSize = critical ? 40 : 16;
+            damageText.fontSize = critical ? 60 : 36;
             damageText.color = critical ? 'orange' : "white";
             if (amount >= 10000) {
-                damageText.fontSize = 65;
+                damageText.fontSize = 85;
                 damageText.color = "#00DDDD";
             }
             damageText.text = String(amount);
@@ -521,10 +524,11 @@
             roarText.bold = true;
             roarText.align = "left";
             roarText.alpha = 1;
-            roarText.fontSize = 50;
+            roarText.fontSize = 70;
             roarText.color = '#FF3333';
-            roarText.text = this.m_name;
-            roarText.font = "opensans-bold";
+            roarText.text = this.m_name + "\n哈哈";
+            roarText.font = "silver";
+            roarText.leading = 50;
             Laya.stage.addChild(roarText);
             Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 13, y: roarText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
@@ -628,12 +632,6 @@
                     return;
                 e._ent.takeDamage(this.m_damage);
                 e._ent.delayMove(0.1);
-                if (e._ent.m_health - this.m_damage > 0) {
-                    e._ent.m_rigidbody.setVelocity({
-                        "x": rightSide ? 25 : -25,
-                        "y": 0,
-                    });
-                }
             });
         }
     }
@@ -953,10 +951,10 @@
             damageText.bold = true;
             damageText.align = "left";
             damageText.alpha = 1;
-            damageText.fontSize = critical ? 42 : 17;
+            damageText.fontSize = critical ? 62 : 37;
             damageText.color = critical ? '#ff31c8' : "red";
             damageText.text = String(amount);
-            damageText.font = "opensans-bold";
+            damageText.font = "silver";
             Laya.stage.addChild(damageText);
             Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);

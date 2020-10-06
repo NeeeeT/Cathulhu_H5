@@ -130,7 +130,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         if(this.m_animation.destroyed || amount <= 0) return;
 
         let fakeNum = Math.random() * 100;
-        let critical: boolean = (fakeNum <= 50);
+        let critical: boolean = (fakeNum <= 25);
         
         this.delayMove(this.m_mdelay);
         amount *= critical ? 5 : 1;
@@ -164,11 +164,11 @@ export abstract class VirtualEnemy extends Laya.Script {
         damageText.align = "left";
         damageText.alpha = 1;
 
-        damageText.fontSize = critical ? 40 : 16;
+        damageText.fontSize = critical ? 60 : 36;
         damageText.color = critical ? 'orange' : "white";
 
         if(amount >= 10000){
-            damageText.fontSize = 65;   
+            damageText.fontSize = 85;   
             damageText.color = "#00DDDD";
         }
 

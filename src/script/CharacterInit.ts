@@ -184,10 +184,10 @@ export class Character extends Laya.Script {
         damageText.align = "left";
         damageText.alpha = 1;
 
-        damageText.fontSize = critical ? 42 : 17;
+        damageText.fontSize = critical ? 62 : 37;
         damageText.color = critical ? '#ff31c8' : "red";
         damageText.text = String(amount);
-        damageText.font = "opensans-bold";
+        damageText.font = "silver";
         // soundNum = critical ? 0 : 1;
         // this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
