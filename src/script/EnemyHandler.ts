@@ -164,31 +164,38 @@ export abstract class VirtualEnemy extends Laya.Script {
         damageText.align = "left";
         damageText.alpha = 1;
 
-        damageText.fontSize = critical ? 60 : 36;
+        damageText.fontSize = critical ? 40 : 20;
         damageText.color = critical ? 'orange' : "white";
 
         if(amount >= 10000){
-            damageText.fontSize = 85;   
+            damageText.fontSize = 55;   
             damageText.color = "#00DDDD";
         }
 
-        damageText.text = String(amount);
+        let temp_text = "";
+        for(let i = 0; i < String(amount).length; i++){
+            temp_text += String(amount)[i];
+            temp_text += " ";
+        }
+
+        damageText.text = temp_text;
         damageText.font = "silver";
         soundNum = critical ? 0 : 1;
         this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
 
-        Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut,
+        Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut,
+                    Laya.Handler.create(this, ()=>{ damageText.destroy() }), 0);
             }), 0);
 
-        setTimeout((() => {
-            if (damageText.destroyed) return;
+        // setTimeout((() => {
+        //     if (damageText.destroyed) return;
 
-            damageText.destroy();
-            damageText.destroyed = true;
-        }), 700);
+        //     damageText.destroy();
+        //     damageText.destroyed = true;
+        // }), 900);
     }
     private showHealth() {
         this.m_healthBar = new Laya.ProgressBar();

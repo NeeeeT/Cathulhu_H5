@@ -161,26 +161,25 @@
             damageText.bold = true;
             damageText.align = "left";
             damageText.alpha = 1;
-            damageText.fontSize = critical ? 60 : 36;
+            damageText.fontSize = critical ? 40 : 20;
             damageText.color = critical ? 'orange' : "white";
             if (amount >= 10000) {
-                damageText.fontSize = 85;
+                damageText.fontSize = 55;
                 damageText.color = "#00DDDD";
             }
-            damageText.text = String(amount);
+            let temp_text = "";
+            for (let i = 0; i < String(amount).length; i++) {
+                temp_text += String(amount)[i];
+                temp_text += " ";
+            }
+            damageText.text = temp_text;
             damageText.font = "silver";
             soundNum = critical ? 0 : 1;
             this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
             Laya.stage.addChild(damageText);
-            Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+            Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
             }), 0);
-            setTimeout((() => {
-                if (damageText.destroyed)
-                    return;
-                damageText.destroy();
-                damageText.destroyed = true;
-            }), 700);
         }
         showHealth() {
             this.m_healthBar = new Laya.ProgressBar();
@@ -524,11 +523,18 @@
             roarText.bold = true;
             roarText.align = "left";
             roarText.alpha = 1;
+            roarText.width = 300;
+            roarText.wordWrap = false;
             roarText.fontSize = 70;
             roarText.color = '#FF3333';
-            roarText.text = this.m_name + "\n哈哈";
+            let temp_name = "";
+            for (let i = 0; i < this.m_name.length; i++) {
+                temp_name += this.m_name[i];
+                temp_name += " ";
+            }
+            console.log(temp_name);
+            roarText.text = temp_name;
             roarText.font = "silver";
-            roarText.leading = 50;
             Laya.stage.addChild(roarText);
             Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 13, y: roarText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
@@ -951,20 +957,25 @@
             damageText.bold = true;
             damageText.align = "left";
             damageText.alpha = 1;
-            damageText.fontSize = critical ? 62 : 37;
+            damageText.fontSize = critical ? 40 : 20;
             damageText.color = critical ? '#ff31c8' : "red";
-            damageText.text = String(amount);
+            let temp_text = "";
+            for (let i = 0; i < String(amount).length; i++) {
+                temp_text += String(amount)[i];
+                temp_text += " ";
+            }
+            damageText.text = temp_text;
             damageText.font = "silver";
             Laya.stage.addChild(damageText);
-            Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+            Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, null, 0);
             }), 0);
             setTimeout((() => {
                 if (damageText.destroyed)
                     return;
                 damageText.destroy();
                 damageText.destroyed = true;
-            }), 700);
+            }), 900);
         }
         listenKeyBoard() {
             this.m_keyDownList = [];

@@ -26,10 +26,20 @@ export abstract class VirtualSkill extends Laya.Script{
         roarText.bold = true;
         roarText.align = "left";
         roarText.alpha = 1;
+        
+        roarText.width = 300;
+        roarText.wordWrap = false;
 
         roarText.fontSize = 70;
         roarText.color = '#FF3333'
-        roarText.text = this.m_name;
+        
+        let temp_name = "";
+        for(let i = 0; i < this.m_name.length; i++){
+            temp_name += this.m_name[i];
+            temp_name += " ";
+        }
+
+        roarText.text = temp_name;
         roarText.font = "silver";
 
         Laya.stage.addChild(roarText);
