@@ -70,8 +70,8 @@ export class Slam extends VirtualSkill{
 
 export class BlackHole extends VirtualSkill{
     m_name = '深淵侵蝕';
-    m_damage = 77777;
-    m_dotDamage = 5;
+    m_damage = 130;
+    m_dotDamage = 7;
     m_cost = 0;
     m_id = 2;
     m_cd = 3;
@@ -115,7 +115,7 @@ export class BlackHole extends VirtualSkill{
                 this.attackRangeCheck(owner,{
                     "x": offsetX,
                     "y": offsetY,
-                    "r": this.m_radius,
+                    "r": this.m_radius, 
                 }, this.m_damage);
                 clearInterval(timer);
             }
@@ -129,7 +129,7 @@ export class BlackHole extends VirtualSkill{
                 "y": offsetY,
                 "r": this.m_radius + 100,
             }, this.m_dotDamage);
-            count+=100;
+            count += 100;
         }, 100);
 
         setTimeout(()=>{
@@ -145,10 +145,10 @@ export class BlackHole extends VirtualSkill{
         enemyFound.forEach((e) => {
             if(e._ent.m_animation.destroyed === true) return;
             
-            e._ent.delayMove(0.1);
+            // e._ent.delayMove(0.1);
             e._ent.m_rigidbody.setVelocity({
-                "x": (pos['x'] - (e._ent.m_rectangle['x0'] + e._ent.m_animation.width/2)) * 0.05,
-                "y": (pos['y'] - (e._ent.m_rectangle['y0'] + e._ent.m_animation.height/2)) * 0.05,
+                "x": (pos['x'] - (e._ent.m_rectangle['x0'] + e._ent.m_animation.width/2)) * 0.25,
+                "y": (pos['y'] - (e._ent.m_rectangle['y0'] + e._ent.m_animation.height/2)) * 0.25,
             });
         });
     }
@@ -156,7 +156,7 @@ export class BlackHole extends VirtualSkill{
         let enemy = EnemyHandler.enemyPool;
         let enemyFound = enemy.filter(data => (this.rectCircleIntersect(pos, data._ent.m_rectangle) === true));
         enemyFound.forEach((e) => {
-            e._ent.delayMove(0.3);
+            // e._ent.delayMove(0.3);
             e._ent.takeDamage(dmg);
         });
     }

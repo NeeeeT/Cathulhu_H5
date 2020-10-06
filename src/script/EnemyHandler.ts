@@ -101,7 +101,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         if (amount <= 0) {
             // this.m_animation.filters = null;
             // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)
-            this.bloodSplitEffect(this.m_animation);
+            // this.bloodSplitEffect(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
             return;
@@ -159,7 +159,10 @@ export abstract class VirtualEnemy extends Laya.Script {
         let damageText = new Laya.Text();
         let soundNum: number;
 
-        damageText.pos((this.m_animation.x - this.m_animation.width / 2) - 20, (this.m_animation.y - this.m_animation.height) - 110);
+        let fakeX: number = Math.random() * 130;
+        let fakeY: number = Math.random() * 50;
+
+        damageText.pos((this.m_animation.x - this.m_animation.width / 2) - fakeX, (this.m_animation.y - this.m_animation.height) - 110 - fakeY);
         damageText.bold = true;
         damageText.align = "left";
         damageText.alpha = 1;
@@ -189,13 +192,6 @@ export abstract class VirtualEnemy extends Laya.Script {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut,
                     Laya.Handler.create(this, ()=>{ damageText.destroy() }), 0);
             }), 0);
-
-        // setTimeout((() => {
-        //     if (damageText.destroyed) return;
-
-        //     damageText.destroy();
-        //     damageText.destroyed = true;
-        // }), 900);
     }
     private showHealth() {
         this.m_healthBar = new Laya.ProgressBar();

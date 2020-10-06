@@ -46,15 +46,9 @@ export abstract class VirtualSkill extends Laya.Script{
 
         Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 350, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
-                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 13, y: roarText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 13, y: roarText.y - 50 }, 350, Laya.Ease.linearInOut,
+                Laya.Handler.create(this, ()=> { roarText.destroy() }), 0);
             }), 0);
-
-        setTimeout((() => {
-            if (roarText.destroyed) return;
-
-            roarText.destroy();
-            roarText.destroyed = true;
-        }), 700);
     }
     /** 兩個矩形碰撞檢測 r1、r2分別傳入object類型{x0, x1, y0, y1}*/
     rectIntersect(r1, r2): boolean{

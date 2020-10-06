@@ -99,7 +99,6 @@
         ;
         setHealth(amount) {
             if (amount <= 0) {
-                this.bloodSplitEffect(this.m_animation);
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
                 return;
@@ -157,7 +156,9 @@
         damageTextEffect(amount, critical) {
             let damageText = new Laya.Text();
             let soundNum;
-            damageText.pos((this.m_animation.x - this.m_animation.width / 2) - 20, (this.m_animation.y - this.m_animation.height) - 110);
+            let fakeX = Math.random() * 130;
+            let fakeY = Math.random() * 50;
+            damageText.pos((this.m_animation.x - this.m_animation.width / 2) - fakeX, (this.m_animation.y - this.m_animation.height) - 110 - fakeY);
             damageText.bold = true;
             damageText.align = "left";
             damageText.alpha = 1;
@@ -532,19 +533,12 @@
                 temp_name += this.m_name[i];
                 temp_name += " ";
             }
-            console.log(temp_name);
             roarText.text = temp_name;
             roarText.font = "silver";
             Laya.stage.addChild(roarText);
             Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 13, y: roarText.y - 50 }, 350, Laya.Ease.linearInOut, null, 0);
+                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 13, y: roarText.y - 50 }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { roarText.destroy(); }), 0);
             }), 0);
-            setTimeout((() => {
-                if (roarText.destroyed)
-                    return;
-                roarText.destroy();
-                roarText.destroyed = true;
-            }), 700);
         }
         rectIntersect(r1, r2) {
             let aLeftOfB = r1.x1 < r2.x0;
@@ -764,8 +758,8 @@
         constructor() {
             super(...arguments);
             this.m_name = '深淵侵蝕';
-            this.m_damage = 77777;
-            this.m_dotDamage = 5;
+            this.m_damage = 130;
+            this.m_dotDamage = 7;
             this.m_cost = 0;
             this.m_id = 2;
             this.m_cd = 3;
@@ -825,10 +819,9 @@
             enemyFound.forEach((e) => {
                 if (e._ent.m_animation.destroyed === true)
                     return;
-                e._ent.delayMove(0.1);
                 e._ent.m_rigidbody.setVelocity({
-                    "x": (pos['x'] - (e._ent.m_rectangle['x0'] + e._ent.m_animation.width / 2)) * 0.05,
-                    "y": (pos['y'] - (e._ent.m_rectangle['y0'] + e._ent.m_animation.height / 2)) * 0.05,
+                    "x": (pos['x'] - (e._ent.m_rectangle['x0'] + e._ent.m_animation.width / 2)) * 0.25,
+                    "y": (pos['y'] - (e._ent.m_rectangle['y0'] + e._ent.m_animation.height / 2)) * 0.25,
                 });
             });
         }
@@ -836,7 +829,6 @@
             let enemy = EnemyHandler.enemyPool;
             let enemyFound = enemy.filter(data => (this.rectCircleIntersect(pos, data._ent.m_rectangle) === true));
             enemyFound.forEach((e) => {
-                e._ent.delayMove(0.3);
                 e._ent.takeDamage(dmg);
             });
         }
@@ -869,8 +861,8 @@
             this.m_animation = new Laya.Animation();
             this.m_animation.scaleX = 1;
             this.m_animation.scaleY = 1;
-            this.m_animation.width = 130;
-            this.m_animation.height = 130;
+            this.m_animation.width = 200;
+            this.m_animation.height = 128;
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
             this.m_animation.pos(1345, 544);
@@ -968,14 +960,8 @@
             damageText.font = "silver";
             Laya.stage.addChild(damageText);
             Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, null, 0);
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
             }), 0);
-            setTimeout((() => {
-                if (damageText.destroyed)
-                    return;
-                damageText.destroy();
-                damageText.destroyed = true;
-            }), 900);
         }
         listenKeyBoard() {
             this.m_keyDownList = [];
@@ -1224,21 +1210,21 @@
             switch (this.m_state) {
                 case CharacterStatus.attack:
                     this.m_animationChanging = true;
-                    this.m_animation.interval = 30;
+                    this.m_animation.interval = 42;
                     this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.idle:
                     this.m_animation.interval = 500;
-                    this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+                    this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                     break;
                 case CharacterStatus.run:
-                    this.m_animation.source = 'character/player_run_01.png,character/player_run_02.png,character/player_run_03.png,character/player_run_04.png';
+                    this.m_animation.source = 'character/Run/character_run_1.png,character/Run/character_run_2.png,character/Run/character_run_3.png,character/Run/character_run_4.png';
                     this.m_animation.interval = 100;
                     this.m_animation.play();
                     break;
                 default:
-                    this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+                    this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                     break;
             }
             if (typeof onCallBack === 'function')

@@ -79,8 +79,8 @@ export class Character extends Laya.Script {
         this.m_animation.scaleX = 1;
         this.m_animation.scaleY = 1;
 
-        this.m_animation.width = 130;
-        this.m_animation.height = 130;
+        this.m_animation.width = 200;
+        this.m_animation.height = 128;
         this.m_animation.pivotX = this.m_animation.width / 2;
         this.m_animation.pivotY = this.m_animation.height / 2;
 
@@ -201,15 +201,9 @@ export class Character extends Laya.Script {
 
         Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, null, 0);
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut,
+                Laya.Handler.create(this, ()=>{ damageText.destroy() }), 0);
             }), 0);
-
-        setTimeout((() => {
-            if (damageText.destroyed) return;
-
-            damageText.destroy();
-            damageText.destroyed = true;
-        }), 900);
     }
     private listenKeyBoard(): void {
         this.m_keyDownList = [];
@@ -585,21 +579,21 @@ export class Character extends Laya.Script {
         switch(this.m_state){
             case CharacterStatus.attack:
                 this.m_animationChanging = true;
-                this.m_animation.interval = 30;
+                this.m_animation.interval = 42;
                 this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
                 this.m_animation.play();
                 break;
             case CharacterStatus.idle:
                 this.m_animation.interval = 500;
-                this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+                this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                 break;
             case CharacterStatus.run:
-                this.m_animation.source = 'character/player_run_01.png,character/player_run_02.png,character/player_run_03.png,character/player_run_04.png';
+                this.m_animation.source = 'character/Run/character_run_1.png,character/Run/character_run_2.png,character/Run/character_run_3.png,character/Run/character_run_4.png';
                 this.m_animation.interval = 100;
                 this.m_animation.play();
                 break;
             default:
-                this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+                this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                 break;
         }
         if(typeof onCallBack === 'function')
