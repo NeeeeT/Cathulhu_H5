@@ -2,6 +2,7 @@
 // import DrawCmd from "./DrawCmd";
 
 import OathManager from "./OathManager";
+
 import EnemyHandler from "./EnemyHandler";
 
 import { VirtualSkill } from "./SkillManager";
@@ -79,6 +80,8 @@ export class Character extends Laya.Script {
         this.m_animation.scaleX = 1;
         this.m_animation.scaleY = 1;
 
+        this.m_animation.name = "Player";
+
         this.m_animation.width = 200;
         this.m_animation.height = 128;
         this.m_animation.pivotX = this.m_animation.width / 2;
@@ -89,7 +92,7 @@ export class Character extends Laya.Script {
 
         this.m_animation.pos(1345, 544);
         this.m_animation.autoPlay = true;
-        this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+        this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
         this.m_animation.interval = 200;
         this.m_animation.loop = true;
         this.m_animation.on(Laya.Event.COMPLETE, this, () => {
@@ -130,10 +133,10 @@ export class Character extends Laya.Script {
         this.m_keyDownList[keyCode] = true;
         }
 
-        this.m_collider.width = this.m_animation.width;
+        this.m_collider.width = this.m_animation.width * 0.6;
         this.m_collider.height = this.m_animation.height;
-        this.m_collider.x -= 5;
-        this.m_collider.y -= 5;
+        this.m_collider.x += 38;
+        this.m_collider.y -= 1;
         this.m_collider.tag = 'Player';
         this.m_collider.friction = 0;
 
@@ -403,8 +406,8 @@ export class Character extends Laya.Script {
     }*/
     private attackSimulation(): void{
         let temp:Laya.Animation = this.m_animation;
-        let atkRange:number = 100;
-        let offsetX:number = this.m_isFacingRight ? (temp.x + (temp.width/2)) : (temp.x - (temp.width/2) - atkRange);
+        let atkRange:number = this.m_attackRange;
+        let offsetX:number = this.m_isFacingRight ? (temp.x + (temp.width*1/3)) : (temp.x - (temp.width*1/3) - atkRange);
         let offsetY:number = temp.y - (temp.height/3);
         let soundNum: number = Math.floor(Math.random() * 2);
 
@@ -635,6 +638,7 @@ export default class CharacterInit extends Laya.Script {
         this.initSetting(player);
         player.spawn();
         CharacterInit.playerEnt = player;
+        Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
     }
     private initSetting(player: Character): void {
         player.m_maxHealth = player.m_health = this.health;

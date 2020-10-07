@@ -156,11 +156,11 @@
         damageTextEffect(amount, critical) {
             let damageText = new Laya.Text();
             let soundNum;
-            let fakeX = Math.random() * 130;
+            let fakeX = Math.random() * 60;
             let fakeY = Math.random() * 50;
-            damageText.pos((this.m_animation.x - this.m_animation.width / 2) - fakeX, (this.m_animation.y - this.m_animation.height) - 110 - fakeY);
+            damageText.pos(this.m_animation.x - fakeX, (this.m_animation.y - this.m_animation.height) - 100);
             damageText.bold = true;
-            damageText.align = "left";
+            damageText.align = "center";
             damageText.alpha = 1;
             damageText.fontSize = critical ? 40 : 20;
             damageText.color = critical ? 'orange' : "white";
@@ -175,11 +175,13 @@
             }
             damageText.text = temp_text;
             damageText.font = "silver";
+            damageText.stroke = 5;
+            damageText.strokeColor = "#000";
             soundNum = critical ? 0 : 1;
             this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
             Laya.stage.addChild(damageText);
-            Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
+            Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
             }), 0);
         }
         showHealth() {
@@ -291,14 +293,11 @@
             atkCircleRigid.mask = 4;
             atkCircleScript.onTriggerEnter = function (col) {
                 if (col.tag === 'Player') {
-                    let victim = CharacterInit.playerEnt;
-                    victim.m_animation.alpha = 0.3;
-                    victim.takeDamage(30);
-                    setTimeout(() => {
-                        if (victim.m_animation.destroyed)
-                            return;
-                        victim.m_animation.alpha = 1;
-                    }, 150);
+                    let victim = Laya.stage.getChildByName("Player");
+                    console.log(col);
+                    if (victim.alpha != 1)
+                        return;
+                    Laya.Tween.to(victim, { alpha: 0.3 }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { victim.alpha = 1; }));
                 }
             };
             atkBoxCollider.isSensor = true;
@@ -758,7 +757,7 @@
         constructor() {
             super(...arguments);
             this.m_name = '深淵侵蝕';
-            this.m_damage = 130;
+            this.m_damage = 99999;
             this.m_dotDamage = 7;
             this.m_cost = 0;
             this.m_id = 2;
@@ -861,13 +860,14 @@
             this.m_animation = new Laya.Animation();
             this.m_animation.scaleX = 1;
             this.m_animation.scaleY = 1;
+            this.m_animation.name = "Player";
             this.m_animation.width = 200;
             this.m_animation.height = 128;
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
             this.m_animation.pos(1345, 544);
             this.m_animation.autoPlay = true;
-            this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
+            this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
             this.m_animation.interval = 200;
             this.m_animation.loop = true;
             this.m_animation.on(Laya.Event.COMPLETE, this, () => {
@@ -906,10 +906,10 @@
                 let keyCode = e["keyCode"];
                 this.m_keyDownList[keyCode] = true;
             };
-            this.m_collider.width = this.m_animation.width;
+            this.m_collider.width = this.m_animation.width * 0.6;
             this.m_collider.height = this.m_animation.height;
-            this.m_collider.x -= 5;
-            this.m_collider.y -= 5;
+            this.m_collider.x += 38;
+            this.m_collider.y -= 1;
             this.m_collider.tag = 'Player';
             this.m_collider.friction = 0;
             this.m_rigidbody.allowRotation = false;
@@ -1050,8 +1050,8 @@
         }
         attackSimulation() {
             let temp = this.m_animation;
-            let atkRange = 100;
-            let offsetX = this.m_isFacingRight ? (temp.x + (temp.width / 2)) : (temp.x - (temp.width / 2) - atkRange);
+            let atkRange = this.m_attackRange;
+            let offsetX = this.m_isFacingRight ? (temp.x + (temp.width * 1 / 3)) : (temp.x - (temp.width * 1 / 3) - atkRange);
             let offsetY = temp.y - (temp.height / 3);
             let soundNum = Math.floor(Math.random() * 2);
             this.attackRangeCheck({
@@ -1252,6 +1252,7 @@
             this.initSetting(player);
             player.spawn();
             CharacterInit.playerEnt = player;
+            Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
         }
         initSetting(player) {
             player.m_maxHealth = player.m_health = this.health;

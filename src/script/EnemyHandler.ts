@@ -1,4 +1,4 @@
-import CharacterInit from "./CharacterInit";
+// import CharacterInit, { Character } from "./CharacterInit";
 
 export enum EnemyStatus{
     idle = 0,
@@ -159,12 +159,13 @@ export abstract class VirtualEnemy extends Laya.Script {
         let damageText = new Laya.Text();
         let soundNum: number;
 
-        let fakeX: number = Math.random() * 130;
+        let fakeX: number = Math.random() * 60;
         let fakeY: number = Math.random() * 50;
 
-        damageText.pos((this.m_animation.x - this.m_animation.width / 2) - fakeX, (this.m_animation.y - this.m_animation.height) - 110 - fakeY);
+        // damageText.pos(this.m_animation.x - this.m_animation.width/2 - 20, this.m_animation.y - this.m_animation.height - 100);
+        damageText.pos(this.m_animation.x - fakeX, (this.m_animation.y - this.m_animation.height) - 100);
         damageText.bold = true;
-        damageText.align = "left";
+        damageText.align = "center";
         damageText.alpha = 1;
 
         damageText.fontSize = critical ? 40 : 20;
@@ -183,13 +184,16 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         damageText.text = temp_text;
         damageText.font = "silver";
+        damageText.stroke = 5;
+        damageText.strokeColor = "#000";
+
         soundNum = critical ? 0 : 1;
         this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
 
-        Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut,
+        Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut,
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut,
                     Laya.Handler.create(this, ()=>{ damageText.destroy() }), 0);
             }), 0);
     }
@@ -307,7 +311,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         } else {
             atkCircle.pos(
                 // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                this.m_animation.x - 3 * this.m_animation.width / 2 - 80, this.m_animation.y - this.m_animation.height / 2//9/15更改
+                this.m_animation.x - 3 * this.m_animation.width / 2 - 80, this.m_animation.y - this.m_animation.height / 2,//9/15更改
             );
         }
         let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
@@ -320,14 +324,15 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
             if (col.tag === 'Player') {
-                let victim = CharacterInit.playerEnt;
-                victim.m_animation.alpha = 0.3;//0921新增
-                // victim.m_health -= 50;
-                victim.takeDamage(30);
-                setTimeout(() => {
-                    if(victim.m_animation.destroyed) return
-                    victim.m_animation.alpha = 1;
-                }, 150);//0921新增
+                let victim = Laya.stage.getChildByName("Player") as Laya.Animation;
+                // console.log(victim);
+                console.log(col);
+                
+                
+                if(victim.alpha != 1) return;
+                Laya.Tween.to(victim, {alpha: 0.3}, 350, Laya.Ease.linearInOut,
+                    Laya.Handler.create(this, ()=>{ victim.alpha = 1; }));
+
             }
         };
         atkBoxCollider.isSensor = true;

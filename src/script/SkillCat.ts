@@ -70,7 +70,7 @@ export class Slam extends VirtualSkill{
 
 export class BlackHole extends VirtualSkill{
     m_name = '深淵侵蝕';
-    m_damage = 130;
+    m_damage = 99999;
     m_dotDamage = 7;
     m_cost = 0;
     m_id = 2;
