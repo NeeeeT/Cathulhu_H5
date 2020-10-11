@@ -769,6 +769,7 @@
             if (!this.m_canUse)
                 return;
             let rightSide = owner.m_isFacingRight;
+            let explosion = new Laya.Animation();
             this.m_animation = new Laya.Animation();
             this.m_animation.width = this.m_animation.height = this.m_radius;
             this.m_animation.scaleX = 3;
@@ -778,6 +779,10 @@
             this.m_animation.source = "comp/BlackHole/Blackhole_0034.png,comp/BlackHole/Blackhole_0035.png,comp/BlackHole/Blackhole_0036.png,comp/BlackHole/Blackhole_0037.png,comp/BlackHole/Blackhole_0038.png,comp/BlackHole/Blackhole_0039.png,comp/BlackHole/Blackhole_0040.png,comp/BlackHole/Blackhole_0041.png,comp/BlackHole/Blackhole_0042.png,comp/BlackHole/Blackhole_0043.png,comp/BlackHole/Blackhole_0044.png";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
+            explosion.source = "comp/BlackExplosion/BlackholeExplsion_0024.png,comp/BlackExplosion/BlackholeExplsion_0025.png,comp/BlackExplosion/BlackholeExplsion_0026.png,comp/BlackExplosion/BlackholeExplsion_0027.png,comp/BlackExplosion/BlackholeExplsion_0028.png,comp/BlackExplosion/BlackholeExplsion_0029.png,comp/BlackExplosion/BlackholeExplsion_0030.png,comp/BlackExplosion/BlackholeExplsion_0031.png,comp/BlackExplosion/BlackholeExplsion_0032.png";
+            explosion.scaleX = 1.5;
+            explosion.scaleY = 1.5;
+            explosion.pos(this.m_animation.x, this.m_animation.y);
             let offsetX = rightSide ? position['x'] + 140 : position['x'] - this.m_animation.width - 65;
             let offsetY = position['y'] - this.m_animation.height / 2 * 4;
             this.m_canUse = false;
@@ -791,9 +796,16 @@
             let glowFilter = new Laya.GlowFilter("#460075", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [glowFilter, colorFilter];
+            let colorFilterex = new Laya.ColorFilter(colorMat);
+            explosion.filters = [glowFilter];
             let count = 0;
             let timer = setInterval(() => {
                 if (count >= this.m_lastTime * 1000) {
+                    Laya.stage.addChild(explosion);
+                    explosion.play();
+                    setTimeout(() => {
+                        explosion.destroy();
+                    }, 200);
                     this.attackRangeCheck(owner, {
                         "x": offsetX,
                         "y": offsetY,
