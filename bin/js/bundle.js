@@ -36,12 +36,6 @@
     class VirtualEnemy extends Laya.Script {
         constructor() {
             super(...arguments);
-            this.m_name = '';
-            this.m_health = 1000;
-            this.m_armor = 0;
-            this.m_speed = 3;
-            this.m_mdelay = 0.5;
-            this.m_tag = '';
             this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
             this.m_rectangle = { "x0": 0, "x1": 0, "y0": 0, "y1": 0, "h": 0, "w": 0 };
             this.m_attackRange = 100;
@@ -291,19 +285,11 @@
             atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
             atkCircleRigid.category = 8;
             atkCircleRigid.mask = 4;
-            atkCircleScript.onTriggerEnter = function (col) {
-                if (col.tag === 'Player') {
-                    let victim = Laya.stage.getChildByName("Player");
-                    console.log(col);
-                    if (victim.alpha != 1)
-                        return;
-                    Laya.Tween.to(victim, { alpha: 0.3 }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { victim.alpha = 1; }));
-                }
-            };
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
             this.updateAnimation(this.m_state, EnemyStatus.attack);
             Laya.stage.addChild(atkCircle);
+            atkBoxCollider.tag = this.m_atkTag;
             this.m_atkTimer = 100;
             setTimeout(() => {
                 atkCircle.destroy();
@@ -399,6 +385,8 @@
             this.m_tag = 'n';
             this.m_attackRange = 100;
             this.m_mdelay = 0.1;
+            this.m_dmg = 50;
+            this.m_atkTag = "EnemyNormalAttack";
         }
     }
     class Shield extends VirtualEnemy {
@@ -411,6 +399,8 @@
             this.m_tag = 's';
             this.m_attackRange = 100;
             this.m_mdelay = 0.05;
+            this.m_dmg = 30;
+            this.m_atkTag = "EnemyShieldAttack";
         }
     }
     class EnemyHandler extends Laya.Script {
@@ -900,10 +890,11 @@
                 this.characterMove();
             };
             this.m_script.onTriggerEnter = (col) => {
-                if (col.label == "BoxCollider") {
+                if (col.label === "BoxCollider") {
                     this.resetMove();
                     this.m_canJump = true;
                 }
+                this.takeDamage(this.getEnemyAttackDamage(col.tag));
             };
             this.m_script.onKeyUp = (e) => {
                 if (this.m_canJump) {
@@ -946,6 +937,8 @@
         }
         ;
         takeDamage(amount) {
+            if (amount <= 0)
+                return;
             let fakeNum = Math.random() * 100;
             let critical = (fakeNum <= 33);
             amount *= critical ? 3 : 1;
@@ -1239,6 +1232,16 @@
             }
             if (typeof onCallBack === 'function')
                 onCallBack();
+        }
+        getEnemyAttackDamage(tag) {
+            switch (tag) {
+                case "EnemyNormalAttack":
+                    return new Normal().m_dmg;
+                case "EnemyShieldAttack":
+                    return new Shield().m_dmg;
+                default:
+                    return 0;
+            }
         }
     }
     Character.m_cameraShakingTimer = 0;
