@@ -1,14 +1,10 @@
-// import Raycast from "./Raycast";
-// import DrawCmd from "./DrawCmd";
-
 import OathManager from "./OathManager";
 
-import EnemyHandler from "./EnemyHandler";
-
 import { VirtualSkill } from "./SkillManager";
-
 import * as hSkill from "./SkillHuman";
 import * as cSkill from "./SkillCat";
+
+import EnemyHandler, { Normal, Shield } from "./EnemyHandler";
 
 
 export enum CharacterStatus {
@@ -107,32 +103,32 @@ export class Character extends Laya.Script {
         this.m_script = this.m_animation.addComponent(Laya.Script);
 
         this.m_script.onAwake = () => {
-        this.m_playerVelocity = { Vx: 0, Vy: 0 };
-        this.listenKeyBoard();
+            this.m_playerVelocity = { Vx: 0, Vy: 0 };
+            this.listenKeyBoard();
         }
         this.m_script.onUpdate = () => {
-        if (this.m_playerVelocity["Vx"] < -this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = -this.m_xMaxVelocity;
-        if (this.m_playerVelocity["Vx"] > this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = this.m_xMaxVelocity;
-        this.characterMove();
+            if (this.m_playerVelocity["Vx"] < -this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = -this.m_xMaxVelocity;
+            if (this.m_playerVelocity["Vx"] > this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = this.m_xMaxVelocity;
+            this.characterMove();
         }
         this.m_script.onTriggerEnter = (col: Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) => {
-        if (col.label == "BoxCollider") {
-            this.resetMove();
-            this.m_canJump = true;
-        }
+            if (col.label === "BoxCollider") {
+                this.resetMove();
+                this.m_canJump = true;
+            }
+            this.takeDamage(this.getEnemyAttackDamage(col.tag))
         }
         this.m_script.onKeyUp = (e: Laya.Event) => {
-        if (this.m_canJump) {
-            this.m_playerVelocity["Vx"] = 0;
-            this.applyMoveX();
-        }
-        delete this.m_keyDownList[e["keyCode"]];
+            if (this.m_canJump) {
+                this.m_playerVelocity["Vx"] = 0;
+                this.applyMoveX();
+            }
+            delete this.m_keyDownList[e["keyCode"]];
         }
         this.m_script.onKeyDown = (e: Laya.Event) => {
-        let keyCode: number = e["keyCode"];
-        this.m_keyDownList[keyCode] = true;
+            let keyCode: number = e["keyCode"];
+            this.m_keyDownList[keyCode] = true;
         }
-
         this.m_collider.width = this.m_animation.width * 0.6;
         this.m_collider.height = this.m_animation.height;
         this.m_collider.x += 38;
@@ -171,6 +167,8 @@ export class Character extends Laya.Script {
         return this.m_health;
     };
     takeDamage(amount: number) {
+        if(amount <= 0) return;
+        
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 33);
 
@@ -423,7 +421,7 @@ export class Character extends Laya.Script {
         this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
     }
     private attackRangeCheck(pos:object, type: string): void{
-        //可做其他形狀的範圍偵測判斷 ex.三角形、圓形, etc...
+        // 可做其他形狀的範圍偵測判斷 ex.三角形、圓形, etc...
         let enemy = EnemyHandler.enemyPool;
         switch (type) {
         case 'rect':
@@ -452,7 +450,7 @@ export class Character extends Laya.Script {
 
         return !( aLeftOfB || aRightOfB || aAboveB || aBelowB );
     }
-    private createAttackEffect(player: Laya.Animation) {
+    public createAttackEffect(player: Laya.Animation) {
         let slashEffect: Laya.Animation = new Laya.Animation();
         slashEffect.source = "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
         slashEffect.scaleX = 2;
@@ -545,7 +543,7 @@ export class Character extends Laya.Script {
         y: this.m_playerVelocity["Vy"],
         });
     }
-    private setSound(volume: number, url: string, loop: number) {
+    public setSound(volume: number, url: string, loop: number) {
         Laya.SoundManager.playSound(url, loop);
         Laya.SoundManager.setSoundVolume(volume, url);
     }
@@ -575,7 +573,7 @@ export class Character extends Laya.Script {
         Character.m_cameraShakingMultiplyer = multiplier;
         Character.m_cameraShakingTimer = timer;
     }
-    private updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void{
+    public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void{
         if(this.m_state === to || this.m_animationChanging) return;
         this.m_state = to;
         // console.log('Player status from', from, 'convert to ', to);
@@ -601,6 +599,16 @@ export class Character extends Laya.Script {
         }
         if(typeof onCallBack === 'function')
             onCallBack();
+    }
+    public getEnemyAttackDamage(tag: string): number{
+        switch (tag) {
+            case "EnemyNormalAttack":
+                return new Normal().m_dmg;
+            case "EnemyShieldAttack":
+                return new Shield().m_dmg;
+            default:
+                return 0;
+        }
     }
 }
 

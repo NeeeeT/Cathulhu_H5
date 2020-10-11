@@ -1,6 +1,5 @@
 // import CharacterInit, { Character } from "./CharacterInit";
-
-export enum EnemyStatus {
+export enum EnemyStatus{
     idle = 0,
     run,
     jump,
@@ -13,13 +12,15 @@ export enum EnemyStatus {
 }
 /** (虛擬)敵人基礎設定 */
 export abstract class VirtualEnemy extends Laya.Script {
-    abstract m_name: string = '';
-    abstract m_health: number = 1000;
-    abstract m_armor: number = 0;
-    abstract m_speed: number = 3;
+    abstract m_health: number;
+    abstract m_armor: number;
+    abstract m_speed: number;
+    abstract m_dmg: number;
     /** 受到攻擊時的硬直秒數，單位:seconds。 */
-    abstract m_mdelay: number = 0.5;
-    abstract m_tag: string = '';
+    abstract m_mdelay: number;
+    abstract m_tag: string;
+    abstract m_name: string;
+    abstract m_atkTag: string;
     m_animSheet: string;
 
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
@@ -323,25 +324,20 @@ export abstract class VirtualEnemy extends Laya.Script {
         atkCircleRigid.category = 8;
         atkCircleRigid.mask = 4;
 
-        atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
-            if (col.tag === 'Player') {
-                let victim = Laya.stage.getChildByName("Player") as Laya.Animation;
-                // console.log(victim);
-                console.log(col);
+        // atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
+        //     if (col.tag === 'Player') {
+ 
 
-
-                if (victim.alpha != 1) return;
-                Laya.Tween.to(victim, { alpha: 0.3 }, 350, Laya.Ease.linearInOut,
-                    Laya.Handler.create(this, () => { victim.alpha = 1; }));
-
-            }
-        };
+        //     }
+        // };
         atkBoxCollider.isSensor = true;
         atkCircleRigid.gravityScale = 0;
         this.updateAnimation(this.m_state, EnemyStatus.attack);
         // this.m_animation.skew
         // atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
         Laya.stage.addChild(atkCircle);
+
+        atkBoxCollider.tag = this.m_atkTag;
 
         this.m_atkTimer = 100;
 
@@ -384,8 +380,8 @@ export abstract class VirtualEnemy extends Laya.Script {
             y: this.m_moveVelocity["Vy"],
         });
     }
-    private updateAnimation(from: EnemyStatus, to: EnemyStatus, onCallBack: () => void = null, force: boolean = false): void {
-        if (this.m_state === to || this.m_animationChanging) return;
+    public updateAnimation(from: EnemyStatus, to: EnemyStatus, onCallBack: () => void = null, force: boolean = false): void{
+        if(this.m_state === to || this.m_animationChanging) return;
         this.m_state = to;
         // console.log(from, 'convert to ', to);
         switch (this.m_state) {
@@ -438,6 +434,8 @@ export class Normal extends VirtualEnemy {
     m_tag = 'n';
     m_attackRange = 100;
     m_mdelay = 0.1;
+    m_dmg = 50;
+    m_atkTag = "EnemyNormalAttack";
 }
 export class Shield extends VirtualEnemy {
     m_name = '裝甲敵人';
@@ -447,6 +445,8 @@ export class Shield extends VirtualEnemy {
     m_tag = 's';
     m_attackRange = 100;
     m_mdelay = 0.05;
+    m_dmg = 30;
+    m_atkTag = "EnemyShieldAttack";
 }
 
 export default class EnemyHandler extends Laya.Script {
