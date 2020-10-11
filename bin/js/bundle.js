@@ -371,6 +371,8 @@
                 onCallBack();
         }
         enemyInjuredColor() {
+            if (this.m_animation.destroyed)
+                return;
             this.m_animation.alpha = 1;
             let colorMat = [
                 4, 0, 0, 0, 10,
@@ -382,8 +384,6 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [colorFilter, glowFilter];
             setTimeout(() => {
-                if (this.m_animation.destroyed)
-                    return;
                 this.m_animation.alpha = 1;
                 this.m_animation.filters = null;
             }, 200);
@@ -771,18 +771,26 @@
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
             this.m_animation.width = this.m_animation.height = this.m_radius;
-            this.m_animation.scaleX = 2;
-            this.m_animation.scaleY = 2;
-            this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 130);
-            this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
+            this.m_animation.scaleX = 3;
+            this.m_animation.scaleY = 3;
+            this.m_animation.pos(rightSide ? position['x'] - 600 : position['x'] - 870, position['y'] - 950);
+            this.m_animation.zOrder = -1;
+            this.m_animation.source = "comp/BlackHole/Blackhole_0034.png,comp/BlackHole/Blackhole_0035.png,comp/BlackHole/Blackhole_0036.png,comp/BlackHole/Blackhole_0037.png,comp/BlackHole/Blackhole_0038.png,comp/BlackHole/Blackhole_0039.png,comp/BlackHole/Blackhole_0040.png,comp/BlackHole/Blackhole_0041.png,comp/BlackHole/Blackhole_0042.png,comp/BlackHole/Blackhole_0043.png,comp/BlackHole/Blackhole_0044.png";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
             let offsetX = rightSide ? position['x'] + 140 : position['x'] - this.m_animation.width - 65;
-            let offsetY = position['y'] - this.m_animation.height / 2;
+            let offsetY = position['y'] - this.m_animation.height / 2 * 4;
             this.m_canUse = false;
             this.castRoar(position);
-            Laya.stage.graphics.drawCircle(offsetX, offsetY, this.m_radius, 'black', 'white', 1);
-            Laya.stage.graphics.drawCircle(offsetX, offsetY, this.m_radius + 100, 'black', 'white', 1);
+            let colorMat = [
+                3, 0, 3, 0, -150,
+                0, 1, 0, 0, -100,
+                3, 0, 3, 0, -150,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#460075", 10, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            this.m_animation.filters = [glowFilter, colorFilter];
             let count = 0;
             let timer = setInterval(() => {
                 if (count >= this.m_lastTime * 1000) {
@@ -806,11 +814,13 @@
                 count += 100;
             }, 100);
             setTimeout(() => {
-                Laya.stage.graphics.clear();
+                this.m_animation.destroy();
             }, this.m_lastTime * 1000);
             setTimeout(() => {
                 this.m_canUse = true;
             }, this.m_cd * 1000);
+            Laya.stage.addChild(this.m_animation);
+            this.m_animation.play();
         }
         attractRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
@@ -1342,7 +1352,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "First.scene";
+    GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

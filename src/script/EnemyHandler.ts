@@ -1,6 +1,6 @@
 // import CharacterInit, { Character } from "./CharacterInit";
 
-export enum EnemyStatus{
+export enum EnemyStatus {
     idle = 0,
     run,
     jump,
@@ -23,7 +23,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_animSheet: string;
 
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
-    m_rectangle: object = {"x0": 0, "x1": 0, "y0": 0, "y1": 0, "h": 0, "w": 0};
+    m_rectangle: object = { "x0": 0, "x1": 0, "y0": 0, "y1": 0, "h": 0, "w": 0 };
     m_maxHealth: number;
     m_attackRange: number = 100;
     m_hurtDelay: number = 0;
@@ -56,16 +56,16 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_animation.height = 35;
         this.m_animation.pivotX = this.m_animation.width / 2;
         this.m_animation.pivotY = this.m_animation.height / 2;
-        let enemyPos : number[] = [-200,200];//9/12新增
+        let enemyPos: number[] = [-200, 200];//9/12新增
         this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));//9/12更改
         this.m_animation.autoPlay = true;
         this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
         this.m_animation.interval = 100;
         this.m_animation.loop = true;
-        this.m_animation.on(Laya.Event.COMPLETE, this, ()=>{
+        this.m_animation.on(Laya.Event.COMPLETE, this, () => {
             this.m_animationChanging = false;
         })
-        
+
         this.m_maxHealth = this.m_health;
 
         this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
@@ -82,7 +82,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_collider.y -= 10;
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
-        
+
         this.m_rigidbody.category = 8;
         this.m_rigidbody.mask = 4 | 2;
         this.m_rigidbody.allowRotation = false;
@@ -127,11 +127,11 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_collider.label = index;
     };
     takeDamage(amount: number) {
-        if(this.m_animation.destroyed || amount <= 0) return;
+        if (this.m_animation.destroyed || amount <= 0) return;
 
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 25);
-        
+
         this.delayMove(this.m_mdelay);
         amount *= critical ? 5 : 1;
         this.setHealth(this.getHealth() - amount);
@@ -141,13 +141,14 @@ export abstract class VirtualEnemy extends Laya.Script {
         //     this.m_animation.x--;
         //     this.m_animation.y++;
         // }
-        if(this.m_hurtDelay > 0){
+        //this.enemyInjuredColor();
+        if (this.m_hurtDelay > 0) {
             this.m_hurtDelay += 2.0;
         }
-        else{
+        else {
             this.m_hurtDelay = 2.0;
-            this.m_hurtDelayTimer = setInterval(()=>{
-                if(this.m_hurtDelay <= 0){
+            this.m_hurtDelayTimer = setInterval(() => {
+                if (this.m_hurtDelay <= 0) {
                     clearInterval(this.m_hurtDelayTimer);
                     this.m_hurtDelay = -1;
                 }
@@ -171,13 +172,13 @@ export abstract class VirtualEnemy extends Laya.Script {
         damageText.fontSize = critical ? 40 : 20;
         damageText.color = critical ? 'orange' : "white";
 
-        if(amount >= 10000){
-            damageText.fontSize = 55;   
+        if (amount >= 10000) {
+            damageText.fontSize = 55;
             damageText.color = "#00DDDD";
         }
 
         let temp_text = "";
-        for(let i = 0; i < String(amount).length; i++){
+        for (let i = 0; i < String(amount).length; i++) {
             temp_text += String(amount)[i];
             temp_text += " ";
         }
@@ -194,7 +195,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut,
-                    Laya.Handler.create(this, ()=>{ damageText.destroy() }), 0);
+                    Laya.Handler.create(this, () => { damageText.destroy() }), 0);
             }), 0);
     }
     private showHealth() {
@@ -207,7 +208,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         Laya.stage.addChild(this.m_healthBar);
 
         setInterval((() => {
-            if(this.m_healthBar.destroyed)
+            if (this.m_healthBar.destroyed)
                 return;
             if (this.m_animation.destroyed) {
                 this.m_healthBar.destroy();
@@ -249,7 +250,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     }
     //敵人行為主邏輯
     public enemyAIMain() {
-        if(this.m_animation.destroyed) return;
+        if (this.m_animation.destroyed) return;
 
         this.pursuitPlayer();
         this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
@@ -260,15 +261,15 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
     }
     private checkPosition() {
-        this.m_rectangle['x0'] = this.m_animation.x - (this.m_animation.width/2);
-        this.m_rectangle['x1'] = this.m_animation.x + (this.m_animation.width/2);
-        this.m_rectangle['y0'] = this.m_animation.y - (this.m_animation.height/2);
-        this.m_rectangle['y1'] = this.m_animation.y + (this.m_animation.height/2);
+        this.m_rectangle['x0'] = this.m_animation.x - (this.m_animation.width / 2);
+        this.m_rectangle['x1'] = this.m_animation.x + (this.m_animation.width / 2);
+        this.m_rectangle['y0'] = this.m_animation.y - (this.m_animation.height / 2);
+        this.m_rectangle['y1'] = this.m_animation.y + (this.m_animation.height / 2);
         this.m_rectangle['w'] = this.m_animation.width;
         this.m_rectangle['h'] = this.m_animation.height;
     }
     private pursuitPlayer() {
-        if(this.m_player.destroyed){
+        if (this.m_player.destroyed) {
             this.updateAnimation(this.m_state, EnemyStatus.idle);
             return;
         }
@@ -282,11 +283,11 @@ export abstract class VirtualEnemy extends Laya.Script {
         } else {
             this.m_moveVelocity["Vx"] = (dir > 0) ? this.m_speed : -this.m_speed;
         }
-        if(!this.m_animationChanging)
+        if (!this.m_animationChanging)
             this.updateAnimation(this.m_state, EnemyStatus.run);
         else
             this.m_moveVelocity["Vx"] = 0;
-        this.applyMoveX();            
+        this.applyMoveX();
     }
     private playerRangeCheck(detectRange: number): boolean {
         //取得角色與敵人的最短路徑長度
@@ -327,11 +328,11 @@ export abstract class VirtualEnemy extends Laya.Script {
                 let victim = Laya.stage.getChildByName("Player") as Laya.Animation;
                 // console.log(victim);
                 console.log(col);
-                
-                
-                if(victim.alpha != 1) return;
-                Laya.Tween.to(victim, {alpha: 0.3}, 350, Laya.Ease.linearInOut,
-                    Laya.Handler.create(this, ()=>{ victim.alpha = 1; }));
+
+
+                if (victim.alpha != 1) return;
+                Laya.Tween.to(victim, { alpha: 0.3 }, 350, Laya.Ease.linearInOut,
+                    Laya.Handler.create(this, () => { victim.alpha = 1; }));
 
             }
         };
@@ -351,27 +352,27 @@ export abstract class VirtualEnemy extends Laya.Script {
         setTimeout(() => {
             this.m_atkCd = true;
         }, 500);
-        
+
         this.delayMove(0.3);
     }
-    public delayMove(time: number): void{
-        if(this.m_moveDelayValue > 0){
-          this.m_moveDelayValue += time;
+    public delayMove(time: number): void {
+        if (this.m_moveDelayValue > 0) {
+            this.m_moveDelayValue += time;
         }
-        else{
-          this.m_moveDelayValue = time;
-          this.m_moveDelayTimer = setInterval(()=>{
-            if(this.m_moveDelayValue <= 0){
-              this.m_moveVelocity["Vx"] = 0;
-              clearInterval(this.m_moveDelayTimer);
-              this.m_moveDelayValue = 0;
-            }
-            this.m_moveDelayValue -= 0.1;
-          }, 100)
+        else {
+            this.m_moveDelayValue = time;
+            this.m_moveDelayTimer = setInterval(() => {
+                if (this.m_moveDelayValue <= 0) {
+                    this.m_moveVelocity["Vx"] = 0;
+                    clearInterval(this.m_moveDelayTimer);
+                    this.m_moveDelayValue = 0;
+                }
+                this.m_moveDelayValue -= 0.1;
+            }, 100)
         }
     }
     private applyMoveX(): void {
-        if(this.m_moveDelayValue > 0 || this.m_animation.destroyed) return;
+        if (this.m_moveDelayValue > 0 || this.m_animation.destroyed) return;
         this.m_rigidbody.setVelocity({
             x: this.m_moveVelocity["Vx"],
             y: this.m_rigidbody.linearVelocity.y,
@@ -383,11 +384,11 @@ export abstract class VirtualEnemy extends Laya.Script {
             y: this.m_moveVelocity["Vy"],
         });
     }
-    private updateAnimation(from: EnemyStatus, to: EnemyStatus, onCallBack: () => void = null, force: boolean = false): void{
-        if(this.m_state === to || this.m_animationChanging) return;
+    private updateAnimation(from: EnemyStatus, to: EnemyStatus, onCallBack: () => void = null, force: boolean = false): void {
+        if (this.m_state === to || this.m_animationChanging) return;
         this.m_state = to;
         // console.log(from, 'convert to ', to);
-        switch(this.m_state){
+        switch (this.m_state) {
             case EnemyStatus.attack:
                 this.m_animationChanging = true;
                 this.m_animation.interval = 100;
@@ -406,11 +407,12 @@ export abstract class VirtualEnemy extends Laya.Script {
                 this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
                 break;
         }
-        if(typeof onCallBack === 'function')
+        if (typeof onCallBack === 'function')
             onCallBack();
     }
-    public enemyInjuredColor():void//0921新增
+    public enemyInjuredColor(): void//0921新增
     {
+        if (this.m_animation.destroyed) return;
         this.m_animation.alpha = 1;
         let colorMat: Array<number> =
             [
@@ -421,11 +423,10 @@ export abstract class VirtualEnemy extends Laya.Script {
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        this.m_animation.filters = [colorFilter,glowFilter];
+        this.m_animation.filters = [colorFilter, glowFilter];
         setTimeout(() => {
-          if(this.m_animation.destroyed) return;
-          this.m_animation.alpha = 1;
-          this.m_animation.filters = null;  
+            this.m_animation.alpha = 1;
+            this.m_animation.filters = null;
         }, 200);
     }
 }
@@ -435,7 +436,7 @@ export class Normal extends VirtualEnemy {
     m_armor = 100;
     m_speed = 2;
     m_tag = 'n';
-    m_attackRange = 100; 
+    m_attackRange = 100;
     m_mdelay = 0.1;
 }
 export class Shield extends VirtualEnemy {
@@ -452,7 +453,7 @@ export default class EnemyHandler extends Laya.Script {
     public static enemyIndex: number = 0;
     public static enemyPool = [];
 
-    public static generator(player: Laya.Animation, enemyType: number, spawnPoint: number): VirtualEnemy{
+    public static generator(player: Laya.Animation, enemyType: number, spawnPoint: number): VirtualEnemy {
         let enemy: VirtualEnemy = this.decideEnemyType(enemyType);
         let id: string = enemy.m_tag + String(++this.enemyIndex);
 
@@ -465,7 +466,7 @@ export default class EnemyHandler extends Laya.Script {
     }
     private static decideEnemyType(enemyType: number) {
         switch (enemyType) {
-            case 1: return new Normal(); 
+            case 1: return new Normal();
             case 2: return new Shield();
             default: return new Normal();
         };
