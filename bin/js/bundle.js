@@ -1313,13 +1313,33 @@
         constructor() {
             super();
             this.enemyGenerateTime = 5000;
+            this.enemyLeft = 50;
         }
         onStart() {
             let player = CharacterInit.playerEnt.m_animation;
-            let isFacingRight = CharacterInit.playerEnt.m_isFacingRight;
+            let enemy = EnemyHandler.enemyPool;
             setInterval(() => {
+                if (CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20)
+                    return;
                 EnemyHandler.generator(player, 1, 0);
+                this.enemyLeft--;
             }, this.enemyGenerateTime);
+            this.showBattleInfo();
+        }
+        showBattleInfo() {
+            let info = new Laya.Text();
+            let player = CharacterInit.playerEnt.m_animation;
+            let enemy = EnemyHandler.enemyPool;
+            info.fontSize = 45;
+            info.color = "#efefef";
+            info.stroke = 3;
+            info.font = "silver";
+            info.strokeColor = "#000";
+            Laya.stage.addChild(info);
+            setInterval(() => {
+                info.text = "剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
+                info.pos(player.x - 50, player.y - 400);
+            }, 100);
         }
     }
 
@@ -1367,7 +1387,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
