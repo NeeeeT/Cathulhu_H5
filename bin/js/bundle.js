@@ -49,16 +49,16 @@
         spawn(player, id) {
             this.m_animation = new Laya.Animation();
             this.m_animation.filters = [];
-            this.m_animation.scaleX = 4;
-            this.m_animation.scaleY = 4;
-            this.m_animation.width = 35;
-            this.m_animation.height = 35;
+            this.m_animation.scaleX = 1.5;
+            this.m_animation.scaleY = 1.5;
+            this.m_animation.width = 96;
+            this.m_animation.height = 140;
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
             let enemyPos = [-200, 200];
             this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));
             this.m_animation.autoPlay = true;
-            this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+            this.m_animation.source = 'normalEnemy/Idle.atlas';
             this.m_animation.interval = 100;
             this.m_animation.loop = true;
             this.m_animation.on(Laya.Event.COMPLETE, this, () => {
@@ -338,19 +338,19 @@
                 case EnemyStatus.attack:
                     this.m_animationChanging = true;
                     this.m_animation.interval = 100;
-                    this.m_animation.source = 'goblin/attack_05.png,goblin/attack_06.png,goblin/attack_07.png,goblin/attack_08.png';
+                    this.m_animation.source = 'normalEnemy/Attack.atlas';
                     this.m_animation.play();
                     break;
                 case EnemyStatus.idle:
-                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                    this.m_animation.source = 'normalEnemy/Idle.atlas';
                     break;
                 case EnemyStatus.run:
-                    this.m_animation.source = 'goblin/run_01.png,goblin/run_02.png,goblin/run_03.png,goblin/run_04.png,goblin/run_05.png,goblin/run_06.png,goblin/run_07.png,goblin/run_08.png';
+                    this.m_animation.source = 'normalEnemy/Walk.atlas';
                     this.m_animation.interval = 100;
                     this.m_animation.play();
                     break;
                 default:
-                    this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                    this.m_animation.source = 'normalEnemy/Idle.atlas';
                     break;
             }
             if (typeof onCallBack === 'function')
@@ -751,8 +751,8 @@
             this.m_dotDamage = 7;
             this.m_cost = 0;
             this.m_id = 2;
-            this.m_cd = 3;
-            this.m_lastTime = 5;
+            this.m_cd = 5;
+            this.m_lastTime = 2;
             this.m_radius = 100;
         }
         cast(owner, position) {
@@ -762,32 +762,32 @@
             let explosion = new Laya.Animation();
             this.m_animation = new Laya.Animation();
             this.m_animation.width = this.m_animation.height = this.m_radius;
-            this.m_animation.scaleX = 3;
-            this.m_animation.scaleY = 3;
-            this.m_animation.pos(rightSide ? position['x'] - 600 : position['x'] - 870, position['y'] - 950);
-            this.m_animation.zOrder = -1;
-            this.m_animation.source = "comp/BlackHole/Blackhole_0034.png,comp/BlackHole/Blackhole_0035.png,comp/BlackHole/Blackhole_0036.png,comp/BlackHole/Blackhole_0037.png,comp/BlackHole/Blackhole_0038.png,comp/BlackHole/Blackhole_0039.png,comp/BlackHole/Blackhole_0040.png,comp/BlackHole/Blackhole_0041.png,comp/BlackHole/Blackhole_0042.png,comp/BlackHole/Blackhole_0043.png,comp/BlackHole/Blackhole_0044.png";
+            this.m_animation.scaleX = 1;
+            this.m_animation.scaleY = 1;
+            this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
+            this.m_animation.source = "comp/BlackHole/BlakeHole_0023.png,comp/BlackHole/BlakeHole_0024.png,comp/BlackHole/BlakeHole_0025.png,comp/BlackHole/BlakeHole_0026.png,comp/BlackHole/BlakeHole_0027.png,comp/BlackHole/BlakeHole_0028.png,comp/BlackHole/BlakeHole_0029.png,comp/BlackHole/BlakeHole_0030.png,comp/BlackHole/BlakeHole_0031.png,comp/BlackHole/BlakeHole_0032.png,comp/BlackHole/BlakeHole_0033.png,comp/BlackHole/BlakeHole_0034.png,comp/BlackHole/BlakeHole_0035.png,comp/BlackHole/BlakeHole_0036.png,comp/BlackHole/BlakeHole_0037.png,comp/BlackHole/BlakeHole_0038.png,comp/BlackHole/BlakeHole_0039.png,comp/BlackHole/BlakeHole_0040.png";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
-            explosion.source = "comp/BlackExplosion/BlackholeExplsion_0024.png,comp/BlackExplosion/BlackholeExplsion_0025.png,comp/BlackExplosion/BlackholeExplsion_0026.png,comp/BlackExplosion/BlackholeExplsion_0027.png,comp/BlackExplosion/BlackholeExplsion_0028.png,comp/BlackExplosion/BlackholeExplsion_0029.png,comp/BlackExplosion/BlackholeExplsion_0030.png,comp/BlackExplosion/BlackholeExplsion_0031.png,comp/BlackExplosion/BlackholeExplsion_0032.png";
-            explosion.scaleX = 1.5;
-            explosion.scaleY = 1.5;
+            explosion.source = "comp/BlackExplosion/BlackholeExplsion_0036.png,comp/BlackExplosion/BlackholeExplsion_0037.png,comp/BlackExplosion/BlackholeExplsion_0038.png,comp/BlackExplosion/BlackholeExplsion_0039.png,comp/BlackExplosion/BlackholeExplsion_0040.png,comp/BlackExplosion/BlackholeExplsion_0041.png,comp/BlackExplosion/BlackholeExplsion_0042.png,comp/BlackExplosion/BlackholeExplsion_0043.png,comp/BlackExplosion/BlackholeExplsion_0044.png,comp/BlackExplosion/BlackholeExplsion_0045.png";
+            explosion.scaleX = 1;
+            explosion.scaleY = 1;
+            explosion.interval = 30;
             explosion.pos(this.m_animation.x, this.m_animation.y);
             let offsetX = rightSide ? position['x'] + 140 : position['x'] - this.m_animation.width - 65;
-            let offsetY = position['y'] - this.m_animation.height / 2 * 4;
+            let offsetY = position['y'] - this.m_animation.height / 2;
             this.m_canUse = false;
             this.castRoar(position);
             let colorMat = [
-                3, 0, 3, 0, -150,
-                0, 1, 0, 0, -100,
-                3, 0, 3, 0, -150,
-                0, 0, 0, 1, 0,
+                4, 0, 2, 0, -150,
+                0, 1, 1, 0, -100,
+                1, 2, 1, 0, -150,
+                0, 0, 0, 2, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#460075", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [glowFilter, colorFilter];
             let colorFilterex = new Laya.ColorFilter(colorMat);
-            explosion.filters = [glowFilter];
+            explosion.filters = [glowFilter, colorFilter];
             let count = 0;
             let timer = setInterval(() => {
                 if (count >= this.m_lastTime * 1000) {
@@ -795,7 +795,7 @@
                     explosion.play();
                     setTimeout(() => {
                         explosion.destroy();
-                    }, 200);
+                    }, 300);
                     this.attackRangeCheck(owner, {
                         "x": offsetX,
                         "y": offsetY,
@@ -831,8 +831,8 @@
                 if (e._ent.m_animation.destroyed === true)
                     return;
                 e._ent.m_rigidbody.setVelocity({
-                    "x": (pos['x'] - (e._ent.m_rectangle['x0'] + e._ent.m_animation.width / 2)) * 0.25,
-                    "y": (pos['y'] - (e._ent.m_rectangle['y0'] + e._ent.m_animation.height / 2)) * 0.25,
+                    "x": (pos['x'] - (e._ent.m_rectangle['x0'] + e._ent.m_animation.width / 2)) * 0.1,
+                    "y": (pos['y'] - (e._ent.m_rectangle['y0'] + e._ent.m_animation.height / 2)) * 0.1,
                 });
             });
         }
@@ -1395,7 +1395,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "First.scene";
+    GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
