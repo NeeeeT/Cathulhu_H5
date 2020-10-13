@@ -554,19 +554,18 @@ export class Character extends Laya.Script {
         let player_pivot_y: number = Laya.stage.height / 2;
 
         setInterval(() => {
-        if(this.m_animation.destroyed) return;
+            if(this.m_animation.destroyed) return;
 
-        if (Character.m_cameraShakingTimer > 0) {
-            let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
-            Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-            Laya.stage.y = /*(player_pivot_y - this.m_animation.y + 150)*/0 + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-            Character.m_cameraShakingTimer--;
-        } else {
-            
-            Laya.stage.x = player_pivot_x - this.m_animation.x;
-            // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
-        }
-        
+            if (Character.m_cameraShakingTimer > 0) {
+                let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
+                Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
+                Laya.stage.y = /*(player_pivot_y - this.m_animation.y + 150)*/0 + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
+                Character.m_cameraShakingTimer--;
+            } else {
+                
+                Laya.stage.x = player_pivot_x - this.m_animation.x;
+                // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
+            }
         }, 10);
     }
     public static setCameraShake(timer: number, multiplier: number) {

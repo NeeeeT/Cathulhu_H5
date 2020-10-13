@@ -1326,6 +1326,14 @@
             }, this.enemyGenerateTime);
             this.showBattleInfo();
         }
+        onUpdate() {
+            if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0) {
+                CharacterInit.playerEnt.m_animation.destroy();
+                Laya.Scene.open("Village.scene");
+                Laya.stage.x = Laya.stage.y = 0;
+                console.log("恭喜通過戰鬥!!!");
+            }
+        }
         showBattleInfo() {
             let info = new Laya.Text();
             let player = CharacterInit.playerEnt.m_animation;
@@ -1339,7 +1347,7 @@
             setInterval(() => {
                 info.text = "剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
                 info.pos(player.x - 50, player.y - 400);
-            }, 100);
+            }, 10);
         }
     }
 
