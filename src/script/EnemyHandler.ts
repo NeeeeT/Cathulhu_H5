@@ -47,20 +47,23 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_healthBar: Laya.ProgressBar;
     m_state = EnemyStatus.idle;
 
+
     spawn(player: Laya.Animation, id: string): void {
         this.m_animation = new Laya.Animation();
         this.m_animation.filters = [];
-        this.m_animation.scaleX = 4;
-        this.m_animation.scaleY = 4;
+        //10/14匯入normalEnemy後調整
+        this.m_animation.scaleX = 1.5;
+        this.m_animation.scaleY = 1.5;
 
-        this.m_animation.width = 35;
-        this.m_animation.height = 35;
+        this.m_animation.width = 96;
+        this.m_animation.height = 140;
+        //
         this.m_animation.pivotX = this.m_animation.width / 2;
         this.m_animation.pivotY = this.m_animation.height / 2;
         let enemyPos: number[] = [-200, 200];//9/12新增
         this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));//9/12更改
         this.m_animation.autoPlay = true;
-        this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+        this.m_animation.source = 'normalEnemy/Idle.atlas';
         this.m_animation.interval = 100;
         this.m_animation.loop = true;
         this.m_animation.on(Laya.Event.COMPLETE, this, () => {
@@ -92,7 +95,6 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         Laya.stage.addChild(this.m_animation);
         this.showHealth();
-
     };
     destroy(): void {
         this.m_animation.destroy();
@@ -388,19 +390,19 @@ export abstract class VirtualEnemy extends Laya.Script {
             case EnemyStatus.attack:
                 this.m_animationChanging = true;
                 this.m_animation.interval = 100;
-                this.m_animation.source = 'goblin/attack_05.png,goblin/attack_06.png,goblin/attack_07.png,goblin/attack_08.png';
+                this.m_animation.source = 'normalEnemy/Attack.atlas';
                 this.m_animation.play();
                 break;
             case EnemyStatus.idle:
-                this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                this.m_animation.source = 'normalEnemy/Idle.atlas';
                 break;
             case EnemyStatus.run:
-                this.m_animation.source = 'goblin/run_01.png,goblin/run_02.png,goblin/run_03.png,goblin/run_04.png,goblin/run_05.png,goblin/run_06.png,goblin/run_07.png,goblin/run_08.png';
+                this.m_animation.source = 'normalEnemy/Walk.atlas';
                 this.m_animation.interval = 100;
                 this.m_animation.play();
                 break;
             default:
-                this.m_animation.source = 'goblin/idle_01.png,goblin/idle_02.png,goblin/idle_03.png,goblin/idle_04.png';
+                this.m_animation.source = 'normalEnemy/Idle.atlas';
                 break;
         }
         if (typeof onCallBack === 'function')

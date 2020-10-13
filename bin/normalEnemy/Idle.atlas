@@ -1,0 +1,76 @@
+{
+    "frames": {
+        "normalEnemy_Idle_1.png": {
+            "frame": {
+                "h": 156,
+                "idx": 0,
+                "w": 96,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 160,
+                "w": 160
+            },
+            "spriteSourceSize": {
+                "x": 36,
+                "y": 4
+            }
+        },
+        "normalEnemy_Idle_2.png": {
+            "frame": {
+                "h": 155,
+                "idx": 0,
+                "w": 96,
+                "x": 0,
+                "y": 157
+            },
+            "sourceSize": {
+                "h": 160,
+                "w": 160
+            },
+            "spriteSourceSize": {
+                "x": 36,
+                "y": 5
+            }
+        },
+        "normalEnemy_Idle_3.png": {
+            "frame": {
+                "h": 154,
+                "idx": 0,
+                "w": 96,
+                "x": 97,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 160,
+                "w": 160
+            },
+            "spriteSourceSize": {
+                "x": 36,
+                "y": 6
+            }
+        },
+        "normalEnemy_Idle_4.png": {
+            "frame": {
+                "h": 156,
+                "idx": 0,
+                "w": 96,
+                "x": 97,
+                "y": 155
+            },
+            "sourceSize": {
+                "h": 160,
+                "w": 160
+            },
+            "spriteSourceSize": {
+                "x": 36,
+                "y": 4
+            }
+        }
+    },
+    "meta": {
+        "image": "Idle.png",
+        "prefix": "Idle/"
+    }
+}

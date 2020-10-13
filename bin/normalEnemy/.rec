@@ -1,0 +1,24 @@
+D .
+D Attack
+P E571DD77 Attack_1.png
+P 8C36AA9D Attack_2.png
+P 94DD53AA Attack_3.png
+P AAA447FF Attack_4.png
+P 7F6EA07A Attack_5.png
+P F6B6D9BF Attack_6.png
+P DEC6CEF6 Attack_7.png
+P 8C2B0035 Attack_8.png
+D Idle
+P 2636FBB7 normalEnemy_Idle_1.png
+P 623A9731 normalEnemy_Idle_2.png
+P 9726B402 normalEnemy_Idle_3.png
+P 2636FBB7 normalEnemy_Idle_4.png
+D Walk
+P B69B624B normalEnemy_Walk_1.png
+P B405F81F normalEnemy_Walk_2.png
+P 41EF1979 normalEnemy_Walk_3.png
+P 6FB96686 normalEnemy_Walk_4.png
+P ECE4D672 normalEnemy_Walk_5.png
+P 5D29CB9A normalEnemy_Walk_6.png
+P 5E07A81B normalEnemy_Walk_7.png
+P 08FB6CFE normalEnemy_Walk_8.png
