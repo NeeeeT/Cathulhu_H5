@@ -16,6 +16,7 @@ P 05188180 Blood_0011.png
 P B251754D Blood_0012.png
 P F7503637 Blood_0013.png
 P 550FE1FA Blood_0014.png
+D Cat(1013)
 D character
 P D32D8CC2 Player_attack_0.png
 P 643FA78E Player_attack_1.png
@@ -23,7 +24,6 @@ P F62B59C8 Player_attack_2.png
 P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
-D Character(0903)
 D Character(0904)
 D Character(0929)
 D Character(1002)
@@ -112,6 +112,16 @@ R 43D88A94 5.red forest_ground.png
 R 818528A3 6.red forest_black.png
 R 5083A16C Red Forest(0912).png
 S 17172344 Red Forest(x3)(0912).png
+D Cat(1013)/0.Slam
+P 6117F385 cat_slam_1.png
+P 001D2A16 cat_slam_2.png
+P 93E5B260 cat_slam_3.png
+P ED908DA7 cat_slam_4.png
+D Cat(1013)/1.Erosion
+P 0BA2EB52 cat_erosion_1.png
+P C60330A5 cat_erosion_2.png
+P 2013F188 cat_erosion_3.png
+P 2496871E cat_erosion_4.png
 D Character(0904)/Run
 P E6D601D9 character_run_1.png
 P 19DBFBFA character_run_2.png
