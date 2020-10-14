@@ -35,7 +35,7 @@ export default class EnemyInit extends Laya.Script{
     showBattleInfo(): void{
         let info = new Laya.Text();
         let player = CharacterInit.playerEnt.m_animation;
-        let enemy = EnemyHandler.enemyPool;
+
         info.fontSize = 45;
         info.color = "#efefef";
         info.stroke = 3;

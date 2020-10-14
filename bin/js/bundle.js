@@ -13,8 +13,6 @@
             Laya.stage.bgColor = this.sceneBackgroundColor;
             this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
         }
-        generator() {
-        }
         setSound(volume, url, loop) {
             Laya.SoundManager.playSound(url, loop);
             Laya.SoundManager.setSoundVolume(volume, url);
@@ -46,7 +44,7 @@
             this.m_animationChanging = false;
             this.m_state = EnemyStatus.idle;
         }
-        spawn(player, id) {
+        spawn(player, id, point) {
             this.m_animation = new Laya.Animation();
             this.m_animation.filters = [];
             this.m_animation.scaleX = 1.5;
@@ -56,7 +54,7 @@
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
             let enemyPos = [-200, 200];
-            this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));
+            this.m_animation.pos(point['x'], point['y']);
             this.m_animation.autoPlay = true;
             this.m_animation.source = 'normalEnemy/Idle.atlas';
             this.m_animation.interval = 100;
@@ -407,7 +405,12 @@
         static generator(player, enemyType, spawnPoint) {
             let enemy = this.decideEnemyType(enemyType);
             let id = enemy.m_tag + String(++this.enemyIndex);
-            enemy.spawn(player, id);
+            let point = [
+                { "x": 150.0, "y": 450.0 },
+                { "x": 3935.0, "y": 450.0 }
+            ];
+            let randomPoint = Math.floor(Math.random() * point.length);
+            enemy.spawn(player, id, point[randomPoint]);
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();
             return enemy;
@@ -934,7 +937,7 @@
             this.m_rigidbody.allowRotation = false;
             this.m_rigidbody.gravityScale = 3;
             this.m_rigidbody.category = 4;
-            this.m_rigidbody.mask = 8 | 2;
+            this.m_rigidbody.mask = 8 | 2 | 16;
             Laya.stage.addChild(this.m_animation);
             OathManager.showBloodyPoint(this.m_animation);
             OathManager.showBloodyLogo(this.m_animation, "comp/Cat.png");
@@ -1050,11 +1053,11 @@
                 this.attackStepEventCheck();
                 if (!this.m_animationChanging) {
                     if (this.m_atkStep === 1) {
-                        this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 5);
+                        this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 4);
                         console.log('ATTACK2');
                     }
                     if (this.m_atkStep === 0) {
-                        this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 5);
+                        this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 4);
                         console.log('ATTACK1');
                     }
                 }
@@ -1237,6 +1240,10 @@
                 else {
                     Laya.stage.x = player_pivot_x - this.m_animation.x;
                 }
+                if (Laya.stage.x >= -250.0)
+                    Laya.stage.x = -250.0;
+                if (Laya.stage.x <= -2475.0)
+                    Laya.stage.x = -2475.0;
             }, 10);
         }
         static setCameraShake(timer, multiplier) {
@@ -1250,12 +1257,12 @@
             switch (this.m_state) {
                 case CharacterStatus.attackOne:
                     this.m_animationChanging = true;
-                    this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png';
+                    this.m_animation.source = 'character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.attackTwo:
                     this.m_animationChanging = true;
-                    this.m_animation.source = 'character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
+                    this.m_animation.source = 'character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.idle:
@@ -1365,7 +1372,6 @@
         showBattleInfo() {
             let info = new Laya.Text();
             let player = CharacterInit.playerEnt.m_animation;
-            let enemy = EnemyHandler.enemyPool;
             info.fontSize = 45;
             info.color = "#efefef";
             info.stroke = 3;

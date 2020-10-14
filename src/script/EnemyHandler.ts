@@ -48,7 +48,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_state = EnemyStatus.idle;
 
 
-    spawn(player: Laya.Animation, id: string): void {
+    spawn(player: Laya.Animation, id: string, point: object): void {
         this.m_animation = new Laya.Animation();
         this.m_animation.filters = [];
         //10/14匯入normalEnemy後調整
@@ -61,7 +61,9 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_animation.pivotX = this.m_animation.width / 2;
         this.m_animation.pivotY = this.m_animation.height / 2;
         let enemyPos: number[] = [-200, 200];//9/12新增
-        this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));//9/12更改
+        // this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));//9/12更改
+        this.m_animation.pos(point['x'], point['y']);
+
         this.m_animation.autoPlay = true;
         this.m_animation.source = 'normalEnemy/Idle.atlas';
         this.m_animation.interval = 100;
@@ -458,8 +460,12 @@ export default class EnemyHandler extends Laya.Script {
     public static generator(player: Laya.Animation, enemyType: number, spawnPoint: number): VirtualEnemy {
         let enemy: VirtualEnemy = this.decideEnemyType(enemyType);
         let id: string = enemy.m_tag + String(++this.enemyIndex);
-
-        enemy.spawn(player, id);
+        let point = [
+            {"x": 150.0, "y": 450.0},
+            {"x": 3935.0, "y": 450.0}
+        ];
+        let randomPoint = Math.floor(Math.random() * point.length);
+        enemy.spawn(player, id, point[randomPoint]);
 
         this.enemyPool.push({ '_id': id, '_ent': enemy });
         this.updateEnemies();

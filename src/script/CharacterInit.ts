@@ -148,7 +148,7 @@ export class Character extends Laya.Script {
         this.m_rigidbody.allowRotation = false;
         this.m_rigidbody.gravityScale = 3;
         this.m_rigidbody.category = 4;
-        this.m_rigidbody.mask = 8 | 2;
+        this.m_rigidbody.mask = 8 | 2 | 16;
 
         Laya.stage.addChild(this.m_animation);
 
@@ -346,11 +346,11 @@ export class Character extends Laya.Script {
             if (!this.m_animationChanging){
                 if(this.m_atkStep === 1){
                     // ,1,2,3,4, 逗號數為分母(圖數+1)
-                    this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 5);
+                    this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 4);
                     console.log('ATTACK2');
                 }
                 if(this.m_atkStep === 0){
-                    this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 5);
+                    this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 4);
                     console.log('ATTACK1');
                 }
             }
@@ -605,10 +605,11 @@ export class Character extends Laya.Script {
                 Laya.stage.y = /*(player_pivot_y - this.m_animation.y + 150)*/0 + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
                 Character.m_cameraShakingTimer--;
             } else {
-                
                 Laya.stage.x = player_pivot_x - this.m_animation.x;
                 // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
             }
+            if(Laya.stage.x >= -250.0) Laya.stage.x = -250.0;
+            if(Laya.stage.x <= -2475.0) Laya.stage.x = -2475.0;
         }, 10);
     }
     public static setCameraShake(timer: number, multiplier: number) {
@@ -623,13 +624,13 @@ export class Character extends Laya.Script {
             case CharacterStatus.attackOne:
                 this.m_animationChanging = true;
                 // this.m_animation.interval = this.m_attackCdTime / 5;// ,1,2,3,4, 逗號數為分母(圖數+1)
-                this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png';
+                this.m_animation.source = 'character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png';
                 this.m_animation.play();
                 break;
             case CharacterStatus.attackTwo:
                 this.m_animationChanging = true;
                 // this.m_animation.interval = this.m_attackCdTime / 5;// ,1,2,3,4, 逗號數為分母(圖數+1)
-                this.m_animation.source = 'character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
+                this.m_animation.source = 'character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png';
                 this.m_animation.play();
                 break;
             case CharacterStatus.idle:

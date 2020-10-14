@@ -2,11 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":220,
+    "selecteID":235,
     "searchKey":"Scene",
     "props":{"x":0,"width":4098,"skewY":0,"skewX":0,"sceneColor":"gray","pivotX":0,"height":768},
     "nodeParent":-1,
-    "maxID":228,
+    "maxID":236,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -84,7 +84,7 @@
             "source":"src/script/EnemyInit.ts",
             "searchKey":"Script,EnemyInit",
             "removeAble":true,
-            "props":{"enemyLeft":50,"enemyGenerateTime":100000,"EnemyGenerateTime":5000},
+            "props":{"enemyLeft":50,"enemyGenerateTime":3000,"EnemyGenerateTime":5000},
             "nodeParent":2,
             "label":"EnemyInit",
             "isDirectory":false,
@@ -126,6 +126,98 @@
             "compId":225,
             "child":[
                 ]
+        },
+        {
+            "x":15,
+            "type":"Sprite",
+            "searchKey":"Sprite,leftBound",
+            "props":{"y":0,"x":0,"width":250,"name":"leftBound","height":768},
+            "nodeParent":2,
+            "label":"leftBound",
+            "isOpen":true,
+            "isDirectory":true,
+            "isAniNode":true,
+            "hasChild":true,
+            "compId":229,
+            "child":[
+                {
+                    "x":30,
+                    "type":"BoxCollider",
+                    "switchAble":true,
+                    "searchKey":"BoxCollider",
+                    "removeAble":true,
+                    "props":{"width":250,"height":768},
+                    "nodeParent":229,
+                    "label":"BoxCollider",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":230,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"RigidBody",
+                    "switchAble":true,
+                    "searchKey":"RigidBody",
+                    "removeAble":true,
+                    "props":{"type":"static","category":16,"allowRotation":false},
+                    "nodeParent":229,
+                    "label":"RigidBody",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":231,
+                    "child":[
+                        ]
+                }]
+        },
+        {
+            "x":15,
+            "type":"Sprite",
+            "searchKey":"Sprite,rightBound",
+            "props":{"y":0,"x":3849,"width":250,"name":"rightBound","height":768},
+            "nodeParent":2,
+            "label":"rightBound",
+            "isOpen":true,
+            "isDirectory":true,
+            "isAniNode":true,
+            "hasChild":true,
+            "compId":232,
+            "child":[
+                {
+                    "x":30,
+                    "type":"BoxCollider",
+                    "switchAble":true,
+                    "searchKey":"BoxCollider",
+                    "removeAble":true,
+                    "props":{"width":250,"height":768},
+                    "nodeParent":232,
+                    "label":"BoxCollider",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":233,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"RigidBody",
+                    "switchAble":true,
+                    "searchKey":"RigidBody",
+                    "removeAble":true,
+                    "props":{"type":"static","category":16},
+                    "nodeParent":232,
+                    "label":"RigidBody",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":234,
+                    "child":[
+                        ]
+                }]
         }],
     "animations":[
         {
