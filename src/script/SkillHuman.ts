@@ -1,3 +1,4 @@
+import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
 import { VirtualSkill } from "./SkillManager";
 
@@ -50,6 +51,8 @@ export class Spike extends VirtualSkill{
       
       owner.delayMove(this.m_lastTime);
       owner.m_rigidbody.setVelocity({x: rightSide ? this.m_spikeVec : -this.m_spikeVec, y: 0});
+
+      owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 130);
       
       this.attackRangeCheck(owner,
       {
@@ -123,6 +126,8 @@ export class Behead extends VirtualSkill{
       
       owner.delayMove(this.m_preTime);
       owner.m_rigidbody.setVelocity({x:0,y:0});
+      owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false)
+      // owner.
 
       
       Laya.stage.addChild(this.m_animation);

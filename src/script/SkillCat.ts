@@ -89,6 +89,7 @@ export class BlackHole extends VirtualSkill {
         this.m_animation.scaleX = 1;
         this.m_animation.scaleY = 1;
         this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
+        this.m_animation.alpha = 0.7;
         //this.m_animation.zOrder = 5;
         //動畫位置需要再調整
 

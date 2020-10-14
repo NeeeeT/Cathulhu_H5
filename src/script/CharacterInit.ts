@@ -5,19 +5,21 @@ import * as hSkill from "./SkillHuman";
 import * as cSkill from "./SkillCat";
 
 import EnemyHandler, { Normal, Shield } from "./EnemyHandler";
+import { CharacterStatus } from "./CharacterStatus";
 
 
-export enum CharacterStatus {
-    idle = 0,
-    run,
-    jump,
-    down,
-    attack,
-    useSkill,
-    hurt,
-    defend,
-    death
-  }
+// export enum CharacterStatus {
+//     idle = 0,
+//     run,
+//     jump,
+//     down,
+//     attackOne,
+//     attackTwo,
+//     useSkill,
+//     hurt,
+//     defend,
+//     death
+// }
   
 export class Character extends Laya.Script {
     m_state: number;
@@ -54,6 +56,11 @@ export class Character extends Laya.Script {
     m_canJump: boolean = true;
     m_canAttack: boolean = true;
     m_animationChanging: boolean;
+
+    m_atkTimer;
+    m_atkStep: number;
+    m_atkTimerValue: number;
+    m_atkTimerInterval: number = 1.2;
 
     public static m_cameraShakingTimer: number = 0;
     public static m_cameraShakingMultiplyer: number = 1;
@@ -94,7 +101,7 @@ export class Character extends Laya.Script {
         this.m_animation.on(Laya.Event.COMPLETE, this, () => {
             this.m_animationChanging = false;
             if(Math.abs(this.m_playerVelocity["Vx"]) <= 0)
-                this.updateAnimation(this.m_state, CharacterStatus.idle);
+                this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         })
 
         // this.m_maxHealth = this.m_health;
@@ -109,6 +116,8 @@ export class Character extends Laya.Script {
         this.m_script.onUpdate = () => {
             if (this.m_playerVelocity["Vx"] < -this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = -this.m_xMaxVelocity;
             if (this.m_playerVelocity["Vx"] > this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = this.m_xMaxVelocity;
+            // this.m_atkStep = (this.m_atkTimerValue > 0) ? 1 : 0;
+            // console.log(this.m_atkStep);
             this.characterMove();
         }
         this.m_script.onTriggerEnter = (col: Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) => {
@@ -243,7 +252,7 @@ export class Character extends Laya.Script {
             this.m_isFacingRight = false;
         }
         this.applyMoveX();
-        if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false);
+        if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
         //Up
         if (this.m_keyDownList[38]) {
@@ -263,7 +272,7 @@ export class Character extends Laya.Script {
                 this.m_isFacingRight = true;
             }
             this.applyMoveX();
-            if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false);
+            if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
         if (this.m_keyDownList[40]) {
             //Down
@@ -314,11 +323,38 @@ export class Character extends Laya.Script {
 
             // this.m_animation.interval = 100;
             // this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
-
-
             
-            // this.createAttackCircle(this.m_animation);
-            if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.attack, null, false);
+            // if(this.m_atkTimerValue > 0)
+            // {
+            //     this.m_atkTimerValue += this.m_atkTimerInterval;
+            // }
+            // else{
+            //     this.m_atkTimerValue = this.m_atkTimerInterval;
+            //     this.m_atkTimer = setInterval(()=>{
+            //         if(this.m_atkTimerValue <= 0){
+            //             clearInterval(this.m_atkTimer);
+            //             this.m_atkTimerValue = -1;
+            //             this.m_atkStep = 0;
+            //         }
+            //         this.m_atkTimerValue -= 0.1;
+            //         console.log('working..', this.m_atkTimerValue);
+            //     }, 100)
+            // }
+            if(this.m_atkTimer) clearInterval(this.m_atkTimer);
+            this.attackStepEventCheck();
+
+            if (!this.m_animationChanging){
+                if(this.m_atkStep === 1){
+                    // ,1,2,3,4, 逗號數為分母(圖數+1)
+                    this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 5);
+                    console.log('ATTACK2');
+                }
+                if(this.m_atkStep === 0){
+                    this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 5);
+                    console.log('ATTACK1');
+                }
+            }
+            this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
             this.createAttackEffect(this.m_animation);
             this.attackSimulation();//另類攻擊判定
 
@@ -402,6 +438,13 @@ export class Character extends Laya.Script {
         atkCircle.destroyed = true;
         }, 100);
     }*/
+    private attackStepEventCheck(){
+        this.m_atkTimer = setTimeout(()=>{
+            this.m_atkStep = 0;
+            this.m_atkTimer = null
+            console.log('Reset Attack Step');
+        }, this.m_attackCdTime + 200);
+    }
     private attackSimulation(): void{
         let temp:Laya.Animation = this.m_animation;
         let atkRange:number = this.m_attackRange;
@@ -412,10 +455,10 @@ export class Character extends Laya.Script {
         // Laya.stage.graphics.drawRect(offsetX, offsetY, atkRange, atkRange, 'red', 'red', 2);
 
         this.attackRangeCheck({
-        'x0': offsetX,
-        'x1': offsetX + atkRange,
-        'y0': offsetY,
-        'y1': offsetY + atkRange,
+            'x0': offsetX,
+            'x1': offsetX + atkRange,
+            'y0': offsetY,
+            'y1': offsetY + atkRange,
         }, 'rect');
 
         this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
@@ -424,23 +467,23 @@ export class Character extends Laya.Script {
         // 可做其他形狀的範圍偵測判斷 ex.三角形、圓形, etc...
         let enemy = EnemyHandler.enemyPool;
         switch (type) {
-        case 'rect':
-            let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
-            enemyFound.forEach((e) => {
-            e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
-            if (!OathManager.isCharging) {
-                Character.setCameraShake(10, 3);
-                //誓約系統測試
-                OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
-            } else {
-                // OathManager.chargeAttack(col.label);
-                Character.setCameraShake(50, 5);
+            case 'rect':
+                let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
+                enemyFound.forEach((e) => {
+                e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+                if (!OathManager.isCharging) {
+                    Character.setCameraShake(10, 3);
+                    //誓約系統測試
+                    OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+                } else {
+                    // OathManager.chargeAttack(col.label);
+                    Character.setCameraShake(50, 5);
+                }
+                });
+                break;
+            default:
+                break;
             }
-            });
-            break;
-        default:
-            break;
-        }
     }
     public rectIntersect(r1, r2): boolean{
         let aLeftOfB:boolean = r1.x1 < r2.x0;
@@ -535,7 +578,7 @@ export class Character extends Laya.Script {
         y: this.m_rigidbody.linearVelocity.y,
         });
         if (!this.m_animationChanging && this.m_playerVelocity["Vx"] === 0)
-        this.updateAnimation(this.m_state, CharacterStatus.idle, null, false);
+        this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
     }
     private applyMoveY(): void {
         this.m_rigidbody.setVelocity({
@@ -572,30 +615,37 @@ export class Character extends Laya.Script {
         Character.m_cameraShakingMultiplyer = multiplier;
         Character.m_cameraShakingTimer = timer;
     }
-    public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false): void{
+    public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void{
         if(this.m_state === to || this.m_animationChanging) return;
         this.m_state = to;
         // console.log('Player status from', from, 'convert to ', to);
         switch(this.m_state){
-            case CharacterStatus.attack:
+            case CharacterStatus.attackOne:
                 this.m_animationChanging = true;
-                this.m_animation.interval = 42;
-                this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
+                // this.m_animation.interval = this.m_attackCdTime / 5;// ,1,2,3,4, 逗號數為分母(圖數+1)
+                this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png';
+                this.m_animation.play();
+                break;
+            case CharacterStatus.attackTwo:
+                this.m_animationChanging = true;
+                // this.m_animation.interval = this.m_attackCdTime / 5;// ,1,2,3,4, 逗號數為分母(圖數+1)
+                this.m_animation.source = 'character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
                 this.m_animation.play();
                 break;
             case CharacterStatus.idle:
-                this.m_animation.interval = 500;
+                // this.m_animation.interval = 500;
                 this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                 break;
             case CharacterStatus.run:
                 this.m_animation.source = 'character/Run/character_run_1.png,character/Run/character_run_2.png,character/Run/character_run_3.png,character/Run/character_run_4.png';
-                this.m_animation.interval = 100;
+                // this.m_animation.interval = 100;
                 this.m_animation.play();
                 break;
             default:
                 this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                 break;
         }
+        this.m_animation.interval = rate;
         if(typeof onCallBack === 'function')
             onCallBack();
     }

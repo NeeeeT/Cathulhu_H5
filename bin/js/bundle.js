@@ -499,6 +499,20 @@
     OathManager.increaseBloodyPoint = 10;
     OathManager.isCharging = false;
 
+    var CharacterStatus;
+    (function (CharacterStatus) {
+        CharacterStatus[CharacterStatus["idle"] = 0] = "idle";
+        CharacterStatus[CharacterStatus["run"] = 1] = "run";
+        CharacterStatus[CharacterStatus["jump"] = 2] = "jump";
+        CharacterStatus[CharacterStatus["down"] = 3] = "down";
+        CharacterStatus[CharacterStatus["attackOne"] = 4] = "attackOne";
+        CharacterStatus[CharacterStatus["attackTwo"] = 5] = "attackTwo";
+        CharacterStatus[CharacterStatus["useSkill"] = 6] = "useSkill";
+        CharacterStatus[CharacterStatus["hurt"] = 7] = "hurt";
+        CharacterStatus[CharacterStatus["defend"] = 8] = "defend";
+        CharacterStatus[CharacterStatus["death"] = 9] = "death";
+    })(CharacterStatus || (CharacterStatus = {}));
+
     class VirtualSkill extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -597,6 +611,7 @@
             this.m_animation.skewY = rightSide ? 0 : 180;
             owner.delayMove(this.m_lastTime);
             owner.m_rigidbody.setVelocity({ x: rightSide ? this.m_spikeVec : -this.m_spikeVec, y: 0 });
+            owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
             this.attackRangeCheck(owner, {
                 "x0": offsetX,
                 "x1": offsetX + this.m_animation.width,
@@ -653,6 +668,7 @@
             this.castRoar(position);
             owner.delayMove(this.m_preTime);
             owner.m_rigidbody.setVelocity({ x: 0, y: 0 });
+            owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false);
             Laya.stage.addChild(this.m_animation);
             setTimeout(() => {
                 this.attackRangeCheck(owner, {
@@ -765,6 +781,7 @@
             this.m_animation.scaleX = 1;
             this.m_animation.scaleY = 1;
             this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
+            this.m_animation.alpha = 0.7;
             this.m_animation.source = "comp/BlackHole/BlakeHole_0023.png,comp/BlackHole/BlakeHole_0024.png,comp/BlackHole/BlakeHole_0025.png,comp/BlackHole/BlakeHole_0026.png,comp/BlackHole/BlakeHole_0027.png,comp/BlackHole/BlakeHole_0028.png,comp/BlackHole/BlakeHole_0029.png,comp/BlackHole/BlakeHole_0030.png,comp/BlackHole/BlakeHole_0031.png,comp/BlackHole/BlakeHole_0032.png,comp/BlackHole/BlakeHole_0033.png,comp/BlackHole/BlakeHole_0034.png,comp/BlackHole/BlakeHole_0035.png,comp/BlackHole/BlakeHole_0036.png,comp/BlackHole/BlakeHole_0037.png,comp/BlackHole/BlakeHole_0038.png,comp/BlackHole/BlakeHole_0039.png,comp/BlackHole/BlakeHole_0040.png";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
@@ -845,18 +862,6 @@
         }
     }
 
-    var CharacterStatus;
-    (function (CharacterStatus) {
-        CharacterStatus[CharacterStatus["idle"] = 0] = "idle";
-        CharacterStatus[CharacterStatus["run"] = 1] = "run";
-        CharacterStatus[CharacterStatus["jump"] = 2] = "jump";
-        CharacterStatus[CharacterStatus["down"] = 3] = "down";
-        CharacterStatus[CharacterStatus["attack"] = 4] = "attack";
-        CharacterStatus[CharacterStatus["useSkill"] = 5] = "useSkill";
-        CharacterStatus[CharacterStatus["hurt"] = 6] = "hurt";
-        CharacterStatus[CharacterStatus["defend"] = 7] = "defend";
-        CharacterStatus[CharacterStatus["death"] = 8] = "death";
-    })(CharacterStatus || (CharacterStatus = {}));
     class Character extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -864,6 +869,7 @@
             this.m_isFacingRight = true;
             this.m_canJump = true;
             this.m_canAttack = true;
+            this.m_atkTimerInterval = 1.2;
             this.m_catSkill = null;
             this.m_humanSkill = null;
         }
@@ -885,7 +891,7 @@
             this.m_animation.on(Laya.Event.COMPLETE, this, () => {
                 this.m_animationChanging = false;
                 if (Math.abs(this.m_playerVelocity["Vx"]) <= 0)
-                    this.updateAnimation(this.m_state, CharacterStatus.idle);
+                    this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
             });
             this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
             this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
@@ -1011,7 +1017,7 @@
                 }
                 this.applyMoveX();
                 if (!this.m_animationChanging)
-                    this.updateAnimation(this.m_state, CharacterStatus.run, null, false);
+                    this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[38]) {
                 if (this.m_canJump) {
@@ -1029,7 +1035,7 @@
                 }
                 this.applyMoveX();
                 if (!this.m_animationChanging)
-                    this.updateAnimation(this.m_state, CharacterStatus.run, null, false);
+                    this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
                 console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
@@ -1039,8 +1045,20 @@
             if (this.m_keyDownList[17]) {
                 if (!this.m_canAttack)
                     return;
-                if (!this.m_animationChanging)
-                    this.updateAnimation(this.m_state, CharacterStatus.attack, null, false);
+                if (this.m_atkTimer)
+                    clearInterval(this.m_atkTimer);
+                this.attackStepEventCheck();
+                if (!this.m_animationChanging) {
+                    if (this.m_atkStep === 1) {
+                        this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 5);
+                        console.log('ATTACK2');
+                    }
+                    if (this.m_atkStep === 0) {
+                        this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 5);
+                        console.log('ATTACK1');
+                    }
+                }
+                this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
                 this.createAttackEffect(this.m_animation);
                 this.attackSimulation();
                 this.m_canAttack = false;
@@ -1062,6 +1080,13 @@
                     y: this.m_animation.y,
                 });
             }
+        }
+        attackStepEventCheck() {
+            this.m_atkTimer = setTimeout(() => {
+                this.m_atkStep = 0;
+                this.m_atkTimer = null;
+                console.log('Reset Attack Step');
+            }, this.m_attackCdTime + 200);
         }
         attackSimulation() {
             let temp = this.m_animation;
@@ -1183,7 +1208,7 @@
                 y: this.m_rigidbody.linearVelocity.y,
             });
             if (!this.m_animationChanging && this.m_playerVelocity["Vx"] === 0)
-                this.updateAnimation(this.m_state, CharacterStatus.idle, null, false);
+                this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         }
         applyMoveY() {
             this.m_rigidbody.setVelocity({
@@ -1218,30 +1243,33 @@
             Character.m_cameraShakingMultiplyer = multiplier;
             Character.m_cameraShakingTimer = timer;
         }
-        updateAnimation(from, to, onCallBack = null, force = false) {
+        updateAnimation(from, to, onCallBack = null, force = false, rate = 100) {
             if (this.m_state === to || this.m_animationChanging)
                 return;
             this.m_state = to;
             switch (this.m_state) {
-                case CharacterStatus.attack:
+                case CharacterStatus.attackOne:
                     this.m_animationChanging = true;
-                    this.m_animation.interval = 42;
-                    this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
+                    this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png';
+                    this.m_animation.play();
+                    break;
+                case CharacterStatus.attackTwo:
+                    this.m_animationChanging = true;
+                    this.m_animation.source = 'character/Attack/character_attack_5.png,character/Attack/character_attack_6.png,character/Attack/character_attack_7.png,character/Attack/character_attack_8.png';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.idle:
-                    this.m_animation.interval = 500;
                     this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                     break;
                 case CharacterStatus.run:
                     this.m_animation.source = 'character/Run/character_run_1.png,character/Run/character_run_2.png,character/Run/character_run_3.png,character/Run/character_run_4.png';
-                    this.m_animation.interval = 100;
                     this.m_animation.play();
                     break;
                 default:
                     this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                     break;
             }
+            this.m_animation.interval = rate;
             if (typeof onCallBack === 'function')
                 onCallBack();
         }
