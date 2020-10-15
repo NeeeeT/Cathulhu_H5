@@ -512,10 +512,10 @@ export class Character extends Laya.Script {
         slashEffect.scaleY = 2;
 
         if(this.m_atkStep === 0){
-            slashEffect.source = "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
+            slashEffect.source = "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png";
         }
         else if(this.m_atkStep === 1){
-            slashEffect.source = "comp/NewSlash/Slash_0037.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
+            slashEffect.source = "comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
         }
 
         //slashEffect.interval = 100;
@@ -523,12 +523,12 @@ export class Character extends Laya.Script {
         //濾鏡
         let colorMat: Array<number> =
         [
-            colorNum, 0, 0, 0, -100, //R
-            0, Math.floor(Math.random() * 2) + 1, 0, 0, -100, //G
-            0, 0, colorNum, 0, -100, //B
+            colorNum, 0, 4, 0, -150, //R
+            3, Math.floor(Math.random() * 4) + 2, 0, 0, -150, //G
+            0, 0, colorNum, 0, -150, //B
             0, 0, 0, 1, 0, //A
         ];
-        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#af06ff", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         if (!OathManager.isCharging) {
         slashEffect.filters = [colorFilter, glowFilter];
@@ -547,13 +547,13 @@ export class Character extends Laya.Script {
         //濾鏡
         if (this.m_isFacingRight) {
             slashEffect.skewY = 0;
-            slashEffect.pos(player.x - 275, player.y - 400 + 10);
+            slashEffect.pos(player.x - 350, player.y - 470 + 10);
         } else {
             slashEffect.skewY = 180;
-            slashEffect.pos(player.x + 275, player.y - 400 + 10);
+            slashEffect.pos(player.x + 350, player.y - 470 + 10);
         }
-        slashEffect.source =
-        "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
+        // slashEffect.source =
+        // "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
         slashEffect.on(Laya.Event.COMPLETE, this, function () {
         slashEffect.destroy();
         slashEffect.destroyed = true;
