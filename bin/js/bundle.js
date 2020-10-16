@@ -1051,8 +1051,8 @@
                     return;
                 if (this.m_atkTimer)
                     clearInterval(this.m_atkTimer);
-                this.attackStepEventCheck();
                 this.createAttackEffect(this.m_animation);
+                this.attackStepEventCheck();
                 if (!this.m_animationChanging) {
                     if (this.m_atkStep === 1) {
                         this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 3);
@@ -1139,12 +1139,12 @@
             slashEffect.scaleX = 2;
             slashEffect.scaleY = 2;
             if (this.m_atkStep === 0) {
-                slashEffect.source = "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png";
+                slashEffect.source = "comp/NewSlash/Slash_0060.png,comp/NewSlash/Slash_0061.png,comp/NewSlash/Slash_0062.png";
             }
             else if (this.m_atkStep === 1) {
-                slashEffect.source = "comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
+                slashEffect.source = "comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
             }
-            let colorNum = Math.floor(Math.random() * 3) + 2;
+            let colorNum = Math.floor(Math.random() * 5) + 2;
             let colorMat = [
                 colorNum, 0, 4, 0, -150,
                 3, Math.floor(Math.random() * 4) + 2, 0, 0, -150,
@@ -1169,11 +1169,11 @@
             }
             if (this.m_isFacingRight) {
                 slashEffect.skewY = 0;
-                slashEffect.pos(player.x - 350, player.y - 470 + 10);
+                slashEffect.pos(player.x - 420, player.y - 560 + 10);
             }
             else {
                 slashEffect.skewY = 180;
-                slashEffect.pos(player.x + 350, player.y - 470 + 10);
+                slashEffect.pos(player.x + 420, player.y - 560 + 10);
             }
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashEffect.destroy();
@@ -1437,7 +1437,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

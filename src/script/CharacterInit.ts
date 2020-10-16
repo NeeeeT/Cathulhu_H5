@@ -352,8 +352,8 @@ export class Character extends Laya.Script {
             //     }, 100)
             // }
             if(this.m_atkTimer) clearInterval(this.m_atkTimer);
-            this.attackStepEventCheck();
             this.createAttackEffect(this.m_animation);
+            this.attackStepEventCheck();
 
             if (!this.m_animationChanging){
                 if(this.m_atkStep === 1){
@@ -512,14 +512,14 @@ export class Character extends Laya.Script {
         slashEffect.scaleY = 2;
 
         if(this.m_atkStep === 0){
-            slashEffect.source = "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png";
+            slashEffect.source = "comp/NewSlash/Slash_0060.png,comp/NewSlash/Slash_0061.png,comp/NewSlash/Slash_0062.png";
         }
         else if(this.m_atkStep === 1){
-            slashEffect.source = "comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
+            slashEffect.source = "comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
         }
 
         //slashEffect.interval = 100;
-        let colorNum: number = Math.floor(Math.random() * 3) + 2;
+        let colorNum: number = Math.floor(Math.random() * 5) + 2;
         //濾鏡
         let colorMat: Array<number> =
         [
@@ -547,10 +547,10 @@ export class Character extends Laya.Script {
         //濾鏡
         if (this.m_isFacingRight) {
             slashEffect.skewY = 0;
-            slashEffect.pos(player.x - 350, player.y - 470 + 10);
+            slashEffect.pos(player.x - 420, player.y - 560 + 10);
         } else {
             slashEffect.skewY = 180;
-            slashEffect.pos(player.x + 350, player.y - 470 + 10);
+            slashEffect.pos(player.x + 420, player.y - 560 + 10);
         }
         // slashEffect.source =
         // "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
