@@ -27,8 +27,6 @@ export default class EnemyInit extends Laya.Script{
             CharacterInit.playerEnt.m_animation.destroy();
             Laya.Scene.open("Village.scene");
             Laya.stage.x = Laya.stage.y = 0;
-
-            console.log("恭喜通過戰鬥!!!");
             this.battleToggle = false;
         }
     }

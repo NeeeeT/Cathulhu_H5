@@ -29,7 +29,7 @@ export class Spike extends VirtualSkill {
         let offsetX: number = rightSide ? position['x'] : position['x'] - this.m_animation.width;
         let offsetY: number = position['y'] - this.m_animation.height / 2 + 20;
 
-        this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
+        this.m_animation.source = "comp/Spike.atlas";
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 20;
 
@@ -50,7 +50,8 @@ export class Spike extends VirtualSkill {
         this.m_animation.skewY = rightSide ? 0 : 180;
 
         owner.delayMove(this.m_lastTime);
-        owner.m_rigidbody.setVelocity({ x: rightSide ? this.m_spikeVec : -this.m_spikeVec, y: 0 });
+        // owner.m_rigidbody.setVelocity({ x: rightSide ? this.m_spikeVec : -this.m_spikeVec, y: 0 });
+        owner.m_rigidbody.linearVelocity = {x: rightSide?this.m_spikeVec:-this.m_spikeVec};
 
         owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
 
@@ -82,13 +83,7 @@ export class Spike extends VirtualSkill {
 
             e._ent.takeDamage(this.m_damage);
             e._ent.delayMove(0.1);
-
-            // if(e._ent.m_health - this.m_damage > 0){
-            //   e._ent.m_rigidbody.setVelocity({
-            //     "x": rightSide ? 25:-25,
-            //     "y": 0,
-            //   });
-            // }
+            e._ent.m_rigidbody.linearVelocity = {x:rightSide?this.m_spikeVec/2:-this.m_spikeVec/2};
         });
     }
 }
@@ -126,7 +121,7 @@ export class Behead extends VirtualSkill {
         this.castRoar(position);
 
         owner.delayMove(this.m_preTime);
-        owner.m_rigidbody.setVelocity({ x: 0, y: 0 });
+        owner.m_rigidbody.linearVelocity = {x:0.0,y:0.0};
 
         owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 125);
         // owner.

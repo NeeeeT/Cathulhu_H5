@@ -5,10 +5,13 @@
         constructor() {
             super();
             this.sceneBackgroundColor = '#4a4a4a';
+            this.resourceLoad = ["font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
+                "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
+                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas",
+            ];
         }
         onAwake() {
-            Laya.loader.load(["font/silver.ttf"], Laya.Handler.create(this, () => {
-                console.log('字體加載完畢!!!');
+            Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
             }));
             Laya.stage.bgColor = this.sceneBackgroundColor;
             this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
@@ -61,6 +64,9 @@
             this.m_animation.loop = true;
             this.m_animation.on(Laya.Event.COMPLETE, this, () => {
                 this.m_animationChanging = false;
+                if (this.m_state === EnemyStatus.attack) {
+                    this.m_animation.stop();
+                }
             });
             this.m_maxHealth = this.m_health;
             this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
@@ -122,7 +128,7 @@
         }
         ;
         takeDamage(amount) {
-            if (this.m_animation.destroyed || amount <= 0)
+            if (this.m_animation.destroyed || amount <= 0 || !this.m_animation)
                 return;
             let fakeNum = Math.random() * 100;
             let critical = (fakeNum <= 25);
@@ -144,6 +150,11 @@
                     this.m_hurtDelay -= 0.1;
                 }, 100);
             }
+            if (critical) {
+                this.delayMove(0.2);
+                this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -10.0 : 10.0, y: 0.0 };
+            }
+            this.enemyInjuredColor();
         }
         damageTextEffect(amount, critical) {
             let damageText = new Laya.Text();
@@ -224,13 +235,17 @@
             Laya.SoundManager.setSoundVolume(volume, url);
         }
         enemyAIMain() {
-            if (this.m_animation.destroyed)
+            if (this.m_animation.destroyed) {
                 return;
-            this.pursuitPlayer();
-            this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer;
+            }
             if (this.playerRangeCheck(this.m_attackRange * 2)) {
                 this.tryAttack();
+                this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer;
+                if (!this.m_moveDelayValue)
+                    this.m_rigidbody.linearVelocity = { x: 0.0, y: 0.0 };
+                return;
             }
+            this.pursuitPlayer();
         }
         checkPosition() {
             this.m_rectangle['x0'] = this.m_animation.x - (this.m_animation.width / 2);
@@ -244,6 +259,8 @@
             if (this.m_player.destroyed) {
                 this.updateAnimation(this.m_state, EnemyStatus.idle);
                 return;
+            }
+            if (this.m_atkTimer) {
             }
             let dir = this.m_player.x - this.m_animation.x;
             let rightSide = (this.m_player.x - this.m_animation.x) > 0;
@@ -279,13 +296,12 @@
             }
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
-            let atkCircleScript = atkCircle.addComponent(Laya.Script);
             atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
             atkCircleRigid.category = 8;
             atkCircleRigid.mask = 4;
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
-            this.updateAnimation(this.m_state, EnemyStatus.attack);
+            this.updateAnimation(EnemyStatus.idle, EnemyStatus.attack);
             Laya.stage.addChild(atkCircle);
             atkBoxCollider.tag = this.m_atkTag;
             this.m_atkTimer = 100;
@@ -322,20 +338,13 @@
                 y: this.m_rigidbody.linearVelocity.y,
             });
         }
-        applyMoveY() {
-            this.m_rigidbody.setVelocity({
-                x: this.m_rigidbody.linearVelocity.x,
-                y: this.m_moveVelocity["Vy"],
-            });
-        }
-        updateAnimation(from, to, onCallBack = null, force = false) {
-            if (this.m_state === to || this.m_animationChanging)
+        updateAnimation(from, to, onCallBack = null, force = false, rate = 100) {
+            if (from === to || this.m_animationChanging)
                 return;
             this.m_state = to;
             switch (this.m_state) {
                 case EnemyStatus.attack:
                     this.m_animationChanging = true;
-                    this.m_animation.interval = 100;
                     this.m_animation.source = 'normalEnemy/Attack.atlas';
                     this.m_animation.play();
                     break;
@@ -344,30 +353,33 @@
                     break;
                 case EnemyStatus.run:
                     this.m_animation.source = 'normalEnemy/Walk.atlas';
-                    this.m_animation.interval = 100;
                     this.m_animation.play();
                     break;
                 default:
                     this.m_animation.source = 'normalEnemy/Idle.atlas';
                     break;
             }
+            this.m_animation.interval = rate;
             if (typeof onCallBack === 'function')
                 onCallBack();
         }
         enemyInjuredColor() {
-            if (this.m_animation.destroyed)
+            if (this.m_animation.destroyed || !this.m_animation)
                 return;
             this.m_animation.alpha = 1;
             let colorMat = [
-                4, 0, 0, 0, 10,
+                2, 0, 0, 0, 10,
                 0, 1, 0, 0, 10,
-                0, 0, 4, 0, 10,
+                0, 0, 0, 0, 10,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [colorFilter, glowFilter];
             setTimeout(() => {
+                if (!this.m_animation || this.m_animation.destroyed || this.m_animation.alpha === 1) {
+                    return;
+                }
                 this.m_animation.alpha = 1;
                 this.m_animation.filters = null;
             }, 200);
@@ -383,7 +395,7 @@
             this.m_tag = 'n';
             this.m_attackRange = 100;
             this.m_mdelay = 0.1;
-            this.m_dmg = 50;
+            this.m_dmg = 33;
             this.m_atkTag = "EnemyNormalAttack";
         }
     }
@@ -597,7 +609,7 @@
             this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 195);
             let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
             let offsetY = position['y'] - this.m_animation.height / 2 + 20;
-            this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
+            this.m_animation.source = "comp/Spike.atlas";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
             this.m_canUse = false;
@@ -613,7 +625,7 @@
             this.m_animation.filters = [glowFilter, colorFilter];
             this.m_animation.skewY = rightSide ? 0 : 180;
             owner.delayMove(this.m_lastTime);
-            owner.m_rigidbody.setVelocity({ x: rightSide ? this.m_spikeVec : -this.m_spikeVec, y: 0 });
+            owner.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec : -this.m_spikeVec };
             owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
             this.attackRangeCheck(owner, {
                 "x0": offsetX,
@@ -639,6 +651,7 @@
                     return;
                 e._ent.takeDamage(this.m_damage);
                 e._ent.delayMove(0.1);
+                e._ent.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec / 2 : -this.m_spikeVec / 2 };
             });
         }
     }
@@ -670,7 +683,7 @@
             this.m_canUse = false;
             this.castRoar(position);
             owner.delayMove(this.m_preTime);
-            owner.m_rigidbody.setVelocity({ x: 0, y: 0 });
+            owner.m_rigidbody.linearVelocity = { x: 0.0, y: 0.0 };
             owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 125);
             setTimeout(() => {
                 owner.m_rigidbody.setVelocity({ x: 0.0, y: 10.0 });
@@ -787,10 +800,10 @@
             this.m_animation.scaleY = 1;
             this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
             this.m_animation.alpha = 0.7;
-            this.m_animation.source = "comp/BlackHole/BlakeHole_0023.png,comp/BlackHole/BlakeHole_0024.png,comp/BlackHole/BlakeHole_0025.png,comp/BlackHole/BlakeHole_0026.png,comp/BlackHole/BlakeHole_0027.png,comp/BlackHole/BlakeHole_0028.png,comp/BlackHole/BlakeHole_0029.png,comp/BlackHole/BlakeHole_0030.png,comp/BlackHole/BlakeHole_0031.png,comp/BlackHole/BlakeHole_0032.png,comp/BlackHole/BlakeHole_0033.png,comp/BlackHole/BlakeHole_0034.png,comp/BlackHole/BlakeHole_0035.png,comp/BlackHole/BlakeHole_0036.png,comp/BlackHole/BlakeHole_0037.png,comp/BlackHole/BlakeHole_0038.png,comp/BlackHole/BlakeHole_0039.png,comp/BlackHole/BlakeHole_0040.png";
+            this.m_animation.source = "comp/BlackHole.atlas";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
-            explosion.source = "comp/BlackExplosion/BlackholeExplsion_0036.png,comp/BlackExplosion/BlackholeExplsion_0037.png,comp/BlackExplosion/BlackholeExplsion_0038.png,comp/BlackExplosion/BlackholeExplsion_0039.png,comp/BlackExplosion/BlackholeExplsion_0040.png,comp/BlackExplosion/BlackholeExplsion_0041.png,comp/BlackExplosion/BlackholeExplsion_0042.png,comp/BlackExplosion/BlackholeExplsion_0043.png,comp/BlackExplosion/BlackholeExplsion_0044.png,comp/BlackExplosion/BlackholeExplsion_0045.png";
+            explosion.source = "comp/BlackExplosion.atlas";
             explosion.scaleX = 1;
             explosion.scaleY = 1;
             explosion.interval = 30;
@@ -874,6 +887,7 @@
             this.m_isFacingRight = true;
             this.m_canJump = true;
             this.m_canAttack = true;
+            this.m_hurted = false;
             this.m_catSkill = null;
             this.m_humanSkill = null;
         }
@@ -889,15 +903,13 @@
             this.m_animation.pivotY = this.m_animation.height / 2;
             this.m_animation.pos(1345, 544);
             this.m_animation.autoPlay = true;
-            this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
+            this.m_animation.source = 'character/Idle.atlas';
             this.m_animation.interval = 200;
             this.m_animation.loop = true;
             this.m_animation.on(Laya.Event.COMPLETE, this, () => {
                 if (this.m_state === CharacterStatus.attackOne || this.m_state === CharacterStatus.attackTwo)
                     this.m_animation.stop();
                 this.m_animationChanging = false;
-                if (Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
-                    this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
             });
             this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
             this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
@@ -918,8 +930,10 @@
                     this.resetMove();
                     this.m_canJump = true;
                 }
-                if (col.tag === "Enemy") {
-                    this.m_rigidbody.category = 32;
+                if (col.tag === "Enemy" && !this.m_hurtTimer) {
+                    this.delayMove(0.15);
+                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -5.0 : 5.0, y: 0.0 };
+                    this.takeDamage(50.0);
                 }
                 this.takeDamage(this.getEnemyAttackDamage(col.tag));
             };
@@ -964,7 +978,7 @@
         }
         ;
         takeDamage(amount) {
-            if (amount <= 0)
+            if (amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted)
                 return;
             let fakeNum = Math.random() * 100;
             let critical = (fakeNum <= 33);
@@ -974,6 +988,14 @@
             Laya.Tween.to(this.m_animation, { alpha: 0.65 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
+            this.huredEvent(1.5);
+        }
+        huredEvent(time) {
+            this.m_hurted = true;
+            this.m_hurtTimer = setTimeout(() => {
+                this.m_hurted = false;
+                this.m_hurtTimer = null;
+            }, 1000 * time);
         }
         damageTextEffect(amount, critical) {
             let damageText = new Laya.Text();
@@ -1064,11 +1086,9 @@
                 if (!this.m_animationChanging) {
                     if (this.m_atkStep === 1) {
                         this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 3);
-                        console.log('ATTACK2');
                     }
                     else if (this.m_atkStep === 0) {
                         this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 8);
-                        console.log('ATTACK1');
                     }
                 }
                 this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
@@ -1098,7 +1118,6 @@
                 this.m_atkStep = 0;
                 this.m_atkTimer = null;
                 this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
-                console.log('Reset Attack Step');
             }, this.m_attackCdTime + 200);
         }
         attackSimulation() {
@@ -1189,10 +1208,19 @@
             });
             Laya.stage.addChild(slashEffect);
             slashEffect.play();
+            let m_slashTimer = setInterval(() => {
+                if (slashEffect.destroyed) {
+                    clearInterval(m_slashTimer);
+                    m_slashTimer = null;
+                    return;
+                }
+                slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
+                slashEffect.pos(player.x + (this.m_isFacingRight ? -420 : 420), player.y - 560 + 10);
+            }, 10);
         }
         setSkill() {
-            this.m_humanSkill = new Behead();
-            this.m_catSkill = new Slam();
+            this.m_humanSkill = new Spike();
+            this.m_catSkill = new BlackHole();
         }
         delayMove(time) {
             if (this.m_moveDelayValue > 0) {
@@ -1264,35 +1292,35 @@
             Character.m_cameraShakingTimer = timer;
         }
         updateAnimation(from, to, onCallBack = null, force = false, rate = 100) {
-            if (this.m_state === to || this.m_animationChanging)
+            if (from === to || this.m_animationChanging)
                 return;
             this.m_state = to;
             switch (this.m_state) {
                 case CharacterStatus.attackOne:
                     this.m_animationChanging = true;
-                    this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_5.png,character/Attack/character_attack_5.png';
+                    this.m_animation.source = 'character/Attack1.atlas';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.attackTwo:
                     this.m_animationChanging = true;
-                    this.m_animation.source = 'character/Attack/character_attack_6.png,character/Attack/character_attack_7.png';
+                    this.m_animation.source = 'character/Attack2.atlas';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.idle:
-                    this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
+                    this.m_animation.source = 'character/Idle.atlas';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.run:
-                    this.m_animation.source = 'character/Run/character_run_1.png,character/Run/character_run_2.png,character/Run/character_run_3.png,character/Run/character_run_4.png';
+                    this.m_animation.source = 'character/Run.atlas';
                     this.m_animation.play();
                     break;
                 case CharacterStatus.slam:
                     this.m_animationChanging = true;
-                    this.m_animation.source = "character/Slam/character_slam_1.png,character/Slam/character_slam_2.png,character/Slam/character_slam_3.png,character/Slam/character_slam_4.png";
+                    this.m_animation.source = "character/Slam.atlas";
                     this.m_animation.play();
                     console.log('SLAM!!!');
                 default:
-                    this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
+                    this.m_animation.source = 'character/Idle.atlas';
                     this.m_animation.play();
                     break;
             }
@@ -1387,7 +1415,6 @@
                 CharacterInit.playerEnt.m_animation.destroy();
                 Laya.Scene.open("Village.scene");
                 Laya.stage.x = Laya.stage.y = 0;
-                console.log("恭喜通過戰鬥!!!");
                 this.battleToggle = false;
             }
         }
@@ -1432,7 +1459,6 @@
                 console.log("temple");
             });
             this.battleBtn.on(Laya.Event.CLICK, this, function () {
-                console.log("battle");
                 Laya.Scene.open("First.scene");
             });
             console.log(Laya.stage.x, Laya.stage.y);

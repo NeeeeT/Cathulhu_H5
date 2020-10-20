@@ -7,19 +7,6 @@ import * as cSkill from "./SkillCat";
 import EnemyHandler, { Normal, Shield } from "./EnemyHandler";
 import { CharacterStatus } from "./CharacterStatus";
 
-
-// export enum CharacterStatus {
-//     idle = 0,
-//     run,
-//     jump,
-//     down,
-//     attackOne,
-//     attackTwo,
-//     useSkill,
-//     hurt,
-//     defend,
-//     death
-// }
   
 export class Character extends Laya.Script {
     m_state: number;
@@ -60,7 +47,10 @@ export class Character extends Laya.Script {
     m_atkTimer;
     m_atkStep: number;
 
-    m_aniTimer;
+    m_hurted: boolean = false;
+    m_hurtTimer;
+
+    m_slashTimer;
 
     public static m_cameraShakingTimer: number = 0;
     public static m_cameraShakingMultiplyer: number = 1;
@@ -95,7 +85,7 @@ export class Character extends Laya.Script {
 
         this.m_animation.pos(1345, 544);
         this.m_animation.autoPlay = true;
-        this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
+        this.m_animation.source = 'character/Idle.atlas';
         this.m_animation.interval = 200;
         this.m_animation.loop = true;
         this.m_animation.on(Laya.Event.COMPLETE, this, () => {
@@ -103,8 +93,8 @@ export class Character extends Laya.Script {
                 this.m_animation.stop();
 
             this.m_animationChanging = false;
-            if(Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
-                this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
+            // if(Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
+            //     this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         })
 
         // this.m_maxHealth = this.m_health;
@@ -126,9 +116,10 @@ export class Character extends Laya.Script {
                 this.resetMove();
                 this.m_canJump = true;
             }
-            if (col.tag === "Enemy") {
-                this.m_rigidbody.category = 32;
-                // console.log('穿透!!!');
+            if (col.tag === "Enemy" && !this.m_hurtTimer) {
+                this.delayMove(0.15);
+                this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-5.0:5.0, y:0.0};
+                this.takeDamage(50.0);
             }
             this.takeDamage(this.getEnemyAttackDamage(col.tag))
         }
@@ -181,7 +172,7 @@ export class Character extends Laya.Script {
         return this.m_health;
     };
     takeDamage(amount: number) {
-        if(amount <= 0) return;
+        if(amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted) return;
         
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 33);
@@ -195,6 +186,16 @@ export class Character extends Laya.Script {
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut,
                     Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
+        
+        this.huredEvent(1.5);
+    }
+    private huredEvent(time: number){
+        this.m_hurted = true;
+                
+        this.m_hurtTimer = setTimeout(()=>{
+            this.m_hurted = false;
+            this.m_hurtTimer = null;             
+        }, 1000*time);
     }
     private damageTextEffect(amount: number, critical: boolean): void {
         let damageText = new Laya.Text();
@@ -359,11 +360,9 @@ export class Character extends Laya.Script {
                 if(this.m_atkStep === 1){
                     // ,1,2,3,4, 逗號數為分母(圖數+1)
                     this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 3);
-                    console.log('ATTACK2');
                 }
                 else if(this.m_atkStep === 0){
                     this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 8);
-                    console.log('ATTACK1');
                 }
             }
             this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
@@ -454,7 +453,6 @@ export class Character extends Laya.Script {
             this.m_atkStep = 0;
             this.m_atkTimer = null
             this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
-            console.log('Reset Attack Step');
         }, this.m_attackCdTime + 200);
     }
     private attackSimulation(): void{
@@ -518,7 +516,6 @@ export class Character extends Laya.Script {
             slashEffect.source = "comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
         }
 
-        //slashEffect.interval = 100;
         let colorNum: number = Math.floor(Math.random() * 5) + 2;
         //濾鏡
         let colorMat: Array<number> =
@@ -560,13 +557,24 @@ export class Character extends Laya.Script {
     });
         Laya.stage.addChild(slashEffect);
         slashEffect.play();
+
+        let m_slashTimer = setInterval(()=>{
+            if(slashEffect.destroyed)
+            {
+                clearInterval(m_slashTimer);
+                m_slashTimer = null;
+                return;
+            }
+            slashEffect.skewY = this.m_isFacingRight? 0:180;
+            slashEffect.pos(player.x + (this.m_isFacingRight?-420:420), player.y - 560 + 10);
+        }, 10);
     }
     private setSkill(): void{
-        // this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
-        this.m_humanSkill = new hSkill.Behead();
+        this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
+        // this.m_humanSkill = new hSkill.Behead();
 
-        this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
-        // this.m_catSkill = new cSkill.BlackHole();
+        // this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
+        this.m_catSkill = new cSkill.BlackHole();
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
     public delayMove(time: number): void{
@@ -637,35 +645,35 @@ export class Character extends Laya.Script {
         Character.m_cameraShakingTimer = timer;
     }
     public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void{
-        if(this.m_state === to || this.m_animationChanging) return;
+        if(from === to || this.m_animationChanging) return;
         this.m_state = to;
         // console.log('Player status from', from, 'convert to ', to);
         switch(this.m_state){
             case CharacterStatus.attackOne:
                 this.m_animationChanging = true;
-                this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_5.png,character/Attack/character_attack_5.png';
+                this.m_animation.source = 'character/Attack1.atlas';
                 this.m_animation.play();
                 break;
             case CharacterStatus.attackTwo:
                 this.m_animationChanging = true;
-                this.m_animation.source = 'character/Attack/character_attack_6.png,character/Attack/character_attack_7.png';
+                this.m_animation.source = 'character/Attack2.atlas';
                 this.m_animation.play();
                 break;
             case CharacterStatus.idle:
-                this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
+                this.m_animation.source = 'character/Idle.atlas';
                 this.m_animation.play();
                 break;
             case CharacterStatus.run:
-                this.m_animation.source = 'character/Run/character_run_1.png,character/Run/character_run_2.png,character/Run/character_run_3.png,character/Run/character_run_4.png';
+                this.m_animation.source = 'character/Run.atlas';
                 this.m_animation.play();
                 break;
             case CharacterStatus.slam:
                 this.m_animationChanging = true;
-                this.m_animation.source = "character/Slam/character_slam_1.png,character/Slam/character_slam_2.png,character/Slam/character_slam_3.png,character/Slam/character_slam_4.png";
+                this.m_animation.source = "character/Slam.atlas";
                 this.m_animation.play()
                 console.log('SLAM!!!');
             default:
-                this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
+                this.m_animation.source = 'character/Idle.atlas';
                 this.m_animation.play();
                 break;
         }

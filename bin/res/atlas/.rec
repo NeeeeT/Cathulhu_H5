@@ -57,8 +57,7 @@ P 5FD17798 img_bg4.png
 P 2BE22124 img_bg5.png
 P BA28BD65 img_blank.png
 P BA2A0579 label.png
-P 9F43D29D monster_normal.png
-P 69ADCFE4 monster_shield.png
+R 6F74B0F8 loading.png
 P A2078EC0 progress$bar.png
 P 7BEC43FB progress.png
 P 7BEC43FB progressYellow$bar.png

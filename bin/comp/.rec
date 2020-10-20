@@ -1,0 +1,94 @@
+D .
+R AE787599 Cat.png
+R 5298C6DC circle.png
+R 6F74B0F8 loading.png
+D BlackExplosion
+P 8908EBE1 BlackholeExplsion_0036.png
+P E57B2BE9 BlackholeExplsion_0037.png
+P BC16FE4E BlackholeExplsion_0038.png
+P 439EC826 BlackholeExplsion_0039.png
+P 9BE6D211 BlackholeExplsion_0040.png
+P F8661299 BlackholeExplsion_0041.png
+P 64184F2F BlackholeExplsion_0042.png
+P 08D654CF BlackholeExplsion_0043.png
+P 7CA5905E BlackholeExplsion_0044.png
+P A17AC0E5 BlackholeExplsion_0045.png
+D BlackHole
+P 606D23F5 BlakeHole_0023.png
+P C6F51F04 BlakeHole_0024.png
+P E7FAB440 BlakeHole_0025.png
+P A5C2BAB5 BlakeHole_0026.png
+P 65F7FA7C BlakeHole_0027.png
+P 4F559CA9 BlakeHole_0028.png
+P 6E8F578C BlakeHole_0029.png
+P 68245989 BlakeHole_0030.png
+P 6BB90BAE BlakeHole_0031.png
+P 1E131793 BlakeHole_0032.png
+P 6DB115C8 BlakeHole_0033.png
+P 1818E2B6 BlakeHole_0034.png
+P 0F30E155 BlakeHole_0035.png
+P AEFA6994 BlakeHole_0036.png
+P 26119CBA BlakeHole_0037.png
+P C835C8B0 BlakeHole_0038.png
+P 038ABF49 BlakeHole_0039.png
+P 3BDDECDF BlakeHole_0040.png
+D Blood
+P F99364CB Blood_0000.png
+P 93278246 Blood_0001.png
+P 0759646D Blood_0002.png
+P 94B68D8E Blood_0003.png
+P FDF4E9B8 Blood_0004.png
+P 2D653F3F Blood_0005.png
+P EEB14B2C Blood_0006.png
+P C9991648 Blood_0007.png
+P DE195568 Blood_0008.png
+P 87F799B1 Blood_0009.png
+P D0698F1A Blood_0010.png
+P 46986722 Blood_0011.png
+P 543ADE9E Blood_0012.png
+P 8B146C23 Blood_0013.png
+P 6C8A024A Blood_0014.png
+D Loading
+R 70D35F68 loading.png
+D NewBlood
+P DEDA69D7 Blood_0000.png
+P 5E4A240D Blood_0001.png
+P 41C85B22 Blood_0002.png
+P D741409F Blood_0003.png
+P 3E2D1716 Blood_0004.png
+P 49B7C323 Blood_0005.png
+P E4873D50 Blood_0006.png
+P 08A7ADCD Blood_0007.png
+D NewSlash
+P 567EC92E Slash_0030.png
+P 45D7B3AB Slash_0031.png
+P 2502A87A Slash_0032.png
+P 854D39EE Slash_0033.png
+P F0D029D7 Slash_0060.png
+P 5EEA6326 Slash_0061.png
+P ADD5BFE9 Slash_0062.png
+P 854D39EE Slash_0063.png
+D SlashEffects
+P 854D39EE Slash_0029.png
+P E9FE8002 Slash_0030.png
+P 1FFCAB4E Slash_0031.png
+P 706BE3B1 Slash_0032.png
+P D7A947AE Slash_0033.png
+P 64BD506E Slash_0034.png
+P 9BE393A0 Slash_0035.png
+D SlashLight
+P 772F8117 SlashLight_0000.png
+P F6A604D7 SlashLight_0001.png
+P 9521A51A SlashLight_0002.png
+P D8836284 SlashLight_0003.png
+P 60BB545A SlashLight_0004.png
+P FE0C42B9 SlashLight_0005.png
+D Spike
+P 9E75966A Spike_0001.png
+P 400E3C18 Spike_0002.png
+P A0C37684 Spike_0003.png
+P 69F64490 Spike_0004.png
+P 71A22456 Spike_0005.png
+P 11C2A002 Spike_0006.png
+P 66777956 Spike_0007.png
+P 53E4AF43 Spike_0008.png

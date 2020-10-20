@@ -1,0 +1,26 @@
+D .
+D Attack1
+P EB2A0F59 character_attack_1.png
+P E49CE9F2 character_attack_2.png
+P 1F59E3FF character_attack_3.png
+P DB4049DF character_attack_4.png
+P 7A414C84 character_attack_5.png
+P 7A414C84 character_attack_6.png
+D Attack2
+P F9BEEA5B character_attack_6.png
+P 079FC355 character_attack_7.png
+D Idle
+P C079B7BA character_idle_1.png
+P 14693719 character_idle_2.png
+P CAEF3397 character_idle_3.png
+P 2F6F87C6 character_idle_4.png
+D Run
+P 5F8DC9F2 character_run_1.png
+P D4279627 character_run_2.png
+P D4E53559 character_run_3.png
+P F2E89D77 character_run_4.png
+D Slam
+P 6117F385 character_slam_1.png
+P 001D2A16 character_slam_2.png
+P 93E5B260 character_slam_3.png
+P ED908DA7 character_slam_4.png

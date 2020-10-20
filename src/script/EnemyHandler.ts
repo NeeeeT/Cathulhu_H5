@@ -70,6 +70,9 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_animation.loop = true;
         this.m_animation.on(Laya.Event.COMPLETE, this, () => {
             this.m_animationChanging = false;
+            if(this.m_state === EnemyStatus.attack){
+                this.m_animation.stop();
+            }
         })
 
         this.m_maxHealth = this.m_health;
@@ -132,7 +135,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_collider.label = index;
     };
     takeDamage(amount: number) {
-        if (this.m_animation.destroyed || amount <= 0) return;
+        if (this.m_animation.destroyed || amount <= 0 || !this.m_animation) return;
 
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 25);
@@ -142,11 +145,6 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.setHealth(this.getHealth() - amount);
         this.damageTextEffect(amount, critical);
         this.m_healthBar.alpha = 1;
-        // if (critical){
-        //     this.m_animation.x--;
-        //     this.m_animation.y++;
-        // }
-        //this.enemyInjuredColor();
         if (this.m_hurtDelay > 0) {
             this.m_hurtDelay += 2.0;
         }
@@ -160,6 +158,11 @@ export abstract class VirtualEnemy extends Laya.Script {
                 this.m_hurtDelay -= 0.1;
             }, 100);
         }
+        if (critical){
+            this.delayMove(0.2);
+            this.m_rigidbody.linearVelocity = {x: this.m_isFacingRight?-10.0:10.0, y:0.0};
+        }
+        this.enemyInjuredColor();
     }
     private damageTextEffect(amount: number, critical: boolean): void {
         let damageText = new Laya.Text();
@@ -255,15 +258,18 @@ export abstract class VirtualEnemy extends Laya.Script {
     }
     //敵人行為主邏輯
     public enemyAIMain() {
-        if (this.m_animation.destroyed) return;
-
-        this.pursuitPlayer();
-        this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
-        // console.log(this.m_atkTimer);
-
+        if (this.m_animation.destroyed){
+            return;
+        }
         if (this.playerRangeCheck(this.m_attackRange * 2)) {
             this.tryAttack();
+            this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
+
+            if(!this.m_moveDelayValue)
+                this.m_rigidbody.linearVelocity = {x:0.0,y:0.0};
+            return;
         }
+        this.pursuitPlayer();
     }
     private checkPosition() {
         this.m_rectangle['x0'] = this.m_animation.x - (this.m_animation.width / 2);
@@ -277,6 +283,9 @@ export abstract class VirtualEnemy extends Laya.Script {
         if (this.m_player.destroyed) {
             this.updateAnimation(this.m_state, EnemyStatus.idle);
             return;
+        }
+        if(this.m_atkTimer){
+            
         }
         let dir: number = this.m_player.x - this.m_animation.x;
         // this.m_animation.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
@@ -292,6 +301,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.updateAnimation(this.m_state, EnemyStatus.run);
         else
             this.m_moveVelocity["Vx"] = 0;
+
         this.applyMoveX();
     }
     private playerRangeCheck(detectRange: number): boolean {
@@ -322,23 +332,14 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
         let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
         let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(Laya.RigidBody) as Laya.RigidBody;
-        let atkCircleScript: Laya.Script = atkCircle.addComponent(Laya.Script) as Laya.Script;
 
         atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
         atkCircleRigid.category = 8;
         atkCircleRigid.mask = 4;
 
-        // atkCircleScript.onTriggerEnter = function (col: Laya.BoxCollider) {
-        //     if (col.tag === 'Player') {
- 
-
-        //     }
-        // };
         atkBoxCollider.isSensor = true;
         atkCircleRigid.gravityScale = 0;
-        this.updateAnimation(this.m_state, EnemyStatus.attack);
-        // this.m_animation.skew
-        // atkCircle.graphics.drawRect(0, 0, 100, 100, "red", "red", 1);
+        this.updateAnimation(EnemyStatus.idle, EnemyStatus.attack);
         Laya.stage.addChild(atkCircle);
 
         atkBoxCollider.tag = this.m_atkTag;
@@ -378,20 +379,19 @@ export abstract class VirtualEnemy extends Laya.Script {
             y: this.m_rigidbody.linearVelocity.y,
         });
     }
-    private applyMoveY(): void {
-        this.m_rigidbody.setVelocity({
-            x: this.m_rigidbody.linearVelocity.x,
-            y: this.m_moveVelocity["Vy"],
-        });
-    }
-    public updateAnimation(from: EnemyStatus, to: EnemyStatus, onCallBack: () => void = null, force: boolean = false): void{
-        if(this.m_state === to || this.m_animationChanging) return;
+    // private applyMoveY(): void {
+    //     this.m_rigidbody.setVelocity({
+    //         x: this.m_rigidbody.linearVelocity.x,
+    //         y: this.m_moveVelocity["Vy"],
+    //     });
+    // }
+    public updateAnimation(from: EnemyStatus, to: EnemyStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void{
+        if(from === to || this.m_animationChanging) return;
         this.m_state = to;
         // console.log(from, 'convert to ', to);
         switch (this.m_state) {
             case EnemyStatus.attack:
                 this.m_animationChanging = true;
-                this.m_animation.interval = 100;
                 this.m_animation.source = 'normalEnemy/Attack.atlas';
                 this.m_animation.play();
                 break;
@@ -400,31 +400,38 @@ export abstract class VirtualEnemy extends Laya.Script {
                 break;
             case EnemyStatus.run:
                 this.m_animation.source = 'normalEnemy/Walk.atlas';
-                this.m_animation.interval = 100;
                 this.m_animation.play();
                 break;
             default:
                 this.m_animation.source = 'normalEnemy/Idle.atlas';
                 break;
         }
+        this.m_animation.interval = rate;
         if (typeof onCallBack === 'function')
             onCallBack();
     }
     public enemyInjuredColor(): void//0921新增
     {
-        if (this.m_animation.destroyed) return;
+        if (this.m_animation.destroyed || !this.m_animation) return;
         this.m_animation.alpha = 1;
         let colorMat: Array<number> =
             [
-                4, 0, 0, 0, 10, //R
+                // 4, 0, 0, 0, 10, //R
+                // 0, 1, 0, 0, 10, //G
+                // 0, 0, 4, 0, 10, //B
+                // 0, 0, 0, 1, 0, //A
+                2, 0, 0, 0, 10, //R
                 0, 1, 0, 0, 10, //G
-                0, 0, 4, 0, 10, //B
+                0, 0, 0, 0, 10, //B
                 0, 0, 0, 1, 0, //A
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         this.m_animation.filters = [colorFilter, glowFilter];
         setTimeout(() => {
+            if(!this.m_animation || this.m_animation.destroyed || this.m_animation.alpha === 1){
+                return;
+            }
             this.m_animation.alpha = 1;
             this.m_animation.filters = null;
         }, 200);
@@ -438,7 +445,7 @@ export class Normal extends VirtualEnemy {
     m_tag = 'n';
     m_attackRange = 100;
     m_mdelay = 0.1;
-    m_dmg = 50;
+    m_dmg = 33;
     m_atkTag = "EnemyNormalAttack";
 }
 export class Shield extends VirtualEnemy {

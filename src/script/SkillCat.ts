@@ -99,11 +99,11 @@ export class BlackHole extends VirtualSkill {
         //this.m_animation.zOrder = 5;
         //動畫位置需要再調整
 
-        this.m_animation.source = "comp/BlackHole/BlakeHole_0023.png,comp/BlackHole/BlakeHole_0024.png,comp/BlackHole/BlakeHole_0025.png,comp/BlackHole/BlakeHole_0026.png,comp/BlackHole/BlakeHole_0027.png,comp/BlackHole/BlakeHole_0028.png,comp/BlackHole/BlakeHole_0029.png,comp/BlackHole/BlakeHole_0030.png,comp/BlackHole/BlakeHole_0031.png,comp/BlackHole/BlakeHole_0032.png,comp/BlackHole/BlakeHole_0033.png,comp/BlackHole/BlakeHole_0034.png,comp/BlackHole/BlakeHole_0035.png,comp/BlackHole/BlakeHole_0036.png,comp/BlackHole/BlakeHole_0037.png,comp/BlackHole/BlakeHole_0038.png,comp/BlackHole/BlakeHole_0039.png,comp/BlackHole/BlakeHole_0040.png";
+        this.m_animation.source = "comp/BlackHole.atlas";
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 20;
 
-        explosion.source = "comp/BlackExplosion/BlackholeExplsion_0036.png,comp/BlackExplosion/BlackholeExplsion_0037.png,comp/BlackExplosion/BlackholeExplsion_0038.png,comp/BlackExplosion/BlackholeExplsion_0039.png,comp/BlackExplosion/BlackholeExplsion_0040.png,comp/BlackExplosion/BlackholeExplsion_0041.png,comp/BlackExplosion/BlackholeExplsion_0042.png,comp/BlackExplosion/BlackholeExplsion_0043.png,comp/BlackExplosion/BlackholeExplsion_0044.png,comp/BlackExplosion/BlackholeExplsion_0045.png";
+        explosion.source = "comp/BlackExplosion.atlas";
         explosion.scaleX = 1;
         explosion.scaleY = 1;
         explosion.interval = 30;

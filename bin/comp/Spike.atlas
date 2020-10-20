@@ -1,0 +1,144 @@
+{
+    "frames": {
+        "Spike_0001.png": {
+            "frame": {
+                "h": 44,
+                "idx": 0,
+                "w": 222,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 200,
+                "w": 400
+            },
+            "spriteSourceSize": {
+                "x": 108,
+                "y": 77
+            }
+        },
+        "Spike_0002.png": {
+            "frame": {
+                "h": 90,
+                "idx": 0,
+                "w": 204,
+                "x": 0,
+                "y": 45
+            },
+            "sourceSize": {
+                "h": 200,
+                "w": 400
+            },
+            "spriteSourceSize": {
+                "x": 108,
+                "y": 53
+            }
+        },
+        "Spike_0003.png": {
+            "frame": {
+                "h": 141,
+                "idx": 0,
+                "w": 240,
+                "x": 0,
+                "y": 136
+            },
+            "sourceSize": {
+                "h": 200,
+                "w": 400
+            },
+            "spriteSourceSize": {
+                "x": 52,
+                "y": 28
+            }
+        },
+        "Spike_0004.png": {
+            "frame": {
+                "h": 196,
+                "idx": 0,
+                "w": 292,
+                "x": 0,
+                "y": 278
+            },
+            "sourceSize": {
+                "h": 200,
+                "w": 400
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 1
+            }
+        },
+        "Spike_0005.png": {
+            "frame": {
+                "h": 200,
+                "idx": 0,
+                "w": 292,
+                "x": 241,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 200,
+                "w": 400
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        "Spike_0006.png": {
+            "frame": {
+                "h": 194,
+                "idx": 0,
+                "w": 292,
+                "x": 293,
+                "y": 201
+            },
+            "sourceSize": {
+                "h": 200,
+                "w": 400
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        "Spike_0007.png": {
+            "frame": {
+                "h": 144,
+                "idx": 0,
+                "w": 292,
+                "x": 293,
+                "y": 396
+            },
+            "sourceSize": {
+                "h": 200,
+                "w": 400
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 26
+            }
+        },
+        "Spike_0008.png": {
+            "frame": {
+                "h": 43,
+                "idx": 0,
+                "w": 292,
+                "x": 0,
+                "y": 475
+            },
+            "sourceSize": {
+                "h": 200,
+                "w": 400
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 78
+            }
+        }
+    },
+    "meta": {
+        "image": "Spike.png",
+        "prefix": "Spike/"
+    }
+}
