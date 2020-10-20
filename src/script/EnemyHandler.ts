@@ -83,7 +83,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_script.onUpdate = () => {
             this.enemyAIMain();
             this.checkPosition();
-            console.log(this.m_moveDelayValue);
+            // console.log(this.m_moveDelayValue);
             
         }
 

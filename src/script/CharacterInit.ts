@@ -45,7 +45,7 @@ export class Character extends Laya.Script {
     m_animationChanging: boolean;
 
     m_atkTimer;
-    m_atkStep: number;
+    m_atkStep: number = 0;
 
     m_hurted: boolean = false;
     m_hurtTimer;
@@ -93,8 +93,8 @@ export class Character extends Laya.Script {
                 this.m_animation.stop();
 
             this.m_animationChanging = false;
-            // if(Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
-            //     this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
+            if(Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
+                this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         })
 
         // this.m_maxHealth = this.m_health;
@@ -572,11 +572,11 @@ export class Character extends Laya.Script {
         }, 10);
     }
     private setSkill(): void{
-        this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
-        // this.m_humanSkill = new hSkill.Behead();
+        // this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
+        this.m_humanSkill = new hSkill.Behead();
 
-        // this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
-        this.m_catSkill = new cSkill.BlackHole();
+        this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
+        // this.m_catSkill = new cSkill.BlackHole();
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
     public delayMove(time: number): void{
@@ -604,7 +604,8 @@ export class Character extends Laya.Script {
         //     this.m_canJump = true;
     }
     private applyMoveX(): void {
-        if(this.m_moveDelayValue > 0 || this.m_animation.destroyed) return;
+        if(this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation)
+            return;
         this.m_rigidbody.setVelocity({
         x: this.m_playerVelocity["Vx"],
         y: this.m_rigidbody.linearVelocity.y,
@@ -613,6 +614,8 @@ export class Character extends Laya.Script {
             this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
     }
     private applyMoveY(): void {
+        if(!this.m_animation || this.m_animation.destroyed)
+            return;
         this.m_rigidbody.setVelocity({
         x: this.m_rigidbody.linearVelocity.x,
         y: this.m_playerVelocity["Vy"],

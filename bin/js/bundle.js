@@ -75,7 +75,6 @@
             this.m_script.onUpdate = () => {
                 this.enemyAIMain();
                 this.checkPosition();
-                console.log(this.m_moveDelayValue);
             };
             this.m_collider.width = this.m_animation.width;
             this.m_collider.height = this.m_animation.height;
@@ -83,7 +82,6 @@
             this.m_collider.y -= 10;
             this.m_collider.label = id;
             this.m_collider.tag = 'Enemy';
-            this.m_collider.friction = 10;
             this.m_rigidbody.category = 8;
             this.m_rigidbody.mask = 4 | 2;
             this.m_rigidbody.allowRotation = false;
@@ -888,6 +886,7 @@
             this.m_isFacingRight = true;
             this.m_canJump = true;
             this.m_canAttack = true;
+            this.m_atkStep = 0;
             this.m_hurted = false;
             this.m_catSkill = null;
             this.m_humanSkill = null;
@@ -911,6 +910,8 @@
                 if (this.m_state === CharacterStatus.attackOne || this.m_state === CharacterStatus.attackTwo)
                     this.m_animation.stop();
                 this.m_animationChanging = false;
+                if (Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
+                    this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
             });
             this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
             this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
@@ -1220,8 +1221,8 @@
             }, 10);
         }
         setSkill() {
-            this.m_humanSkill = new Spike();
-            this.m_catSkill = new BlackHole();
+            this.m_humanSkill = new Behead();
+            this.m_catSkill = new Slam();
         }
         delayMove(time) {
             if (this.m_moveDelayValue > 0) {
@@ -1246,7 +1247,7 @@
             this.applyMoveY();
         }
         applyMoveX() {
-            if (this.m_moveDelayValue > 0 || this.m_animation.destroyed)
+            if (this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation)
                 return;
             this.m_rigidbody.setVelocity({
                 x: this.m_playerVelocity["Vx"],
@@ -1256,6 +1257,8 @@
                 this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         }
         applyMoveY() {
+            if (!this.m_animation || this.m_animation.destroyed)
+                return;
             this.m_rigidbody.setVelocity({
                 x: this.m_rigidbody.linearVelocity.x,
                 y: this.m_playerVelocity["Vy"],
