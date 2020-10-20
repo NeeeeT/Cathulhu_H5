@@ -7,7 +7,7 @@
             this.sceneBackgroundColor = '#4a4a4a';
             this.resourceLoad = ["font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
                 "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
-                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas",
+                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas",
             ];
         }
         onAwake() {
@@ -75,6 +75,7 @@
             this.m_script.onUpdate = () => {
                 this.enemyAIMain();
                 this.checkPosition();
+                console.log(this.m_moveDelayValue);
             };
             this.m_collider.width = this.m_animation.width;
             this.m_collider.height = this.m_animation.height;
@@ -82,6 +83,7 @@
             this.m_collider.y -= 10;
             this.m_collider.label = id;
             this.m_collider.tag = 'Enemy';
+            this.m_collider.friction = 10;
             this.m_rigidbody.category = 8;
             this.m_rigidbody.mask = 4 | 2;
             this.m_rigidbody.allowRotation = false;
@@ -97,6 +99,7 @@
         ;
         setHealth(amount) {
             if (amount <= 0) {
+                this.bloodSplitEffect(this.m_animation);
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
                 return;
@@ -222,7 +225,7 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             bloodEffect.filters = [glowFilter, colorFilter];
             bloodEffect.pos(enemy.x - 500, enemy.y - 500 + 30);
-            bloodEffect.source = "comp/NewBlood/Blood_0000.png,comp/NewBlood/Blood_0001.png,comp/NewBlood/Blood_0002.png,comp/NewBlood/Blood_0003.png,comp/NewBlood/Blood_0004.png,comp/NewBlood/Blood_0005.png,comp/NewBlood/Blood_0006.png,comp/NewBlood/Blood_0007.png";
+            bloodEffect.source = "comp/NewBlood.atlas";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
                 bloodEffect.destroy();
                 bloodEffect.destroyed = true;
@@ -259,8 +262,6 @@
             if (this.m_player.destroyed) {
                 this.updateAnimation(this.m_state, EnemyStatus.idle);
                 return;
-            }
-            if (this.m_atkTimer) {
             }
             let dir = this.m_player.x - this.m_animation.x;
             let rightSide = (this.m_player.x - this.m_animation.x) > 0;
@@ -315,15 +316,15 @@
             this.delayMove(0.3);
         }
         delayMove(time) {
-            if (this.m_moveDelayValue > 0) {
+            if (this.m_moveDelayTimer) {
                 this.m_moveDelayValue += time;
             }
             else {
                 this.m_moveDelayValue = time;
                 this.m_moveDelayTimer = setInterval(() => {
                     if (this.m_moveDelayValue <= 0) {
-                        this.m_moveVelocity["Vx"] = 0;
                         clearInterval(this.m_moveDelayTimer);
+                        this.m_moveDelayTimer = null;
                         this.m_moveDelayValue = 0;
                     }
                     this.m_moveDelayValue -= 0.1;
@@ -377,7 +378,7 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [colorFilter, glowFilter];
             setTimeout(() => {
-                if (!this.m_animation || this.m_animation.destroyed || this.m_animation.alpha === 1) {
+                if (!this.m_animation || this.m_animation.destroyed) {
                     return;
                 }
                 this.m_animation.alpha = 1;
@@ -988,7 +989,7 @@
             Laya.Tween.to(this.m_animation, { alpha: 0.65 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
-            this.huredEvent(1.5);
+            this.huredEvent(0.5);
         }
         huredEvent(time) {
             this.m_hurted = true;
@@ -1055,7 +1056,7 @@
             }
             if (this.m_keyDownList[38]) {
                 if (this.m_canJump) {
-                    this.m_playerVelocity["Vy"] += -10;
+                    this.m_playerVelocity["Vy"] += -12;
                     this.applyMoveY();
                     this.m_canJump = false;
                 }
@@ -1140,7 +1141,7 @@
                 case 'rect':
                     let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
                     enemyFound.forEach((e) => {
-                        e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+                        e._ent.takeDamage(1);
                         if (!OathManager.isCharging) {
                             Character.setCameraShake(10, 3);
                             OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
@@ -1402,6 +1403,7 @@
         onStart() {
             let player = CharacterInit.playerEnt.m_animation;
             let enemy = EnemyHandler.enemyPool;
+            EnemyHandler.generator(player, 1, 0);
             setInterval(() => {
                 if (CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20)
                     return;

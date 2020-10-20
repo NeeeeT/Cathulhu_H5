@@ -15,6 +15,8 @@ export default class EnemyInit extends Laya.Script{
         let player = CharacterInit.playerEnt.m_animation;
         let enemy = EnemyHandler.enemyPool;
         // let isFacingRight: boolean = CharacterInit.playerEnt.m_isFacingRight;
+
+        EnemyHandler.generator(player, 1, 0);
         setInterval(() =>{
             if(CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20) return;
             EnemyHandler.generator(player, 1, 0);

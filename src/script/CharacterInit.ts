@@ -187,7 +187,8 @@ export class Character extends Laya.Script {
                     Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
         
-        this.huredEvent(1.5);
+        this.huredEvent(0.5);
+        // this.resetMove();
     }
     private huredEvent(time: number){
         this.m_hurted = true;
@@ -269,7 +270,7 @@ export class Character extends Laya.Script {
         //Up
         if (this.m_keyDownList[38]) {
             if (this.m_canJump) {
-                this.m_playerVelocity["Vy"] += -10;
+                this.m_playerVelocity["Vy"] += -12;
                 this.applyMoveY();
                 this.m_canJump = false;
             }
@@ -480,7 +481,8 @@ export class Character extends Laya.Script {
             case 'rect':
                 let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
                 enemyFound.forEach((e) => {
-                e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+                // e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+                e._ent.takeDamage(1);
                 if (!OathManager.isCharging) {
                     Character.setCameraShake(10, 3);
                     //誓約系統測試
@@ -598,6 +600,8 @@ export class Character extends Laya.Script {
         this.m_playerVelocity["Vy"] = 0;
         this.applyMoveX();
         this.applyMoveY();
+        // if(Math.abs(this.m_animation.y - 590.0) < 12)
+        //     this.m_canJump = true;
     }
     private applyMoveX(): void {
         if(this.m_moveDelayValue > 0 || this.m_animation.destroyed) return;
@@ -606,7 +610,7 @@ export class Character extends Laya.Script {
         y: this.m_rigidbody.linearVelocity.y,
         });
         if (!this.m_animationChanging && this.m_playerVelocity["Vx"] === 0)
-        this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
+            this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
     }
     private applyMoveY(): void {
         this.m_rigidbody.setVelocity({

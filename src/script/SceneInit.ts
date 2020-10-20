@@ -6,7 +6,7 @@ export default class SceneInit extends Laya.Script {
     
     resourceLoad = ["font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
                     "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
-                    "comp/BlackHole.atlas", "comp/BlackExplosion.atlas",
+                    "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas",
                 ];
 
     constructor() {

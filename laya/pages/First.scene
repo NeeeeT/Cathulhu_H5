@@ -2,7 +2,7 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":225,
+    "selecteID":217,
     "searchKey":"Scene",
     "props":{"x":0,"width":4098,"skewY":0,"skewX":0,"sceneColor":"gray","pivotX":0,"height":768},
     "nodeParent":-1,
@@ -84,7 +84,7 @@
             "source":"src/script/EnemyInit.ts",
             "searchKey":"Script,EnemyInit",
             "removeAble":true,
-            "props":{"enemyLeft":50,"enemyGenerateTime":3000,"EnemyGenerateTime":5000},
+            "props":{"enemyLeft":50,"enemyGenerateTime":2000,"EnemyGenerateTime":5000},
             "nodeParent":2,
             "label":"EnemyInit",
             "isDirectory":false,
@@ -134,14 +134,13 @@
             "props":{"y":0,"x":0,"width":250,"name":"leftBound","height":768},
             "nodeParent":2,
             "label":"leftBound",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":229,
             "child":[
                 {
-                    "x":30,
                     "type":"BoxCollider",
                     "switchAble":true,
                     "searchKey":"BoxCollider",
@@ -157,7 +156,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",
@@ -180,14 +178,13 @@
             "props":{"y":0,"x":3849,"width":250,"name":"rightBound","height":768},
             "nodeParent":2,
             "label":"rightBound",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":232,
             "child":[
                 {
-                    "x":30,
                     "type":"BoxCollider",
                     "switchAble":true,
                     "searchKey":"BoxCollider",
@@ -203,7 +200,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",

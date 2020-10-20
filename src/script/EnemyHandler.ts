@@ -83,6 +83,8 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_script.onUpdate = () => {
             this.enemyAIMain();
             this.checkPosition();
+            console.log(this.m_moveDelayValue);
+            
         }
 
         this.m_collider.width = this.m_animation.width;
@@ -91,6 +93,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_collider.y -= 10;
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
+        // this.m_collider.friction = 10;
 
         this.m_rigidbody.category = 8;
         this.m_rigidbody.mask = 4 | 2;
@@ -109,7 +112,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         if (amount <= 0) {
             // this.m_animation.filters = null;
             // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)
-            // this.bloodSplitEffect(this.m_animation);
+            this.bloodSplitEffect(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
             return;
@@ -244,7 +247,7 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         bloodEffect.filters = [glowFilter, colorFilter];
         bloodEffect.pos(enemy.x - 500, enemy.y - 500 + 30);
-        bloodEffect.source = "comp/NewBlood/Blood_0000.png,comp/NewBlood/Blood_0001.png,comp/NewBlood/Blood_0002.png,comp/NewBlood/Blood_0003.png,comp/NewBlood/Blood_0004.png,comp/NewBlood/Blood_0005.png,comp/NewBlood/Blood_0006.png,comp/NewBlood/Blood_0007.png";
+        bloodEffect.source = "comp/NewBlood.atlas";
         bloodEffect.on(Laya.Event.COMPLETE, this, function () {
             bloodEffect.destroy();
             bloodEffect.destroyed = true;
@@ -261,7 +264,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         if (this.m_animation.destroyed){
             return;
         }
-        if (this.playerRangeCheck(this.m_attackRange * 2)) {
+        if (this.playerRangeCheck(this.m_attackRange * 2) ) {
             this.tryAttack();
             this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
 
@@ -284,11 +287,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.updateAnimation(this.m_state, EnemyStatus.idle);
             return;
         }
-        if(this.m_atkTimer){
-            
-        }
         let dir: number = this.m_player.x - this.m_animation.x;
-        // this.m_animation.skewY = (this.m_moveVelocity["Vx"] > 0) ? 0 : 180;
         let rightSide: boolean = (this.m_player.x - this.m_animation.x) > 0;
         this.m_animation.skewY = rightSide ? 0 : 180;
         this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false
@@ -301,7 +300,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.updateAnimation(this.m_state, EnemyStatus.run);
         else
             this.m_moveVelocity["Vx"] = 0;
-
+        
         this.applyMoveX();
     }
     private playerRangeCheck(detectRange: number): boolean {
@@ -357,15 +356,16 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.delayMove(0.3);
     }
     public delayMove(time: number): void {
-        if (this.m_moveDelayValue > 0) {
+        if (this.m_moveDelayTimer) {
             this.m_moveDelayValue += time;
         }
         else {
             this.m_moveDelayValue = time;
             this.m_moveDelayTimer = setInterval(() => {
                 if (this.m_moveDelayValue <= 0) {
-                    this.m_moveVelocity["Vx"] = 0;
                     clearInterval(this.m_moveDelayTimer);
+                    this.m_moveDelayTimer = null;
+                    // this.m_moveVelocity["Vx"] = 0;
                     this.m_moveDelayValue = 0;
                 }
                 this.m_moveDelayValue -= 0.1;
@@ -374,6 +374,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     }
     private applyMoveX(): void {
         if (this.m_moveDelayValue > 0 || this.m_animation.destroyed) return;
+        
         this.m_rigidbody.setVelocity({
             x: this.m_moveVelocity["Vx"],
             y: this.m_rigidbody.linearVelocity.y,
@@ -429,7 +430,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         this.m_animation.filters = [colorFilter, glowFilter];
         setTimeout(() => {
-            if(!this.m_animation || this.m_animation.destroyed || this.m_animation.alpha === 1){
+            if(!this.m_animation || this.m_animation.destroyed){
                 return;
             }
             this.m_animation.alpha = 1;
