@@ -104,15 +104,7 @@ export class Character extends Laya.Script {
 
             this.m_animationChanging = false;
             if(Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
-                this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500)
-            // if(this.m_aniTimer){
-            //     clearInterval(this.m_aniTimer)
-            // }
-            // this.m_aniTimer = setTimeout(()=>{
-            //     // if(Math.abs(this.m_playerVelocity["Vx"]) <= 0)
-            //     this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
-            //     this.m_aniTimer = null;
-            // }, 800);
+                this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         })
 
         // this.m_maxHealth = this.m_health;
@@ -127,14 +119,16 @@ export class Character extends Laya.Script {
         this.m_script.onUpdate = () => {
             if (this.m_playerVelocity["Vx"] < -this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = -this.m_xMaxVelocity;
             if (this.m_playerVelocity["Vx"] > this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = this.m_xMaxVelocity;
-            // this.m_atkStep = (this.m_atkTimerValue > 0) ? 1 : 0;
-            // console.log(this.m_atkStep);
             this.characterMove();
         }
         this.m_script.onTriggerEnter = (col: Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) => {
-            if (col.label === "BoxCollider") {
+            if (col.label === "ground") {
                 this.resetMove();
                 this.m_canJump = true;
+            }
+            if (col.tag === "Enemy") {
+                this.m_rigidbody.category = 32;
+                // console.log('穿透!!!');
             }
             this.takeDamage(this.getEnemyAttackDamage(col.tag))
         }
@@ -195,6 +189,12 @@ export class Character extends Laya.Script {
         amount *= critical ? 3 : 1;
         this.setHealth(this.getHealth() - amount);
         this.damageTextEffect(amount, critical);
+
+        Laya.Tween.to(this.m_animation, { alpha: 0.65}, 250, Laya.Ease.linearInOut,
+            Laya.Handler.create(this, () => {
+                Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut,
+                    Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
+            }), 0);
     }
     private damageTextEffect(amount: number, critical: boolean): void {
         let damageText = new Laya.Text();
@@ -562,11 +562,11 @@ export class Character extends Laya.Script {
         slashEffect.play();
     }
     private setSkill(): void{
-        this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
-        // this.m_humanSkill = new hSkill.Behead();
+        // this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
+        this.m_humanSkill = new hSkill.Behead();
 
-        // this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
-        this.m_catSkill = new cSkill.BlackHole();
+        this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
+        // this.m_catSkill = new cSkill.BlackHole();
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
     public delayMove(time: number): void{
@@ -643,27 +643,27 @@ export class Character extends Laya.Script {
         switch(this.m_state){
             case CharacterStatus.attackOne:
                 this.m_animationChanging = true;
-                // this.m_animation.interval = this.m_attackCdTime / 5;// ,1,2,3,4, 逗號數為分母(圖數+1)
                 this.m_animation.source = 'character/Attack/character_attack_1.png,character/Attack/character_attack_2.png,character/Attack/character_attack_3.png,character/Attack/character_attack_4.png,character/Attack/character_attack_5.png,character/Attack/character_attack_5.png,character/Attack/character_attack_5.png';
                 this.m_animation.play();
                 break;
             case CharacterStatus.attackTwo:
                 this.m_animationChanging = true;
-                // this.m_animation.interval = this.m_attackCdTime / 5;// ,1,2,3,4, 逗號數為分母(圖數+1)
                 this.m_animation.source = 'character/Attack/character_attack_6.png,character/Attack/character_attack_7.png';
                 this.m_animation.play();
                 break;
             case CharacterStatus.idle:
-                // this.m_animation.interval = 500;
                 this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                 this.m_animation.play();
-                console.log('撥放了idle!!!');
                 break;
             case CharacterStatus.run:
                 this.m_animation.source = 'character/Run/character_run_1.png,character/Run/character_run_2.png,character/Run/character_run_3.png,character/Run/character_run_4.png';
-                // this.m_animation.interval = 100;
                 this.m_animation.play();
                 break;
+            case CharacterStatus.slam:
+                this.m_animationChanging = true;
+                this.m_animation.source = "character/Slam/character_slam_1.png,character/Slam/character_slam_2.png,character/Slam/character_slam_3.png,character/Slam/character_slam_4.png";
+                this.m_animation.play()
+                console.log('SLAM!!!');
             default:
                 this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                 this.m_animation.play();

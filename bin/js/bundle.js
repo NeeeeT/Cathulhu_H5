@@ -510,7 +510,7 @@
         CharacterStatus[CharacterStatus["down"] = 3] = "down";
         CharacterStatus[CharacterStatus["attackOne"] = 4] = "attackOne";
         CharacterStatus[CharacterStatus["attackTwo"] = 5] = "attackTwo";
-        CharacterStatus[CharacterStatus["useSkill"] = 6] = "useSkill";
+        CharacterStatus[CharacterStatus["slam"] = 6] = "slam";
         CharacterStatus[CharacterStatus["hurt"] = 7] = "hurt";
         CharacterStatus[CharacterStatus["defend"] = 8] = "defend";
         CharacterStatus[CharacterStatus["death"] = 9] = "death";
@@ -646,7 +646,7 @@
         constructor() {
             super(...arguments);
             this.m_name = '攻其不備';
-            this.m_damage = 99999;
+            this.m_damage = 444;
             this.m_cost = 0;
             this.m_id = 1;
             this.m_cd = 3;
@@ -671,9 +671,9 @@
             this.castRoar(position);
             owner.delayMove(this.m_preTime);
             owner.m_rigidbody.setVelocity({ x: 0, y: 0 });
-            owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false);
-            Laya.stage.addChild(this.m_animation);
+            owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 125);
             setTimeout(() => {
+                owner.m_rigidbody.setVelocity({ x: 0.0, y: 10.0 });
                 this.attackRangeCheck(owner, {
                     "x0": offsetX,
                     "x1": offsetX + this.m_animation.width,
@@ -697,8 +697,9 @@
                 return;
             }
             console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
-            owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 50 : -50);
-            owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y - 70;
+            owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 70 : -70);
+            owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y - 100;
+            owner.updateAnimation(owner.m_state, CharacterStatus.attackTwo, null, false, 125);
             enemy[targetEnemy]._ent.takeDamage(this.m_damage);
         }
     }
@@ -720,12 +721,13 @@
             this.m_animation = new Laya.Animation();
             this.m_animation.width = 350;
             this.m_animation.height = 200;
-            this.m_animation.scaleX = 2;
-            this.m_animation.scaleY = 2;
-            this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 130);
-            this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
+            this.m_animation.scaleX = 1;
+            this.m_animation.scaleY = 1;
+            this.m_animation.source = "comp/BlackHole/BlakeHole_0023.png";
+            this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
             this.m_animation.autoPlay = true;
-            this.m_animation.interval = 20;
+            this.m_animation.interval = 100;
+            owner.updateAnimation(owner.m_state, CharacterStatus.slam, null, false, 100);
             let offsetX = rightSide ? position['x'] + 65 : position['x'] - this.m_animation.width - 65;
             let offsetY = position['y'] - this.m_animation.height - 70;
             let offsetInterval = 40;
@@ -912,9 +914,12 @@
                 this.characterMove();
             };
             this.m_script.onTriggerEnter = (col) => {
-                if (col.label === "BoxCollider") {
+                if (col.label === "ground") {
                     this.resetMove();
                     this.m_canJump = true;
+                }
+                if (col.tag === "Enemy") {
+                    this.m_rigidbody.category = 32;
                 }
                 this.takeDamage(this.getEnemyAttackDamage(col.tag));
             };
@@ -966,6 +971,9 @@
             amount *= critical ? 3 : 1;
             this.setHealth(this.getHealth() - amount);
             this.damageTextEffect(amount, critical);
+            Laya.Tween.to(this.m_animation, { alpha: 0.65 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
+            }), 0);
         }
         damageTextEffect(amount, critical) {
             let damageText = new Laya.Text();
@@ -1183,8 +1191,8 @@
             slashEffect.play();
         }
         setSkill() {
-            this.m_humanSkill = new Spike();
-            this.m_catSkill = new BlackHole();
+            this.m_humanSkill = new Behead();
+            this.m_catSkill = new Slam();
         }
         delayMove(time) {
             if (this.m_moveDelayValue > 0) {
@@ -1273,12 +1281,16 @@
                 case CharacterStatus.idle:
                     this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                     this.m_animation.play();
-                    console.log('撥放了idle!!!');
                     break;
                 case CharacterStatus.run:
                     this.m_animation.source = 'character/Run/character_run_1.png,character/Run/character_run_2.png,character/Run/character_run_3.png,character/Run/character_run_4.png';
                     this.m_animation.play();
                     break;
+                case CharacterStatus.slam:
+                    this.m_animationChanging = true;
+                    this.m_animation.source = "character/Slam/character_slam_1.png,character/Slam/character_slam_2.png,character/Slam/character_slam_3.png,character/Slam/character_slam_4.png";
+                    this.m_animation.play();
+                    console.log('SLAM!!!');
                 default:
                     this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                     this.m_animation.play();
@@ -1357,6 +1369,7 @@
             super();
             this.enemyGenerateTime = 5000;
             this.enemyLeft = 50;
+            this.battleToggle = true;
         }
         onStart() {
             let player = CharacterInit.playerEnt.m_animation;
@@ -1375,6 +1388,7 @@
                 Laya.Scene.open("Village.scene");
                 Laya.stage.x = Laya.stage.y = 0;
                 console.log("恭喜通過戰鬥!!!");
+                this.battleToggle = false;
             }
         }
         showBattleInfo() {
@@ -1386,7 +1400,12 @@
             info.font = "silver";
             info.strokeColor = "#000";
             Laya.stage.addChild(info);
-            setInterval(() => {
+            let timer = setInterval(() => {
+                if (!this.battleToggle) {
+                    clearInterval(timer);
+                    info.destroy();
+                    return;
+                }
                 info.text = "剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
                 info.pos(player.x - 50, player.y - 400);
             }, 10);

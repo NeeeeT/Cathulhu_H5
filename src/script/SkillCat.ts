@@ -1,3 +1,4 @@
+import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler, { VirtualEnemy } from "./EnemyHandler"
 import { VirtualSkill } from "./SkillManager";
 
@@ -17,19 +18,24 @@ export class Slam extends VirtualSkill {
         this.m_animation = new Laya.Animation()
         this.m_animation.width = 350;
         this.m_animation.height = 200;
-        this.m_animation.scaleX = 2;
-        this.m_animation.scaleY = 2;
-        this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 130);
+        this.m_animation.scaleX = 1;
+        this.m_animation.scaleY = 1;
         //動畫位置需要再調整
 
-        this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
+        this.m_animation.source = "comp/BlackHole/BlakeHole_0023.png";
+        this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
         this.m_animation.autoPlay = true;
-        this.m_animation.interval = 20;
+        this.m_animation.interval = 100;
+        
+        // Laya.stage.addChild(this.m_animation);
+
+        owner.updateAnimation(owner.m_state, CharacterStatus.slam, null, false, 100);
 
         let offsetX: number = rightSide ? position['x'] + 65 : position['x'] - this.m_animation.width - 65;
         let offsetY: number = position['y'] - this.m_animation.height - 70;
         let offsetInterval: number = 40;
         let rangeY: number = 0;
+
 
         this.m_canUse = false;
         this.castRoar(position);

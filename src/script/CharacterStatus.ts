@@ -5,7 +5,7 @@ export enum CharacterStatus {
     down,
     attackOne,
     attackTwo,
-    useSkill,
+    slam,
     hurt,
     defend,
     death

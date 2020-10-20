@@ -6,6 +6,7 @@ export default class EnemyInit extends Laya.Script{
     enemyGenerateTime: number = 5000;
     /** @prop {name:enemyLeft,tips:"生成的敵人數量",type:int,default:50}*/
     enemyLeft: number = 50;
+    battleToggle = true;
 
     constructor(){
         super();
@@ -27,9 +28,8 @@ export default class EnemyInit extends Laya.Script{
             Laya.Scene.open("Village.scene");
             Laya.stage.x = Laya.stage.y = 0;
 
-            // need to destroy all entites in the scene.
-
             console.log("恭喜通過戰鬥!!!");
+            this.battleToggle = false;
         }
     }
     showBattleInfo(): void{
@@ -44,7 +44,12 @@ export default class EnemyInit extends Laya.Script{
 
         Laya.stage.addChild(info);
 
-        setInterval(()=>{
+        let timer = setInterval(()=>{
+            if(!this.battleToggle){
+                clearInterval(timer);
+                info.destroy();
+                return;
+            }
             info.text = "剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
             info.pos(player.x - 50, player.y - 400);
         }, 10)
