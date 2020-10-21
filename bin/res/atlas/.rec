@@ -99,6 +99,16 @@ P 479C85CB run_08.png
 D Skill
 P 13615EFF circle.png
 P 0A467EB4 spike.png
+D UI
+P C11E3596 Box.png
+P BB8D7F5A bp_100$bar.png
+P 8639F933 bp_100.png
+P BB8D7F5A bp_150$bar.png
+P 4B8E4554 bp_150.png
+P E8FEF7AE Crystal.png
+P 7F35BA50 Gold.png
+P F34D34E1 hp$bar.png
+P 6C98F162 hp.png
 D UI(1020)
 R 633CD042 0.UI_position.PNG
 P 07B27AC3 1-1.UI_block_example.png
@@ -200,9 +210,9 @@ P CF903837 Blood_3.png
 P 59267E9B Blood_4.png
 P 5844260E Blood_5.png
 D UI(1020)/Magic/Magic_block
-P BCAD6F72 Magic_1.png
-P 965C10AF Magic_17.png
-P 0282B1AF Magic_18.png
+P BB8D7F5A Magic_1.png
+P F34D34E1 Magic_17.png
+P BB8D7F5A Magic_18.png
 P 2848B8ED Magic_19.png
 P D334C289 Magic_2.png
 P BD32B2E1 Magic_20.png

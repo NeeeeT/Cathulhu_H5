@@ -251,8 +251,6 @@ export class Character extends Laya.Script {
                 this.m_healthBar.destroyed = true;
                 return;
             }
-            // this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0) ? 0.007 : 0;
-            // this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
             this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
         }), 10);
@@ -261,8 +259,6 @@ export class Character extends Laya.Script {
         //Left
         if (this.m_keyDownList[37]) {
         this.m_playerVelocity["Vx"] += -1 * this.m_velocityMultiplier;
-        // this.m_animation.source = "character/player_run_01.png,character/player_run_02.png,character/player_run_03.png,character/player_run_04.png";
-        // this.m_animation.interval = 200;
         if (this.m_isFacingRight) {
             this.m_playerVelocity["Vx"] = 0;
             this.m_animation.skewY = 180;

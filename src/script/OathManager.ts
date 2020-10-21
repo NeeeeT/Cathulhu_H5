@@ -125,6 +125,8 @@ export default class OathManager extends Laya.Script {
     }
 
     public static oathUpdate() {
+        //更新角色充能時數值
+        OathManager.oathBuffUpdate();
         switch (this.oathState) {
             case OathStatus.normal:
                 //目前普通狀態無特殊效果
@@ -137,8 +139,6 @@ export default class OathManager extends Laya.Script {
                 break;
             case OathStatus.charge:
                 
-                //更新角色充能時數值
-                OathManager.oathBuffUpdate();
                 //overCharge計數達到上限，轉為overCharge狀態
                 if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && OathManager.overChargeCount >= 2) {
                     OathManager.overChargeCount = 0;
