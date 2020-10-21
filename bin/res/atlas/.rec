@@ -99,11 +99,14 @@ P 479C85CB run_08.png
 D Skill
 P 13615EFF circle.png
 P 0A467EB4 spike.png
-D UI(1018)
-P ADD0BA9E box.png
-P E8FEF7AE crystal.png
-P 7F35BA50 gold.png
-P 8FB6FCA4 UI.png
+D UI(1020)
+R 633CD042 0.UI_position.PNG
+P 07B27AC3 1-1.UI_block_example.png
+P C14D0D6F 1-2.UI_color_example.png
+P C11E3596 Box.png
+P E8FEF7AE Crystal.png
+P 7F35BA50 Gold.png
+R 032CFE08 UI位置.txt
 D Village
 R D137205B Village.png
 D Background(0912)/Red Forest
@@ -182,18 +185,26 @@ R 60DEB618 Slash_0032.png
 R 13FB1308 Slash_0033.png
 R 36563627 Slash_0034.png
 R 97BACC82 Slash_0035.png
-D UI(1018)/blood
-P FF214EC6 blood_1.png
-P A824A8D3 blood_2.png
-P CF903837 blood_3.png
-P 59267E9B blood_4.png
-P 5844260E blood_5.png
-D UI(1018)/magic
-P BCAD6F72 magic_1.png
-P 965C10AF magic_17.png
-P 0282B1AF magic_18.png
-P 2848B8ED magic_19.png
-P D334C289 magic_2.png
-P BD32B2E1 magic_20.png
-P 4A70812A magic_3.png
-P D91DC976 magic_4.png
+D UI(1020)/Blood
+P 6C98F162 Bar_blood.png
+P F34D34E1 Bar_blood_color.png
+D UI(1020)/Magic
+P 8639F933 Bar_magic_100.png
+P 4B8E4554 Bar_magic_150.png
+P BB8D7F5A Bar_magic_color.png
+R FE269019 獻祭條長寬.txt
+D UI(1020)/Blood/Blood_block
+P FF214EC6 Blood_1.png
+P A824A8D3 Blood_2.png
+P CF903837 Blood_3.png
+P 59267E9B Blood_4.png
+P 5844260E Blood_5.png
+D UI(1020)/Magic/Magic_block
+P BCAD6F72 Magic_1.png
+P 965C10AF Magic_17.png
+P 0282B1AF Magic_18.png
+P 2848B8ED Magic_19.png
+P D334C289 Magic_2.png
+P BD32B2E1 Magic_20.png
+P 4A70812A Magic_3.png
+P D91DC976 Magic_4.png
