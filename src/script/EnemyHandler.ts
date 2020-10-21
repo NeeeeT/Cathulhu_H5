@@ -33,7 +33,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_isFacingRight: boolean = true;
 
     m_moveDelayValue: number = 0;
-    m_moveDelayTimer;
+    m_moveDelayTimer = null;
 
     m_animationChanging: boolean = false;
 
@@ -42,7 +42,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_rigidbody: Laya.RigidBody;
     m_script: Laya.Script;
     m_player: Laya.Animation;
-    m_hurtDelayTimer;
+    m_hurtDelayTimer = null;
 
     m_healthBar: Laya.ProgressBar;
     m_state = EnemyStatus.idle;
@@ -148,7 +148,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.setHealth(this.getHealth() - amount);
         this.damageTextEffect(amount, critical);
         this.m_healthBar.alpha = 1;
-        if (this.m_hurtDelay > 0) {
+        if (this.m_hurtDelayTimer) {
             this.m_hurtDelay += 2.0;
         }
         else {
@@ -156,6 +156,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_hurtDelayTimer = setInterval(() => {
                 if (this.m_hurtDelay <= 0) {
                     clearInterval(this.m_hurtDelayTimer);
+                    this.m_hurtDelayTimer = null;
                     this.m_hurtDelay = -1;
                 }
                 this.m_hurtDelay -= 0.1;

@@ -44,7 +44,9 @@
             this.m_atkCd = true;
             this.m_isFacingRight = true;
             this.m_moveDelayValue = 0;
+            this.m_moveDelayTimer = null;
             this.m_animationChanging = false;
+            this.m_hurtDelayTimer = null;
             this.m_state = EnemyStatus.idle;
         }
         spawn(player, id, point) {
@@ -138,7 +140,7 @@
             this.setHealth(this.getHealth() - amount);
             this.damageTextEffect(amount, critical);
             this.m_healthBar.alpha = 1;
-            if (this.m_hurtDelay > 0) {
+            if (this.m_hurtDelayTimer) {
                 this.m_hurtDelay += 2.0;
             }
             else {
@@ -146,6 +148,7 @@
                 this.m_hurtDelayTimer = setInterval(() => {
                     if (this.m_hurtDelay <= 0) {
                         clearInterval(this.m_hurtDelayTimer);
+                        this.m_hurtDelayTimer = null;
                         this.m_hurtDelay = -1;
                     }
                     this.m_hurtDelay -= 0.1;
@@ -760,7 +763,7 @@
                     "y1": offsetY + this.m_animation.height,
                 });
                 rangeY += 5;
-            }, 100);
+            }, 50);
             setTimeout(() => {
                 this.m_canUse = true;
                 Laya.stage.graphics.clear();
@@ -883,11 +886,15 @@
         constructor() {
             super(...arguments);
             this.m_moveDelayValue = 0;
+            this.m_moveDelayTimer = null;
             this.m_isFacingRight = true;
             this.m_canJump = true;
             this.m_canAttack = true;
+            this.m_atkTimer = null;
             this.m_atkStep = 0;
             this.m_hurted = false;
+            this.m_hurtTimer = null;
+            this.m_slashTimer = null;
             this.m_catSkill = null;
             this.m_humanSkill = null;
         }
@@ -909,6 +916,8 @@
             this.m_animation.on(Laya.Event.COMPLETE, this, () => {
                 if (this.m_state === CharacterStatus.attackOne || this.m_state === CharacterStatus.attackTwo)
                     this.m_animation.stop();
+                if (this.m_state === CharacterStatus.slam)
+                    console.log('Slam end!');
                 this.m_animationChanging = false;
                 if (Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
                     this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
@@ -1225,7 +1234,7 @@
             this.m_catSkill = new Slam();
         }
         delayMove(time) {
-            if (this.m_moveDelayValue > 0) {
+            if (this.m_moveDelayTimer) {
                 this.m_moveDelayValue += time;
             }
             else {
@@ -1234,7 +1243,8 @@
                     if (this.m_moveDelayValue <= 0) {
                         this.resetMove();
                         clearInterval(this.m_moveDelayTimer);
-                        this.m_moveDelayValue = -1;
+                        this.m_moveDelayTimer = null;
+                        this.m_moveDelayValue = 0;
                     }
                     this.m_moveDelayValue -= 0.1;
                 }, 100);
@@ -1322,7 +1332,7 @@
                     this.m_animationChanging = true;
                     this.m_animation.source = "character/Slam.atlas";
                     this.m_animation.play();
-                    console.log('SLAM!!!');
+                    break;
                 default:
                     this.m_animation.source = 'character/Idle.atlas';
                     this.m_animation.play();

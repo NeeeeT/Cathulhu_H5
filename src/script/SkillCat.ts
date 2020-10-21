@@ -57,7 +57,7 @@ export class Slam extends VirtualSkill {
                 "y1": offsetY + this.m_animation.height,
             })
             rangeY += 5;
-        }, 100);
+        }, 50);
         setTimeout(() => {
             this.m_canUse = true;
             Laya.stage.graphics.clear();

@@ -25,7 +25,7 @@ export class Character extends Laya.Script {
     m_attackCdTime: number;
 
     m_moveDelayValue: number = 0;
-    m_moveDelayTimer;
+    m_moveDelayTimer = null;
 
     //基礎數值
     m_basic_xMaxVelocity: number;
@@ -44,13 +44,13 @@ export class Character extends Laya.Script {
     m_canAttack: boolean = true;
     m_animationChanging: boolean;
 
-    m_atkTimer;
+    m_atkTimer = null;
     m_atkStep: number = 0;
 
     m_hurted: boolean = false;
-    m_hurtTimer;
+    m_hurtTimer = null;
 
-    m_slashTimer;
+    m_slashTimer = null;
 
     public static m_cameraShakingTimer: number = 0;
     public static m_cameraShakingMultiplyer: number = 1;
@@ -92,12 +92,14 @@ export class Character extends Laya.Script {
             if(this.m_state === CharacterStatus.attackOne || this.m_state === CharacterStatus.attackTwo)
                 this.m_animation.stop();
 
+            if(this.m_state === CharacterStatus.slam)
+                console.log('Slam end!');
+                
+
             this.m_animationChanging = false;
             if(Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
                 this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
-        })
-
-        // this.m_maxHealth = this.m_health;
+        });
         this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
         this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
         this.m_script = this.m_animation.addComponent(Laya.Script);
@@ -580,19 +582,20 @@ export class Character extends Laya.Script {
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
     public delayMove(time: number): void{
-        if(this.m_moveDelayValue > 0){
-        this.m_moveDelayValue += time;
+        if(this.m_moveDelayTimer){
+            this.m_moveDelayValue += time;
         }
         else{
-        this.m_moveDelayValue = time;
-        this.m_moveDelayTimer = setInterval(()=>{
-            if(this.m_moveDelayValue <= 0){
-            this.resetMove();
-            clearInterval(this.m_moveDelayTimer);
-            this.m_moveDelayValue = -1;
-            }
-            this.m_moveDelayValue -= 0.1;
-        }, 100)
+            this.m_moveDelayValue = time;
+            this.m_moveDelayTimer = setInterval(()=>{
+                if(this.m_moveDelayValue <= 0){
+                    this.resetMove();
+                    clearInterval(this.m_moveDelayTimer);
+                    this.m_moveDelayTimer = null;
+                    this.m_moveDelayValue = 0;
+                }
+                this.m_moveDelayValue -= 0.1;
+            }, 100)
         }
     }
     private resetMove(): void {
@@ -678,7 +681,7 @@ export class Character extends Laya.Script {
                 this.m_animationChanging = true;
                 this.m_animation.source = "character/Slam.atlas";
                 this.m_animation.play()
-                console.log('SLAM!!!');
+                break;
             default:
                 this.m_animation.source = 'character/Idle.atlas';
                 this.m_animation.play();
