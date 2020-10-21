@@ -29,7 +29,8 @@ export class Character extends Laya.Script {
     m_health: number;
     m_maxHealth: number;
     m_bloodyPoint: number;
-    m_maxBloodyPoint: number;
+    m_maxBloodyPoint_soft: number;
+    m_maxBloodyPoint_hard: number;
     m_defense: number;
     m_xMaxVelocity: number;
     m_yMaxVelocity: number;
@@ -165,7 +166,7 @@ export class Character extends Laya.Script {
 
         OathManager.showBloodyPoint(this.m_animation);
 
-        OathManager.showBloodyLogo(this.m_animation, "comp/Cat.png");//邪貓方法
+        OathManager.showBloodyLogo(this.m_animation);//角色UI狀態方法
 
         this.cameraFollower();
         this.showHealth();
@@ -233,11 +234,11 @@ export class Character extends Laya.Script {
     }
     private showHealth() {
         this.m_healthBar = new Laya.ProgressBar();
-        this.m_healthBar.height = 13;
-        this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
-        this.m_healthBar.skin = "comp/progress.png";
-        this.m_healthBar.value = 1;
-        this.m_healthBar.alpha = 1;
+        // this.m_healthBar.height = 13;
+        // this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
+        this.m_healthBar.skin = "UI/hp.png";
+        // this.m_healthBar.value = 1;
+        // this.m_healthBar.alpha = 1;
         Laya.stage.addChild(this.m_healthBar);
 
         setInterval((() => {
@@ -247,7 +248,8 @@ export class Character extends Laya.Script {
                 return;
             }
             // this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0) ? 0.007 : 0;
-            this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+            // this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+            this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
         }), 10);
     }
@@ -359,11 +361,11 @@ export class Character extends Laya.Script {
                 if(this.m_atkStep === 1){
                     // ,1,2,3,4, 逗號數為分母(圖數+1)
                     this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 3);
-                    console.log('ATTACK2');
+                    // console.log('ATTACK2');
                 }
                 else if(this.m_atkStep === 0){
                     this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 8);
-                    console.log('ATTACK1');
+                    // console.log('ATTACK1');
                 }
             }
             this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
@@ -381,7 +383,7 @@ export class Character extends Laya.Script {
                 this.m_canAttack = true;
             }, this.m_attackCdTime);
         }
-        if (this.m_keyDownList[16]) OathManager.charge();
+        if (this.m_keyDownList[16]) console.log(OathManager.playerDebuff);
         if (this.m_keyDownList[49]&&this.m_keyDownList[37] || this.m_keyDownList[49]&&this.m_keyDownList[39]){
             this.m_humanSkill.cast(CharacterInit.playerEnt,
             {
@@ -454,7 +456,7 @@ export class Character extends Laya.Script {
             this.m_atkStep = 0;
             this.m_atkTimer = null
             this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
-            console.log('Reset Attack Step');
+            // console.log('Reset Attack Step');
         }, this.m_attackCdTime + 200);
     }
     private attackSimulation(): void{
@@ -483,14 +485,15 @@ export class Character extends Laya.Script {
                 let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
                 enemyFound.forEach((e) => {
                 e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
-                if (!OathManager.isCharging) {
+                // if (!OathManager.isCharging) {
                     Character.setCameraShake(10, 3);
                     //誓約系統測試
                     OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
-                } else {
-                    // OathManager.chargeAttack(col.label);
-                    Character.setCameraShake(50, 5);
-                }
+                    
+                // } else {
+                //     // OathManager.chargeAttack(col.label);
+                //     Character.setCameraShake(50, 5);
+                // }
                 });
                 break;
             default:
@@ -530,20 +533,20 @@ export class Character extends Laya.Script {
         ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#af06ff", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        if (!OathManager.isCharging) {
+        // if (!OathManager.isCharging) {
         slashEffect.filters = [colorFilter, glowFilter];
-        } else {
-        let colorMat_charge: Array<number> =
-            [
-            5, 0, 0, 0, -100, //R
-            5, 0, 0, 0, -100, //G
-            0, 0, 0, 0, -100, //B
-            0, 0, 0, 1, 0, //A
-            ];
-        let colorFilter_charge: Laya.ColorFilter = new Laya.ColorFilter(colorMat_charge);
-        let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#F7F706", 20, 0, 0);
-        slashEffect.filters = [colorFilter_charge, glowFilter_charge];
-        }
+        // } else {
+        // let colorMat_charge: Array<number> =
+        //     [
+        //     5, 0, 0, 0, -100, //R
+        //     5, 0, 0, 0, -100, //G
+        //     0, 0, 0, 0, -100, //B
+        //     0, 0, 0, 1, 0, //A
+        //     ];
+        // let colorFilter_charge: Laya.ColorFilter = new Laya.ColorFilter(colorMat_charge);
+        // let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#F7F706", 20, 0, 0);
+        // slashEffect.filters = [colorFilter_charge, glowFilter_charge];
+        // }
         //濾鏡
         if (this.m_isFacingRight) {
             slashEffect.skewY = 0;
@@ -657,7 +660,7 @@ export class Character extends Laya.Script {
                 // this.m_animation.interval = 500;
                 this.m_animation.source = 'character/Idle/character_idle_1.png,character/Idle/character_idle_2.png,character/Idle/character_idle_3.png,character/Idle/character_idle_4.png';
                 this.m_animation.play();
-                console.log('撥放了idle!!!');
+                // console.log('撥放了idle!!!');
                 break;
             case CharacterStatus.run:
                 this.m_animation.source = 'character/Run/character_run_1.png,character/Run/character_run_2.png,character/Run/character_run_3.png,character/Run/character_run_4.png';
@@ -690,8 +693,10 @@ export default class CharacterInit extends Laya.Script {
     health: number = 1000;
     /** @prop {name:bloodyPoint,tips:"角色初始獻祭值",type:int,default:0}*/
     bloodyPoint: number = 0;
-    /** @prop {name:maxBloodyPoint,tips:"角色最大獻祭值",type:int,default:100}*/
-    maxBloodyPoint: number = 100;
+    /** @prop {name:maxBloodyPoint_soft,tips:"角色充能獻祭值上限",type:int,default:100}*/
+    maxBloodyPoint_soft: number = 100;
+    /** @prop {name:maxBloodyPoint_hard,tips:"角色過度充能獻祭值上限",type:int,default:150}*/
+    maxBloodyPoint_hard: number = 150;
     /** @prop {name:xMaxVelocity,tips:"x軸速度上限",type:int,default:5}*/
     xMaxVelocity: number = 5;
     /** @prop {name:buff_xMaxVelocity,tips:"誓約充能時，x軸速度上限",type:int,default:5.75}*/
@@ -724,7 +729,8 @@ export default class CharacterInit extends Laya.Script {
     private initSetting(player: Character): void {
         player.m_maxHealth = player.m_health = this.health;
         player.m_bloodyPoint = this.bloodyPoint;
-        player.m_maxBloodyPoint = this.maxBloodyPoint;
+        player.m_maxBloodyPoint_soft = this.maxBloodyPoint_soft;
+        player.m_maxBloodyPoint_hard = this.maxBloodyPoint_hard;
         player.m_basic_xMaxVelocity = this.xMaxVelocity;
         player.m_buff_xMaxVelocity = this.buff_xMaxVelocity;
         player.m_yMaxVelocity = this.yMaxVelocity;
@@ -749,10 +755,10 @@ export default class CharacterInit extends Laya.Script {
             ];
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(oathColorMat);
         let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 40, 0, 0);
-        CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
-        OathManager.catLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint) ? [glowFilter_charge, colorFilter] : [];
+        CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
+        OathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
 
         //更新誓約所影響的數值變化
-        OathManager.oathBuffUpdate();
+        OathManager.oathUpdate();
     }
 }

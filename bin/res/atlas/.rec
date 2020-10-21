@@ -24,7 +24,6 @@ P F62B59C8 Player_attack_2.png
 P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
-D Character(0903)
 D Character(0904)
 D Character(0929)
 D Character(1002)
@@ -101,6 +100,16 @@ P 479C85CB run_08.png
 D Skill
 P 13615EFF circle.png
 P 0A467EB4 spike.png
+D UI
+P C11E3596 Box.png
+P BB8D7F5A bp_100$bar.png
+P 8639F933 bp_100.png
+P BB8D7F5A bp_150$bar.png
+P 4B8E4554 bp_150.png
+P E8FEF7AE Crystal.png
+P 7F35BA50 Gold.png
+P F34D34E1 hp$bar.png
+P 6C98F162 hp.png
 D Village
 R D137205B Village.png
 D Background(0912)/Red Forest
