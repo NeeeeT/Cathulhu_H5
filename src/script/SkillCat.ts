@@ -1,3 +1,4 @@
+import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler, { VirtualEnemy } from "./EnemyHandler"
 import { VirtualSkill } from "./SkillManager";
@@ -17,17 +18,50 @@ export class Slam extends VirtualSkill {
 
         this.m_animation = new Laya.Animation()
         this.m_animation.width = 350;
-        this.m_animation.height = 200;
-        this.m_animation.scaleX = 1;
-        this.m_animation.scaleY = 1;
+        this.m_animation.height = 350;
+        this.m_animation.scaleX = 1.5;
+        this.m_animation.scaleY = 1.5;
         //動畫位置需要再調整
 
-        this.m_animation.source = "comp/BlackHole/BlakeHole_0023.png";
-        this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
-        this.m_animation.autoPlay = true;
-        this.m_animation.interval = 100;
+        this.m_animation.source = "comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.pngcomp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
+        this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 400);
+        this.m_animation.autoPlay = false;
+        this.m_animation.interval = 25;
+        this.m_animation.alpha = 0.8;
+
+        let colorMat: Array<number> =
+            [
+                4, 0, 0, 0, -270, //R
+                0, 2, 0, 0, -100, //G
+                2, 0, 3, 0, -270, //B
+                0, 0, 0, 2, 0, //A
+            ];
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
+        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+        this.m_animation.filters = [glowFilter, colorFilter];
+        this.m_animation.on(Laya.Event.COMPLETE, this, function () {
+            this.m_animation.destroy();
+            this.m_animation.destroyed = true;
+        });
+        Laya.stage.addChild(this.m_animation);
+        setTimeout(() => {
+            this.m_animation.play();
+            let timer = setInterval(() => {
+                if (rangeY > offsetInterval) {
+                    clearInterval(timer);
+                }
+                offsetY += rangeY;
+                Laya.stage.graphics.drawRect(offsetX, offsetY, this.m_animation.width, this.m_animation.height, 'red', 'red');
+                this.attackRangeCheck(owner, {
+                    "x0": offsetX,
+                    "x1": offsetX + this.m_animation.width,
+                    "y0": offsetY,
+                    "y1": offsetY + this.m_animation.height,
+                })
+                rangeY += 5;
+            }, 50);
+        }, 180);
         
-        // Laya.stage.addChild(this.m_animation);
 
         owner.updateAnimation(owner.m_state, CharacterStatus.slam, null, false, 100);
 
@@ -44,20 +78,20 @@ export class Slam extends VirtualSkill {
         // Laya.stage.graphics.drawRect(offsetX, offsetY, this.m_animation.width, this.m_animation.height, 'yellow', 'yellow');
         // 攻擊範圍畫圖
 
-        let timer = setInterval(() => {
-            if (rangeY > offsetInterval) {
-                clearInterval(timer);
-            }
-            offsetY += rangeY;
-            Laya.stage.graphics.drawRect(offsetX, offsetY, this.m_animation.width, this.m_animation.height, 'red', 'red');
-            this.attackRangeCheck(owner, {
-                "x0": offsetX,
-                "x1": offsetX + this.m_animation.width,
-                "y0": offsetY,
-                "y1": offsetY + this.m_animation.height,
-            })
-            rangeY += 5;
-        }, 50);
+        // let timer = setInterval(() => {
+        //     if (rangeY > offsetInterval) {
+        //         clearInterval(timer);
+        //     }
+        //     offsetY += rangeY;
+        //     Laya.stage.graphics.drawRect(offsetX, offsetY, this.m_animation.width, this.m_animation.height, 'red', 'red');
+        //     this.attackRangeCheck(owner, {
+        //         "x0": offsetX,
+        //         "x1": offsetX + this.m_animation.width,
+        //         "y0": offsetY,
+        //         "y1": offsetY + this.m_animation.height,
+        //     })
+        //     rangeY += 5;
+        // }, 50);
         setTimeout(() => {
             this.m_canUse = true;
             Laya.stage.graphics.clear();

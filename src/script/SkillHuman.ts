@@ -108,14 +108,14 @@ export class Behead extends VirtualSkill {
         this.m_animation.height = owner.m_animation.height;
         this.m_animation.scaleX = 1;
         this.m_animation.scaleY = 1;
-        this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 195);
+        this.m_animation.pos(rightSide ? position['x'] - 240 : position['x']-240, position['y'] - 250);
 
         let offsetX: number = rightSide ? position['x'] : position['x'] - this.m_animation.width;
         let offsetY: number = position['y'] - this.m_animation.height / 2 + 20;
 
-        this.m_animation.source = "comp/Spike/Spike_0001.png,comp/Spike/Spike_0002.png,comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
+        this.m_animation.source = "comp/Target/Target_0000.png,comp/Target/Target_0001.png,comp/Target/Target_0002.png,comp/Target/Target_0003.png,comp/Target/Target_0004.png,comp/Target/Target_0005.png,comp/Target/Target_0006.png,comp/Target/Target_0007.png,comp/Target/Target_0008.png,comp/Target/Target_0009.png,comp/Target/Target_0010.png,comp/Target/Target_0011.png,comp/Target/Target_0012.png,comp/Target/Target_0013.png,comp/Target/Target_0014.png,comp/Target/Target_0015.png,comp/Target/Target_0016.png,comp/Target/Target_0017.png,comp/Target/Target_0018.png,comp/Target/Target_0019.png,comp/Target/Target_0020.png";
         this.m_animation.autoPlay = true;
-        this.m_animation.interval = 20;
+        this.m_animation.interval = 25;
 
         this.m_canUse = false;
         this.castRoar(position);
@@ -125,9 +125,24 @@ export class Behead extends VirtualSkill {
 
         owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 125);
         // owner.
+        let colorMat: Array<number> =
+        [
+            3, 0, 2, 0, -300, //R
+            0, 3, 0, 0, -100, //G
+            3, 0, 3, 0, -300, //B
+            0, 0, 0, 2, 0, //A
+        ];
+    let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
+    let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+    this.m_animation.filters = [glowFilter, colorFilter];
+        this.m_animation.on(Laya.Event.COMPLETE, this, function () {
+            this.m_animation.destroy();
+            this.m_animation.destroyed = true;
+        });
 
 
-        // Laya.stage.addChild(this.m_animation);
+        Laya.stage.addChild(this.m_animation);
+        // this.m_animation.play();
 
         setTimeout(() => {
             owner.m_rigidbody.setVelocity({ x: 0.0, y: 10.0 });
@@ -138,12 +153,8 @@ export class Behead extends VirtualSkill {
                     "y0": offsetY,
                     "y1": offsetY + this.m_animation.height,
                 });
+            //this.m_animation.play();
         }, this.m_preTime * 1000);
-
-        setTimeout(() => {
-            this.m_animation.destroy();
-            this.m_animation.destroyed = true;
-        }, 200);
         setTimeout(() => {
             this.m_canUse = true;
         }, this.m_cd * 1000);
@@ -163,6 +174,7 @@ export class Behead extends VirtualSkill {
         console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
         owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 70 : -70);
         owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y - 100;
+        //this.m_animation.pos(owner.m_animation.x, owner.m_animation.y);
 
         owner.updateAnimation(owner.m_state, CharacterStatus.attackTwo, null, false, 125);
 

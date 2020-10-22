@@ -170,7 +170,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     }
     private damageTextEffect(amount: number, critical: boolean): void {
         let damageText = new Laya.Text();
-        let soundNum: number;
+        //let soundNum: number;
 
         let fakeX: number = Math.random() * 60;
         let fakeY: number = Math.random() * 50;
@@ -200,8 +200,8 @@ export abstract class VirtualEnemy extends Laya.Script {
         damageText.stroke = 5;
         damageText.strokeColor = "#000";
 
-        soundNum = critical ? 0 : 1;
-        this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
+        //soundNum = critical ? 0 : 1;
+        //this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
 
         Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut,
@@ -255,6 +255,31 @@ export abstract class VirtualEnemy extends Laya.Script {
         });
         Laya.stage.addChild(bloodEffect);
         bloodEffect.play();
+    }
+    slashLightEffect(enemy: Laya.Sprite) {
+        let slashLightEffect: Laya.Animation = new Laya.Animation();
+        slashLightEffect.scaleX = 2;
+        slashLightEffect.scaleY = 2;
+        let colorMat: Array<number> =
+            [
+                4, 0, 4, 0, -100, //R
+                1, 2, 1, 0, -100, //G
+                0, 0, 3, 0, -100, //B
+                0, 0, 0, 1, 0, //A
+            ];
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
+        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+        
+        slashLightEffect.filters = [glowFilter, colorFilter];
+        slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 450 : enemy.x - 580, enemy.y - 500 + 30);
+        slashLightEffect.source = "comp/SlashLight/SlashLight_0000.png,comp/SlashLight/SlashLight_0001.png,comp/SlashLight/SlashLight_0002.png,comp/SlashLight/SlashLight_0003.png,comp/SlashLight/SlashLight_0004.png,comp/SlashLight/SlashLight_0005.png";
+        slashLightEffect.alpha = 0.8;
+        slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
+            slashLightEffect.destroy();
+            slashLightEffect.destroyed = true;
+        });
+        Laya.stage.addChild(slashLightEffect);
+        slashLightEffect.play();
     }
     private setSound(volume: number, url: string, loop: number) {
         Laya.SoundManager.playSound(url, loop);

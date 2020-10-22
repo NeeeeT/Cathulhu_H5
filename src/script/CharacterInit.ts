@@ -482,12 +482,18 @@ export class Character extends Laya.Script {
         switch (type) {
             case 'rect':
                 let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
+                let soundNum : number;
+                let fakeNum = Math.random() * 100;//需再修正
+                let critical: boolean = (fakeNum <= 25);//需再修正
+                soundNum = critical ? 0 : 1;//需再修正
                 enemyFound.forEach((e) => {
                 e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
                 // if (!OathManager.isCharging) {
                     Character.setCameraShake(10, 3);
                     //誓約系統測試
                     OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+                    e._ent.slashLightEffect(e._ent.m_animation);
+                    this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
                     
                 // } else {
                 //     // OathManager.chargeAttack(col.label);
