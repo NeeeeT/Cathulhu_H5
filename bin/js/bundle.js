@@ -865,15 +865,15 @@
             this.m_animation.height = 350;
             this.m_animation.scaleX = 1.5;
             this.m_animation.scaleY = 1.5;
-            this.m_animation.source = "comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.pngcomp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
-            this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 400);
+            this.m_animation.source = "comp/Slam/Slam_0000.png,comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.pngcomp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
+            this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 550);
             this.m_animation.autoPlay = false;
             this.m_animation.interval = 25;
-            this.m_animation.alpha = 0.8;
+            this.m_animation.alpha = 1;
             let colorMat = [
-                4, 0, 0, 0, -270,
-                0, 2, 0, 0, -100,
-                2, 0, 3, 0, -270,
+                4, 1, 4, 0, -300,
+                0, 4, 0, 0, -100,
+                2, 0, 4, 0, -300,
                 0, 0, 0, 2, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);

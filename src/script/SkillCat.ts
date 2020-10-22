@@ -23,17 +23,17 @@ export class Slam extends VirtualSkill {
         this.m_animation.scaleY = 1.5;
         //動畫位置需要再調整
 
-        this.m_animation.source = "comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.pngcomp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
-        this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 400);
+        this.m_animation.source = "comp/Slam/Slam_0000.png,comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.pngcomp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
+        this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 550);
         this.m_animation.autoPlay = false;
         this.m_animation.interval = 25;
-        this.m_animation.alpha = 0.8;
+        this.m_animation.alpha = 1;
 
         let colorMat: Array<number> =
             [
-                4, 0, 0, 0, -270, //R
-                0, 2, 0, 0, -100, //G
-                2, 0, 3, 0, -270, //B
+                4, 1, 4, 0, -300, //R
+                0, 4, 0, 0, -100, //G
+                2, 0, 4, 0, -300, //B
                 0, 0, 0, 2, 0, //A
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
