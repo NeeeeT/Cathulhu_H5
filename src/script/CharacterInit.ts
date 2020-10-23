@@ -1,11 +1,12 @@
 import OathManager from "./OathManager";
 
 import { VirtualSkill } from "./SkillManager";
+import { CharacterStatus } from "./CharacterStatus";
+
 import * as hSkill from "./SkillHuman";
 import * as cSkill from "./SkillCat";
 
 import EnemyHandler, { Normal, Shield } from "./EnemyHandler";
-import { CharacterStatus } from "./CharacterStatus";
 
   
 export class Character extends Laya.Script {
@@ -94,10 +95,6 @@ export class Character extends Laya.Script {
             if(this.m_state === CharacterStatus.attackOne || this.m_state === CharacterStatus.attackTwo)
                 this.m_animation.stop();
 
-            if(this.m_state === CharacterStatus.slam)
-                console.log('Slam end!');
-                
-
             this.m_animationChanging = false;
             if(Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
                 this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
@@ -122,7 +119,7 @@ export class Character extends Laya.Script {
             }
             if (col.tag === "Enemy" && !this.m_hurtTimer) {
                 this.delayMove(0.15);
-                this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-8.0:8.0, y:-8.0};
+                this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-10.0:10.0, y:-9.0};
                 this.takeDamage(50.0);
             }
             this.takeDamage(this.getEnemyAttackDamage(col.tag))
@@ -130,8 +127,8 @@ export class Character extends Laya.Script {
         this.m_script.onKeyUp = (e: Laya.Event) => {
             if (this.m_canJump) {
                 this.m_playerVelocity["Vx"] = 0;
-                this.applyMoveX();
             }
+            this.applyMoveX();
             delete this.m_keyDownList[e["keyCode"]];
         }
         this.m_script.onKeyDown = (e: Laya.Event) => {
@@ -191,10 +188,10 @@ export class Character extends Laya.Script {
                     Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
         
-        this.huredEvent(0.5);
+        this.hurtedEvent(0.5);
         // this.resetMove();
     }
-    private huredEvent(time: number){
+    private hurtedEvent(time: number){
         this.m_hurted = true;
                 
         this.m_hurtTimer = setTimeout(()=>{
@@ -271,7 +268,7 @@ export class Character extends Laya.Script {
         //Up
         if (this.m_keyDownList[38]) {
             if (this.m_canJump) {
-                this.m_playerVelocity["Vy"] += -12;
+                this.m_playerVelocity["Vy"] -= 12;
                 this.applyMoveY();
                 this.m_canJump = false;
             }
@@ -581,11 +578,11 @@ export class Character extends Laya.Script {
         }, 10);
     }
     private setSkill(): void{
-        // this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
-        this.m_humanSkill = new hSkill.Behead();
+        this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
+        // this.m_humanSkill = new hSkill.Behead();
 
-        this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
-        // this.m_catSkill = new cSkill.BlackHole();
+        // this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
+        this.m_catSkill = new cSkill.BlackHole();
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
     public delayMove(time: number): void{
@@ -610,8 +607,6 @@ export class Character extends Laya.Script {
         this.m_playerVelocity["Vy"] = 0;
         this.applyMoveX();
         this.applyMoveY();
-        // if(Math.abs(this.m_animation.y - 590.0) < 12)
-        //     this.m_canJump = true;
     }
     private applyMoveX(): void {
         if(this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation)
@@ -627,8 +622,8 @@ export class Character extends Laya.Script {
         if(!this.m_animation || this.m_animation.destroyed)
             return;
         this.m_rigidbody.setVelocity({
-        x: this.m_rigidbody.linearVelocity.x,
-        y: this.m_playerVelocity["Vy"],
+            x: this.m_rigidbody.linearVelocity.x,
+            y: this.m_playerVelocity["Vy"],
         });
     }
     public setSound(volume: number, url: string, loop: number) {

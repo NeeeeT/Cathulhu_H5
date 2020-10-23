@@ -265,6 +265,7 @@
             this.m_rigidbody.category = 8;
             this.m_rigidbody.mask = 4 | 2;
             this.m_rigidbody.allowRotation = false;
+            this.m_rigidbody.gravityScale = 5;
             this.m_player = player;
             Laya.stage.addChild(this.m_animation);
             this.showHealth();
@@ -747,6 +748,7 @@
             owner.delayMove(this.m_lastTime);
             owner.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec : -this.m_spikeVec };
             owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
+            owner.hurtedEvent(0.5);
             this.attackRangeCheck(owner, {
                 "x0": offsetX,
                 "x1": offsetX + this.m_animation.width,
@@ -1066,8 +1068,6 @@
             this.m_animation.on(Laya.Event.COMPLETE, this, () => {
                 if (this.m_state === CharacterStatus.attackOne || this.m_state === CharacterStatus.attackTwo)
                     this.m_animation.stop();
-                if (this.m_state === CharacterStatus.slam)
-                    console.log('Slam end!');
                 this.m_animationChanging = false;
                 if (Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
                     this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
@@ -1093,7 +1093,7 @@
                 }
                 if (col.tag === "Enemy" && !this.m_hurtTimer) {
                     this.delayMove(0.15);
-                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -8.0 : 8.0, y: -8.0 };
+                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -10.0 : 10.0, y: -9.0 };
                     this.takeDamage(50.0);
                 }
                 this.takeDamage(this.getEnemyAttackDamage(col.tag));
@@ -1101,8 +1101,8 @@
             this.m_script.onKeyUp = (e) => {
                 if (this.m_canJump) {
                     this.m_playerVelocity["Vx"] = 0;
-                    this.applyMoveX();
                 }
+                this.applyMoveX();
                 delete this.m_keyDownList[e["keyCode"]];
             };
             this.m_script.onKeyDown = (e) => {
@@ -1149,9 +1149,9 @@
             Laya.Tween.to(this.m_animation, { alpha: 0.65 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
-            this.huredEvent(0.5);
+            this.hurtedEvent(0.5);
         }
-        huredEvent(time) {
+        hurtedEvent(time) {
             this.m_hurted = true;
             this.m_hurtTimer = setTimeout(() => {
                 this.m_hurted = false;
@@ -1212,7 +1212,7 @@
             }
             if (this.m_keyDownList[38]) {
                 if (this.m_canJump) {
-                    this.m_playerVelocity["Vy"] += -12;
+                    this.m_playerVelocity["Vy"] -= 12;
                     this.applyMoveY();
                     this.m_canJump = false;
                 }
@@ -1364,8 +1364,8 @@
             }, 10);
         }
         setSkill() {
-            this.m_humanSkill = new Behead();
-            this.m_catSkill = new Slam();
+            this.m_humanSkill = new Spike();
+            this.m_catSkill = new BlackHole();
         }
         delayMove(time) {
             if (this.m_moveDelayTimer) {

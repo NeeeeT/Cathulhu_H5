@@ -101,7 +101,7 @@
             "source":"src/script/CharacterInit.ts",
             "searchKey":"Script,CharacterInit",
             "removeAble":true,
-            "props":{"maxBloodyPoint_soft":100,"maxBloodyPoint_hard":150,"health":1000,"attackRange":110,"attackCdTime":500},
+            "props":{"maxBloodyPoint_soft":100,"maxBloodyPoint_hard":150,"health":9999999,"attackRange":110,"attackCdTime":500},
             "nodeParent":2,
             "label":"CharacterInit",
             "isDirectory":false,
@@ -134,13 +134,14 @@
             "props":{"y":0,"x":0,"width":250,"name":"leftBound","height":768},
             "nodeParent":2,
             "label":"leftBound",
-            "isOpen":false,
+            "isOpen":true,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":229,
             "child":[
                 {
+                    "x":30,
                     "type":"BoxCollider",
                     "switchAble":true,
                     "searchKey":"BoxCollider",
@@ -156,6 +157,7 @@
                         ]
                 },
                 {
+                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",

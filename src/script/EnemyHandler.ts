@@ -98,6 +98,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_rigidbody.category = 8;
         this.m_rigidbody.mask = 4 | 2;
         this.m_rigidbody.allowRotation = false;
+        this.m_rigidbody.gravityScale = 5;
 
         this.m_player = player;
 
