@@ -272,7 +272,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         
         slashLightEffect.filters = [glowFilter, colorFilter];
         slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 450 : enemy.x - 580, enemy.y - 500 + 30);
-        slashLightEffect.source = "comp/SlashLight/SlashLight_0000.png,comp/SlashLight/SlashLight_0001.png,comp/SlashLight/SlashLight_0002.png,comp/SlashLight/SlashLight_0003.png,comp/SlashLight/SlashLight_0004.png,comp/SlashLight/SlashLight_0005.png";
+        slashLightEffect.source = "comp/SlashLight.atlas";
         slashLightEffect.alpha = 0.75;
         slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
             slashLightEffect.destroy();

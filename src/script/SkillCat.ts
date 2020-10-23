@@ -1,4 +1,3 @@
-import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler, { VirtualEnemy } from "./EnemyHandler"
 import { VirtualSkill } from "./SkillManager";
@@ -23,7 +22,7 @@ export class Slam extends VirtualSkill {
         this.m_animation.scaleY = 1.5;
         //動畫位置需要再調整
 
-        this.m_animation.source = "comp/Slam/Slam_0000.png,comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.png,comp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
+        this.m_animation.source = "comp/Slam.atlas";
         this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 550);
         this.m_animation.autoPlay = false;
         this.m_animation.interval = 25;
@@ -75,23 +74,6 @@ export class Slam extends VirtualSkill {
         this.castRoar(position);
         this.m_injuredEnemy = [];//暫時用來記憶被此次技能打中的敵人，並忽略此攻擊
 
-        // Laya.stage.graphics.drawRect(offsetX, offsetY, this.m_animation.width, this.m_animation.height, 'yellow', 'yellow');
-        // 攻擊範圍畫圖
-
-        // let timer = setInterval(() => {
-        //     if (rangeY > offsetInterval) {
-        //         clearInterval(timer);
-        //     }
-        //     offsetY += rangeY;
-        //     Laya.stage.graphics.drawRect(offsetX, offsetY, this.m_animation.width, this.m_animation.height, 'red', 'red');
-        //     this.attackRangeCheck(owner, {
-        //         "x0": offsetX,
-        //         "x1": offsetX + this.m_animation.width,
-        //         "y0": offsetY,
-        //         "y1": offsetY + this.m_animation.height,
-        //     })
-        //     rangeY += 5;
-        // }, 50);
         setTimeout(() => {
             this.m_canUse = true;
             Laya.stage.graphics.clear();
@@ -104,7 +86,8 @@ export class Slam extends VirtualSkill {
             e._ent.delayMove(0.3);
             e._ent.takeDamage(this.m_damage);
             this.m_injuredEnemy.push(e._id);
-            CharacterInit.playerEnt.setCameraShake(50,12); //owner.setCameraShake報錯沒有此方法，暫時把此方法及裡面的參數的static刪除
+            owner.setCameraShake(50,12);
+            // CharacterInit.playerEnt.setCameraShake(50,12); //owner.setCameraShake報錯沒有此方法，暫時把此方法及裡面的參數的static刪除
         });
     }
 }

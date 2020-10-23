@@ -7,7 +7,8 @@
             this.sceneBackgroundColor = '#4a4a4a';
             this.resourceLoad = ["font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
                 "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
-                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas",
+                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
+                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas"
             ];
         }
         onAwake() {
@@ -422,7 +423,7 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashLightEffect.filters = [glowFilter, colorFilter];
             slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 450 : enemy.x - 580, enemy.y - 500 + 30);
-            slashLightEffect.source = "comp/SlashLight/SlashLight_0000.png,comp/SlashLight/SlashLight_0001.png,comp/SlashLight/SlashLight_0002.png,comp/SlashLight/SlashLight_0003.png,comp/SlashLight/SlashLight_0004.png,comp/SlashLight/SlashLight_0005.png";
+            slashLightEffect.source = "comp/SlashLight.atlas";
             slashLightEffect.alpha = 0.75;
             slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashLightEffect.destroy();
@@ -782,7 +783,7 @@
             this.m_cost = 0;
             this.m_id = 1;
             this.m_cd = 3;
-            this.m_preTime = 1.5;
+            this.m_preTime = 1.0;
         }
         cast(owner, position) {
             if (!this.m_canUse)
@@ -796,7 +797,7 @@
             this.m_animation.pos(rightSide ? position['x'] - 240 : position['x'] - 240, position['y'] - 250);
             let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
             let offsetY = position['y'] - this.m_animation.height / 2 + 20;
-            this.m_animation.source = "comp/Target/Target_0000.png,comp/Target/Target_0001.png,comp/Target/Target_0002.png,comp/Target/Target_0003.png,comp/Target/Target_0004.png,comp/Target/Target_0005.png,comp/Target/Target_0006.png,comp/Target/Target_0007.png,comp/Target/Target_0008.png,comp/Target/Target_0009.png,comp/Target/Target_0010.png,comp/Target/Target_0011.png,comp/Target/Target_0012.png,comp/Target/Target_0013.png,comp/Target/Target_0014.png,comp/Target/Target_0015.png,comp/Target/Target_0016.png,comp/Target/Target_0017.png,comp/Target/Target_0018.png,comp/Target/Target_0019.png,comp/Target/Target_0020.png";
+            this.m_animation.source = "comp/Target.atlas";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 25;
             this.m_canUse = false;
@@ -839,8 +840,8 @@
                 return;
             }
             console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
-            owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 70 : -70);
-            owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y - 100;
+            owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 50 : -50);
+            owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y;
             owner.updateAnimation(owner.m_state, CharacterStatus.attackTwo, null, false, 125);
             enemy[targetEnemy]._ent.takeDamage(this.m_damage);
         }
@@ -865,7 +866,7 @@
             this.m_animation.height = 350;
             this.m_animation.scaleX = 1.5;
             this.m_animation.scaleY = 1.5;
-            this.m_animation.source = "comp/Slam/Slam_0000.png,comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.png,comp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
+            this.m_animation.source = "comp/Slam.atlas";
             this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 550);
             this.m_animation.autoPlay = false;
             this.m_animation.interval = 25;
@@ -921,7 +922,7 @@
                 e._ent.delayMove(0.3);
                 e._ent.takeDamage(this.m_damage);
                 this.m_injuredEnemy.push(e._id);
-                CharacterInit.playerEnt.setCameraShake(50, 12);
+                owner.setCameraShake(50, 12);
             });
         }
     }
@@ -1051,6 +1052,7 @@
             this.m_animation = new Laya.Animation();
             this.m_animation.scaleX = 1;
             this.m_animation.scaleY = 1;
+            this.m_animation.zOrder = 10;
             this.m_animation.name = "Player";
             this.m_animation.width = 200;
             this.m_animation.height = 128;
@@ -1091,7 +1093,7 @@
                 }
                 if (col.tag === "Enemy" && !this.m_hurtTimer) {
                     this.delayMove(0.15);
-                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -5.0 : 5.0, y: 0.0 };
+                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -8.0 : 8.0, y: -8.0 };
                     this.takeDamage(50.0);
                 }
                 this.takeDamage(this.getEnemyAttackDamage(col.tag));
@@ -1322,10 +1324,10 @@
             slashEffect.scaleX = 2;
             slashEffect.scaleY = 2;
             if (this.m_atkStep === 0) {
-                slashEffect.source = "comp/NewSlash/Slash_0060.png,comp/NewSlash/Slash_0061.png,comp/NewSlash/Slash_0062.png";
+                slashEffect.source = "comp/NewSlash_1.atlas";
             }
             else if (this.m_atkStep === 1) {
-                slashEffect.source = "comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
+                slashEffect.source = "comp/NewSlash_2.atlas";
             }
             let colorNum = Math.floor(Math.random() * 5) + 2;
             let colorMat = [
@@ -1629,7 +1631,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

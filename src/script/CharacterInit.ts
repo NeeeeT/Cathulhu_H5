@@ -73,6 +73,7 @@ export class Character extends Laya.Script {
         this.m_animation = new Laya.Animation();
         this.m_animation.scaleX = 1;
         this.m_animation.scaleY = 1;
+        this.m_animation.zOrder = 10;
 
         this.m_animation.name = "Player";
 
@@ -121,7 +122,7 @@ export class Character extends Laya.Script {
             }
             if (col.tag === "Enemy" && !this.m_hurtTimer) {
                 this.delayMove(0.15);
-                this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-5.0:5.0, y:0.0};
+                this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-8.0:8.0, y:-8.0};
                 this.takeDamage(50.0);
             }
             this.takeDamage(this.getEnemyAttackDamage(col.tag))
@@ -520,10 +521,10 @@ export class Character extends Laya.Script {
         slashEffect.scaleY = 2;
 
         if(this.m_atkStep === 0){
-            slashEffect.source = "comp/NewSlash/Slash_0060.png,comp/NewSlash/Slash_0061.png,comp/NewSlash/Slash_0062.png";
+            slashEffect.source = "comp/NewSlash_1.atlas";
         }
         else if(this.m_atkStep === 1){
-            slashEffect.source = "comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
+            slashEffect.source = "comp/NewSlash_2.atlas";
         }
 
         let colorNum: number = Math.floor(Math.random() * 5) + 2;
