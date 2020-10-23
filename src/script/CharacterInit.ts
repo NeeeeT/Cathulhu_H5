@@ -53,8 +53,8 @@ export class Character extends Laya.Script {
 
     m_slashTimer = null;
 
-    public static m_cameraShakingTimer: number = 0;
-    public static m_cameraShakingMultiplyer: number = 1;
+    public m_cameraShakingTimer: number = 0;
+    public m_cameraShakingMultiplyer: number = 1;
 
     m_keyDownList: Array<boolean>;
 
@@ -489,7 +489,7 @@ export class Character extends Laya.Script {
                 enemyFound.forEach((e) => {
                 e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
                 // if (!OathManager.isCharging) {
-                    Character.setCameraShake(10, 3);
+                    this.setCameraShake(10, 3);
                     //誓約系統測試
                     OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
                     e._ent.slashLightEffect(e._ent.m_animation);
@@ -643,11 +643,11 @@ export class Character extends Laya.Script {
         setInterval(() => {
             if(this.m_animation.destroyed) return;
 
-            if (Character.m_cameraShakingTimer > 0) {
+            if (this.m_cameraShakingTimer > 0) {
                 let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
-                Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-                Laya.stage.y = /*(player_pivot_y - this.m_animation.y + 150)*/0 + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-                Character.m_cameraShakingTimer--;
+                Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+                Laya.stage.y = /*(player_pivot_y - this.m_animation.y + 150)*/0 + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+                this.m_cameraShakingTimer--;
             } else {
                 Laya.stage.x = player_pivot_x - this.m_animation.x;
                 // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
@@ -656,9 +656,9 @@ export class Character extends Laya.Script {
             if(Laya.stage.x <= -2475.0) Laya.stage.x = -2475.0;
         }, 10);
     }
-    public static setCameraShake(timer: number, multiplier: number) {
-        Character.m_cameraShakingMultiplyer = multiplier;
-        Character.m_cameraShakingTimer = timer;
+    public setCameraShake(timer: number, multiplier: number) {
+        this.m_cameraShakingMultiplyer = multiplier;
+        this.m_cameraShakingTimer = timer;
     }
     public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void{
         if(from === to || this.m_animationChanging) return;

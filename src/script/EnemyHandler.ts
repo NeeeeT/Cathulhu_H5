@@ -262,9 +262,9 @@ export abstract class VirtualEnemy extends Laya.Script {
         slashLightEffect.scaleY = 2;
         let colorMat: Array<number> =
             [
-                4, 0, 4, 0, -100, //R
-                1, 2, 1, 0, -100, //G
-                0, 0, 3, 0, -100, //B
+                6, 1, 1, 0, -100, //R
+                1, 5, 2, 0, -100, //G
+                1, 0, 6, 0, -100, //B
                 0, 0, 0, 1, 0, //A
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
@@ -273,7 +273,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         slashLightEffect.filters = [glowFilter, colorFilter];
         slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 450 : enemy.x - 580, enemy.y - 500 + 30);
         slashLightEffect.source = "comp/SlashLight/SlashLight_0000.png,comp/SlashLight/SlashLight_0001.png,comp/SlashLight/SlashLight_0002.png,comp/SlashLight/SlashLight_0003.png,comp/SlashLight/SlashLight_0004.png,comp/SlashLight/SlashLight_0005.png";
-        slashLightEffect.alpha = 0.8;
+        slashLightEffect.alpha = 0.75;
         slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
             slashLightEffect.destroy();
             slashLightEffect.destroyed = true;

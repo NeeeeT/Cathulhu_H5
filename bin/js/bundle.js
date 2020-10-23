@@ -413,9 +413,9 @@
             slashLightEffect.scaleX = 2;
             slashLightEffect.scaleY = 2;
             let colorMat = [
-                4, 0, 4, 0, -100,
-                1, 2, 1, 0, -100,
-                0, 0, 3, 0, -100,
+                6, 1, 1, 0, -100,
+                1, 5, 2, 0, -100,
+                1, 0, 6, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
@@ -423,7 +423,7 @@
             slashLightEffect.filters = [glowFilter, colorFilter];
             slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 450 : enemy.x - 580, enemy.y - 500 + 30);
             slashLightEffect.source = "comp/SlashLight/SlashLight_0000.png,comp/SlashLight/SlashLight_0001.png,comp/SlashLight/SlashLight_0002.png,comp/SlashLight/SlashLight_0003.png,comp/SlashLight/SlashLight_0004.png,comp/SlashLight/SlashLight_0005.png";
-            slashLightEffect.alpha = 0.8;
+            slashLightEffect.alpha = 0.75;
             slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashLightEffect.destroy();
                 slashLightEffect.destroyed = true;
@@ -865,16 +865,16 @@
             this.m_animation.height = 350;
             this.m_animation.scaleX = 1.5;
             this.m_animation.scaleY = 1.5;
-            this.m_animation.source = "comp/Slam/Slam_0000.png,comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.pngcomp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
+            this.m_animation.source = "comp/Slam/Slam_0000.png,comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.png,comp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
             this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 550);
             this.m_animation.autoPlay = false;
             this.m_animation.interval = 25;
             this.m_animation.alpha = 1;
             let colorMat = [
-                4, 1, 4, 0, -300,
-                0, 4, 0, 0, -100,
-                2, 0, 4, 0, -300,
-                0, 0, 0, 2, 0,
+                4, 0, 0, 0, -180,
+                0, Math.floor(Math.random() * 4) + 2, 0, 0, -180,
+                0, 0, 4, 0, -180,
+                0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
@@ -921,6 +921,7 @@
                 e._ent.delayMove(0.3);
                 e._ent.takeDamage(this.m_damage);
                 this.m_injuredEnemy.push(e._id);
+                CharacterInit.playerEnt.setCameraShake(50, 12);
             });
         }
     }
@@ -1040,6 +1041,8 @@
             this.m_hurted = false;
             this.m_hurtTimer = null;
             this.m_slashTimer = null;
+            this.m_cameraShakingTimer = 0;
+            this.m_cameraShakingMultiplyer = 1;
             this.m_catSkill = null;
             this.m_humanSkill = null;
         }
@@ -1297,7 +1300,7 @@
                     soundNum = critical ? 0 : 1;
                     enemyFound.forEach((e) => {
                         e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
-                        Character.setCameraShake(10, 3);
+                        this.setCameraShake(10, 3);
                         OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
                         e._ent.slashLightEffect(e._ent.m_animation);
                         this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
@@ -1415,11 +1418,11 @@
             setInterval(() => {
                 if (this.m_animation.destroyed)
                     return;
-                if (Character.m_cameraShakingTimer > 0) {
+                if (this.m_cameraShakingTimer > 0) {
                     let randomSign = (Math.floor(Math.random() * 2) == 1) ? 1 : -1;
-                    Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-                    Laya.stage.y = 0 + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-                    Character.m_cameraShakingTimer--;
+                    Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+                    Laya.stage.y = 0 + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+                    this.m_cameraShakingTimer--;
                 }
                 else {
                     Laya.stage.x = player_pivot_x - this.m_animation.x;
@@ -1430,9 +1433,9 @@
                     Laya.stage.x = -2475.0;
             }, 10);
         }
-        static setCameraShake(timer, multiplier) {
-            Character.m_cameraShakingMultiplyer = multiplier;
-            Character.m_cameraShakingTimer = timer;
+        setCameraShake(timer, multiplier) {
+            this.m_cameraShakingMultiplyer = multiplier;
+            this.m_cameraShakingTimer = timer;
         }
         updateAnimation(from, to, onCallBack = null, force = false, rate = 100) {
             if (from === to || this.m_animationChanging)
@@ -1482,8 +1485,6 @@
             }
         }
     }
-    Character.m_cameraShakingTimer = 0;
-    Character.m_cameraShakingMultiplyer = 1;
     class CharacterInit extends Laya.Script {
         constructor() {
             super();
