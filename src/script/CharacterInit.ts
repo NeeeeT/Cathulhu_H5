@@ -267,9 +267,11 @@ export class Character extends Laya.Script {
                 this.m_healthBar.destroyed = true;
                 return;
             }
-            this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
+            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) { 
+                this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
+            }
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
-        }), 10);
+        }), 5);
     }
     private characterMove() {
         //Left

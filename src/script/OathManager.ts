@@ -31,10 +31,12 @@ export default class OathManager extends Laya.Script {
         OathManager.oathBar = new Laya.ProgressBar();
         OathManager.oathBar.skin = "UI/bp_100.png";
         setInterval((() => {
-            OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
+            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+                OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
+            }
             OathManager.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
             
-        }), 10);
+        }), 5);
         Laya.stage.addChild(OathManager.oathBar);
     }
     //10/21新增
@@ -45,8 +47,10 @@ export default class OathManager extends Laya.Script {
         // this.characterLogo.scaleY = 0.6;
         this.characterLogo.source = "UI/Box.png";
         setInterval((() => {
-            this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
-        }), 10);
+            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+                this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
+            }
+        }), 5);
         Laya.stage.addChild(this.characterLogo);
         this.characterLogo.play();
         

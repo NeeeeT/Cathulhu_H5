@@ -590,17 +590,21 @@
             OathManager.oathBar = new Laya.ProgressBar();
             OathManager.oathBar.skin = "UI/bp_100.png";
             setInterval((() => {
-                OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
+                if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+                    OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
+                }
                 OathManager.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
-            }), 10);
+            }), 5);
             Laya.stage.addChild(OathManager.oathBar);
         }
         static showBloodyLogo(player) {
             this.characterLogo = new Laya.Animation();
             this.characterLogo.source = "UI/Box.png";
             setInterval((() => {
-                this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
-            }), 10);
+                if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+                    this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
+                }
+            }), 5);
             Laya.stage.addChild(this.characterLogo);
             this.characterLogo.play();
         }
@@ -1232,7 +1236,6 @@
             this.cameraFollower();
             this.showHealth();
             this.setSkill();
-            this.checkJumpTimer();
         }
         ;
         setHealth(amount) {
@@ -1312,9 +1315,11 @@
                     this.m_healthBar.destroyed = true;
                     return;
                 }
-                this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
+                if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+                    this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
+                }
                 this.m_healthBar.value = this.m_health / this.m_maxHealth;
-            }), 10);
+            }), 5);
         }
         characterMove() {
             if (this.m_keyDownList[37]) {
