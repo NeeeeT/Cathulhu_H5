@@ -159,7 +159,7 @@ export class Character extends Laya.Script {
         this.showHealth();
         this.setSkill();
     };
-    setHealth(amount: number): void {
+    public setHealth(amount: number): void {
         this.m_health = amount;
         if (this.m_health <= 0) {
             // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)//loop:0為循環播放;
@@ -171,7 +171,7 @@ export class Character extends Laya.Script {
             // }, 1000)
         }
     }
-    getHealth(): number {
+    public getHealth(): number {
         return this.m_health;
     };
     takeDamage(amount: number) {

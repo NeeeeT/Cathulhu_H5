@@ -29,176 +29,6 @@
         OathStatus[OathStatus["overCharge"] = 2] = "overCharge";
     })(OathStatus || (OathStatus = {}));
 
-    var DebuffType;
-    (function (DebuffType) {
-        DebuffType[DebuffType["none"] = 0] = "none";
-        DebuffType[DebuffType["blind"] = 1] = "blind";
-        DebuffType[DebuffType["bodyCrumble"] = 2] = "bodyCrumble";
-        DebuffType[DebuffType["insane"] = 4] = "insane";
-        DebuffType[DebuffType["predator"] = 8] = "predator";
-        DebuffType[DebuffType["decay"] = 0] = "decay";
-    })(DebuffType || (DebuffType = {}));
-
-    class OathManager extends Laya.Script {
-        static getBloodyPoint() {
-            return CharacterInit.playerEnt.m_bloodyPoint;
-        }
-        static setBloodyPoint(amount) {
-            CharacterInit.playerEnt.m_bloodyPoint = amount;
-            return CharacterInit.playerEnt.m_bloodyPoint;
-        }
-        static showBloodyPoint(player) {
-            OathManager.oathBar = new Laya.ProgressBar();
-            OathManager.oathBar.skin = "UI/bp_100.png";
-            setInterval((() => {
-                OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
-                OathManager.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
-            }), 10);
-            Laya.stage.addChild(OathManager.oathBar);
-        }
-        static showBloodyLogo(player) {
-            this.characterLogo = new Laya.Animation();
-            this.characterLogo.source = "UI/Box.png";
-            setInterval((() => {
-                this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
-            }), 10);
-            Laya.stage.addChild(this.characterLogo);
-            this.characterLogo.play();
-        }
-        static oathChargeDetect() {
-            return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? true : false;
-        }
-        static oathBuffUpdate() {
-            if (CharacterInit.playerEnt.m_animation.destroyed)
-                return;
-            if (OathManager.oathChargeDetect()) {
-                CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_buff_xMaxVelocity;
-                CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_buff_attackCdTime;
-            }
-            else {
-                CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_basic_xMaxVelocity;
-                CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_basic_attackCdTime;
-            }
-        }
-        static addDebuff(type) {
-            switch (type) {
-                case 1:
-                    OathManager.playerDebuff |= DebuffType.blind;
-                    break;
-                case 2:
-                    OathManager.playerDebuff |= DebuffType.bodyCrumble;
-                    break;
-                case 3:
-                    OathManager.playerDebuff |= DebuffType.insane;
-                    break;
-                case 4:
-                    OathManager.playerDebuff |= DebuffType.predator;
-                    break;
-                case 5:
-                    OathManager.playerDebuff |= DebuffType.decay;
-                    break;
-            }
-        }
-        static removeDebuff(type) {
-            switch (type) {
-                case 1:
-                    OathManager.playerDebuff ^= DebuffType.blind;
-                    break;
-                case 2:
-                    OathManager.playerDebuff ^= DebuffType.bodyCrumble;
-                    break;
-                case 3:
-                    OathManager.playerDebuff ^= DebuffType.insane;
-                    break;
-                case 4:
-                    OathManager.playerDebuff ^= DebuffType.predator;
-                    break;
-                case 5:
-                    OathManager.playerDebuff ^= DebuffType.decay;
-                    break;
-            }
-        }
-        static oathUpdate() {
-            OathManager.oathBuffUpdate();
-            switch (this.oathState) {
-                case OathStatus.normal:
-                    if (OathManager.oathChargeDetect()) {
-                        OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
-                        this.oathState = OathStatus.charge;
-                    }
-                    break;
-                case OathStatus.charge:
-                    if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && OathManager.overChargeCount >= 2) {
-                        OathManager.overChargeCount = 0;
-                        OathManager.oathBar.skin = "UI/bp_150.png";
-                        this.oathState = OathStatus.overCharge;
-                        return;
-                    }
-                    if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && OathManager.overChargeCount < 2) {
-                        OathManager.overChargeCount++;
-                        OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
-                        return;
-                    }
-                    if (OathManager.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        OathManager.overChargeCount = 0;
-                        this.oathState = OathStatus.normal;
-                        return;
-                    }
-                    break;
-                case OathStatus.overCharge:
-                    let addDebuffTimer = setTimeout(() => {
-                        OathManager.addDebuff(Math.floor(Math.random() * 4 + 1));
-                        console.log("debuff", this.playerDebuff);
-                    }, 5000);
-                    if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
-                        OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
-                        return;
-                    }
-                    if (OathManager.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        clearInterval(addDebuffTimer);
-                        OathManager.oathBar.skin = "UI/bp_100.png";
-                        this.oathState = OathStatus.charge;
-                        return;
-                    }
-                    if (OathManager.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        clearInterval(addDebuffTimer);
-                        OathManager.oathBar.skin = "UI/bp_100.png";
-                        this.oathState = OathStatus.normal;
-                        return;
-                    }
-                    break;
-                default:
-                    this.oathState = OathStatus.normal;
-                    break;
-            }
-        }
-        static oathCastSkill(cost, valve = 30) {
-            if (OathManager.getBloodyPoint() < valve || OathManager.getBloodyPoint() < cost)
-                return false;
-            OathManager.setBloodyPoint(OathManager.getBloodyPoint() - cost);
-            return true;
-        }
-    }
-    OathManager.oathState = 0;
-    OathManager.increaseBloodyPoint = 10;
-    OathManager.isCharging = false;
-    OathManager.overChargeCount = 0;
-    OathManager.playerDebuff = DebuffType.none;
-
-    var CharacterStatus;
-    (function (CharacterStatus) {
-        CharacterStatus[CharacterStatus["idle"] = 0] = "idle";
-        CharacterStatus[CharacterStatus["run"] = 1] = "run";
-        CharacterStatus[CharacterStatus["jump"] = 2] = "jump";
-        CharacterStatus[CharacterStatus["down"] = 3] = "down";
-        CharacterStatus[CharacterStatus["attackOne"] = 4] = "attackOne";
-        CharacterStatus[CharacterStatus["attackTwo"] = 5] = "attackTwo";
-        CharacterStatus[CharacterStatus["slam"] = 6] = "slam";
-        CharacterStatus[CharacterStatus["hurt"] = 7] = "hurt";
-        CharacterStatus[CharacterStatus["defend"] = 8] = "defend";
-        CharacterStatus[CharacterStatus["death"] = 9] = "death";
-    })(CharacterStatus || (CharacterStatus = {}));
-
     var EnemyStatus;
     (function (EnemyStatus) {
         EnemyStatus[EnemyStatus["idle"] = 0] = "idle";
@@ -646,6 +476,283 @@
     }
     EnemyHandler.enemyIndex = 0;
     EnemyHandler.enemyPool = [];
+
+    var DebuffType;
+    (function (DebuffType) {
+        DebuffType[DebuffType["none"] = 0] = "none";
+        DebuffType[DebuffType["blind"] = 1] = "blind";
+        DebuffType[DebuffType["bodyCrumble"] = 2] = "bodyCrumble";
+        DebuffType[DebuffType["insane"] = 4] = "insane";
+        DebuffType[DebuffType["predator"] = 8] = "predator";
+        DebuffType[DebuffType["decay"] = 16] = "decay";
+    })(DebuffType || (DebuffType = {}));
+    class DebuffProto extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.player = CharacterInit.playerEnt;
+        }
+        debuffUpdate() {
+        }
+    }
+    class Blind extends DebuffProto {
+        constructor() {
+            super(...arguments);
+            this.debuffText = "哈，那東西爆掉的樣子真滑稽";
+        }
+    }
+    class BodyCrumble extends DebuffProto {
+        constructor() {
+            super(...arguments);
+            this.debuffText = "希望你還走得回去";
+        }
+    }
+    class Insane extends DebuffProto {
+        constructor() {
+            super(...arguments);
+            this.debuffText = "對力量的渴望會讓你拋棄理性";
+        }
+    }
+    class Predator extends DebuffProto {
+        constructor() {
+            super(...arguments);
+            this.debuffText = "它們循著氣息來了";
+        }
+    }
+    class Decay extends DebuffProto {
+        constructor() {
+            super(...arguments);
+            this.debuffText = "為我戰鬥至到粉身碎骨吧";
+            this.isKilling = false;
+            this.killingTimer = 0;
+            this.currentEnemyCount = 0;
+            this.priviousEnemyCount = 0;
+        }
+        checkKilling() {
+            setTimeout(() => {
+                this.priviousEnemyCount = EnemyHandler.getEnemiesCount();
+            }, 100);
+            this.currentEnemyCount = EnemyHandler.getEnemiesCount();
+            console.log(this.currentEnemyCount - this.priviousEnemyCount);
+            if (this.currentEnemyCount - this.priviousEnemyCount > 0)
+                this.killingTimer = 120;
+            if (this.killingTimer > 0) {
+                this.isKilling = true;
+                this.killingTimer--;
+            }
+            else {
+                this.isKilling = false;
+            }
+        }
+        decayEffect() {
+            this.checkKilling();
+            setInterval(() => {
+                if (this.isKilling) {
+                    this.player.setHealth(this.player.getHealth() - (this.player.m_maxHealth * 0.1));
+                }
+            }, 1000);
+        }
+        debuffUpdate() {
+            super.debuffUpdate();
+            this.decayEffect();
+        }
+    }
+    class DebuffManager extends Laya.Script {
+        static CastDeBuff(debuffType) {
+            let debuff = this.decideDebuffType(debuffType);
+            debuff.debuffUpdate();
+            return debuff;
+        }
+        static decideDebuffType(debuffType) {
+            switch (debuffType) {
+                case 1 << 0: return new Blind();
+                case 1 << 1: return new BodyCrumble();
+                case 1 << 2: return new Insane();
+                case 1 << 3: return new Predator();
+                case 1 << 4: return new Decay();
+            }
+            ;
+        }
+    }
+
+    class OathManager extends Laya.Script {
+        static initOathSystem() {
+        }
+        static getBloodyPoint() {
+            return CharacterInit.playerEnt.m_bloodyPoint;
+        }
+        static setBloodyPoint(amount) {
+            CharacterInit.playerEnt.m_bloodyPoint = amount;
+            return CharacterInit.playerEnt.m_bloodyPoint;
+        }
+        static showBloodyPoint(player) {
+            OathManager.oathBar = new Laya.ProgressBar();
+            OathManager.oathBar.skin = "UI/bp_100.png";
+            setInterval((() => {
+                OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
+                OathManager.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
+            }), 10);
+            Laya.stage.addChild(OathManager.oathBar);
+        }
+        static showBloodyLogo(player) {
+            this.characterLogo = new Laya.Animation();
+            this.characterLogo.source = "UI/Box.png";
+            setInterval((() => {
+                this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
+            }), 10);
+            Laya.stage.addChild(this.characterLogo);
+            this.characterLogo.play();
+        }
+        static oathChargeDetect() {
+            return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? true : false;
+        }
+        static oathBuffUpdate() {
+            if (CharacterInit.playerEnt.m_animation.destroyed)
+                return;
+            if (OathManager.oathChargeDetect()) {
+                CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_buff_xMaxVelocity;
+                CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_buff_attackCdTime;
+            }
+            else {
+                CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_basic_xMaxVelocity;
+                CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_basic_attackCdTime;
+            }
+        }
+        static addDebuff(type) {
+            switch (type) {
+                case 1 << 0:
+                    OathManager.playerDebuff |= DebuffType.blind;
+                    break;
+                case 1 << 1:
+                    OathManager.playerDebuff |= DebuffType.bodyCrumble;
+                    break;
+                case 1 << 2:
+                    OathManager.playerDebuff |= DebuffType.insane;
+                    break;
+                case 1 << 3:
+                    OathManager.playerDebuff |= DebuffType.predator;
+                    break;
+                case 1 << 4:
+                    OathManager.playerDebuff |= DebuffType.decay;
+                    break;
+            }
+        }
+        static removeDebuff(type) {
+            switch (type) {
+                case 1 << 0:
+                    OathManager.playerDebuff ^= DebuffType.blind;
+                    break;
+                case 1 << 1:
+                    OathManager.playerDebuff ^= DebuffType.bodyCrumble;
+                    break;
+                case 1 << 2:
+                    OathManager.playerDebuff ^= DebuffType.insane;
+                    break;
+                case 1 << 3:
+                    OathManager.playerDebuff ^= DebuffType.predator;
+                    break;
+                case 1 << 4:
+                    OathManager.playerDebuff ^= DebuffType.decay;
+                    break;
+            }
+        }
+        static oathUpdate() {
+            switch (this.oathState) {
+                case OathStatus.normal:
+                    if (OathManager.oathChargeDetect()) {
+                        OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
+                        this.oathState = OathStatus.charge;
+                        OathManager.addDebuff(1 << 4);
+                    }
+                    break;
+                case OathStatus.charge:
+                    if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && OathManager.overChargeCount >= 2) {
+                        OathManager.overChargeCount = 0;
+                        OathManager.oathBar.skin = "UI/bp_150.png";
+                        this.oathState = OathStatus.overCharge;
+                        return;
+                    }
+                    if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && OathManager.overChargeCount < 2) {
+                        OathManager.overChargeCount++;
+                        OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
+                        return;
+                    }
+                    if (OathManager.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                        OathManager.overChargeCount = 0;
+                        this.oathState = OathStatus.normal;
+                        return;
+                    }
+                    break;
+                case OathStatus.overCharge:
+                    let addDebuffTimer = setTimeout(() => {
+                        OathManager.addDebuff(1 << Math.ceil(Math.random() * 4));
+                        console.log("debuff", this.playerDebuff);
+                    }, 5000);
+                    if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
+                        OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
+                        return;
+                    }
+                    if (OathManager.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                        clearInterval(addDebuffTimer);
+                        OathManager.oathBar.skin = "UI/bp_100.png";
+                        this.oathState = OathStatus.charge;
+                        return;
+                    }
+                    if (OathManager.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                        clearInterval(addDebuffTimer);
+                        OathManager.oathBar.skin = "UI/bp_100.png";
+                        this.oathState = OathStatus.normal;
+                        return;
+                    }
+                    break;
+                default:
+                    this.oathState = OathStatus.normal;
+                    break;
+            }
+            OathManager.oathBuffUpdate();
+        }
+        static debuffUpdate() {
+            if ((this.playerDebuff & DebuffType.blind) === DebuffType.blind) {
+            }
+            if ((this.playerDebuff & DebuffType.bodyCrumble) === DebuffType.bodyCrumble) {
+            }
+            if ((this.playerDebuff & DebuffType.insane) === DebuffType.insane) {
+            }
+            if ((this.playerDebuff & DebuffType.predator) === DebuffType.predator) {
+            }
+            if ((this.playerDebuff & DebuffType.decay) === DebuffType.decay) {
+                let debuffText = "為我戰鬥至到粉身碎骨吧";
+                let isKilling = false;
+                let killingTimer = 0;
+                let currentEnemyCount = 0;
+                let priviousEnemyCount = 0;
+            }
+        }
+        static oathCastSkill(cost, valve = 30) {
+            if (OathManager.getBloodyPoint() < valve || OathManager.getBloodyPoint() < cost)
+                return false;
+            OathManager.setBloodyPoint(OathManager.getBloodyPoint() - cost);
+            return true;
+        }
+    }
+    OathManager.oathState = 0;
+    OathManager.increaseBloodyPoint = 10;
+    OathManager.isCharging = false;
+    OathManager.overChargeCount = 0;
+    OathManager.playerDebuff = DebuffType.none;
+
+    var CharacterStatus;
+    (function (CharacterStatus) {
+        CharacterStatus[CharacterStatus["idle"] = 0] = "idle";
+        CharacterStatus[CharacterStatus["run"] = 1] = "run";
+        CharacterStatus[CharacterStatus["jump"] = 2] = "jump";
+        CharacterStatus[CharacterStatus["down"] = 3] = "down";
+        CharacterStatus[CharacterStatus["attackOne"] = 4] = "attackOne";
+        CharacterStatus[CharacterStatus["attackTwo"] = 5] = "attackTwo";
+        CharacterStatus[CharacterStatus["slam"] = 6] = "slam";
+        CharacterStatus[CharacterStatus["hurt"] = 7] = "hurt";
+        CharacterStatus[CharacterStatus["defend"] = 8] = "defend";
+        CharacterStatus[CharacterStatus["death"] = 9] = "death";
+    })(CharacterStatus || (CharacterStatus = {}));
 
     class VirtualSkill extends Laya.Script {
         constructor() {
@@ -1628,7 +1735,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

@@ -2,7 +2,7 @@ import EnemyHandler from "./EnemyHandler";
 import CharacterInit from "./CharacterInit";
 
 import { OathStatus } from "./OathStatus";
-import { DebuffType } from "./DebuffType";
+import { DebuffType, DebuffManager, DebuffProto } from "./DebuffType";
 
 export default class OathManager extends Laya.Script {
 
@@ -12,10 +12,14 @@ export default class OathManager extends Laya.Script {
     public static overChargeCount: number = 0;
     public static playerDebuff: DebuffType = DebuffType.none;
     
+    
     public static characterLogo: Laya.Animation;
     public static oathBar: Laya.ProgressBar;
     // public static oathBarSkinUrl: string; 
 
+    public static initOathSystem() {
+        
+    }
     public static getBloodyPoint(){
         return CharacterInit.playerEnt.m_bloodyPoint;
     }
@@ -24,7 +28,6 @@ export default class OathManager extends Laya.Script {
         return CharacterInit.playerEnt.m_bloodyPoint;
     }
     public static showBloodyPoint(player: Laya.Animation) {
-        
         OathManager.oathBar = new Laya.ProgressBar();
         OathManager.oathBar.skin = "UI/bp_100.png";
         setInterval((() => {
@@ -86,55 +89,60 @@ export default class OathManager extends Laya.Script {
 
     public static addDebuff(type: number): void {
         switch (type) {
-            case 1:
+            case 1 << 0:
                 OathManager.playerDebuff |= DebuffType.blind;
+                
                 break;
-            case 2:
+            case 1 << 1:
                 OathManager.playerDebuff |= DebuffType.bodyCrumble;
+                
                 break;
-            case 3:
+            case 1 << 2:
                 OathManager.playerDebuff |= DebuffType.insane;
+                
                 break;
-            case 4:
+            case 1 << 3:
                 OathManager.playerDebuff |= DebuffType.predator;
+                
                 break;
-            case 5:
+            case 1 << 4:
                 OathManager.playerDebuff |= DebuffType.decay;
+                
                 break;
         }
     }
 
     public static removeDebuff(type: number): void {
         switch (type) {
-            case 1:
+            case 1 << 0:
                 OathManager.playerDebuff ^= DebuffType.blind;
                 break;
-            case 2:
+            case 1 << 1:
                 OathManager.playerDebuff ^= DebuffType.bodyCrumble;
                 break;
-            case 3:
+            case 1 << 2:
                 OathManager.playerDebuff ^= DebuffType.insane;
                 break;
-            case 4:
+            case 1 << 3:
                 OathManager.playerDebuff ^= DebuffType.predator;
                 break;
-            case 5:
+            case 1 << 4:
                 OathManager.playerDebuff ^= DebuffType.decay;
                 break;
         }
     }
 
     public static oathUpdate() {
-        //更新角色充能時數值
-        OathManager.oathBuffUpdate();
         switch (this.oathState) {
             case OathStatus.normal:
                 //目前普通狀態無特殊效果
-
+                
                 //若達到上限則轉為charge狀態
                 if (OathManager.oathChargeDetect()) {
                     OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
                     this.oathState = OathStatus.charge;
+                    OathManager.addDebuff(1 << 4);
+                    
                 }
                 break;
             case OathStatus.charge:
@@ -163,11 +171,11 @@ export default class OathManager extends Laya.Script {
                 //計算處於此狀態時間，時間到時給予debuff
                 let addDebuffTimer = setTimeout(() => {
                     //debuff
-                    OathManager.addDebuff(Math.floor(Math.random() * 4 + 1));
+                    OathManager.addDebuff(1 << Math.ceil(Math.random() * 4));
                     console.log("debuff", this.playerDebuff);
                     
                 }, 5000);
-
+                
                 //視當前BP值轉換狀態
                 if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
                     OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
@@ -186,21 +194,43 @@ export default class OathManager extends Laya.Script {
                     return;
                 }
                 break;
-            default:
-                this.oathState = OathStatus.normal;
-                break;
+                default:
+                    this.oathState = OathStatus.normal;
+                    break;
+                }
+                //更新角色充能時數值
+                OathManager.oathBuffUpdate();
+    }
+
+    public static debuffUpdate(): void {
+        if ((this.playerDebuff & DebuffType.blind) === DebuffType.blind) {
+            
+        }
+        if ((this.playerDebuff & DebuffType.bodyCrumble) === DebuffType.bodyCrumble) {
+            
+        }
+        if ((this.playerDebuff & DebuffType.insane) === DebuffType.insane) {
+            
+        }
+        if ((this.playerDebuff & DebuffType.predator) === DebuffType.predator) {
+            
+        }
+        if ((this.playerDebuff & DebuffType.decay) === DebuffType.decay) {
+            let debuffText = "為我戰鬥至到粉身碎骨吧";
+            let isKilling: boolean = false;
+            let killingTimer: number = 0;
+            let currentEnemyCount: number = 0;
+            let priviousEnemyCount: number = 0;
+            
+            
         }
     }
-
-    public static oathCastSkill(cost: number, valve: number = 30): boolean {
-        //施放閥值
-        if (OathManager.getBloodyPoint() < valve || OathManager.getBloodyPoint() < cost) return false;
-        //操作OathManager
-        OathManager.setBloodyPoint(OathManager.getBloodyPoint() - cost);
         
-        return true;
-    }
-
-
-
+    public static oathCastSkill(cost: number, valve: number = 30): boolean {
+    //施放閥值
+        if (OathManager.getBloodyPoint() < valve || OathManager.getBloodyPoint() < cost) return false;
+            //操作OathManager
+            OathManager.setBloodyPoint(OathManager.getBloodyPoint() - cost);
+            return true;
+        }
 }
