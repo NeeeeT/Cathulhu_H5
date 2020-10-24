@@ -163,7 +163,7 @@ export class Character extends Laya.Script {
         this.setSkill();
         // this.checkJumpTimer();
     };
-    setHealth(amount: number): void {
+    public setHealth(amount: number): void {
         this.m_health = amount;
         if (this.m_health <= 0) {
             // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)//loop:0為循環播放;
@@ -175,7 +175,7 @@ export class Character extends Laya.Script {
             // }, 1000)
         }
     }
-    getHealth(): number {
+    public getHealth(): number {
         return this.m_health;
     };
     takeDamage(amount: number) {
@@ -266,9 +266,11 @@ export class Character extends Laya.Script {
                 this.m_healthBar.destroyed = true;
                 return;
             }
-            this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
+            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) { 
+                this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
+            }
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
-        }), 10);
+        }), 5);
     }
     private characterMove() {
         //Left
