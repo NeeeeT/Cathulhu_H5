@@ -1,7 +1,28 @@
 D .
+R 7DE0084B .rec
+R AA63CC8E BlackExplosion.atlas
+R 5C228EFB BlackExplosion.png
+R D71DD9C4 BlackHole.atlas
+R 4B28DCC1 BlackHole.png
+R D0E5ADF0 Blood.atlas
+R 85AFA56A Blood.png
 R AE787599 Cat.png
 R 5298C6DC circle.png
 R 6F74B0F8 loading.png
+R B532E2F6 NewBlood.atlas
+R 79B448FF NewBlood.png
+R E61EE369 NewSlash.atlas
+R 5EDB2CB1 NewSlash.png
+R 9A178570 Slam.atlas
+R 77E7A9CC Slam.png
+R 5DFA2E1 SlashEffects.atlas
+R CC956199 SlashEffects.png
+R 443055FB SlashLight.atlas
+R 73B0B328 SlashLight.png
+R AFAE159A Spike.atlas
+R 475544FE Spike.png
+R C6C2DB81 Target.atlas
+R AA06540 Target.png
 D BlackExplosion
 P 8908EBE1 BlackholeExplsion_0036.png
 P E57B2BE9 BlackholeExplsion_0037.png
@@ -60,14 +81,35 @@ P 49B7C323 Blood_0005.png
 P E4873D50 Blood_0006.png
 P 08A7ADCD Blood_0007.png
 D NewSlash
-P 567EC92E Slash_0030.png
-P 45D7B3AB Slash_0031.png
-P 2502A87A Slash_0032.png
-P 854D39EE Slash_0033.png
+P 854D39EE Slash_0063.png
+D NewSlash_1
 P F0D029D7 Slash_0060.png
 P 5EEA6326 Slash_0061.png
 P ADD5BFE9 Slash_0062.png
-P 854D39EE Slash_0063.png
+D NewSlash_2
+P 854D39EE Slash_00.png
+P 2502A87A Slash_01.png
+P 45D7B3AB Slash_02.png
+P 567EC92E Slash_03.png
+D Slam
+P 8F0E8FE8 Slam_0000.png
+P 2FC45362 Slam_0001.png
+P 1350A591 Slam_0002.png
+P BD60D76F Slam_0003.png
+P 07566DD7 Slam_0004.png
+P D00AD866 Slam_0005.png
+P ADB899B5 Slam_0006.png
+P 4AFD69FA Slam_0007.png
+P DEFF8B59 Slam_0008.png
+P C3C6BEF9 Slam_0009.png
+P 9915CE83 Slam_0010.png
+P C7C51C51 Slam_0011.png
+P DC1DE8A2 Slam_0012.png
+P 61BB83F7 Slam_0013.png
+P B954FC96 Slam_0014.png
+P 0DB8B856 Slam_0015.png
+P FF04E3F7 Slam_0016.png
+P D8445AA7 Slam_0017.png
 D SlashEffects
 P 854D39EE Slash_0029.png
 P E9FE8002 Slash_0030.png
@@ -92,3 +134,25 @@ P 71A22456 Spike_0005.png
 P 11C2A002 Spike_0006.png
 P 66777956 Spike_0007.png
 P 53E4AF43 Spike_0008.png
+D Target
+P 51C652C1 Target_0000.png
+P 837910B6 Target_0001.png
+P FB85EE0A Target_0002.png
+P D6FD043A Target_0003.png
+P 4A4ED4AE Target_0004.png
+P 13A32898 Target_0005.png
+P EECE3D9C Target_0006.png
+P 399A3972 Target_0007.png
+P 89572F45 Target_0008.png
+P F4E18C0E Target_0009.png
+P 49C312C6 Target_0010.png
+P E878E799 Target_0011.png
+P 406EE8E0 Target_0012.png
+P C13077B3 Target_0013.png
+P B8194585 Target_0014.png
+P F28E960C Target_0015.png
+P 08619592 Target_0016.png
+P 3176A7A0 Target_0017.png
+P 57BC125B Target_0018.png
+P 99EBCF5F Target_0019.png
+P 4561629E Target_0020.png

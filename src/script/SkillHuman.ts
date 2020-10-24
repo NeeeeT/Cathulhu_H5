@@ -54,6 +54,7 @@ export class Spike extends VirtualSkill {
         owner.m_rigidbody.linearVelocity = {x: rightSide?this.m_spikeVec:-this.m_spikeVec};
 
         owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
+        owner.hurtedEvent(0.5);
 
         this.attackRangeCheck(owner,
             {
@@ -96,7 +97,7 @@ export class Behead extends VirtualSkill {
     m_cd = 3;
 
     /** 技能的準備時間 */
-    m_preTime: number = 1.5;
+    m_preTime: number = 1.0;
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
@@ -113,7 +114,7 @@ export class Behead extends VirtualSkill {
         let offsetX: number = rightSide ? position['x'] : position['x'] - this.m_animation.width;
         let offsetY: number = position['y'] - this.m_animation.height / 2 + 20;
 
-        this.m_animation.source = "comp/Target/Target_0000.png,comp/Target/Target_0001.png,comp/Target/Target_0002.png,comp/Target/Target_0003.png,comp/Target/Target_0004.png,comp/Target/Target_0005.png,comp/Target/Target_0006.png,comp/Target/Target_0007.png,comp/Target/Target_0008.png,comp/Target/Target_0009.png,comp/Target/Target_0010.png,comp/Target/Target_0011.png,comp/Target/Target_0012.png,comp/Target/Target_0013.png,comp/Target/Target_0014.png,comp/Target/Target_0015.png,comp/Target/Target_0016.png,comp/Target/Target_0017.png,comp/Target/Target_0018.png,comp/Target/Target_0019.png,comp/Target/Target_0020.png";
+        this.m_animation.source = "comp/Target.atlas";
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 25;
 
@@ -172,8 +173,8 @@ export class Behead extends VirtualSkill {
         }
 
         console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
-        owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 70 : -70);
-        owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y - 100;
+        owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 50 : -50);
+        owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y;
         //this.m_animation.pos(owner.m_animation.x, owner.m_animation.y);
 
         owner.updateAnimation(owner.m_state, CharacterStatus.attackTwo, null, false, 125);

@@ -7,7 +7,8 @@
             this.sceneBackgroundColor = '#4a4a4a';
             this.resourceLoad = ["font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
                 "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
-                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas",
+                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
+                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas"
             ];
         }
         onAwake() {
@@ -94,6 +95,7 @@
             this.m_rigidbody.category = 8;
             this.m_rigidbody.mask = 4 | 2;
             this.m_rigidbody.allowRotation = false;
+            this.m_rigidbody.gravityScale = 5;
             this.m_player = player;
             Laya.stage.addChild(this.m_animation);
             this.showHealth();
@@ -243,17 +245,17 @@
             slashLightEffect.scaleX = 2;
             slashLightEffect.scaleY = 2;
             let colorMat = [
-                4, 0, 4, 0, -100,
-                1, 2, 1, 0, -100,
-                0, 0, 3, 0, -100,
+                6, 1, 1, 0, -100,
+                1, 5, 2, 0, -100,
+                1, 0, 6, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashLightEffect.filters = [glowFilter, colorFilter];
             slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 450 : enemy.x - 580, enemy.y - 500 + 30);
-            slashLightEffect.source = "comp/SlashLight/SlashLight_0000.png,comp/SlashLight/SlashLight_0001.png,comp/SlashLight/SlashLight_0002.png,comp/SlashLight/SlashLight_0003.png,comp/SlashLight/SlashLight_0004.png,comp/SlashLight/SlashLight_0005.png";
-            slashLightEffect.alpha = 0.8;
+            slashLightEffect.source = "comp/SlashLight.atlas";
+            slashLightEffect.alpha = 0.75;
             slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashLightEffect.destroy();
                 slashLightEffect.destroyed = true;
@@ -853,6 +855,7 @@
             owner.delayMove(this.m_lastTime);
             owner.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec : -this.m_spikeVec };
             owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
+            owner.hurtedEvent(0.5);
             this.attackRangeCheck(owner, {
                 "x0": offsetX,
                 "x1": offsetX + this.m_animation.width,
@@ -889,7 +892,7 @@
             this.m_cost = 0;
             this.m_id = 1;
             this.m_cd = 3;
-            this.m_preTime = 1.5;
+            this.m_preTime = 1.0;
         }
         cast(owner, position) {
             if (!this.m_canUse)
@@ -903,7 +906,7 @@
             this.m_animation.pos(rightSide ? position['x'] - 240 : position['x'] - 240, position['y'] - 250);
             let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
             let offsetY = position['y'] - this.m_animation.height / 2 + 20;
-            this.m_animation.source = "comp/Target/Target_0000.png,comp/Target/Target_0001.png,comp/Target/Target_0002.png,comp/Target/Target_0003.png,comp/Target/Target_0004.png,comp/Target/Target_0005.png,comp/Target/Target_0006.png,comp/Target/Target_0007.png,comp/Target/Target_0008.png,comp/Target/Target_0009.png,comp/Target/Target_0010.png,comp/Target/Target_0011.png,comp/Target/Target_0012.png,comp/Target/Target_0013.png,comp/Target/Target_0014.png,comp/Target/Target_0015.png,comp/Target/Target_0016.png,comp/Target/Target_0017.png,comp/Target/Target_0018.png,comp/Target/Target_0019.png,comp/Target/Target_0020.png";
+            this.m_animation.source = "comp/Target.atlas";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 25;
             this.m_canUse = false;
@@ -946,8 +949,8 @@
                 return;
             }
             console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
-            owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 70 : -70);
-            owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y - 100;
+            owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 50 : -50);
+            owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y;
             owner.updateAnimation(owner.m_state, CharacterStatus.attackTwo, null, false, 125);
             enemy[targetEnemy]._ent.takeDamage(this.m_damage);
         }
@@ -972,16 +975,16 @@
             this.m_animation.height = 350;
             this.m_animation.scaleX = 1.5;
             this.m_animation.scaleY = 1.5;
-            this.m_animation.source = "comp/Slam/Slam_0001.png,comp/Slam/Slam_0002.png,comp/Slam/Slam_0003.png,comp/Slam/Slam_0004.png,comp/Slam/Slam_0005.png,comp/Slam/Slam_0006.png,comp/Slam/Slam_0007.png,comp/Slam/Slam_0008.png,comp/Slam/Slam_0009.png,comp/Slam/Slam_0010.png,comp/Slam/Slam_0011.pngcomp/Slam/Slam_0012.png,comp/Slam/Slam_0013.png,comp/Slam/Slam_0014.png,comp/Slam/Slam_0015.png,comp/Slam/Slam_0016.png,comp/Slam/Slam_0017.png";
-            this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 400);
+            this.m_animation.source = "comp/Slam.atlas";
+            this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 550);
             this.m_animation.autoPlay = false;
             this.m_animation.interval = 25;
-            this.m_animation.alpha = 0.8;
+            this.m_animation.alpha = 1;
             let colorMat = [
-                4, 0, 0, 0, -270,
-                0, 2, 0, 0, -100,
-                2, 0, 3, 0, -270,
-                0, 0, 0, 2, 0,
+                4, 0, 0, 0, -180,
+                0, Math.floor(Math.random() * 4) + 2, 0, 0, -180,
+                0, 0, 4, 0, -180,
+                0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
@@ -1028,6 +1031,7 @@
                 e._ent.delayMove(0.3);
                 e._ent.takeDamage(this.m_damage);
                 this.m_injuredEnemy.push(e._id);
+                owner.setCameraShake(50, 12);
             });
         }
     }
@@ -1147,6 +1151,8 @@
             this.m_hurted = false;
             this.m_hurtTimer = null;
             this.m_slashTimer = null;
+            this.m_cameraShakingTimer = 0;
+            this.m_cameraShakingMultiplyer = 1;
             this.m_catSkill = null;
             this.m_humanSkill = null;
         }
@@ -1155,6 +1161,7 @@
             this.m_animation = new Laya.Animation();
             this.m_animation.scaleX = 1;
             this.m_animation.scaleY = 1;
+            this.m_animation.zOrder = 10;
             this.m_animation.name = "Player";
             this.m_animation.width = 200;
             this.m_animation.height = 128;
@@ -1168,8 +1175,6 @@
             this.m_animation.on(Laya.Event.COMPLETE, this, () => {
                 if (this.m_state === CharacterStatus.attackOne || this.m_state === CharacterStatus.attackTwo)
                     this.m_animation.stop();
-                if (this.m_state === CharacterStatus.slam)
-                    console.log('Slam end!');
                 this.m_animationChanging = false;
                 if (Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
                     this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
@@ -1195,7 +1200,7 @@
                 }
                 if (col.tag === "Enemy" && !this.m_hurtTimer) {
                     this.delayMove(0.15);
-                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -5.0 : 5.0, y: 0.0 };
+                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -10.0 : 10.0, y: 0.0 };
                     this.takeDamage(50.0);
                 }
                 this.takeDamage(this.getEnemyAttackDamage(col.tag));
@@ -1203,8 +1208,8 @@
             this.m_script.onKeyUp = (e) => {
                 if (this.m_canJump) {
                     this.m_playerVelocity["Vx"] = 0;
-                    this.applyMoveX();
                 }
+                this.applyMoveX();
                 delete this.m_keyDownList[e["keyCode"]];
             };
             this.m_script.onKeyDown = (e) => {
@@ -1227,6 +1232,7 @@
             this.cameraFollower();
             this.showHealth();
             this.setSkill();
+            this.checkJumpTimer();
         }
         ;
         setHealth(amount) {
@@ -1251,9 +1257,19 @@
             Laya.Tween.to(this.m_animation, { alpha: 0.65 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
-            this.huredEvent(0.5);
+            this.hurtedEvent(0.5);
         }
-        huredEvent(time) {
+        checkJumpTimer() {
+            let timer = setInterval(() => {
+                if (!this.m_animation || this.m_animation.destroyed) {
+                    clearInterval(timer);
+                    return;
+                }
+                this.m_canJump = (Math.abs(this.m_animation.y - 590) < 10) ? true : false;
+                console.log(this.m_canJump);
+            }, 1000);
+        }
+        hurtedEvent(time) {
             this.m_hurted = true;
             this.m_hurtTimer = setTimeout(() => {
                 this.m_hurted = false;
@@ -1314,7 +1330,7 @@
             }
             if (this.m_keyDownList[38]) {
                 if (this.m_canJump) {
-                    this.m_playerVelocity["Vy"] += -12;
+                    this.m_playerVelocity["Vy"] -= 12;
                     this.applyMoveY();
                     this.m_canJump = false;
                 }
@@ -1331,7 +1347,8 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
+                this.m_humanSkill = new Behead();
+                this.m_catSkill = new Slam();
             }
             if (this.m_keyDownList[32]) {
             }
@@ -1404,7 +1421,7 @@
                     soundNum = critical ? 0 : 1;
                     enemyFound.forEach((e) => {
                         e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
-                        Character.setCameraShake(10, 3);
+                        this.setCameraShake(10, 3);
                         OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
                         e._ent.slashLightEffect(e._ent.m_animation);
                         this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
@@ -1426,10 +1443,10 @@
             slashEffect.scaleX = 2;
             slashEffect.scaleY = 2;
             if (this.m_atkStep === 0) {
-                slashEffect.source = "comp/NewSlash/Slash_0060.png,comp/NewSlash/Slash_0061.png,comp/NewSlash/Slash_0062.png";
+                slashEffect.source = "comp/NewSlash_1.atlas";
             }
             else if (this.m_atkStep === 1) {
-                slashEffect.source = "comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0030.png";
+                slashEffect.source = "comp/NewSlash_2.atlas";
             }
             let colorNum = Math.floor(Math.random() * 5) + 2;
             let colorMat = [
@@ -1466,8 +1483,8 @@
             }, 10);
         }
         setSkill() {
-            this.m_humanSkill = new Behead();
-            this.m_catSkill = new Slam();
+            this.m_humanSkill = new Spike();
+            this.m_catSkill = new BlackHole();
         }
         delayMove(time) {
             if (this.m_moveDelayTimer) {
@@ -1522,11 +1539,11 @@
             setInterval(() => {
                 if (this.m_animation.destroyed)
                     return;
-                if (Character.m_cameraShakingTimer > 0) {
+                if (this.m_cameraShakingTimer > 0) {
                     let randomSign = (Math.floor(Math.random() * 2) == 1) ? 1 : -1;
-                    Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-                    Laya.stage.y = 0 + Math.random() * Character.m_cameraShakingMultiplyer * randomSign;
-                    Character.m_cameraShakingTimer--;
+                    Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+                    Laya.stage.y = 0 + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+                    this.m_cameraShakingTimer--;
                 }
                 else {
                     Laya.stage.x = player_pivot_x - this.m_animation.x;
@@ -1537,9 +1554,9 @@
                     Laya.stage.x = -2475.0;
             }, 10);
         }
-        static setCameraShake(timer, multiplier) {
-            Character.m_cameraShakingMultiplyer = multiplier;
-            Character.m_cameraShakingTimer = timer;
+        setCameraShake(timer, multiplier) {
+            this.m_cameraShakingMultiplyer = multiplier;
+            this.m_cameraShakingTimer = timer;
         }
         updateAnimation(from, to, onCallBack = null, force = false, rate = 100) {
             if (from === to || this.m_animationChanging)
@@ -1589,8 +1606,6 @@
             }
         }
     }
-    Character.m_cameraShakingTimer = 0;
-    Character.m_cameraShakingMultiplyer = 1;
     class CharacterInit extends Laya.Script {
         constructor() {
             super();
