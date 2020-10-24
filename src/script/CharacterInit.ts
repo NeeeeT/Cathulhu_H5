@@ -122,7 +122,7 @@ export class Character extends Laya.Script {
                 this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-10.0:10.0, y:0.0};
                 this.takeDamage(50.0);
             }
-            this.takeDamage(this.getEnemyAttackDamage(col.tag))
+            this.takeDamage(this.getEnemyAttackDamage(col.tag));
         }
         // this.m_script.onTriggerStay = (col:Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) =>{
         //     if (col.label === "ground") {
@@ -204,9 +204,8 @@ export class Character extends Laya.Script {
                 clearInterval(timer);
                 return;
             }
-            this.m_canJump = (Math.abs(this.m_animation.y - 590) < 10) ? true:false;
+            this.m_canJump = (Math.abs(this.m_animation.y + (this.m_animation.height/2)  - 590) < 10) ? true:false;
             console.log(this.m_canJump);
-            
         }, 1000);
     }
     private hurtedEvent(time: number){

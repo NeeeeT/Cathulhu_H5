@@ -1125,7 +1125,6 @@
             this.cameraFollower();
             this.showHealth();
             this.setSkill();
-            this.checkJumpTimer();
         }
         ;
         setHealth(amount) {
@@ -1158,7 +1157,7 @@
                     clearInterval(timer);
                     return;
                 }
-                this.m_canJump = (Math.abs(this.m_animation.y - 590) < 10) ? true : false;
+                this.m_canJump = (Math.abs(this.m_animation.y + (this.m_animation.height / 2) - 590) < 10) ? true : false;
                 console.log(this.m_canJump);
             }, 1000);
         }
