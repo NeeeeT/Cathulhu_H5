@@ -34,6 +34,7 @@ export abstract class VirtualEnemy extends Laya.Script {
 
     m_moveDelayValue: number = 0;
     m_moveDelayTimer = null;
+    m_deadTimer = null;
 
     m_animationChanging: boolean = false;
 
@@ -110,15 +111,23 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_animation.destroyed = true;
     };
     setHealth(amount: number): void {
+        this.m_health = amount;
         if (amount <= 0) {
             // this.m_animation.filters = null;
             // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)
-            this.bloodSplitEffect(this.m_animation);
-            this.m_animation.destroy();
-            this.m_animation.destroyed = true;
+            //this.bloodSplitEffect(this.m_animation);
+            this.m_state = EnemyStatus.idle;
+            this.m_deadTimer = setInterval((() => {
+            if (this.m_animation.destroyed || !this.m_animation) return;
+            this.m_animation.alpha -= 0.1;
+            if(this.m_animation.alpha <= 0)
+            {
+                clearInterval(this.m_deadTimer);
+                this.destroy();
+            }
+            }), 25);//可能要在優化
             return;
         }
-        this.m_health = amount;
     }
     getHealth(): number {
         return this.m_health;
@@ -259,22 +268,24 @@ export abstract class VirtualEnemy extends Laya.Script {
     }
     slashLightEffect(enemy: Laya.Sprite) {
         let slashLightEffect: Laya.Animation = new Laya.Animation();
-        slashLightEffect.scaleX = 2;
-        slashLightEffect.scaleY = 2;
+        let rotation : number;
+        slashLightEffect.scaleX = 1;
+        slashLightEffect.scaleY = 1;
         let colorMat: Array<number> =
             [
-                6, 1, 1, 0, -100, //R
+                1, 2, 1, 0, -100, //R
                 1, 5, 2, 0, -100, //G
-                1, 0, 6, 0, -100, //B
+                1, 0, Math.floor(Math.random() * 1) + 2, 0, -100, //B
                 0, 0, 0, 1, 0, //A
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        
         slashLightEffect.filters = [glowFilter, colorFilter];
-        slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 450 : enemy.x - 580, enemy.y - 500 + 30);
+        rotation = Math.floor(Math.random() * 90);
+        slashLightEffect.rotation = rotation;
+        slashLightEffect.pos(this.m_isFacingRight ? enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320, enemy.y - 2 * rotation - 250 + 30);//y軸需再修正
         slashLightEffect.source = "comp/SlashLight.atlas";
-        slashLightEffect.alpha = 0.75;
+        slashLightEffect.alpha = 0.8;
         slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
             slashLightEffect.destroy();
             slashLightEffect.destroyed = true;
@@ -291,7 +302,8 @@ export abstract class VirtualEnemy extends Laya.Script {
         if (this.m_animation.destroyed){
             return;
         }
-        if (this.playerRangeCheck(this.m_attackRange * 2) ) {
+        if (this.playerRangeCheck(this.m_attackRange * 2)) {
+            if(this.m_health <= 0) return;
             this.tryAttack();
             this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
 
@@ -362,16 +374,13 @@ export abstract class VirtualEnemy extends Laya.Script {
         atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
         atkCircleRigid.category = 8;
         atkCircleRigid.mask = 4;
-
+        
         atkBoxCollider.isSensor = true;
         atkCircleRigid.gravityScale = 0;
         this.updateAnimation(EnemyStatus.idle, EnemyStatus.attack);
         Laya.stage.addChild(atkCircle);
-
-        atkBoxCollider.tag = this.m_atkTag;
-
+         atkBoxCollider.tag = this.m_atkTag;
         this.m_atkTimer = 100;
-
         setTimeout(() => {
             atkCircle.destroy();
             atkCircle.destroyed = true;
@@ -379,7 +388,6 @@ export abstract class VirtualEnemy extends Laya.Script {
         setTimeout(() => {
             this.m_atkCd = true;
         }, 500);
-
         this.delayMove(0.3);
     }
     public delayMove(time: number): void {

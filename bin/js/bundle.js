@@ -53,6 +53,7 @@
             this.m_isFacingRight = true;
             this.m_moveDelayValue = 0;
             this.m_moveDelayTimer = null;
+            this.m_deadTimer = null;
             this.m_animationChanging = false;
             this.m_hurtDelayTimer = null;
             this.m_state = EnemyStatus.idle;
@@ -107,13 +108,20 @@
         }
         ;
         setHealth(amount) {
+            this.m_health = amount;
             if (amount <= 0) {
-                this.bloodSplitEffect(this.m_animation);
-                this.m_animation.destroy();
-                this.m_animation.destroyed = true;
+                this.m_state = EnemyStatus.idle;
+                this.m_deadTimer = setInterval((() => {
+                    if (this.m_animation.destroyed || !this.m_animation)
+                        return;
+                    this.m_animation.alpha -= 0.1;
+                    if (this.m_animation.alpha <= 0) {
+                        clearInterval(this.m_deadTimer);
+                        this.destroy();
+                    }
+                }), 25);
                 return;
             }
-            this.m_health = amount;
         }
         getHealth() {
             return this.m_health;
@@ -242,20 +250,23 @@
         }
         slashLightEffect(enemy) {
             let slashLightEffect = new Laya.Animation();
-            slashLightEffect.scaleX = 2;
-            slashLightEffect.scaleY = 2;
+            let rotation;
+            slashLightEffect.scaleX = 1;
+            slashLightEffect.scaleY = 1;
             let colorMat = [
-                6, 1, 1, 0, -100,
+                1, 2, 1, 0, -100,
                 1, 5, 2, 0, -100,
-                1, 0, 6, 0, -100,
+                1, 0, Math.floor(Math.random() * 1) + 2, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashLightEffect.filters = [glowFilter, colorFilter];
-            slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 450 : enemy.x - 580, enemy.y - 500 + 30);
+            rotation = Math.floor(Math.random() * 90);
+            slashLightEffect.rotation = rotation;
+            slashLightEffect.pos(this.m_isFacingRight ? enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320, enemy.y - 2 * rotation - 250 + 30);
             slashLightEffect.source = "comp/SlashLight.atlas";
-            slashLightEffect.alpha = 0.75;
+            slashLightEffect.alpha = 0.8;
             slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashLightEffect.destroy();
                 slashLightEffect.destroyed = true;
@@ -272,6 +283,8 @@
                 return;
             }
             if (this.playerRangeCheck(this.m_attackRange * 2)) {
+                if (this.m_health <= 0)
+                    return;
                 this.tryAttack();
                 this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer;
                 if (!this.m_moveDelayValue)
@@ -983,11 +996,11 @@
             this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 550);
             this.m_animation.autoPlay = false;
             this.m_animation.interval = 25;
-            this.m_animation.alpha = 1;
+            this.m_animation.alpha = 0.7;
             let colorMat = [
-                4, 0, 0, 0, -180,
-                0, Math.floor(Math.random() * 4) + 2, 0, 0, -180,
-                0, 0, 4, 0, -180,
+                2, 1, 0, 0, -350,
+                3, Math.floor(Math.random() * 1) + 2, 1, 0, -350,
+                1, 3, 1, 0, -350,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
