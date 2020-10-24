@@ -119,11 +119,16 @@ export class Character extends Laya.Script {
             }
             if (col.tag === "Enemy" && !this.m_hurtTimer) {
                 this.delayMove(0.15);
-                this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-10.0:10.0, y:-9.0};
+                this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-10.0:10.0, y:0.0};
                 this.takeDamage(50.0);
             }
             this.takeDamage(this.getEnemyAttackDamage(col.tag))
         }
+        // this.m_script.onTriggerStay = (col:Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) =>{
+        //     if (col.label === "ground") {
+        //         this.m_canJump = true;
+        //     }
+        // }
         this.m_script.onKeyUp = (e: Laya.Event) => {
             if (this.m_canJump) {
                 this.m_playerVelocity["Vx"] = 0;
@@ -156,6 +161,7 @@ export class Character extends Laya.Script {
         this.cameraFollower();
         this.showHealth();
         this.setSkill();
+        // this.checkJumpTimer();
     };
     setHealth(amount: number): void {
         this.m_health = amount;
@@ -190,6 +196,18 @@ export class Character extends Laya.Script {
         
         this.hurtedEvent(0.5);
         // this.resetMove();
+    }
+    private checkJumpTimer(){
+        let timer = setInterval(()=>{
+            if(!this.m_animation || this.m_animation.destroyed)
+            {
+                clearInterval(timer);
+                return;
+            }
+            this.m_canJump = (Math.abs(this.m_animation.y - 590) < 10) ? true:false;
+            console.log(this.m_canJump);
+            
+        }, 1000);
     }
     private hurtedEvent(time: number){
         this.m_hurted = true;
@@ -287,7 +305,9 @@ export class Character extends Laya.Script {
         }
         if (this.m_keyDownList[40]) {
             //Down
-            console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
+            // console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
+            this.m_humanSkill = new hSkill.Behead();
+            this.m_catSkill = new cSkill.Slam();
         }
         if (this.m_keyDownList[32]) {
             // let width_offset: number =

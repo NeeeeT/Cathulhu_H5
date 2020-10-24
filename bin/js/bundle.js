@@ -1093,7 +1093,7 @@
                 }
                 if (col.tag === "Enemy" && !this.m_hurtTimer) {
                     this.delayMove(0.15);
-                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -10.0 : 10.0, y: -9.0 };
+                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -10.0 : 10.0, y: 0.0 };
                     this.takeDamage(50.0);
                 }
                 this.takeDamage(this.getEnemyAttackDamage(col.tag));
@@ -1125,6 +1125,7 @@
             this.cameraFollower();
             this.showHealth();
             this.setSkill();
+            this.checkJumpTimer();
         }
         ;
         setHealth(amount) {
@@ -1150,6 +1151,16 @@
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
             this.hurtedEvent(0.5);
+        }
+        checkJumpTimer() {
+            let timer = setInterval(() => {
+                if (!this.m_animation || this.m_animation.destroyed) {
+                    clearInterval(timer);
+                    return;
+                }
+                this.m_canJump = (Math.abs(this.m_animation.y - 590) < 10) ? true : false;
+                console.log(this.m_canJump);
+            }, 1000);
         }
         hurtedEvent(time) {
             this.m_hurted = true;
@@ -1229,7 +1240,8 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
+                this.m_humanSkill = new Behead();
+                this.m_catSkill = new Slam();
             }
             if (this.m_keyDownList[32]) {
             }
