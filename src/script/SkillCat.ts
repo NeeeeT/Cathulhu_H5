@@ -26,13 +26,13 @@ export class Slam extends VirtualSkill {
         this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 700, position['y'] - 550);
         this.m_animation.autoPlay = false;
         this.m_animation.interval = 25;
-        this.m_animation.alpha = 1;
+        this.m_animation.alpha = 0.7;
 
         let colorMat: Array<number> =
             [
-                4, 0, 0, 0, -180, //R
-                0, Math.floor(Math.random() * 4) + 2, 0, 0, -180, //G
-                0, 0, 4, 0, -180, //B
+                2, 1, 0, 0, -350, //R
+                3, Math.floor(Math.random() * 1) + 2, 1, 0, -350, //G
+                1, 3, 1, 0, -350, //B
                 0, 0, 0, 1, 0, //A
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
