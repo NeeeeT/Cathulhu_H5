@@ -396,6 +396,7 @@ export class Character extends Laya.Script {
 
             // this.m_animation.on(Laya.Event.COMPLETE, this, function () {
             //   this.m_animation.interval = 200;
+            // this.m_animation.source = 'character/player_idle.atlas'
             //   this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
             // });
             setTimeout(() => {

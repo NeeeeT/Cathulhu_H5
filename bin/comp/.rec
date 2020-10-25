@@ -1,5 +1,5 @@
 D .
-R 7DE0084B .rec
+R 1D422520 .rec
 R AA63CC8E BlackExplosion.atlas
 R 5C228EFB BlackExplosion.png
 R D71DD9C4 BlackHole.atlas
@@ -11,8 +11,12 @@ R 5298C6DC circle.png
 R 6F74B0F8 loading.png
 R B532E2F6 NewBlood.atlas
 R 79B448FF NewBlood.png
-R E61EE369 NewSlash.atlas
-R 5EDB2CB1 NewSlash.png
+R 753C2DA0 NewSlash.atlas
+R 2A1A3B53 NewSlash.png
+R BA674E0B NewSlash_1.atlas
+R 1A97E1F8 NewSlash_1.png
+R 943D2356 NewSlash_2.atlas
+R F6F9F535 NewSlash_2.png
 R 9A178570 Slam.atlas
 R 77E7A9CC Slam.png
 R 5DFA2E1 SlashEffects.atlas

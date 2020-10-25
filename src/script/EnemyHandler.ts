@@ -297,6 +297,7 @@ export abstract class VirtualEnemy extends Laya.Script {
 
             if(!this.m_moveDelayValue)
                 this.m_rigidbody.linearVelocity = {x:0.0,y:0.0};
+
             return;
         }
         this.pursuitPlayer();
@@ -378,7 +379,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         }, 100);
         setTimeout(() => {
             this.m_atkCd = true;
-        }, 500);
+        }, 1000);
 
         this.delayMove(0.3);
     }

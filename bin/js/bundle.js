@@ -5,10 +5,10 @@
         constructor() {
             super();
             this.sceneBackgroundColor = '#4a4a4a';
-            this.resourceLoad = ["font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
+            this.resourceLoad = ["Audio/Bgm/BGM1.wav", "font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
                 "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
                 "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
-                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas"
+                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas",
             ];
         }
         onAwake() {
@@ -342,7 +342,7 @@
             }, 100);
             setTimeout(() => {
                 this.m_atkCd = true;
-            }, 500);
+            }, 1000);
             this.delayMove(0.3);
         }
         delayMove(time) {
