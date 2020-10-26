@@ -8,6 +8,8 @@ import * as cSkill from "./SkillCat";
 
 import EnemyHandler, { Normal, Shield } from "./EnemyHandler";
 
+import { ExtraData } from "./ExtraData";
+
   
 export class Character extends Laya.Script {
     m_state: number;
@@ -44,6 +46,7 @@ export class Character extends Laya.Script {
     m_isFacingRight: boolean = true;
     m_canJump: boolean = true;
     m_canAttack: boolean = true;
+    m_canSprint: boolean = true;
     m_animationChanging: boolean;
 
     m_atkTimer = null;
@@ -117,11 +120,11 @@ export class Character extends Laya.Script {
                 this.resetMove();
                 this.m_canJump = true;
             }
-            if (col.tag === "Enemy" && !this.m_hurtTimer) {
-                this.delayMove(0.15);
-                this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-10.0:10.0, y:0.0};
-                this.takeDamage(50.0);
-            }
+            // if (col.tag === "Enemy" && !this.m_hurtTimer) {
+            //     this.delayMove(0.15);
+            //     this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-10.0:10.0, y:0.0};
+            //     this.takeDamage(50.0);
+            // }
             this.takeDamage(this.getEnemyAttackDamage(col.tag));
         }
         // this.m_script.onTriggerStay = (col:Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) =>{
@@ -282,6 +285,16 @@ export class Character extends Laya.Script {
         }
         this.applyMoveX();
         if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
+        }
+        if (this.m_keyDownList[16]){
+            if(!this.m_canSprint) return;
+
+            this.delayMove(0.5)
+            Laya.Tween.to(this.m_animation, {x: this.m_isFacingRight? this.m_animation.x+250:this.m_animation.x-250}, 500, Laya.Ease.linearInOut, null, 0);
+            this.m_canSprint = false;
+            setTimeout(()=>{
+                this.m_canSprint = true;
+            }, 3000);
         }
         //Up
         if (this.m_keyDownList[38]) {
@@ -599,11 +612,12 @@ export class Character extends Laya.Script {
         }, 10);
     }
     private setSkill(): void{
-        this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
+        // this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
         // this.m_humanSkill = new hSkill.Behead();
-
         // this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
-        this.m_catSkill = new cSkill.BlackHole();
+        // this.m_catSkill = new cSkill.BlackHole();
+        this.m_catSkill = new ExtraData().e_cSkill;
+        this.m_humanSkill = new ExtraData().e_hSkill;
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
     public delayMove(time: number): void{

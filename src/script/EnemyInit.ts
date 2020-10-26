@@ -33,7 +33,6 @@ export default class EnemyInit extends Laya.Script{
                 clearInterval(this.battleTimer);
                 this.battleTimer = null;
             }
-            console.log(CharacterInit.playerEnt.m_animation.x);
         }, 500);
         this.showBattleInfo();
     }
@@ -51,7 +50,7 @@ export default class EnemyInit extends Laya.Script{
         this.endingSkillUI = new Laya.Sprite();
         this.endingSkillUI.width = 684;
         this.endingSkillUI.height = 576;
-        this.endingSkillUI.loadImage('Screen/ending/skill.png');
+        this.endingSkillUI.loadImage('ui/ending/skill.png');
         this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.x - 325), 94);//544 - 450 = 94
         this.endingSkillUI.alpha = 0;
 
@@ -72,7 +71,7 @@ export default class EnemyInit extends Laya.Script{
         this.endingRewardUI = new Laya.Sprite();
         this.endingRewardUI.width = 342;
         this.endingRewardUI.height = 288;
-        this.endingRewardUI.loadImage('Screen/ending/ending.png');
+        this.endingRewardUI.loadImage('ui/ending/ending.png');
         this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
         Laya.stage.addChild(this.endingRewardUI);
     }

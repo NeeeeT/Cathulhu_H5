@@ -435,7 +435,7 @@
             this.m_name = '普通敵人';
             this.m_health = 1000;
             this.m_armor = 100;
-            this.m_speed = 20;
+            this.m_speed = 1.7;
             this.m_tag = 'n';
             this.m_attackRange = 100;
             this.m_mdelay = 0.1;
@@ -449,7 +449,7 @@
             this.m_name = '裝甲敵人';
             this.m_armor = 500;
             this.m_health = 1500;
-            this.m_speed = 1;
+            this.m_speed = 1.5;
             this.m_tag = 's';
             this.m_attackRange = 100;
             this.m_mdelay = 0.05;
@@ -907,7 +907,7 @@
             this.m_name = '攻其不備';
             this.m_damage = 444;
             this.m_cost = 0;
-            this.m_id = 1;
+            this.m_id = 2;
             this.m_cd = 3;
             this.m_preTime = 1.0;
         }
@@ -1155,6 +1155,21 @@
         }
     }
 
+    class ExtraData extends Laya.Script {
+        constructor() {
+            super();
+            this.loadData();
+        }
+        loadData() {
+            this.e_health = 500;
+            this.e_atkDmg = 500;
+            this.e_gold = 1500;
+            this.e_crystal = 2000;
+            this.e_cSkill = new Slam();
+            this.e_hSkill = new Spike();
+        }
+    }
+
     class Character extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -1163,6 +1178,7 @@
             this.m_isFacingRight = true;
             this.m_canJump = true;
             this.m_canAttack = true;
+            this.m_canSprint = true;
             this.m_atkTimer = null;
             this.m_atkStep = 0;
             this.m_hurted = false;
@@ -1214,11 +1230,6 @@
                 if (col.label === "ground") {
                     this.resetMove();
                     this.m_canJump = true;
-                }
-                if (col.tag === "Enemy" && !this.m_hurtTimer) {
-                    this.delayMove(0.15);
-                    this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -10.0 : 10.0, y: 0.0 };
-                    this.takeDamage(50.0);
                 }
                 this.takeDamage(this.getEnemyAttackDamage(col.tag));
             };
@@ -1345,6 +1356,16 @@
                 this.applyMoveX();
                 if (!this.m_animationChanging)
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
+            }
+            if (this.m_keyDownList[16]) {
+                if (!this.m_canSprint)
+                    return;
+                this.delayMove(0.5);
+                Laya.Tween.to(this.m_animation, { x: this.m_isFacingRight ? this.m_animation.x + 250 : this.m_animation.x - 250 }, 500, Laya.Ease.linearInOut, null, 0);
+                this.m_canSprint = false;
+                setTimeout(() => {
+                    this.m_canSprint = true;
+                }, 3000);
             }
             if (this.m_keyDownList[38]) {
                 if (this.m_canJump) {
@@ -1501,8 +1522,8 @@
             }, 10);
         }
         setSkill() {
-            this.m_humanSkill = new Spike();
-            this.m_catSkill = new BlackHole();
+            this.m_catSkill = new ExtraData().e_cSkill;
+            this.m_humanSkill = new ExtraData().e_hSkill;
         }
         delayMove(time) {
             if (this.m_moveDelayTimer) {
@@ -1700,7 +1721,6 @@
                     clearInterval(this.battleTimer);
                     this.battleTimer = null;
                 }
-                console.log(CharacterInit.playerEnt.m_animation.x);
             }, 500);
             this.showBattleInfo();
         }
@@ -1718,7 +1738,7 @@
             this.endingSkillUI = new Laya.Sprite();
             this.endingSkillUI.width = 684;
             this.endingSkillUI.height = 576;
-            this.endingSkillUI.loadImage('Screen/ending/skill.png');
+            this.endingSkillUI.loadImage('ui/ending/skill.png');
             this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.x - 325), 94);
             this.endingSkillUI.alpha = 0;
             Laya.stage.addChild(this.endingSkillUI);
@@ -1737,7 +1757,7 @@
             this.endingRewardUI = new Laya.Sprite();
             this.endingRewardUI.width = 342;
             this.endingRewardUI.height = 288;
-            this.endingRewardUI.loadImage('Screen/ending/ending.png');
+            this.endingRewardUI.loadImage('ui/ending/ending.png');
             this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
             Laya.stage.addChild(this.endingRewardUI);
         }
@@ -1763,20 +1783,15 @@
     }
 
     class Village extends Laya.Script {
-        constructor() {
-            super(...arguments);
-            this.reinforceBtn = null;
-            this.templeBtn = null;
-            this.battleBtn = null;
-        }
         onStart() {
+            this.precacheData();
             Laya.stage.x = 0;
             Laya.stage.y = 0;
             this.reinforceBtn = this.owner.getChildByName("Reinforce");
             this.templeBtn = this.owner.getChildByName("Temple");
             this.battleBtn = this.owner.getChildByName("Battle");
             this.reinforceBtn.on(Laya.Event.CLICK, this, function () {
-                console.log("reinforce");
+                this.showReinforceUI();
             });
             this.templeBtn.on(Laya.Event.CLICK, this, function () {
                 console.log("temple");
@@ -1784,7 +1799,36 @@
             this.battleBtn.on(Laya.Event.CLICK, this, function () {
                 Laya.Scene.open("First.scene");
             });
-            console.log(Laya.stage.x, Laya.stage.y);
+        }
+        precacheData() {
+            let p = new ExtraData();
+            this.c_gold = p.e_gold;
+            this.c_crystal = p.e_crystal;
+        }
+        showReinforceUI() {
+            this.reinforceUI = new Laya.Sprite();
+            this.reinforceUI.loadImage("ui/reinforce.png");
+            this.reinforceUI.width = 1066;
+            this.reinforceUI.height = 550;
+            this.reinforceUI.pos(150, 109);
+            this.reinforceUI.alpha = 1;
+            this.reinforceBackBtn = new Laya.Button();
+            this.reinforceBackBtn.width = this.reinforceBackBtn.height = 73;
+            this.reinforceBackBtn.pos(150 + 933, 109 + 56);
+            this.reinforceBackBtn.on(Laya.Event.CLICK, this, () => {
+                this.reinforceUI.destroy();
+                this.reinforceBackBtn.destroy();
+                this.reinforceGold.destroy();
+            });
+            this.reinforceGold = new Laya.Text();
+            this.reinforceGold.font = "silver";
+            this.reinforceGold.fontSize = 120;
+            this.reinforceGold.color = "#fff";
+            this.reinforceGold.text = String(this.c_gold);
+            this.reinforceGold.pos(150 + 433, 109 + 393);
+            Laya.stage.addChild(this.reinforceUI);
+            Laya.stage.addChild(this.reinforceBackBtn);
+            Laya.stage.addChild(this.reinforceGold);
         }
     }
 
@@ -1805,7 +1849,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "First.scene";
+    GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

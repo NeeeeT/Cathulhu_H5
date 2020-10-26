@@ -93,7 +93,7 @@ export class Behead extends VirtualSkill {
     m_name = '攻其不備';
     m_damage = 444;
     m_cost = 0;
-    m_id = 1;
+    m_id = 2;
     m_cd = 3;
 
     /** 技能的準備時間 */
