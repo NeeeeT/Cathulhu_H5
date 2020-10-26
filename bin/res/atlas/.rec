@@ -17,6 +17,7 @@ P B251754D Blood_0012.png
 P F7503637 Blood_0013.png
 P 550FE1FA Blood_0014.png
 D Cat(1013)
+D Cat(1025)
 D character
 P D32D8CC2 Player_attack_0.png
 P 643FA78E Player_attack_1.png
@@ -24,7 +25,6 @@ P F62B59C8 Player_attack_2.png
 P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
-D Character(0903)
 D Character(0904)
 D Character(0929)
 D Character(1002)
@@ -97,6 +97,7 @@ P 0D25E4AD run_05.png
 P 5DDD39F6 run_06.png
 P E9366A50 run_07.png
 P 479C85CB run_08.png
+D Screen(1025)
 D Skill
 P 13615EFF circle.png
 P 0A467EB4 spike.png
@@ -140,6 +141,16 @@ P 0BA2EB52 cat_erosion_1.png
 P C60330A5 cat_erosion_2.png
 P 2013F188 cat_erosion_3.png
 P 2496871E cat_erosion_4.png
+D Cat(1025)/0.Slam
+P 230E3D2A cat_slam_1.png
+P CE36AE18 cat_slam_2.png
+P CB31CCEF cat_slam_3.png
+P 024F1843 cat_slam_4.png
+D Cat(1025)/1.Erosion
+P E2E2EA27 cat_erosion_1.png
+P 84787EFD cat_erosion_2.png
+P 5EC37005 cat_erosion_3.png
+P 689E898E cat_erosion_4.png
 D Character(0904)/Run
 P E6D601D9 character_run_1.png
 P 19DBFBFA character_run_2.png
@@ -196,6 +207,24 @@ R 60DEB618 Slash_0032.png
 R 13FB1308 Slash_0033.png
 R 36563627 Slash_0034.png
 R 97BACC82 Slash_0035.png
+D Screen(1025)/0.summary
+P C7F8033A 0.summar_example.png
+R 7EC8151E 1.summary_number_color.png
+P DD5B1B7F summary.png
+D Screen(1025)/1.choice_skill
+R 51D77544 0.chioce_skill_example.png
+R 3E3129BB 1.skill_text_color.png
+R 4F371D4F chioce_skill.png
+P 46F7C59A chioce_skill_button(Bright).png
+P 0EE2179A chioce_skill_button(Dark).png
+D Screen(1025)/2.chioce_mission
+R 0578D8B6 0.chioce_mission_example.png
+R C41EEA9D 1.mission_text_color.png
+R AE883E5A chioce_mission.png
+P 5BAB5835 chioce_mission_button(Bright).png
+P 8F543625 chioce_mission_button(Dark).png
+P DEEAFC30 skull.png
+P 61615B3A star.png
 D UI(1020)/Blood
 P 6C98F162 Bar_blood.png
 P F34D34E1 Bar_blood_color.png

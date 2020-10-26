@@ -150,7 +150,7 @@ export class Character extends Laya.Script {
         this.m_rigidbody.allowRotation = false;
         this.m_rigidbody.gravityScale = 3;
         this.m_rigidbody.category = 4;
-        this.m_rigidbody.mask = 8 | 2 | 16;
+        this.m_rigidbody.mask = 2 | 8 | 16;
 
         Laya.stage.addChild(this.m_animation);
 
@@ -195,7 +195,6 @@ export class Character extends Laya.Script {
             }), 0);
         
         this.hurtedEvent(0.5);
-        // this.resetMove();
     }
     private checkJumpTimer(){
         let timer = setInterval(()=>{
@@ -656,7 +655,7 @@ export class Character extends Laya.Script {
         if(this.m_animation.destroyed) return;
 
         let player_pivot_x: number = Laya.stage.width / 2;
-        let player_pivot_y: number = Laya.stage.height / 2;
+        // let player_pivot_y: number = Laya.stage.height / 2;
 
         setInterval(() => {
             if(this.m_animation.destroyed) return;

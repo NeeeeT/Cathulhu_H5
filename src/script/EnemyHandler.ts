@@ -96,7 +96,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_collider.tag = 'Enemy';
         // this.m_collider.friction = 10;
 
-        this.m_rigidbody.category = 8;
+        this.m_rigidbody.category = 64;
         this.m_rigidbody.mask = 4 | 2;
         this.m_rigidbody.allowRotation = false;
         this.m_rigidbody.gravityScale = 5;
@@ -479,7 +479,7 @@ export class Normal extends VirtualEnemy {
     m_name = '普通敵人';
     m_health = 1000;
     m_armor = 100;
-    m_speed = 2;
+    m_speed = 1.7;
     m_tag = 'n';
     m_attackRange = 100;
     m_mdelay = 0.1;
@@ -490,7 +490,7 @@ export class Shield extends VirtualEnemy {
     m_name = '裝甲敵人';
     m_armor = 500;
     m_health = 1500;
-    m_speed = 1;
+    m_speed = 1.5;
     m_tag = 's';
     m_attackRange = 100;
     m_mdelay = 0.05;

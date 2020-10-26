@@ -6,7 +6,12 @@ export default class EnemyInit extends Laya.Script{
     enemyGenerateTime: number = 5000;
     /** @prop {name:enemyLeft,tips:"生成的敵人數量",type:int,default:50}*/
     enemyLeft: number = 50;
+
     battleToggle = true;
+    battleTimer = null;
+
+    endingRewardUI: Laya.Sprite;
+    endingSkillUI: Laya.Sprite;
 
     constructor(){
         super();
@@ -14,23 +19,62 @@ export default class EnemyInit extends Laya.Script{
     onStart(){
         let player = CharacterInit.playerEnt.m_animation;
         let enemy = EnemyHandler.enemyPool;
-        // let isFacingRight: boolean = CharacterInit.playerEnt.m_isFacingRight;
-
-        EnemyHandler.generator(player, 1, 0);
         setInterval(() =>{
             if(CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20) return;
             EnemyHandler.generator(player, 1, 0);
             this.enemyLeft--;
         }, this.enemyGenerateTime)
+        this.battleTimer = setInterval(()=>{
+            if(this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0){
+                // Laya.Scene.open("Village.scene");
+                // Laya.stage.x = Laya.stage.y = 0; 
+                this.battleToggle = false;
+                this.unsetCharacter();
+                clearInterval(this.battleTimer);
+                this.battleTimer = null;
+            }
+            console.log(CharacterInit.playerEnt.m_animation.x);
+        }, 500);
         this.showBattleInfo();
     }
-    onUpdate(){
-        if(this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0){
-            CharacterInit.playerEnt.m_animation.destroy();
-            Laya.Scene.open("Village.scene");
-            Laya.stage.x = Laya.stage.y = 0;
-            this.battleToggle = false;
+    onKeyUp(e: Laya.Event){
+        if(this.endingRewardUI && e.keyCode === 32){
+            Laya.Tween.to(this.endingRewardUI, {alpha: 0.2}, 500, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
+                this.endingRewardUI.destroy();
+                this.endingRewardUI = null;
+                this.showEndSkill();
+            }), 0);
         }
+    }
+    showEndSkill(): void{
+        let player = CharacterInit.playerEnt.m_animation;
+        this.endingSkillUI = new Laya.Sprite();
+        this.endingSkillUI.width = 684;
+        this.endingSkillUI.height = 576;
+        this.endingSkillUI.loadImage('Screen/ending/skill.png');
+        this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.x - 325), 94);//544 - 450 = 94
+        this.endingSkillUI.alpha = 0;
+
+        Laya.stage.addChild(this.endingSkillUI);
+
+        Laya.Tween.to(this.endingSkillUI, {alpha: 1.0}, 500, Laya.Ease.linearInOut, null, 0);
+    }
+    unsetCharacter(): void{
+        let player = CharacterInit.playerEnt.m_animation;
+        Laya.Tween.to(player, {alpha: 0}, 700, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
+            this.showEndRewardUI();
+            player.destroy();
+            player.destroyed = true;
+        }), 0);
+    }
+    showEndRewardUI(): void{
+        let player = CharacterInit.playerEnt.m_animation;
+        this.endingRewardUI = new Laya.Sprite();
+        this.endingRewardUI.width = 342;
+        this.endingRewardUI.height = 288;
+        this.endingRewardUI.loadImage('Screen/ending/ending.png');
+        this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
+        Laya.stage.addChild(this.endingRewardUI);
     }
     showBattleInfo(): void{
         let info = new Laya.Text();

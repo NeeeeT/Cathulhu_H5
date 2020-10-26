@@ -2,11 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":217,
+    "selecteID":238,
     "searchKey":"Scene",
     "props":{"x":0,"width":4098,"skewY":0,"skewX":0,"sceneColor":"gray","pivotX":0,"height":768},
     "nodeParent":-1,
-    "maxID":236,
+    "maxID":239,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -84,7 +84,7 @@
             "source":"src/script/EnemyInit.ts",
             "searchKey":"Script,EnemyInit",
             "removeAble":true,
-            "props":{"enemyLeft":30,"enemyGenerateTime":2000,"EnemyGenerateTime":5000},
+            "props":{"enemyLeft":5,"enemyGenerateTime":1000,"EnemyGenerateTime":5000},
             "nodeParent":2,
             "label":"EnemyInit",
             "isDirectory":false,
@@ -187,7 +187,6 @@
             "compId":232,
             "child":[
                 {
-                    "x":30,
                     "type":"BoxCollider",
                     "switchAble":true,
                     "searchKey":"BoxCollider",
@@ -203,7 +202,6 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"RigidBody",
                     "switchAble":true,
                     "searchKey":"RigidBody",

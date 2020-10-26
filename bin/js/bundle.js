@@ -93,7 +93,7 @@
             this.m_collider.y -= 10;
             this.m_collider.label = id;
             this.m_collider.tag = 'Enemy';
-            this.m_rigidbody.category = 8;
+            this.m_rigidbody.category = 64;
             this.m_rigidbody.mask = 4 | 2;
             this.m_rigidbody.allowRotation = false;
             this.m_rigidbody.gravityScale = 5;
@@ -435,7 +435,7 @@
             this.m_name = '普通敵人';
             this.m_health = 1000;
             this.m_armor = 100;
-            this.m_speed = 2;
+            this.m_speed = 20;
             this.m_tag = 'n';
             this.m_attackRange = 100;
             this.m_mdelay = 0.1;
@@ -1242,7 +1242,7 @@
             this.m_rigidbody.allowRotation = false;
             this.m_rigidbody.gravityScale = 3;
             this.m_rigidbody.category = 4;
-            this.m_rigidbody.mask = 8 | 2 | 16;
+            this.m_rigidbody.mask = 2 | 8 | 16;
             Laya.stage.addChild(this.m_animation);
             OathManager.showBloodyPoint(this.m_animation);
             OathManager.showBloodyLogo(this.m_animation);
@@ -1553,7 +1553,6 @@
             if (this.m_animation.destroyed)
                 return;
             let player_pivot_x = Laya.stage.width / 2;
-            let player_pivot_y = Laya.stage.height / 2;
             setInterval(() => {
                 if (this.m_animation.destroyed)
                     return;
@@ -1683,26 +1682,64 @@
             this.enemyGenerateTime = 5000;
             this.enemyLeft = 50;
             this.battleToggle = true;
+            this.battleTimer = null;
         }
         onStart() {
             let player = CharacterInit.playerEnt.m_animation;
             let enemy = EnemyHandler.enemyPool;
-            EnemyHandler.generator(player, 1, 0);
             setInterval(() => {
                 if (CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20)
                     return;
                 EnemyHandler.generator(player, 1, 0);
                 this.enemyLeft--;
             }, this.enemyGenerateTime);
+            this.battleTimer = setInterval(() => {
+                if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0) {
+                    this.battleToggle = false;
+                    this.unsetCharacter();
+                    clearInterval(this.battleTimer);
+                    this.battleTimer = null;
+                }
+                console.log(CharacterInit.playerEnt.m_animation.x);
+            }, 500);
             this.showBattleInfo();
         }
-        onUpdate() {
-            if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0) {
-                CharacterInit.playerEnt.m_animation.destroy();
-                Laya.Scene.open("Village.scene");
-                Laya.stage.x = Laya.stage.y = 0;
-                this.battleToggle = false;
+        onKeyUp(e) {
+            if (this.endingRewardUI && e.keyCode === 32) {
+                Laya.Tween.to(this.endingRewardUI, { alpha: 0.2 }, 500, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    this.endingRewardUI.destroy();
+                    this.endingRewardUI = null;
+                    this.showEndSkill();
+                }), 0);
             }
+        }
+        showEndSkill() {
+            let player = CharacterInit.playerEnt.m_animation;
+            this.endingSkillUI = new Laya.Sprite();
+            this.endingSkillUI.width = 684;
+            this.endingSkillUI.height = 576;
+            this.endingSkillUI.loadImage('Screen/ending/skill.png');
+            this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.x - 325), 94);
+            this.endingSkillUI.alpha = 0;
+            Laya.stage.addChild(this.endingSkillUI);
+            Laya.Tween.to(this.endingSkillUI, { alpha: 1.0 }, 500, Laya.Ease.linearInOut, null, 0);
+        }
+        unsetCharacter() {
+            let player = CharacterInit.playerEnt.m_animation;
+            Laya.Tween.to(player, { alpha: 0 }, 700, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                this.showEndRewardUI();
+                player.destroy();
+                player.destroyed = true;
+            }), 0);
+        }
+        showEndRewardUI() {
+            let player = CharacterInit.playerEnt.m_animation;
+            this.endingRewardUI = new Laya.Sprite();
+            this.endingRewardUI.width = 342;
+            this.endingRewardUI.height = 288;
+            this.endingRewardUI.loadImage('Screen/ending/ending.png');
+            this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
+            Laya.stage.addChild(this.endingRewardUI);
         }
         showBattleInfo() {
             let info = new Laya.Text();
