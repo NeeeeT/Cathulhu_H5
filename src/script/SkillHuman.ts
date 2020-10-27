@@ -1,11 +1,12 @@
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
+import OathManager from "./OathManager";
 import { VirtualSkill } from "./SkillManager";
 
 export class Spike extends VirtualSkill {
     m_name = '突進斬';
     m_damage = 111;
-    m_cost = 0;
+    m_cost = 30;
     m_id = 1;
     m_cd = 3;
 
@@ -16,7 +17,7 @@ export class Spike extends VirtualSkill {
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
-
+        if (!OathManager.oathCastSkill(this.m_cost)) return;
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
@@ -92,7 +93,7 @@ export class Spike extends VirtualSkill {
 export class Behead extends VirtualSkill {
     m_name = '攻其不備';
     m_damage = 444;
-    m_cost = 0;
+    m_cost = 10;
     m_id = 2;
     m_cd = 3;
 
@@ -101,7 +102,7 @@ export class Behead extends VirtualSkill {
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
-
+        if (!OathManager.oathCastSkill(this.m_cost)) return;
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
