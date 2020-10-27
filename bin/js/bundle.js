@@ -1160,9 +1160,13 @@
             super();
             this.loadData();
         }
+        setCookie() {
+        }
+        getCookie() {
+        }
         loadData() {
-            this.e_hpLevel = 5;
             this.e_atkDmgLevel = 7;
+            this.e_hpLevel = 5;
             this.e_gold = 3500;
             this.e_crystal = 2000;
             this.e_cSkill = 1;
@@ -1858,6 +1862,19 @@
             this.setReinforceAtkDmgCostBtn();
             this.setReinforceHpCostBtn();
         }
+        clearReinforceUI() {
+            this.reinforceUI.destroy();
+            this.reinforceBackBtn.destroy();
+            this.reinforceGold.destroy();
+            this.reinforceAtkDmgLevel.destroy();
+            this.reinforceHpLevel.destroy();
+            this.reinforceAtkDmgCost.destroy();
+            this.reinforceHpCost.destroy();
+            this.reinforceAtkDmgCostBtn.destroy();
+            this.reinforceHpCostBtn.destroy();
+            this.reinforceUI = this.reinforceBackBtn = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
+                = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = null;
+        }
         setReinfoceUI() {
             this.reinforceUI = new Laya.Sprite();
             this.reinforceUI.loadImage("ui/reinforce.png");
@@ -1872,15 +1889,7 @@
             this.reinforceBackBtn.width = this.reinforceBackBtn.height = 73;
             this.reinforceBackBtn.pos(150 + 933, 109 + 56);
             this.reinforceBackBtn.on(Laya.Event.CLICK, this, () => {
-                this.reinforceUI.destroy();
-                this.reinforceBackBtn.destroy();
-                this.reinforceGold.destroy();
-                this.reinforceAtkDmgLevel.destroy();
-                this.reinforceHpLevel.destroy();
-                this.reinforceAtkDmgCost.destroy();
-                this.reinforceHpCost.destroy();
-                this.reinforceAtkDmgCostBtn.destroy();
-                this.reinforceHpCostBtn.destroy();
+                this.clearReinforceUI();
             });
             Laya.stage.addChild(this.reinforceBackBtn);
         }
@@ -1980,6 +1989,8 @@
             this.reinforceHpCostBtn.height = 60;
             this.reinforceHpCostBtn.pos(150 + 726, 109 + 307);
             this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, () => {
+                console.log(this.c_crystal);
+                console.log(this.c_gold);
                 if (this.c_gold < this.c_hpLevel * 100) {
                     return;
                 }
