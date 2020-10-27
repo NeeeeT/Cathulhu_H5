@@ -612,12 +612,33 @@ export class Character extends Laya.Script {
         }, 10);
     }
     private setSkill(): void{
-        // this.m_humanSkill = new hSkill.Spike();//設定人類技能為 "突進斬"
-        // this.m_humanSkill = new hSkill.Behead();
-        // this.m_catSkill = new cSkill.Slam()//設定貓類技能為 "猛擊"
-        // this.m_catSkill = new cSkill.BlackHole();
-        this.m_catSkill = new ExtraData().e_cSkill;
-        this.m_humanSkill = new ExtraData().e_hSkill;
+        this.m_catSkill = this.getSkillTypeByExtraData('c', new ExtraData().e_cSkill);
+        this.m_humanSkill = this.getSkillTypeByExtraData('h', new ExtraData().e_hSkill);
+    }
+    private getSkillTypeByExtraData(type: string, id: number): VirtualSkill{
+        if(type === 'c'){
+            switch (id) {
+                case 1:
+                    return new cSkill.BlackHole();
+                case 2:
+                    return new cSkill.Slam();
+                default:
+                    return new cSkill.BlackHole();
+            }
+        }
+        else if(type === 'h'){
+            switch (id) {
+                case 1:
+                    return new hSkill.Spike();
+                case 2:
+                    return new hSkill.Behead();
+                default:
+                    return new hSkill.Spike();
+            }
+        }
+        else{
+            return null;
+        }
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
     public delayMove(time: number): void{

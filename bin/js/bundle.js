@@ -1161,12 +1161,12 @@
             this.loadData();
         }
         loadData() {
-            this.e_health = 500;
-            this.e_atkDmg = 500;
-            this.e_gold = 1500;
+            this.e_hpLevel = 5;
+            this.e_atkDmgLevel = 7;
+            this.e_gold = 3500;
             this.e_crystal = 2000;
-            this.e_cSkill = new Slam();
-            this.e_hSkill = new Spike();
+            this.e_cSkill = 1;
+            this.e_hSkill = 1;
         }
     }
 
@@ -1522,8 +1522,33 @@
             }, 10);
         }
         setSkill() {
-            this.m_catSkill = new ExtraData().e_cSkill;
-            this.m_humanSkill = new ExtraData().e_hSkill;
+            this.m_catSkill = this.getSkillTypeByExtraData('c', new ExtraData().e_cSkill);
+            this.m_humanSkill = this.getSkillTypeByExtraData('h', new ExtraData().e_hSkill);
+        }
+        getSkillTypeByExtraData(type, id) {
+            if (type === 'c') {
+                switch (id) {
+                    case 1:
+                        return new BlackHole();
+                    case 2:
+                        return new Slam();
+                    default:
+                        return new BlackHole();
+                }
+            }
+            else if (type === 'h') {
+                switch (id) {
+                    case 1:
+                        return new Spike();
+                    case 2:
+                        return new Behead();
+                    default:
+                        return new Spike();
+                }
+            }
+            else {
+                return null;
+            }
         }
         delayMove(time) {
             if (this.m_moveDelayTimer) {
@@ -1783,8 +1808,23 @@
     }
 
     class Village extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.reinforceBtn = null;
+            this.templeBtn = null;
+            this.battleBtn = null;
+            this.reinforceUI = null;
+            this.reinforceBackBtn = null;
+            this.reinforceGold = null;
+            this.reinforceHpLevel = null;
+            this.reinforceAtkDmgLevel = null;
+            this.reinforceHpCost = null;
+            this.reinforceHpCostBtn = null;
+            this.reinforceAtkDmgCost = null;
+            this.reinforceAtkDmgCostBtn = null;
+        }
         onStart() {
-            this.precacheData();
+            this.updateData();
             Laya.stage.x = 0;
             Laya.stage.y = 0;
             this.reinforceBtn = this.owner.getChildByName("Reinforce");
@@ -1800,18 +1840,34 @@
                 Laya.Scene.open("First.scene");
             });
         }
-        precacheData() {
+        updateData() {
             let p = new ExtraData();
             this.c_gold = p.e_gold;
             this.c_crystal = p.e_crystal;
+            this.c_hpLevel = p.e_hpLevel;
+            this.c_atkDmgLevel = p.e_atkDmgLevel;
         }
         showReinforceUI() {
+            this.setReinfoceUI();
+            this.setReinfoceBackBtn();
+            this.setReinfoceGoldValue();
+            this.setReinfoceAtkDmgLevel();
+            this.setReinfoceHpLevel();
+            this.setReinfoceAtkDmgCost();
+            this.setReinfoceHpCost();
+            this.setReinforceAtkDmgCostBtn();
+            this.setReinforceHpCostBtn();
+        }
+        setReinfoceUI() {
             this.reinforceUI = new Laya.Sprite();
             this.reinforceUI.loadImage("ui/reinforce.png");
             this.reinforceUI.width = 1066;
             this.reinforceUI.height = 550;
             this.reinforceUI.pos(150, 109);
             this.reinforceUI.alpha = 1;
+            Laya.stage.addChild(this.reinforceUI);
+        }
+        setReinfoceBackBtn() {
             this.reinforceBackBtn = new Laya.Button();
             this.reinforceBackBtn.width = this.reinforceBackBtn.height = 73;
             this.reinforceBackBtn.pos(150 + 933, 109 + 56);
@@ -1819,16 +1875,121 @@
                 this.reinforceUI.destroy();
                 this.reinforceBackBtn.destroy();
                 this.reinforceGold.destroy();
+                this.reinforceAtkDmgLevel.destroy();
+                this.reinforceHpLevel.destroy();
+                this.reinforceAtkDmgCost.destroy();
+                this.reinforceHpCost.destroy();
+                this.reinforceAtkDmgCostBtn.destroy();
+                this.reinforceHpCostBtn.destroy();
             });
+            Laya.stage.addChild(this.reinforceBackBtn);
+        }
+        setReinfoceGoldValue() {
+            if (this.reinforceGold) {
+                this.reinforceGold.text = String(this.c_gold);
+                return;
+            }
             this.reinforceGold = new Laya.Text();
             this.reinforceGold.font = "silver";
-            this.reinforceGold.fontSize = 120;
+            this.reinforceGold.fontSize = 100;
             this.reinforceGold.color = "#fff";
             this.reinforceGold.text = String(this.c_gold);
-            this.reinforceGold.pos(150 + 433, 109 + 393);
-            Laya.stage.addChild(this.reinforceUI);
-            Laya.stage.addChild(this.reinforceBackBtn);
+            this.reinforceGold.pos(150 + 433, 109 + 404);
             Laya.stage.addChild(this.reinforceGold);
+        }
+        setReinfoceAtkDmgLevel() {
+            if (this.reinforceAtkDmgLevel) {
+                this.reinforceAtkDmgLevel.text = String(this.c_atkDmgLevel);
+                return;
+            }
+            this.reinforceAtkDmgLevel = new Laya.Text();
+            this.reinforceAtkDmgLevel.font = "silver";
+            this.reinforceAtkDmgLevel.fontSize = 100;
+            this.reinforceAtkDmgLevel.color = "#00FFFF";
+            this.reinforceAtkDmgLevel.stroke = 10;
+            this.reinforceAtkDmgLevel.strokeColor = "#000";
+            this.reinforceAtkDmgLevel.text = String(this.c_atkDmgLevel);
+            this.reinforceAtkDmgLevel.pos(150 + 578, 109 + 198);
+            Laya.stage.addChild(this.reinforceAtkDmgLevel);
+        }
+        setReinfoceHpLevel() {
+            if (this.reinforceHpLevel) {
+                this.reinforceHpLevel.text = String(this.c_hpLevel);
+                return;
+            }
+            this.reinforceHpLevel = new Laya.Text();
+            this.reinforceHpLevel.font = "silver";
+            this.reinforceHpLevel.fontSize = 100;
+            this.reinforceHpLevel.color = "#00FFFF";
+            this.reinforceHpLevel.stroke = 10;
+            this.reinforceHpLevel.strokeColor = "#000";
+            this.reinforceHpLevel.text = String(this.c_hpLevel);
+            this.reinforceHpLevel.pos(150 + 578, 109 + 297);
+            Laya.stage.addChild(this.reinforceHpLevel);
+        }
+        setReinfoceAtkDmgCost() {
+            if (this.reinforceAtkDmgCost) {
+                this.reinforceAtkDmgCost.text = '-' + String(this.c_atkDmgLevel * 100);
+                return;
+            }
+            this.reinforceAtkDmgCost = new Laya.Text();
+            this.reinforceAtkDmgCost.font = "silver";
+            this.reinforceAtkDmgCost.fontSize = 100;
+            this.reinforceAtkDmgCost.color = "#d1ce07";
+            this.reinforceAtkDmgCost.stroke = 10;
+            this.reinforceAtkDmgCost.strokeColor = "#000";
+            this.reinforceAtkDmgCost.text = '-' + String(this.c_atkDmgLevel * 100);
+            this.reinforceAtkDmgCost.pos(150 + 908, 109 + 193);
+            Laya.stage.addChild(this.reinforceAtkDmgCost);
+        }
+        setReinfoceHpCost() {
+            if (this.reinforceHpCost) {
+                this.reinforceHpCost.text = '-' + String(this.c_hpLevel * 100);
+                return;
+            }
+            this.reinforceHpCost = new Laya.Text();
+            this.reinforceHpCost.font = "silver";
+            this.reinforceHpCost.fontSize = 100;
+            this.reinforceHpCost.color = "#d1ce07";
+            this.reinforceHpCost.stroke = 10;
+            this.reinforceHpCost.strokeColor = "#000";
+            this.reinforceHpCost.text = '-' + String(this.c_hpLevel * 100);
+            this.reinforceHpCost.pos(150 + 908, 109 + 299);
+            Laya.stage.addChild(this.reinforceHpCost);
+        }
+        setReinforceAtkDmgCostBtn() {
+            this.reinforceAtkDmgCostBtn = new Laya.Button();
+            this.reinforceAtkDmgCostBtn.width = 103;
+            this.reinforceAtkDmgCostBtn.height = 60;
+            this.reinforceAtkDmgCostBtn.pos(150 + 726, 109 + 203);
+            this.reinforceAtkDmgCostBtn.on(Laya.Event.CLICK, this, () => {
+                if (this.c_gold < this.c_atkDmgLevel * 100) {
+                    return;
+                }
+                this.c_gold -= this.c_atkDmgLevel * 100;
+                this.c_atkDmgLevel++;
+                this.setReinfoceAtkDmgLevel();
+                this.setReinfoceAtkDmgCost();
+                this.setReinfoceGoldValue();
+            });
+            Laya.stage.addChild(this.reinforceAtkDmgCostBtn);
+        }
+        setReinforceHpCostBtn() {
+            this.reinforceHpCostBtn = new Laya.Button();
+            this.reinforceHpCostBtn.width = 103;
+            this.reinforceHpCostBtn.height = 60;
+            this.reinforceHpCostBtn.pos(150 + 726, 109 + 307);
+            this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, () => {
+                if (this.c_gold < this.c_hpLevel * 100) {
+                    return;
+                }
+                this.c_gold -= this.c_hpLevel * 100;
+                this.c_hpLevel++;
+                this.setReinfoceHpLevel();
+                this.setReinfoceHpCost();
+                this.setReinfoceGoldValue();
+            });
+            Laya.stage.addChild(this.reinforceHpCostBtn);
         }
     }
 
