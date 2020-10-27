@@ -415,7 +415,12 @@ export class Character extends Laya.Script {
                 this.m_canAttack = true;
             }, this.m_attackCdTime);
         }
-        if (this.m_keyDownList[16]) console.log(OathManager.playerDebuff);
+        if (this.m_keyDownList[16]) {
+            console.log(("按下shift"));
+            
+            OathManager.addDebuff(1 << 0);
+            OathManager.setBloodyPoint(100);
+        } 
         if (this.m_keyDownList[49]&&this.m_keyDownList[37] || this.m_keyDownList[49]&&this.m_keyDownList[39]){
             this.m_humanSkill.cast(CharacterInit.playerEnt,
             {

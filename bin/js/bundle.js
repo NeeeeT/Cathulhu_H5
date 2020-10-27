@@ -503,90 +503,202 @@
     })(DebuffType || (DebuffType = {}));
     class DebuffProto extends Laya.Script {
         constructor() {
-            super(...arguments);
+            super();
             this.player = CharacterInit.playerEnt;
         }
         debuffUpdate() {
+            this.player = CharacterInit.playerEnt;
+        }
+        debuffTextEffect(text) {
+            let damageText = new Laya.Text();
+            damageText.pos(this.player.m_animation.x, this.player.m_animation.y);
+            damageText.bold = true;
+            damageText.align = "center";
+            damageText.alpha = 1;
+            damageText.fontSize = 20;
+            damageText.color = "red";
+            damageText.text = text;
+            damageText.font = "silver";
+            damageText.stroke = 5;
+            damageText.strokeColor = "#000";
+            Laya.stage.addChild(damageText);
+            Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
+            }), 0);
         }
     }
     class Blind extends DebuffProto {
         constructor() {
-            super(...arguments);
+            super();
             this.debuffText = "哈，那東西爆掉的樣子真滑稽";
+            this.blindSprite = null;
+            this.blindBlackBg = null;
+            this.blindCircleMask = null;
+            this.blindHandler = null;
+            console.log("執行 Blind Constructor");
+            this.blindSprite = new Laya.Sprite();
+            this.blindBlackBg = new Laya.Sprite();
+            this.blindCircleMask = new Laya.Sprite();
+            this.blindBlackBg.graphics.drawRect(this.player.m_animation.x, 0, 1400, 768, "000");
+            this.blindCircleMask.graphics.drawCircle(this.player.m_animation.x, this.player.m_animation.y, 150, "000");
+            this.blindSprite.addChild(this.blindBlackBg);
+            this.blindSprite.addChild(this.blindCircleMask);
+            Laya.stage.addChild(this.blindSprite);
+            this.blindHandler = setInterval(() => {
+                this.debuffUpdate();
+            }, 10);
+        }
+        debuffUpdate() {
+            super.debuffUpdate();
+            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+                this.blindBlackBg.x = this.player.m_animation.x - 1400 / 2;
+                this.blindCircleMask.x = this.player.m_animation.x;
+                this.blindCircleMask.y = this.player.m_animation.y;
+            }
+        }
+        startBlind() {
+            this.debuffTextEffect(this.debuffText);
+        }
+        stopBlind() {
+            this.blindSprite.graphics.clear();
+            this.blindBlackBg.graphics.clear();
+            this.blindCircleMask.graphics.clear();
+            clearInterval(this.blindHandler);
         }
     }
     class BodyCrumble extends DebuffProto {
         constructor() {
-            super(...arguments);
+            super();
             this.debuffText = "希望你還走得回去";
+            this.bodyCrumbleHandler = null;
+            this.originVM = 0;
+            this.newVM = 0;
+            this.originXMaxVel_basic = 0;
+            this.newXMaxVel_basic = 0;
+            this.originXMaxVel_buff = 0;
+            this.newXMaxVel_buff = 0;
+            console.log("執行 BodyCrumble Constructor");
+            this.originXMaxVel_basic = this.player.m_basic_xMaxVelocity;
+            this.originXMaxVel_buff = this.player.m_buff_xMaxVelocity;
+            this.originVM = this.player.m_velocityMultiplier;
+            this.newVM = this.player.m_velocityMultiplier * 0.3;
+            this.newXMaxVel_basic = this.player.m_basic_xMaxVelocity * 0.3;
+            this.newXMaxVel_buff = this.player.m_buff_xMaxVelocity * 0.3;
+            this.bodyCrumbleHandler = setInterval(() => {
+                this.debuffUpdate();
+            }, 10);
+        }
+        debuffUpdate() {
+            super.debuffUpdate();
+            this.player.m_basic_xMaxVelocity = this.newXMaxVel_basic;
+            this.player.m_buff_xMaxVelocity = this.newXMaxVel_buff;
+            this.player.m_velocityMultiplier = this.newVM;
+        }
+        startBodyCrumble() {
+            this.debuffTextEffect(this.debuffText);
+        }
+        stopBodyCrumble() {
+            this.player.m_basic_xMaxVelocity = this.originXMaxVel_basic;
+            this.player.m_buff_xMaxVelocity = this.originXMaxVel_buff;
+            this.player.m_velocityMultiplier = this.originVM;
+            clearInterval(this.bodyCrumbleHandler);
         }
     }
     class Insane extends DebuffProto {
         constructor() {
-            super(...arguments);
+            super();
             this.debuffText = "對力量的渴望會讓你拋棄理性";
+            console.log("執行 Insane Constructor");
+        }
+        debuffUpdate() {
+            super.debuffUpdate();
+        }
+        startInsane() {
+            this.debuffTextEffect(this.debuffText);
+        }
+        stopInsane() {
         }
     }
     class Predator extends DebuffProto {
         constructor() {
-            super(...arguments);
+            super();
             this.debuffText = "它們循著氣息來了";
+            console.log("執行 Predator Constructor");
+        }
+        debuffUpdate() {
+            super.debuffUpdate();
+        }
+        startPredator() {
+            this.debuffTextEffect(this.debuffText);
+        }
+        stopPredator() {
         }
     }
     class Decay extends DebuffProto {
         constructor() {
-            super(...arguments);
+            super();
             this.debuffText = "為我戰鬥至到粉身碎骨吧";
+            this.isDecaying = false;
             this.isKilling = false;
+            this.isDamaging = false;
             this.killingTimer = 0;
-            this.currentEnemyCount = 0;
-            this.priviousEnemyCount = 0;
-        }
-        checkKilling() {
-            setTimeout(() => {
-                this.priviousEnemyCount = EnemyHandler.getEnemiesCount();
-            }, 100);
-            this.currentEnemyCount = EnemyHandler.getEnemiesCount();
-            console.log(this.currentEnemyCount - this.priviousEnemyCount);
-            if (this.currentEnemyCount - this.priviousEnemyCount > 0)
-                this.killingTimer = 120;
-            if (this.killingTimer > 0) {
-                this.isKilling = true;
-                this.killingTimer--;
-            }
-            else {
-                this.isKilling = false;
-            }
-        }
-        decayEffect() {
-            this.checkKilling();
-            setInterval(() => {
-                if (this.isKilling) {
-                    this.player.setHealth(this.player.getHealth() - (this.player.m_maxHealth * 0.1));
+            this._currentEnemyCount = 0;
+            this.previousEnemyCount = 0;
+            this.decayHandler = null;
+            this.checkKillingHandler = null;
+            console.log("執行 Decay Constructor");
+            this.checkKillingHandler = setInterval(() => {
+                this.currentEnemyCount = EnemyHandler.getEnemiesCount();
+                if (this.currentEnemyCount < this.previousEnemyCount) {
+                    this.isKilling = true;
                 }
+                else {
+                    this.isKilling = false;
+                }
+            }, 100);
+            this.decayHandler = setInterval(() => {
+                this.debuffUpdate();
             }, 1000);
+        }
+        get currentEnemyCount() {
+            return this._currentEnemyCount;
+        }
+        set currentEnemyCount(value) {
+            this.previousEnemyCount = this.currentEnemyCount;
+            this._currentEnemyCount = value;
         }
         debuffUpdate() {
             super.debuffUpdate();
-            this.decayEffect();
+            if (this.player === null)
+                return;
+            if (this.isDamaging) {
+                this.player.setHealth(this.player.getHealth() - this.player.m_maxHealth * 0.1);
+            }
+        }
+        startDecay() {
+            this.isDecaying = true;
+            this.debuffTextEffect(this.debuffText);
+        }
+        stopDecay() {
+            this.isDecaying = false;
+            clearInterval(this.decayHandler);
+        }
+        killingTimerUpdate() {
+            if (this.isKilling)
+                this.killingTimer = 120;
+            if (!this.isDecaying)
+                return;
+            if (this.killingTimer > 0) {
+                this.killingTimer--;
+                this.isDamaging = false;
+            }
+            else if (this.killingTimer <= 0) {
+                this.isDamaging = true;
+            }
+            console.log("isKilling: ", this.isKilling, "killingTimer: ", this.killingTimer, "isDamaging: ", this.isDamaging);
         }
     }
     class DebuffManager extends Laya.Script {
-        static CastDeBuff(debuffType) {
-            let debuff = this.decideDebuffType(debuffType);
-            debuff.debuffUpdate();
-            return debuff;
-        }
-        static decideDebuffType(debuffType) {
-            switch (debuffType) {
-                case 1 << 0: return new Blind();
-                case 1 << 1: return new BodyCrumble();
-                case 1 << 2: return new Insane();
-                case 1 << 3: return new Predator();
-                case 1 << 4: return new Decay();
-            }
-            ;
-        }
     }
 
     class OathManager extends Laya.Script {
@@ -640,53 +752,97 @@
             switch (type) {
                 case 1 << 0:
                     OathManager.playerDebuff |= DebuffType.blind;
+                    if (this.blindProto === null) {
+                        console.log("add Blind");
+                        this.blindProto = new Blind();
+                        this.blindProto.startBlind();
+                    }
                     break;
                 case 1 << 1:
                     OathManager.playerDebuff |= DebuffType.bodyCrumble;
+                    if (this.bodyCrumbleProto === null) {
+                        this.bodyCrumbleProto = new BodyCrumble();
+                        this.bodyCrumbleProto.startBodyCrumble();
+                    }
                     break;
                 case 1 << 2:
                     OathManager.playerDebuff |= DebuffType.insane;
+                    if (this.insaneProto === null) {
+                        this.insaneProto = new Insane();
+                        this.insaneProto.startInsane();
+                    }
                     break;
                 case 1 << 3:
                     OathManager.playerDebuff |= DebuffType.predator;
+                    if (this.predatorProto === null) {
+                        this.predatorProto = new Predator();
+                        this.predatorProto.startPredator();
+                    }
                     break;
                 case 1 << 4:
                     OathManager.playerDebuff |= DebuffType.decay;
+                    if (this.decayProto === null) {
+                        this.decayProto = new Decay();
+                        this.decayProto.startDecay();
+                    }
                     break;
             }
         }
         static removeDebuff(type) {
             switch (type) {
                 case 1 << 0:
+                    if (this.blindProto != null) {
+                        this.blindProto.stopBlind();
+                        this.blindProto = null;
+                    }
                     OathManager.playerDebuff ^= DebuffType.blind;
                     break;
                 case 1 << 1:
+                    if (this.bodyCrumbleProto != null) {
+                        this.bodyCrumbleProto.stopBodyCrumble();
+                        this.bodyCrumbleProto = null;
+                    }
                     OathManager.playerDebuff ^= DebuffType.bodyCrumble;
                     break;
                 case 1 << 2:
+                    if (this.insaneProto != null) {
+                        this.insaneProto.stopInsane();
+                        this.insaneProto = null;
+                    }
                     OathManager.playerDebuff ^= DebuffType.insane;
                     break;
                 case 1 << 3:
+                    if (this.predatorProto != null) {
+                        this.predatorProto.stopPredator();
+                        this.predatorProto = null;
+                    }
                     OathManager.playerDebuff ^= DebuffType.predator;
                     break;
                 case 1 << 4:
+                    if (this.decayProto != null) {
+                        this.decayProto.stopDecay();
+                        this.decayProto = null;
+                    }
                     OathManager.playerDebuff ^= DebuffType.decay;
                     break;
             }
         }
         static oathUpdate() {
+            let addDebuffTimer = null;
             switch (this.oathState) {
                 case OathStatus.normal:
                     if (OathManager.oathChargeDetect()) {
                         OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
                         this.oathState = OathStatus.charge;
-                        OathManager.addDebuff(1 << 4);
                     }
                     break;
                 case OathStatus.charge:
                     if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && OathManager.overChargeCount >= 2) {
                         OathManager.overChargeCount = 0;
                         OathManager.oathBar.skin = "UI/bp_150.png";
+                        addDebuffTimer = setInterval(() => {
+                            this.randomAddDebuff();
+                        }, 5000);
                         this.oathState = OathStatus.overCharge;
                         return;
                     }
@@ -702,22 +858,26 @@
                     }
                     break;
                 case OathStatus.overCharge:
-                    let addDebuffTimer = setTimeout(() => {
-                        OathManager.addDebuff(1 << Math.ceil(Math.random() * 4));
-                        console.log("debuff", this.playerDebuff);
-                    }, 5000);
                     if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
                         OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
                         return;
                     }
                     if (OathManager.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
                         clearInterval(addDebuffTimer);
+                        addDebuffTimer = null;
+                        for (let i = 0; i <= 4; i++) {
+                            this.removeDebuff(1 << i);
+                        }
                         OathManager.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.charge;
                         return;
                     }
                     if (OathManager.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
                         clearInterval(addDebuffTimer);
+                        addDebuffTimer = null;
+                        for (let i = 0; i <= 4; i++) {
+                            this.removeDebuff(1 << i);
+                        }
                         OathManager.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.normal;
                         return;
@@ -727,6 +887,7 @@
                     this.oathState = OathStatus.normal;
                     break;
             }
+            OathManager.debuffUpdate();
             OathManager.oathBuffUpdate();
         }
         static debuffUpdate() {
@@ -739,11 +900,24 @@
             if ((this.playerDebuff & DebuffType.predator) === DebuffType.predator) {
             }
             if ((this.playerDebuff & DebuffType.decay) === DebuffType.decay) {
-                let debuffText = "為我戰鬥至到粉身碎骨吧";
-                let isKilling = false;
-                let killingTimer = 0;
-                let currentEnemyCount = 0;
-                let priviousEnemyCount = 0;
+                if (this.decayProto != null)
+                    this.decayProto.killingTimerUpdate();
+            }
+        }
+        static randomAddDebuff() {
+            if (this.playerDebuff >= 31)
+                return;
+            let type = Math.floor(Math.random() * Math.floor(5));
+            let isInside = false;
+            for (let i = 0; i <= 4; i++) {
+                if ((this.playerDebuff & 1 << i) === 1 << type)
+                    isInside = true;
+            }
+            if (isInside) {
+                this.randomAddDebuff();
+            }
+            if (!isInside) {
+                OathManager.addDebuff(1 << type);
             }
         }
         static oathCastSkill(cost, valve = 30) {
@@ -758,6 +932,11 @@
     OathManager.isCharging = false;
     OathManager.overChargeCount = 0;
     OathManager.playerDebuff = DebuffType.none;
+    OathManager.blindProto = null;
+    OathManager.bodyCrumbleProto = null;
+    OathManager.insaneProto = null;
+    OathManager.predatorProto = null;
+    OathManager.decayProto = null;
 
     var CharacterStatus;
     (function (CharacterStatus) {
@@ -836,7 +1015,7 @@
             super(...arguments);
             this.m_name = '突進斬';
             this.m_damage = 111;
-            this.m_cost = 0;
+            this.m_cost = 30;
             this.m_id = 1;
             this.m_cd = 3;
             this.m_lastTime = 0.2;
@@ -844,6 +1023,8 @@
         }
         cast(owner, position) {
             if (!this.m_canUse)
+                return;
+            if (!OathManager.oathCastSkill(this.m_cost))
                 return;
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
@@ -906,13 +1087,15 @@
             super(...arguments);
             this.m_name = '攻其不備';
             this.m_damage = 444;
-            this.m_cost = 0;
+            this.m_cost = 10;
             this.m_id = 2;
             this.m_cd = 3;
             this.m_preTime = 1.0;
         }
         cast(owner, position) {
             if (!this.m_canUse)
+                return;
+            if (!OathManager.oathCastSkill(this.m_cost))
                 return;
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
@@ -978,13 +1161,15 @@
             super(...arguments);
             this.m_name = '猛擊';
             this.m_damage = 125;
-            this.m_cost = 0;
+            this.m_cost = 50;
             this.m_id = 2;
             this.m_cd = 1;
             this.m_injuredEnemy = [];
         }
         cast(owner, position) {
             if (!this.m_canUse)
+                return;
+            if (!OathManager.oathCastSkill(this.m_cost))
                 return;
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
@@ -1058,7 +1243,7 @@
             this.m_name = '深淵侵蝕';
             this.m_damage = 99999;
             this.m_dotDamage = 7;
-            this.m_cost = 0;
+            this.m_cost = 80;
             this.m_id = 2;
             this.m_cd = 5;
             this.m_lastTime = 2;
@@ -1066,6 +1251,8 @@
         }
         cast(owner, position) {
             if (!this.m_canUse)
+                return;
+            if (!OathManager.oathCastSkill(this.m_cost))
                 return;
             let rightSide = owner.m_isFacingRight;
             let explosion = new Laya.Animation();
@@ -1417,8 +1604,11 @@
                     this.m_canAttack = true;
                 }, this.m_attackCdTime);
             }
-            if (this.m_keyDownList[16])
-                console.log(OathManager.playerDebuff);
+            if (this.m_keyDownList[16]) {
+                console.log(("按下shift"));
+                OathManager.addDebuff(1 << 0);
+                OathManager.setBloodyPoint(100);
+            }
             if (this.m_keyDownList[49] && this.m_keyDownList[37] || this.m_keyDownList[49] && this.m_keyDownList[39]) {
                 this.m_humanSkill.cast(CharacterInit.playerEnt, {
                     x: this.m_animation.x,
@@ -2021,7 +2211,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "First.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
