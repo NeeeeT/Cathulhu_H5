@@ -226,30 +226,9 @@
                 this.m_healthBar.value = this.m_health / this.m_maxHealth;
             }), 10);
         }
-        bloodSplitEffect(enemy) {
-            let bloodEffect = new Laya.Animation();
-            bloodEffect.scaleX = 2;
-            bloodEffect.scaleY = 2;
-            let colorMat = [
-                2, 0, 0, 0, -100,
-                0, 1, 0, 0, -100,
-                0, 0, 1, 0, -100,
-                0, 0, 0, 1, 0,
-            ];
-            let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
-            let colorFilter = new Laya.ColorFilter(colorMat);
-            bloodEffect.filters = [glowFilter, colorFilter];
-            bloodEffect.pos(enemy.x - 500, enemy.y - 500 + 30);
-            bloodEffect.source = "comp/NewBlood.atlas";
-            bloodEffect.on(Laya.Event.COMPLETE, this, function () {
-                bloodEffect.destroy();
-                bloodEffect.destroyed = true;
-            });
-            Laya.stage.addChild(bloodEffect);
-            bloodEffect.play();
-        }
         slashLightEffect(enemy) {
             let slashLightEffect = new Laya.Animation();
+            let randomRotaion = [0, 45, 90];
             let rotation;
             slashLightEffect.scaleX = 1;
             slashLightEffect.scaleY = 1;
@@ -262,9 +241,10 @@
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashLightEffect.filters = [glowFilter, colorFilter];
-            rotation = Math.floor(Math.random() * 90);
+            rotation = randomRotaion[Math.floor(Math.random() * 3)];
+            let checkRotation = rotation > 45;
             slashLightEffect.rotation = rotation;
-            slashLightEffect.pos(this.m_isFacingRight ? enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320, enemy.y - 2 * rotation - 250 + 30);
+            slashLightEffect.pos(this.m_isFacingRight ? enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320, checkRotation ? enemy.y + 0.1 * rotation - 250 + 30 : enemy.y - 2.2 * rotation - 250 + 30);
             slashLightEffect.source = "comp/SlashLight.atlas";
             slashLightEffect.alpha = 0.8;
             slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -346,13 +326,15 @@
             atkBoxCollider.isSensor = true;
             atkCircleRigid.gravityScale = 0;
             this.updateAnimation(EnemyStatus.idle, EnemyStatus.attack);
-            Laya.stage.addChild(atkCircle);
-            atkBoxCollider.tag = this.m_atkTag;
-            this.m_atkTimer = 100;
+            setTimeout(() => {
+                Laya.stage.addChild(atkCircle);
+                atkBoxCollider.tag = this.m_atkTag;
+                this.m_atkTimer = 100;
+            }, 500);
             setTimeout(() => {
                 atkCircle.destroy();
                 atkCircle.destroyed = true;
-            }, 100);
+            }, 600);
             setTimeout(() => {
                 this.m_atkCd = true;
             }, 1000);
@@ -1090,7 +1072,7 @@
             this.m_cost = 10;
             this.m_id = 2;
             this.m_cd = 3;
-            this.m_preTime = 1.0;
+            this.m_preTime = 0.56;
         }
         cast(owner, position) {
             if (!this.m_canUse)
@@ -1101,26 +1083,27 @@
             this.m_animation = new Laya.Animation();
             this.m_animation.width = owner.m_animation.width;
             this.m_animation.height = owner.m_animation.height;
-            this.m_animation.scaleX = 1;
-            this.m_animation.scaleY = 1;
-            this.m_animation.pos(rightSide ? position['x'] - 240 : position['x'] - 240, position['y'] - 250);
+            this.m_animation.scaleX = 1.5;
+            this.m_animation.scaleY = 1.5;
+            this.m_animation.pos(rightSide ? position['x'] - 380 : position['x'] - 380, position['y'] - 400);
             let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
             let offsetY = position['y'] - this.m_animation.height / 2 + 20;
-            this.m_animation.source = "comp/Target.atlas";
+            this.m_animation.source = "comp/Target/Target_0000.png,comp/Target/Target_0001.png,comp/Target/Target_0002.png,comp/Target/Target_0003.png,comp/Target/Target_0004.png,comp/Target/Target_0005.png,comp/Target/Target_0006.png,comp/Target/Target_0007.png,comp/Target/Target_0008.png,comp/Target/Target_0009.png,comp/Target/Target_0010.png,comp/Target/Target_0011.png,comp/Target/Target_0012.png,comp/Target/Target_0013.png,comp/Target/Target_0014.png,comp/Target/Target_0015.png,comp/Target/Target_0016.png";
             this.m_animation.autoPlay = true;
-            this.m_animation.interval = 25;
+            this.m_animation.interval = 30;
+            this.m_animation.zOrder = 10;
             this.m_canUse = false;
             this.castRoar(position);
             owner.delayMove(this.m_preTime);
             owner.m_rigidbody.linearVelocity = { x: 0.0, y: 0.0 };
             owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 125);
             let colorMat = [
-                3, 0, 2, 0, -300,
-                0, 3, 0, 0, -100,
-                3, 0, 3, 0, -300,
+                3, 2, 2, 0, -250,
+                1, 6, 1, 0, -250,
+                2, 1, 4, 0, -250,
                 0, 0, 0, 2, 0,
             ];
-            let glowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
+            let glowFilter = new Laya.GlowFilter("#0065ff", 8, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [glowFilter, colorFilter];
             this.m_animation.on(Laya.Event.COMPLETE, this, function () {
@@ -1136,6 +1119,7 @@
                     "y0": offsetY,
                     "y1": offsetY + this.m_animation.height,
                 });
+                CharacterInit.playerEnt.m_state = CharacterStatus.attackTwo;
             }, this.m_preTime * 1000);
             setTimeout(() => {
                 this.m_canUse = true;
@@ -1290,6 +1274,7 @@
                 if (count >= this.m_lastTime * 1000) {
                     Laya.stage.addChild(explosion);
                     explosion.play();
+                    owner.setCameraShake(100, 12);
                     setTimeout(() => {
                         explosion.destroy();
                     }, 300);
@@ -1583,7 +1568,6 @@
                     return;
                 if (this.m_atkTimer)
                     clearInterval(this.m_atkTimer);
-                this.createAttackEffect(this.m_animation);
                 this.attackStepEventCheck();
                 if (!this.m_animationChanging) {
                     if (this.m_atkStep === 1) {
@@ -1820,11 +1804,13 @@
                     this.m_animationChanging = true;
                     this.m_animation.source = 'character/Attack1.atlas';
                     this.m_animation.play();
+                    this.createAttackEffect(this.m_animation);
                     break;
                 case CharacterStatus.attackTwo:
                     this.m_animationChanging = true;
                     this.m_animation.source = 'character/Attack2.atlas';
                     this.m_animation.play();
+                    this.createAttackEffect(this.m_animation);
                     break;
                 case CharacterStatus.idle:
                     this.m_animation.source = 'character/Idle.atlas';
@@ -1900,12 +1886,12 @@
             let colorNum = 2;
             let oathColorMat = [
                 Math.floor(Math.random() * 2) + 2, 0, 0, 0, -100,
-                0, Math.floor(Math.random() * 2) + 1, 0, 0, -100,
-                0, 0, Math.floor(Math.random() * 2) + 2, 0, -100,
+                1, Math.floor(Math.random() * 2) + 1, 0, 0, -100,
+                1, 0, Math.floor(Math.random() * 2) + 2, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let colorFilter = new Laya.ColorFilter(oathColorMat);
-            let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 40, 0, 0);
+            let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 10, 0, 0);
             CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
             OathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
             OathManager.oathUpdate();
@@ -2200,7 +2186,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "First.scene";
+    GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

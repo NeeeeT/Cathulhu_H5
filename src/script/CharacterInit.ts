@@ -385,7 +385,7 @@ export class Character extends Laya.Script {
             //     }, 100)
             // }
             if(this.m_atkTimer) clearInterval(this.m_atkTimer);
-            this.createAttackEffect(this.m_animation);
+            // this.createAttackEffect(this.m_animation);
             this.attackStepEventCheck();
 
             if (!this.m_animationChanging){
@@ -726,11 +726,13 @@ export class Character extends Laya.Script {
                 this.m_animationChanging = true;
                 this.m_animation.source = 'character/Attack1.atlas';
                 this.m_animation.play();
+                this.createAttackEffect(this.m_animation);
                 break;
             case CharacterStatus.attackTwo:
                 this.m_animationChanging = true;
                 this.m_animation.source = 'character/Attack2.atlas';
                 this.m_animation.play();
+                this.createAttackEffect(this.m_animation);
                 break;
             case CharacterStatus.idle:
                 this.m_animation.source = 'character/Idle.atlas';
@@ -827,12 +829,12 @@ export default class CharacterInit extends Laya.Script {
         let oathColorMat: Array<number> =
             [
                 Math.floor(Math.random() * 2) + 2, 0, 0, 0, -100, //R
-                0, Math.floor(Math.random() * 2) + 1, 0, 0, -100, //G
-                0, 0, Math.floor(Math.random() * 2) + 2, 0, -100, //B
+                1, Math.floor(Math.random() * 2) + 1, 0, 0, -100, //G
+                1, 0, Math.floor(Math.random() * 2) + 2, 0, -100, //B
                 0, 0, 0, 1, 0, //A
             ];
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(oathColorMat);
-        let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 40, 0, 0);
+        let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 10, 0, 0);
         CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
         OathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
 
