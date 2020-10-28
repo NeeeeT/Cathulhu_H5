@@ -1,0 +1,5 @@
+1.各圖示之位置可依UI_block_example或UI_color_example擺放
+
+2.UI整理需位於畫面左上角(距上20px，距左20px)
+
+3.Crystal及Gold考慮到之後會加上數字，故其位置可再調整
