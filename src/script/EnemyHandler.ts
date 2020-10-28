@@ -241,32 +241,33 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
         }), 10);
     }
-    private bloodSplitEffect(enemy: Laya.Sprite) {
-        let bloodEffect: Laya.Animation = new Laya.Animation();
-        bloodEffect.scaleX = 2;
-        bloodEffect.scaleY = 2;
-        let colorMat: Array<number> =
-            [
-                2, 0, 0, 0, -100, //R
-                0, 1, 0, 0, -100, //G
-                0, 0, 1, 0, -100, //B
-                0, 0, 0, 1, 0, //A
-            ];
-        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
-        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+    // private bloodSplitEffect(enemy: Laya.Sprite) {
+    //     let bloodEffect: Laya.Animation = new Laya.Animation();
+    //     bloodEffect.scaleX = 2;
+    //     bloodEffect.scaleY = 2;
+    //     let colorMat: Array<number> =
+    //         [
+    //             2, 0, 0, 0, -100, //R
+    //             0, 1, 0, 0, -100, //G
+    //             0, 0, 1, 0, -100, //B
+    //             0, 0, 0, 1, 0, //A
+    //         ];
+    //     let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
+    //     let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
 
-        bloodEffect.filters = [glowFilter, colorFilter];
-        bloodEffect.pos(enemy.x - 500, enemy.y - 500 + 30);
-        bloodEffect.source = "comp/NewBlood.atlas";
-        bloodEffect.on(Laya.Event.COMPLETE, this, function () {
-            bloodEffect.destroy();
-            bloodEffect.destroyed = true;
-        });
-        Laya.stage.addChild(bloodEffect);
-        bloodEffect.play();
-    }
+    //     bloodEffect.filters = [glowFilter, colorFilter];
+    //     bloodEffect.pos(enemy.x - 500, enemy.y - 500 + 30);
+    //     bloodEffect.source = "comp/NewBlood.atlas";
+    //     bloodEffect.on(Laya.Event.COMPLETE, this, function () {
+    //         bloodEffect.destroy();
+    //         bloodEffect.destroyed = true;
+    //     });
+    //     Laya.stage.addChild(bloodEffect);
+    //     bloodEffect.play();
+    // }
     slashLightEffect(enemy: Laya.Sprite) {
         let slashLightEffect: Laya.Animation = new Laya.Animation();
+        let randomRotaion : number[] = [0,45,90];
         let rotation : number;
         slashLightEffect.scaleX = 1;
         slashLightEffect.scaleY = 1;
@@ -280,9 +281,10 @@ export abstract class VirtualEnemy extends Laya.Script {
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         slashLightEffect.filters = [glowFilter, colorFilter];
-        rotation = Math.floor(Math.random() * 90);
+        rotation = randomRotaion[Math.floor(Math.random() * 3)];
+        let checkRotation : boolean = rotation > 45;
         slashLightEffect.rotation = rotation;
-        slashLightEffect.pos(this.m_isFacingRight ? enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320, enemy.y - 2 * rotation - 250 + 30);//y軸需再修正
+        slashLightEffect.pos(this.m_isFacingRight ? enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320,checkRotation ? enemy.y + 0.1 * rotation - 250 + 30 : enemy.y - 2.2 * rotation - 250 + 30);//y軸需再修正
         slashLightEffect.source = "comp/SlashLight.atlas";
         slashLightEffect.alpha = 0.8;
         slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -378,13 +380,18 @@ export abstract class VirtualEnemy extends Laya.Script {
         atkBoxCollider.isSensor = true;
         atkCircleRigid.gravityScale = 0;
         this.updateAnimation(EnemyStatus.idle, EnemyStatus.attack);
-        Laya.stage.addChild(atkCircle);
-         atkBoxCollider.tag = this.m_atkTag;
-        this.m_atkTimer = 100;
+        // Laya.stage.addChild(atkCircle);
+        // atkBoxCollider.tag = this.m_atkTag;
+        // this.m_atkTimer = 100;
+        setTimeout(() => {
+            Laya.stage.addChild(atkCircle);
+            atkBoxCollider.tag = this.m_atkTag;
+            this.m_atkTimer = 100;
+        }, 500);
         setTimeout(() => {
             atkCircle.destroy();
             atkCircle.destroyed = true;
-        }, 100);
+        }, 600);
         setTimeout(() => {
             this.m_atkCd = true;
         }, 1000);
