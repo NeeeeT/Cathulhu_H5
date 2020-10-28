@@ -161,6 +161,7 @@ export class BlackHole extends VirtualSkill {
             if (count >= this.m_lastTime * 1000) {
                 Laya.stage.addChild(explosion);
                 explosion.play();
+                owner.setCameraShake(100,12);
                 setTimeout(() => {
                     explosion.destroy();
                 }, 300);

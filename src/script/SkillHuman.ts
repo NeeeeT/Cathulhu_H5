@@ -1,3 +1,4 @@
+// import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
@@ -85,7 +86,7 @@ export class Spike extends VirtualSkill {
 
             e._ent.takeDamage(this.m_damage);
             e._ent.delayMove(0.1);
-            e._ent.m_rigidbody.linearVelocity = {x:rightSide?this.m_spikeVec/2:-this.m_spikeVec/2};
+            e._ent.m_rigidbody.linearVelocity = {x:rightSide?this.m_spikeVec/3:-this.m_spikeVec/3};
         });
     }
 }
@@ -98,7 +99,7 @@ export class Behead extends VirtualSkill {
     m_cd = 3;
 
     /** 技能的準備時間 */
-    m_preTime: number = 1.0;
+    m_preTime: number = 0.56;
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
@@ -108,16 +109,17 @@ export class Behead extends VirtualSkill {
         this.m_animation = new Laya.Animation()
         this.m_animation.width = owner.m_animation.width;
         this.m_animation.height = owner.m_animation.height;
-        this.m_animation.scaleX = 1;
-        this.m_animation.scaleY = 1;
-        this.m_animation.pos(rightSide ? position['x'] - 240 : position['x']-240, position['y'] - 250);
+        this.m_animation.scaleX = 1.5;
+        this.m_animation.scaleY = 1.5;
+        this.m_animation.pos(rightSide ? position['x'] - 380 : position['x'] - 380, position['y'] - 400);
 
         let offsetX: number = rightSide ? position['x'] : position['x'] - this.m_animation.width;
         let offsetY: number = position['y'] - this.m_animation.height / 2 + 20;
 
         this.m_animation.source = "comp/Target.atlas";
         this.m_animation.autoPlay = true;
-        this.m_animation.interval = 25;
+        this.m_animation.interval = 30;
+        this.m_animation.zOrder = 10;
 
         this.m_canUse = false;
         this.castRoar(position);
@@ -129,12 +131,12 @@ export class Behead extends VirtualSkill {
         // owner.
         let colorMat: Array<number> =
         [
-            3, 0, 2, 0, -300, //R
-            0, 3, 0, 0, -100, //G
-            3, 0, 3, 0, -300, //B
+            3, 2, 2, 0, -250, //R
+            1, 6, 1, 0, -250, //G
+            2, 1, 4, 0, -250, //B
             0, 0, 0, 2, 0, //A
         ];
-    let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
+    let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#0065ff", 8, 0, 0);
     let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
     this.m_animation.filters = [glowFilter, colorFilter];
         this.m_animation.on(Laya.Event.COMPLETE, this, function () {
@@ -147,7 +149,8 @@ export class Behead extends VirtualSkill {
         // this.m_animation.play();
 
         setTimeout(() => {
-            owner.m_rigidbody.setVelocity({ x: 0.0, y: 10.0 });
+            // owner.m_rigidbody.setVelocity({ x: 0.0, y: 10.0 });
+            owner.m_rigidbody.linearVelocity = {x:0.0, y: 10.0};
             this.attackRangeCheck(owner,
                 {
                     "x0": offsetX,
@@ -156,6 +159,7 @@ export class Behead extends VirtualSkill {
                     "y1": offsetY + this.m_animation.height,
                 });
             //this.m_animation.play();
+             owner.m_state = CharacterStatus.attackTwo;
         }, this.m_preTime * 1000);
         setTimeout(() => {
             this.m_canUse = true;

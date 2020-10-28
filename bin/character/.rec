@@ -1,4 +1,17 @@
 D .
+R DCC70D05 .rec
+R 285EAF9 Attack1.atlas
+R 4D8AB92B Attack1.png
+R 9F18FDB4 Attack2.atlas
+R 2EAA1942 Attack2.png
+R 56B8E82A Erosion.atlas
+R CD404C85 Erosion.png
+R ED59853C Idle.atlas
+R F43E2C0F Idle.png
+R C351B09F Run.atlas
+R 7EA388FE Run.png
+R 700EC560 Slam.atlas
+R 638D098A Slam.png
 D Attack1
 P EB2A0F59 character_attack_1.png
 P E49CE9F2 character_attack_2.png
@@ -9,6 +22,11 @@ P 7A414C84 character_attack_6.png
 D Attack2
 P F9BEEA5B character_attack_6.png
 P 079FC355 character_attack_7.png
+D Erosion
+P 730CCC37 cat_erosion_1.png
+P 78D21FFC cat_erosion_2.png
+P 4A5E0B49 cat_erosion_3.png
+P 25237476 cat_erosion_4.png
 D Idle
 P C079B7BA character_idle_1.png
 P 14693719 character_idle_2.png
