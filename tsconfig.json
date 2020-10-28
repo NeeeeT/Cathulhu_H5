@@ -3,9 +3,11 @@
     "module": "es6",
     "target": "es6",
     "noEmitHelpers": true,
-    "sourceMap": false
+    "sourceMap": false,
+    "esModuleInterop": true,
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "node",
   ]
 }

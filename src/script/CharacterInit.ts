@@ -742,7 +742,7 @@ export class Character extends Laya.Script {
                 break;
             case CharacterStatus.slam:
                 this.m_animationChanging = true;
-                this.m_animation.source = "character/Slam.atlas";
+                this.m_animation.source = "character/Erosion.atlas";
                 this.m_animation.play()
                 break;
             default:
