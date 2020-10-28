@@ -116,7 +116,7 @@ export class Behead extends VirtualSkill {
         let offsetX: number = rightSide ? position['x'] : position['x'] - this.m_animation.width;
         let offsetY: number = position['y'] - this.m_animation.height / 2 + 20;
 
-        this.m_animation.source = "comp/Target/Target_0000.png,comp/Target/Target_0001.png,comp/Target/Target_0002.png,comp/Target/Target_0003.png,comp/Target/Target_0004.png,comp/Target/Target_0005.png,comp/Target/Target_0006.png,comp/Target/Target_0007.png,comp/Target/Target_0008.png,comp/Target/Target_0009.png,comp/Target/Target_0010.png,comp/Target/Target_0011.png,comp/Target/Target_0012.png,comp/Target/Target_0013.png,comp/Target/Target_0014.png,comp/Target/Target_0015.png,comp/Target/Target_0016.png";
+        this.m_animation.source = "comp/Target.atlas";
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 30;
         this.m_animation.zOrder = 10;
