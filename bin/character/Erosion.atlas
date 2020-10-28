@@ -10,10 +10,10 @@
             },
             "sourceSize": {
                 "h": 128,
-                "w": 300
+                "w": 200
             },
             "spriteSourceSize": {
-                "x": 6,
+                "x": 45,
                 "y": 0
             }
         },
@@ -27,10 +27,10 @@
             },
             "sourceSize": {
                 "h": 128,
-                "w": 300
+                "w": 200
             },
             "spriteSourceSize": {
-                "x": 4,
+                "x": 43,
                 "y": 2
             }
         },
@@ -44,10 +44,10 @@
             },
             "sourceSize": {
                 "h": 128,
-                "w": 300
+                "w": 200
             },
             "spriteSourceSize": {
-                "x": 2,
+                "x": 41,
                 "y": 0
             }
         },
@@ -61,10 +61,10 @@
             },
             "sourceSize": {
                 "h": 128,
-                "w": 300
+                "w": 200
             },
             "spriteSourceSize": {
-                "x": 6,
+                "x": 45,
                 "y": 0
             }
         }

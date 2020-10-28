@@ -1,4 +1,4 @@
-import CharacterInit from "./CharacterInit";
+// import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
@@ -86,7 +86,7 @@ export class Spike extends VirtualSkill {
 
             e._ent.takeDamage(this.m_damage);
             e._ent.delayMove(0.1);
-            e._ent.m_rigidbody.linearVelocity = {x:rightSide?this.m_spikeVec/2:-this.m_spikeVec/2};
+            e._ent.m_rigidbody.linearVelocity = {x:rightSide?this.m_spikeVec/3:-this.m_spikeVec/3};
         });
     }
 }
@@ -149,7 +149,8 @@ export class Behead extends VirtualSkill {
         // this.m_animation.play();
 
         setTimeout(() => {
-            owner.m_rigidbody.setVelocity({ x: 0.0, y: 10.0 });
+            // owner.m_rigidbody.setVelocity({ x: 0.0, y: 10.0 });
+            owner.m_rigidbody.linearVelocity = {x:0.0, y: 10.0};
             this.attackRangeCheck(owner,
                 {
                     "x0": offsetX,
@@ -158,7 +159,7 @@ export class Behead extends VirtualSkill {
                     "y1": offsetY + this.m_animation.height,
                 });
             //this.m_animation.play();
-             CharacterInit.playerEnt.m_state = CharacterStatus.attackTwo;
+             owner.m_state = CharacterStatus.attackTwo;
         }, this.m_preTime * 1000);
         setTimeout(() => {
             this.m_canUse = true;

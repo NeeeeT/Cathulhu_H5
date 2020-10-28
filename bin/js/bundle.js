@@ -439,6 +439,20 @@
             this.m_atkTag = "EnemyShieldAttack";
         }
     }
+    class Fast extends VirtualEnemy {
+        constructor() {
+            super(...arguments);
+            this.m_name = '快攻敵人';
+            this.m_armor = 100;
+            this.m_health = 500;
+            this.m_speed = 7;
+            this.m_tag = 's';
+            this.m_attackRange = 70;
+            this.m_mdelay = 1.0;
+            this.m_dmg = 70;
+            this.m_atkTag = "EnemyFastAttack";
+        }
+    }
     class EnemyHandler extends Laya.Script {
         static generator(player, enemyType, spawnPoint) {
             let enemy = this.decideEnemyType(enemyType);
@@ -457,6 +471,7 @@
             switch (enemyType) {
                 case 1: return new Normal();
                 case 2: return new Shield();
+                case 3: return new Fast();
                 default: return new Normal();
             }
             ;
@@ -1060,7 +1075,7 @@
                     return;
                 e._ent.takeDamage(this.m_damage);
                 e._ent.delayMove(0.1);
-                e._ent.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec / 2 : -this.m_spikeVec / 2 };
+                e._ent.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec / 3 : -this.m_spikeVec / 3 };
             });
         }
     }
@@ -1112,14 +1127,14 @@
             });
             Laya.stage.addChild(this.m_animation);
             setTimeout(() => {
-                owner.m_rigidbody.setVelocity({ x: 0.0, y: 10.0 });
+                owner.m_rigidbody.linearVelocity = { x: 0.0, y: 10.0 };
                 this.attackRangeCheck(owner, {
                     "x0": offsetX,
                     "x1": offsetX + this.m_animation.width,
                     "y0": offsetY,
                     "y1": offsetY + this.m_animation.height,
                 });
-                CharacterInit.playerEnt.m_state = CharacterStatus.attackTwo;
+                owner.m_state = CharacterStatus.attackTwo;
             }, this.m_preTime * 1000);
             setTimeout(() => {
                 this.m_canUse = true;
@@ -1879,6 +1894,8 @@
                     return new Normal().m_dmg;
                 case "EnemyShieldAttack":
                     return new Shield().m_dmg;
+                case "EnemyFastAttack":
+                    return new Fast().m_dmg;
                 default:
                     return 0;
             }
@@ -1953,7 +1970,9 @@
             setInterval(() => {
                 if (CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20)
                     return;
-                EnemyHandler.generator(player, 1, 0);
+                let x = Math.floor(Math.random() * 4);
+                console.log(x);
+                EnemyHandler.generator(player, x, 0);
                 this.enemyLeft--;
             }, this.enemyGenerateTime);
             this.battleTimer = setInterval(() => {
@@ -1987,6 +2006,7 @@
                     this.showEndSkill();
                 }), 0);
             }
+            ;
         }
         showEndSkill() {
             let player = CharacterInit.playerEnt.m_animation;
@@ -2215,8 +2235,6 @@
             this.reinforceHpCostBtn.height = 60;
             this.reinforceHpCostBtn.pos(150 + 726, 109 + 307);
             this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, () => {
-                console.log(this.c_crystal);
-                console.log(this.c_gold);
                 if (this.c_gold < this.c_hpLevel * 100) {
                     return;
                 }

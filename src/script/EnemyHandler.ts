@@ -503,6 +503,18 @@ export class Shield extends VirtualEnemy {
     m_dmg = 30;
     m_atkTag = "EnemyShieldAttack";
 }
+export class Fast extends VirtualEnemy {
+    m_name = '快攻敵人';
+    m_armor = 100;
+    m_health = 500;
+    m_speed = 7;
+    m_tag = 's';
+    m_attackRange = 70;
+    m_mdelay = 1.0;
+    m_dmg = 70;
+    m_atkTag = "EnemyFastAttack";
+}
+
 
 export default class EnemyHandler extends Laya.Script {
     public static enemyIndex: number = 0;
@@ -527,6 +539,7 @@ export default class EnemyHandler extends Laya.Script {
         switch (enemyType) {
             case 1: return new Normal();
             case 2: return new Shield();
+            case 3: return new Fast();
             default: return new Normal();
         };
     }

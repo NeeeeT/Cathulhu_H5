@@ -6,7 +6,7 @@ import { CharacterStatus } from "./CharacterStatus";
 import * as hSkill from "./SkillHuman";
 import * as cSkill from "./SkillCat";
 
-import EnemyHandler, { Normal, Shield } from "./EnemyHandler";
+import EnemyHandler, { Fast, Normal, Shield } from "./EnemyHandler";
 
 import { ExtraData } from "./ExtraData";
 
@@ -762,6 +762,8 @@ export class Character extends Laya.Script {
                 return new Normal().m_dmg;
             case "EnemyShieldAttack":
                 return new Shield().m_dmg;
+            case "EnemyFastAttack":
+                return new Fast().m_dmg;
             default:
                 return 0;
         }

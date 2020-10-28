@@ -188,11 +188,7 @@ export default class Village extends Laya.Script{
         this.reinforceHpCostBtn.width = 103;
         this.reinforceHpCostBtn.height = 60;
         this.reinforceHpCostBtn.pos(150+726, 109+307);
-        this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, ()=>{
-            console.log(this.c_crystal);
-            console.log(this.c_gold);
-            
-            
+        this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, ()=>{            
             if(this.c_gold < this.c_hpLevel*100){
                 return;
             }
