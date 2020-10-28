@@ -62,7 +62,7 @@ export default class EnemyInit extends Laya.Script{
                 this.endingRewardUI = null;
                 this.showEndSkill();
             }), 0);
-        }
+        };
     }
     showEndSkill(): void{
         let player = CharacterInit.playerEnt.m_animation;

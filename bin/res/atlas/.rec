@@ -19,6 +19,7 @@ P 550FE1FA Blood_0014.png
 D Cat(1013)
 D Cat(1025)
 D Cat(1027)
+D Cat(1028)
 D Cat_500x128(1027)
 D character
 P D32D8CC2 Player_attack_0.png
@@ -27,7 +28,6 @@ P F62B59C8 Player_attack_2.png
 P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
-D Character(0903)
 D Character(0904)
 D Character(0929)
 D Character(1002)
@@ -178,6 +178,21 @@ P 0BA2EB52 cat_erosion_1.png
 P 0771CDE1 cat_erosion_2.png
 P 2013F188 cat_erosion_3.png
 P 2496871E cat_erosion_4.png
+D Cat(1028)/0-0.Slam_InSitu_300x128
+P 6117F385 cat_slam_inSitu_1.png
+P 001D2A16 cat_slam_inSitu_2.png
+P 93E5B260 cat_slam_inSitu_3.png
+P ED908DA7 cat_slam_inSitu_4.png
+D Cat(1028)/0-1.Slam_Back_300x128
+P C0CFD917 cat_slam_back_1.png
+P D5AF240A cat_slam_back_2.png
+P 06B0C0F5 cat_slam_back_3.png
+P FEFB37D2 cat_slam_back_4.png
+D Cat(1028)/1.Erosion_200x128
+P 730CCC37 cat_erosion_1.png
+P 78D21FFC cat_erosion_2.png
+P 4A5E0B49 cat_erosion_3.png
+P 25237476 cat_erosion_4.png
 D Cat_500x128(1027)/0.Slam
 P 230E3D2A cat_slam_1.png
 P CE36AE18 cat_slam_2.png

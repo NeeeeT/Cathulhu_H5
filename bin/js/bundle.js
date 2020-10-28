@@ -1957,11 +1957,23 @@
                 this.enemyLeft--;
             }, this.enemyGenerateTime);
             this.battleTimer = setInterval(() => {
-                if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0 || this.timeLeftValue < 0) {
+                if (!player || player.destroyed) {
+                    clearInterval(this.battleTimer);
+                    this.battleTimer = null;
+                    return;
+                }
+                if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0) {
                     this.battleToggle = false;
                     this.unsetCharacter();
                     clearInterval(this.battleTimer);
                     this.battleTimer = null;
+                    return;
+                }
+                else if (this.timeLeftValue < 0) {
+                    console.log('時間到! 你輸了:(');
+                    clearInterval(this.battleTimer);
+                    this.battleTimer = null;
+                    return;
                 }
                 this.timeLeftValue--;
             }, 1000);
