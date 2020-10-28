@@ -93,7 +93,7 @@
             this.m_collider.y -= 10;
             this.m_collider.label = id;
             this.m_collider.tag = 'Enemy';
-            this.m_rigidbody.category = 64;
+            this.m_rigidbody.category = 8;
             this.m_rigidbody.mask = 4 | 2;
             this.m_rigidbody.allowRotation = false;
             this.m_rigidbody.gravityScale = 5;
@@ -1332,19 +1332,54 @@
             super();
             this.loadData();
         }
-        setCookie() {
-        }
-        getCookie() {
-        }
         loadData() {
-            this.e_atkDmgLevel = 7;
-            this.e_hpLevel = 5;
-            this.e_gold = 3500;
-            this.e_crystal = 2000;
+            this.e_atkDmgLevel = 1;
+            this.e_hpLevel = 1;
+            this.e_gold = 0;
+            this.e_crystal = 0;
             this.e_cSkill = 1;
             this.e_hSkill = 1;
+            ExtraData.currentData = {
+                "atkDmgLevel": this.e_atkDmgLevel,
+                "hpLevel": this.e_hpLevel,
+                "gold": this.e_hpLevel,
+                "crystal": this.e_crystal,
+                "catSkill": this.e_cSkill,
+                "humanSkill": this.e_hSkill,
+                "catSkillLevel": this.e_cSkillLevel,
+                "humanSkillLevel": this.e_hSkillLevel,
+            };
+        }
+        setCooike(key, value) {
+            document.cookie = "test=123";
+        }
+        parseCookie() {
+            let cookieObj = {};
+            let cookieAry = document.cookie.split(';');
+            let cookie;
+            for (let i = 0, l = cookieAry.length; i < l; ++i) {
+                cookie = String(cookieAry[i]).trim();
+                cookie = cookie.split('=');
+                cookieObj[cookie[0]] = cookie[1];
+            }
+            return cookieObj;
+        }
+        getCookieByName(name) {
+            var value = this.parseCookie()[name];
+            if (value) {
+                value = decodeURIComponent(value);
+            }
+            return value;
+        }
+        getJsonFromURL(url) {
+            fetch(url).then(res => res.json()).then((out) => {
+                console.log("CHECK THIS JSON! ", out);
+            }).catch(err => {
+                throw err;
+            });
         }
     }
+    ExtraData.currentData = {};
 
     class Character extends Laya.Script {
         constructor() {
@@ -1826,7 +1861,7 @@
                     break;
                 case CharacterStatus.slam:
                     this.m_animationChanging = true;
-                    this.m_animation.source = "character/Slam.atlas";
+                    this.m_animation.source = "character/Erosion.atlas";
                     this.m_animation.play();
                     break;
                 default:
@@ -1907,10 +1942,12 @@
             super();
             this.enemyGenerateTime = 5000;
             this.enemyLeft = 50;
+            this.roundTimeLeft = 180;
             this.battleToggle = true;
             this.battleTimer = null;
         }
         onStart() {
+            this.timeLeftValue = this.roundTimeLeft;
             let player = CharacterInit.playerEnt.m_animation;
             let enemy = EnemyHandler.enemyPool;
             setInterval(() => {
@@ -1920,13 +1957,14 @@
                 this.enemyLeft--;
             }, this.enemyGenerateTime);
             this.battleTimer = setInterval(() => {
-                if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0) {
+                if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0 || this.timeLeftValue < 0) {
                     this.battleToggle = false;
                     this.unsetCharacter();
                     clearInterval(this.battleTimer);
                     this.battleTimer = null;
                 }
-            }, 500);
+                this.timeLeftValue--;
+            }, 1000);
             this.showBattleInfo();
         }
         onKeyUp(e) {
@@ -1981,7 +2019,7 @@
                     info.destroy();
                     return;
                 }
-                info.text = "剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
+                info.text = "剩餘時間: " + String(this.timeLeftValue) + "\n剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
                 info.pos(player.x - 50, player.y - 400);
             }, 10);
         }

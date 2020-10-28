@@ -6,9 +6,13 @@ export default class EnemyInit extends Laya.Script{
     enemyGenerateTime: number = 5000;
     /** @prop {name:enemyLeft,tips:"生成的敵人數量",type:int,default:50}*/
     enemyLeft: number = 50;
+    /** @prop {name:roundTimeLeft,tips:"回合的時間限制(sec)",type:int,default:180}*/
+    roundTimeLeft: number = 180;
 
     battleToggle = true;
     battleTimer = null;
+
+    timeLeftValue: number;
 
     endingRewardUI: Laya.Sprite;
     endingSkillUI: Laya.Sprite;
@@ -17,6 +21,8 @@ export default class EnemyInit extends Laya.Script{
         super();
     }
     onStart(){
+        this.timeLeftValue = this.roundTimeLeft;
+
         let player = CharacterInit.playerEnt.m_animation;
         let enemy = EnemyHandler.enemyPool;
         setInterval(() =>{
@@ -25,6 +31,11 @@ export default class EnemyInit extends Laya.Script{
             this.enemyLeft--;
         }, this.enemyGenerateTime)
         this.battleTimer = setInterval(()=>{
+            if(!player || player.destroyed){
+                clearInterval(this.battleTimer);
+                this.battleTimer = null;
+                return;
+            }
             if(this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0){
                 // Laya.Scene.open("Village.scene");
                 // Laya.stage.x = Laya.stage.y = 0; 
@@ -32,8 +43,16 @@ export default class EnemyInit extends Laya.Script{
                 this.unsetCharacter();
                 clearInterval(this.battleTimer);
                 this.battleTimer = null;
+                return;
             }
-        }, 500);
+            else if(this.timeLeftValue < 0){
+                console.log('時間到! 你輸了:(');
+                clearInterval(this.battleTimer);
+                this.battleTimer = null;
+                return;
+            }
+            this.timeLeftValue--;
+        }, 1000);
         this.showBattleInfo();
     }
     onKeyUp(e: Laya.Event){
@@ -93,7 +112,7 @@ export default class EnemyInit extends Laya.Script{
                 info.destroy();
                 return;
             }
-            info.text = "剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
+            info.text = "剩餘時間: " + String(this.timeLeftValue) + "\n剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
             info.pos(player.x - 50, player.y - 400);
         }, 10)
     }

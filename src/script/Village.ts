@@ -72,13 +72,6 @@ export default class Village extends Laya.Script{
         this.reinforceAtkDmgCostBtn.destroy();
         this.reinforceHpCostBtn.destroy();
 
-        // let reinforceUiArray = [
-        //     this.reinforceUI, this.reinforceBackBtn, this.reinforceGold, this.reinforceAtkDmgLevel, this.reinforceHpLevel,
-        //     this.reinforceAtkDmgCost, this.reinforceHpCost, this.reinforceAtkDmgCostBtn, this.reinforceHpCostBtn,
-        // ]
-        // reinforceUiArray.forEach((e)=>{
-        //     e.destroy();
-        // })
         this.reinforceUI = this.reinforceBackBtn = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
         = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = null;
     }
