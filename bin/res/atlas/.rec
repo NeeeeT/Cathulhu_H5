@@ -18,6 +18,8 @@ P F7503637 Blood_0013.png
 P 550FE1FA Blood_0014.png
 D Cat(1013)
 D Cat(1025)
+D Cat(1027)
+D Cat_500x128(1027)
 D character
 P D32D8CC2 Player_attack_0.png
 P 643FA78E Player_attack_1.png
@@ -98,6 +100,7 @@ P 5DDD39F6 run_06.png
 P E9366A50 run_07.png
 P 479C85CB run_08.png
 D Screen(1025)
+D Screen(1027)
 D Skill
 P 13615EFF circle.png
 P 0A467EB4 spike.png
@@ -118,6 +121,19 @@ P C14D0D6F 1-2.UI_color_example.png
 P C11E3596 Box.png
 P E8FEF7AE Crystal.png
 P 7F35BA50 Gold.png
+R 032CFE08 UI位置.txt
+D UI(1027)
+R 633CD042 0.UI_position.PNG
+P E23D8B0E 1.UI_example.png
+P 49953990 Box.png
+P BB8D7F5A bp_100$bar.png
+P D513E301 bp_100.png
+P ADC42192 bp_150.png
+P D3A0A1AF bp_150_broke.png
+P E8FEF7AE Crystal.png
+P 7F35BA50 Gold.png
+P F34D34E1 hp$bar.png
+P DBEFFB28 hp.png
 R 032CFE08 UI位置.txt
 D Village
 R D137205B Village.png
@@ -149,6 +165,26 @@ P 024F1843 cat_slam_4.png
 D Cat(1025)/1.Erosion
 P E2E2EA27 cat_erosion_1.png
 P 84787EFD cat_erosion_2.png
+P 5EC37005 cat_erosion_3.png
+P 689E898E cat_erosion_4.png
+D Cat(1027)/0.Slam
+P 6117F385 cat_slam_1.png
+P 001D2A16 cat_slam_2.png
+P 93E5B260 cat_slam_3.png
+P ED908DA7 cat_slam_4.png
+D Cat(1027)/1.Erosion
+P 0BA2EB52 cat_erosion_1.png
+P 0771CDE1 cat_erosion_2.png
+P 2013F188 cat_erosion_3.png
+P 2496871E cat_erosion_4.png
+D Cat_500x128(1027)/0.Slam
+P 230E3D2A cat_slam_1.png
+P CE36AE18 cat_slam_2.png
+P CB31CCEF cat_slam_3.png
+P 024F1843 cat_slam_4.png
+D Cat_500x128(1027)/1.Erosion
+P E2E2EA27 cat_erosion_1.png
+P F937D4BB cat_erosion_2.png
 P 5EC37005 cat_erosion_3.png
 P 689E898E cat_erosion_4.png
 D Character(0904)/Run
@@ -225,6 +261,26 @@ P 5BAB5835 chioce_mission_button(Bright).png
 P 8F543625 chioce_mission_button(Dark).png
 P DEEAFC30 skull.png
 P 61615B3A star.png
+D Screen(1027)/0.summary
+P 80DCFAE5 summary.png
+P 870A4BD1 summary_.png
+D Screen(1027)/1.choice_skill
+R 51D77544 0.chioce_skill_example.png
+R 3E3129BB 1.skill_text_color.png
+R 4F371D4F chioce_skill.png
+P 46F7C59A chioce_skill_button(Bright).png
+P 0EE2179A chioce_skill_button(Dark).png
+D Screen(1027)/2.chioce_mission
+R 0578D8B6 0.chioce_mission_example.png
+R C41EEA9D 1.mission_text_color.png
+R AE883E5A chioce_mission.png
+P 5BAB5835 chioce_mission_button(Bright).png
+P 8F543625 chioce_mission_button(Dark).png
+P DEEAFC30 skull.png
+P 61615B3A star.png
+D Screen(1027)/3.Strengthening
+R 541C54DA 0.strengthening_example.png
+R 70D6942C strengthening.png
 D UI(1020)/Blood
 P 6C98F162 Bar_blood.png
 P F34D34E1 Bar_blood_color.png
