@@ -1,6 +1,54 @@
 (function () {
     'use strict';
 
+    class ExtraData extends Laya.Script {
+        static loadData() {
+            let data = Laya.LocalStorage.getItem("gameData");
+            if (data) {
+                let Data = JSON.parse(data);
+                ExtraData.currentData = {
+                    "atkDmgLevel": Data.atkDmgLevel,
+                    "hpLevel": Data.hpLevel,
+                    "gold": Data.gold,
+                    "crystal": Data.crystal,
+                    "catSkill": 1,
+                    "humanSkill": 1,
+                    "catSkillLevel": Data.catSkillLevel,
+                    "humanSkillLevel": Data.humanSkillLevel,
+                };
+                console.log('成功讀取檔案!');
+                return;
+            }
+            else {
+                ExtraData.currentData = {
+                    "atkDmgLevel": 0,
+                    "hpLevel": 0,
+                    "gold": 0,
+                    "crystal": 0,
+                    "catSkill": 1,
+                    "humanSkill": 1,
+                    "catSkillLevel": 0,
+                    "humanSkillLevel": 0,
+                };
+                ExtraData.saveData();
+                console.log('創建了新的檔案');
+                return;
+            }
+        }
+        static saveData() {
+            let data = JSON.stringify(ExtraData.currentData);
+            Laya.LocalStorage.setItem("gameData", data);
+            console.log('儲存資料完畢');
+        }
+        getJsonFromURL(url) {
+            fetch(url).then(res => res.json()).then((out) => {
+                console.log("CHECK THIS JSON! ", out);
+            }).catch(err => {
+                throw err;
+            });
+        }
+    }
+
     class SceneInit extends Laya.Script {
         constructor() {
             super();
@@ -16,6 +64,10 @@
             }));
             Laya.stage.bgColor = this.sceneBackgroundColor;
             this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+            setTimeout(() => {
+                ExtraData.currentData['atkDmgLevel'] = 5;
+                ExtraData.saveData();
+            }, 5000);
         }
         setSound(volume, url, loop) {
             Laya.SoundManager.playSound(url, loop);
@@ -1342,60 +1394,6 @@
         }
     }
 
-    class ExtraData extends Laya.Script {
-        constructor() {
-            super();
-            this.loadData();
-        }
-        loadData() {
-            this.e_atkDmgLevel = 1;
-            this.e_hpLevel = 1;
-            this.e_gold = 0;
-            this.e_crystal = 0;
-            this.e_cSkill = 1;
-            this.e_hSkill = 1;
-            ExtraData.currentData = {
-                "atkDmgLevel": this.e_atkDmgLevel,
-                "hpLevel": this.e_hpLevel,
-                "gold": this.e_hpLevel,
-                "crystal": this.e_crystal,
-                "catSkill": this.e_cSkill,
-                "humanSkill": this.e_hSkill,
-                "catSkillLevel": this.e_cSkillLevel,
-                "humanSkillLevel": this.e_hSkillLevel,
-            };
-        }
-        setCooike(key, value) {
-            document.cookie = "test=123";
-        }
-        parseCookie() {
-            let cookieObj = {};
-            let cookieAry = document.cookie.split(';');
-            let cookie;
-            for (let i = 0, l = cookieAry.length; i < l; ++i) {
-                cookie = String(cookieAry[i]).trim();
-                cookie = cookie.split('=');
-                cookieObj[cookie[0]] = cookie[1];
-            }
-            return cookieObj;
-        }
-        getCookieByName(name) {
-            var value = this.parseCookie()[name];
-            if (value) {
-                value = decodeURIComponent(value);
-            }
-            return value;
-        }
-        getJsonFromURL(url) {
-            fetch(url).then(res => res.json()).then((out) => {
-                console.log("CHECK THIS JSON! ", out);
-            }).catch(err => {
-                throw err;
-            });
-        }
-    }
-    ExtraData.currentData = {};
-
     class Character extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -1750,8 +1748,8 @@
             }, 10);
         }
         setSkill() {
-            this.m_catSkill = this.getSkillTypeByExtraData('c', new ExtraData().e_cSkill);
-            this.m_humanSkill = this.getSkillTypeByExtraData('h', new ExtraData().e_hSkill);
+            this.m_catSkill = this.getSkillTypeByExtraData('c', 1);
+            this.m_humanSkill = this.getSkillTypeByExtraData('h', 1);
         }
         getSkillTypeByExtraData(type, id) {
             if (type === 'c') {
@@ -2091,11 +2089,13 @@
             });
         }
         updateData() {
-            let p = new ExtraData();
-            this.c_gold = p.e_gold;
-            this.c_crystal = p.e_crystal;
-            this.c_hpLevel = p.e_hpLevel;
-            this.c_atkDmgLevel = p.e_atkDmgLevel;
+            ExtraData.loadData();
+            this.c_gold = 99999;
+            let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+            this.c_crystal = data.crystal;
+            this.c_hpLevel = data.hpLevel;
+            this.c_atkDmgLevel = data.atkDmgLevel;
+            this.saveData();
         }
         showReinforceUI() {
             this.setReinfoceUI();
@@ -2226,6 +2226,7 @@
                 this.setReinfoceAtkDmgLevel();
                 this.setReinfoceAtkDmgCost();
                 this.setReinfoceGoldValue();
+                this.saveData();
             });
             Laya.stage.addChild(this.reinforceAtkDmgCostBtn);
         }
@@ -2243,8 +2244,18 @@
                 this.setReinfoceHpLevel();
                 this.setReinfoceHpCost();
                 this.setReinfoceGoldValue();
+                this.saveData();
             });
             Laya.stage.addChild(this.reinforceHpCostBtn);
+        }
+        saveData() {
+            ExtraData.currentData['atkDmgLevel'] = this.c_atkDmgLevel;
+            ExtraData.currentData['hpLevel'] = this.c_hpLevel;
+            ExtraData.currentData['gold'] = this.c_gold;
+            ExtraData.currentData['crystal'] = this.c_crystal;
+            console.log(this.c_atkDmgLevel);
+            console.log(this.c_hpLevel);
+            ExtraData.saveData();
         }
     }
 

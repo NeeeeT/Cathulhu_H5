@@ -616,9 +616,9 @@ export class Character extends Laya.Script {
             slashEffect.pos(player.x + (this.m_isFacingRight?-420:420), player.y - 560 + 10);
         }, 10);
     }
-    private setSkill(): void{
-        this.m_catSkill = this.getSkillTypeByExtraData('c', new ExtraData().e_cSkill);
-        this.m_humanSkill = this.getSkillTypeByExtraData('h', new ExtraData().e_hSkill);
+    private setSkill(): void{   
+        this.m_catSkill = this.getSkillTypeByExtraData('c', 1);
+        this.m_humanSkill = this.getSkillTypeByExtraData('h', 1);
     }
     private getSkillTypeByExtraData(type: string, id: number): VirtualSkill{
         if(type === 'c'){
