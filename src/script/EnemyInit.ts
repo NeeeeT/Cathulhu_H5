@@ -1,6 +1,7 @@
 import CharacterInit from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import { ExtraData } from "./ExtraData";
+import SkillList from "./SkillList";
 
 export default class EnemyInit extends Laya.Script{
     /** @prop {name:enemyGenerateTime,tips:"經過多少時間(ms)會生成1個敵人",type:int,default:3000}*/
@@ -28,6 +29,8 @@ export default class EnemyInit extends Laya.Script{
 
     skillCat: Laya.Sprite;
     skillHuman: Laya.Sprite;
+    skillCatIcon: Laya.Sprite;
+    skillHumanIcon: Laya.Sprite;
 
     skillCatInfo: Laya.Sprite;
     skillHumanInfo: Laya.Sprite;
@@ -38,7 +41,6 @@ export default class EnemyInit extends Laya.Script{
     skillCatBtn: Laya.Button;
     skillHumanBtn: Laya.Button;
     
-
     constructor(){
         super();
     }
@@ -116,20 +118,32 @@ export default class EnemyInit extends Laya.Script{
         this.skillCat.loadImage('ui/ending/skillBox.png');
         this.skillHuman.loadImage('ui/ending/skillBox.png');
 
+        this.skillCatIcon = new Laya.Sprite();
+        this.skillHumanIcon = new Laya.Sprite();
+        this.skillCatIcon.width = this.skillHumanIcon.width = 88;
+        this.skillCatIcon.height = this.skillHumanIcon.height = 88;
+        this.skillCatIcon.pos(this.skillCat.x+21,this.skillCat.y+21);
+        this.skillHumanIcon.pos(this.skillHuman.x+21, this.skillHuman.y+21);
+        let n: number = Math.floor(Math.random() * 2);
+        this.skillCatIcon.loadImage(SkillList.catSkillList[n].m_iconB);
+        this.skillHumanIcon.loadImage(SkillList.humanSkillList[n].m_iconB);
+
         this.skillCatBtn = new Laya.Button();
         this.skillHumanBtn = new Laya.Button();
         this.skillCatBtn.width = this.skillHumanBtn.width = 92;
         this.skillCatBtn.height = this.skillHumanBtn.height = 33;
         this.skillCatBtn.pos(pos['x']+155, pos['y']+302);    
         this.skillHumanBtn.pos(pos['x']+442, pos['y']+302);
-        this.skillCatBtn.loadImage('ui/ending/chooseBtn.png');
-        this.skillHumanBtn.loadImage('ui/ending/chooseBtn.png');
+        this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
+        this.skillCatBtn.loadImage("ui/ending/chooseBtn.png")
 
         Laya.stage.addChild(this.endingSkillUI);
         Laya.stage.addChild(this.skillCat);
         Laya.stage.addChild(this.skillHuman);
         Laya.stage.addChild(this.skillCatBtn);
         Laya.stage.addChild(this.skillHumanBtn);
+        Laya.stage.addChild(this.skillCatIcon);
+        Laya.stage.addChild(this.skillHumanIcon);
 
         Laya.Tween.to(this.endingSkillUI, {alpha: 1.0}, 500, Laya.Ease.linearInOut, null, 0);
     }

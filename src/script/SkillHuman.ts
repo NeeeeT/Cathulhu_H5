@@ -11,6 +11,9 @@ export class Spike extends VirtualSkill {
     m_id = 1;
     m_cd = 3;
 
+    m_iconA = "ui/icon/spikeA.png";
+    m_iconB = "ui/icon/spikeB.png";
+
     /** 技能衝刺的持續時間 */
     m_lastTime: number = 0.2;
     /** 技能給予的衝量大小 */
@@ -97,6 +100,9 @@ export class Behead extends VirtualSkill {
     m_cost = 10;
     m_id = 2;
     m_cd = 3;
+
+    m_iconA = "ui/icon/beheadA.png";
+    m_iconB = "ui/icon/beheadB.png";
 
     /** 技能的準備時間 */
     m_preTime: number = 0.56;

@@ -397,7 +397,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_atkCd = true;
         }, 1000);
         if(!this.m_moveDelayTimer)
-            this.delayMove(0.3);
+            this.delayMove(0.35);
     }
     public delayMove(time: number): void {
         if (this.m_moveDelayTimer) {
@@ -413,7 +413,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                     this.m_moveDelayValue = 0;
                 }
                 this.m_moveDelayValue -= 0.1;
-                console.log('working!', this.m_moveDelayValue);
+                // console.log('working!', this.m_moveDelayValue);
             }, 100)
         }
     }

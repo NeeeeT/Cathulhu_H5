@@ -2,6 +2,7 @@
 import SceneInit from "./script/SceneInit"
 import EnemyInit from "./script/EnemyInit"
 import CharacterInit from "./script/CharacterInit"
+import SkillList from "./script/SkillList"
 import Village from "./script/Village"
 /*
 * 游戏初始化配置;
@@ -25,6 +26,7 @@ export default class GameConfig{
         reg("script/SceneInit.ts",SceneInit);
         reg("script/EnemyInit.ts",EnemyInit);
         reg("script/CharacterInit.ts",CharacterInit);
+        reg("script/SkillList.ts",SkillList);
         reg("script/Village.ts",Village);
     }
 }

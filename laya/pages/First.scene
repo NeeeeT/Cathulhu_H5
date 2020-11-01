@@ -2,10 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
+    "selecteID":248,
     "searchKey":"Scene",
     "props":{"x":0,"width":4098,"skewY":0,"skewX":0,"sceneColor":"gray","pivotX":0,"height":768},
     "nodeParent":-1,
-    "maxID":248,
+    "maxID":250,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -216,7 +217,7 @@
             "x":15,
             "type":"Sprite",
             "searchKey":"Sprite,leftBound(Enemy)",
-            "props":{"y":0,"x":-258,"width":250,"name":"leftBound(Enemy)","height":768},
+            "props":{"y":-1,"x":-258,"width":250,"name":"leftBound(Enemy)","height":768},
             "nodeParent":2,
             "label":"leftBound(Enemy)",
             "isOpen":false,
@@ -299,6 +300,23 @@
                     "child":[
                         ]
                 }]
+        },
+        {
+            "x":15,
+            "type":"Script",
+            "switchAble":true,
+            "source":"src/script/SkillList.ts",
+            "searchKey":"Script,SkillList",
+            "removeAble":true,
+            "props":{},
+            "nodeParent":2,
+            "label":"SkillList",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":249,
+            "child":[
+                ]
         }],
     "animations":[
         {

@@ -339,7 +339,7 @@
                 this.m_atkCd = true;
             }, 1000);
             if (!this.m_moveDelayTimer)
-                this.delayMove(0.3);
+                this.delayMove(0.35);
         }
         delayMove(time) {
             if (this.m_moveDelayTimer) {
@@ -354,7 +354,6 @@
                         this.m_moveDelayValue = 0;
                     }
                     this.m_moveDelayValue -= 0.1;
-                    console.log('working!', this.m_moveDelayValue);
                 }, 100);
             }
         }
@@ -1017,6 +1016,8 @@
             this.m_cost = 30;
             this.m_id = 1;
             this.m_cd = 3;
+            this.m_iconA = "ui/icon/spikeA.png";
+            this.m_iconB = "ui/icon/spikeB.png";
             this.m_lastTime = 0.2;
             this.m_spikeVec = 55.0;
         }
@@ -1089,6 +1090,8 @@
             this.m_cost = 10;
             this.m_id = 2;
             this.m_cd = 3;
+            this.m_iconA = "ui/icon/beheadA.png";
+            this.m_iconB = "ui/icon/beheadB.png";
             this.m_preTime = 0.56;
         }
         cast(owner, position) {
@@ -1165,6 +1168,8 @@
             this.m_cost = 50;
             this.m_id = 2;
             this.m_cd = 1;
+            this.m_iconA = "ui/icon/slamA.png";
+            this.m_iconB = "ui/icon/slamB.png";
             this.m_injuredEnemy = [];
         }
         cast(owner, position) {
@@ -1249,6 +1254,8 @@
             this.m_cd = 5;
             this.m_lastTime = 2;
             this.m_radius = 100;
+            this.m_iconA = "ui/icon/blackholeA.png";
+            this.m_iconB = "ui/icon/blackholeB.png";
         }
         cast(owner, position) {
             if (!this.m_canUse)
@@ -1950,6 +1957,22 @@
         }
     }
 
+    class SkillList extends Laya.Script {
+        onStart() {
+            this.updateSkillList();
+        }
+        updateSkillList() {
+            console.log('update!!!');
+            SkillList.catSkillList.push(new Slam());
+            SkillList.catSkillList.push(new BlackHole());
+            SkillList.humanSkillList.push(new Spike());
+            SkillList.humanSkillList.push(new Behead());
+            console.log(SkillList.catSkillList);
+        }
+    }
+    SkillList.catSkillList = [];
+    SkillList.humanSkillList = [];
+
     class EnemyInit extends Laya.Script {
         constructor() {
             super();
@@ -2029,19 +2052,30 @@
             this.skillHuman.pos(pos['x'] + 423, pos['y'] + 158);
             this.skillCat.loadImage('ui/ending/skillBox.png');
             this.skillHuman.loadImage('ui/ending/skillBox.png');
+            this.skillCatIcon = new Laya.Sprite();
+            this.skillHumanIcon = new Laya.Sprite();
+            this.skillCatIcon.width = this.skillHumanIcon.width = 88;
+            this.skillCatIcon.height = this.skillHumanIcon.height = 88;
+            this.skillCatIcon.pos(this.skillCat.x + 21, this.skillCat.y + 21);
+            this.skillHumanIcon.pos(this.skillHuman.x + 21, this.skillHuman.y + 21);
+            let n = Math.floor(Math.random() * 2);
+            this.skillCatIcon.loadImage(SkillList.catSkillList[n].m_iconB);
+            this.skillHumanIcon.loadImage(SkillList.humanSkillList[n].m_iconB);
             this.skillCatBtn = new Laya.Button();
             this.skillHumanBtn = new Laya.Button();
             this.skillCatBtn.width = this.skillHumanBtn.width = 92;
             this.skillCatBtn.height = this.skillHumanBtn.height = 33;
             this.skillCatBtn.pos(pos['x'] + 155, pos['y'] + 302);
             this.skillHumanBtn.pos(pos['x'] + 442, pos['y'] + 302);
-            this.skillCatBtn.loadImage('ui/ending/chooseBtn.png');
-            this.skillHumanBtn.loadImage('ui/ending/chooseBtn.png');
+            this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
+            this.skillCatBtn.loadImage("ui/ending/chooseBtn.png");
             Laya.stage.addChild(this.endingSkillUI);
             Laya.stage.addChild(this.skillCat);
             Laya.stage.addChild(this.skillHuman);
             Laya.stage.addChild(this.skillCatBtn);
             Laya.stage.addChild(this.skillHumanBtn);
+            Laya.stage.addChild(this.skillCatIcon);
+            Laya.stage.addChild(this.skillHumanIcon);
             Laya.Tween.to(this.endingSkillUI, { alpha: 1.0 }, 500, Laya.Ease.linearInOut, null, 0);
         }
         unsetCharacter() {
@@ -2328,6 +2362,7 @@
             reg("script/SceneInit.ts", SceneInit);
             reg("script/EnemyInit.ts", EnemyInit);
             reg("script/CharacterInit.ts", CharacterInit);
+            reg("script/SkillList.ts", SkillList);
             reg("script/Village.ts", Village);
         }
     }

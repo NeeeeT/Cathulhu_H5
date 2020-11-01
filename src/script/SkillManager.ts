@@ -9,6 +9,11 @@ export abstract class VirtualSkill extends Laya.Script{
     abstract m_id: number;
     /** 技能冷卻時間 */
     abstract m_cd: number;
+    /** 技能icon A  */
+    abstract m_iconA: string;
+    /** 技能icon B */
+    abstract m_iconB: string;
+
     
     m_animation: Laya.Animation;
     m_rigidbody: Laya.RigidBody;

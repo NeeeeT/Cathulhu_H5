@@ -9,6 +9,10 @@ export class Slam extends VirtualSkill {
     m_cost = 50;
     m_id = 2;
     m_cd = 1;
+
+    m_iconA = "ui/icon/slamA.png";
+    m_iconB = "ui/icon/slamB.png";
+
     m_injuredEnemy: VirtualEnemy[] = [];
 
     cast(owner: any, position: object): void {
@@ -102,6 +106,9 @@ export class BlackHole extends VirtualSkill {
     m_cd = 5;
     m_lastTime = 2;
     m_radius = 100;//黑洞半徑
+
+    m_iconA = "ui/icon/blackholeA.png";
+    m_iconB = "ui/icon/blackholeB.png";
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
