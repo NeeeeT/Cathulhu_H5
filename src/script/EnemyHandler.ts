@@ -305,6 +305,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
         if (this.playerRangeCheck(this.m_attackRange * 2)) {
             if(this.m_health <= 0) return;
+            
             this.tryAttack();
             this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
 
@@ -395,8 +396,8 @@ export abstract class VirtualEnemy extends Laya.Script {
         setTimeout(() => {
             this.m_atkCd = true;
         }, 1000);
-
-        this.delayMove(0.3);
+        if(!this.m_moveDelayTimer)
+            this.delayMove(0.3);
     }
     public delayMove(time: number): void {
         if (this.m_moveDelayTimer) {
@@ -412,6 +413,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                     this.m_moveDelayValue = 0;
                 }
                 this.m_moveDelayValue -= 0.1;
+                console.log('working!', this.m_moveDelayValue);
             }, 100)
         }
     }
@@ -510,7 +512,7 @@ export class Fast extends VirtualEnemy {
     m_speed = 7;
     m_tag = 's';
     m_attackRange = 70;
-    m_mdelay = 1.0;
+    m_mdelay = 0.7;
     m_dmg = 70;
     m_atkTag = "EnemyFastAttack";
 }

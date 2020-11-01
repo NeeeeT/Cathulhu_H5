@@ -43,9 +43,9 @@ export default class Village extends Laya.Script{
     }
     updateData(): void{
         ExtraData.loadData();
-        this.c_gold = 99999;
 
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+        this.c_gold = data.gold;
         this.c_crystal = data.crystal;
         this.c_hpLevel = data.hpLevel;
         this.c_atkDmgLevel = data.atkDmgLevel;

@@ -1,5 +1,6 @@
 import CharacterInit from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
+import { ExtraData } from "./ExtraData";
 
 export default class EnemyInit extends Laya.Script{
     /** @prop {name:enemyGenerateTime,tips:"經過多少時間(ms)會生成1個敵人",type:int,default:3000}*/
@@ -16,6 +17,27 @@ export default class EnemyInit extends Laya.Script{
 
     endingRewardUI: Laya.Sprite;
     endingSkillUI: Laya.Sprite;
+    
+    rewardGold: Laya.Sprite;
+    rewardCrystal: Laya.Sprite;
+    rewardGoldText: Laya.Text;
+    rewardCrystalText: Laya.Text;
+
+    rewardGoldValue: number = 500;
+    rewardCrystalValue: number = 100;
+
+    skillCat: Laya.Sprite;
+    skillHuman: Laya.Sprite;
+
+    skillCatInfo: Laya.Sprite;
+    skillHumanInfo: Laya.Sprite;
+
+    skillCatInfoText: Laya.Text;
+    skillHumanInfoText: Laya.Text;
+
+    skillCatBtn: Laya.Button;
+    skillHumanBtn: Laya.Button;
+    
 
     constructor(){
         super();
@@ -60,9 +82,13 @@ export default class EnemyInit extends Laya.Script{
     }
     onKeyUp(e: Laya.Event){
         if(this.endingRewardUI && e.keyCode === 32){
-            Laya.Tween.to(this.endingRewardUI, {alpha: 0.2}, 500, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
+            Laya.Tween.to(this.endingRewardUI, {alpha: 0.3}, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
                 this.endingRewardUI.destroy();
-                this.endingRewardUI = null;
+                this.rewardCrystal.destroy();
+                this.rewardGold.destroy();
+                this.rewardCrystalText.destroy();
+                this.rewardGoldText.destroy();
+                // this.endingRewardUI = null;
                 this.showEndSkill();
             }), 0);
         };
@@ -72,11 +98,38 @@ export default class EnemyInit extends Laya.Script{
         this.endingSkillUI = new Laya.Sprite();
         this.endingSkillUI.width = 684;
         this.endingSkillUI.height = 576;
-        this.endingSkillUI.loadImage('ui/ending/skill.png');
+        this.endingSkillUI.loadImage('ui/ending/chooseSkill.png');
         this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.x - 325), 94);//544 - 450 = 94
         this.endingSkillUI.alpha = 0;
 
+        let pos:object = {
+            'x': this.endingSkillUI.x,
+            'y': this.endingSkillUI.y,
+        }
+
+        this.skillCat = new Laya.Sprite();
+        this.skillHuman = new Laya.Sprite();
+        this.skillCat.width = this.skillHuman.width = 130;
+        this.skillCat.height = this.skillHuman.height = 130;
+        this.skillCat.pos(pos['x']+136, pos['y']+158);
+        this.skillHuman.pos(pos['x']+423, pos['y']+158);
+        this.skillCat.loadImage('ui/ending/skillBox.png');
+        this.skillHuman.loadImage('ui/ending/skillBox.png');
+
+        this.skillCatBtn = new Laya.Button();
+        this.skillHumanBtn = new Laya.Button();
+        this.skillCatBtn.width = this.skillHumanBtn.width = 92;
+        this.skillCatBtn.height = this.skillHumanBtn.height = 33;
+        this.skillCatBtn.pos(pos['x']+155, pos['y']+302);    
+        this.skillHumanBtn.pos(pos['x']+442, pos['y']+302);
+        this.skillCatBtn.loadImage('ui/ending/chooseBtn.png');
+        this.skillHumanBtn.loadImage('ui/ending/chooseBtn.png');
+
         Laya.stage.addChild(this.endingSkillUI);
+        Laya.stage.addChild(this.skillCat);
+        Laya.stage.addChild(this.skillHuman);
+        Laya.stage.addChild(this.skillCatBtn);
+        Laya.stage.addChild(this.skillHumanBtn);
 
         Laya.Tween.to(this.endingSkillUI, {alpha: 1.0}, 500, Laya.Ease.linearInOut, null, 0);
     }
@@ -95,7 +148,44 @@ export default class EnemyInit extends Laya.Script{
         this.endingRewardUI.height = 288;
         this.endingRewardUI.loadImage('ui/ending/ending.png');
         this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
+
+        let pos:object = {
+            'x': this.endingRewardUI.x,
+            'y': this.endingRewardUI.y,
+        }
+
+        this.rewardCrystal = new Laya.Sprite();
+        this.rewardGold = new Laya.Sprite();
+        this.rewardCrystalText = new Laya.Text();
+        this.rewardGoldText = new Laya.Text();
+        
+        this.rewardCrystal.width = this.rewardGold.width = 50;
+        this.rewardCrystal.height = this.rewardGold.height = 50;
+        this.rewardCrystalText.width = this.rewardGoldText.width = 135;
+        this.rewardCrystalText.height = this.rewardGoldText.height = 35;
+
+        this.rewardCrystalText.font = this.rewardGoldText.font = "silver";
+        this.rewardCrystalText.fontSize = this.rewardGoldText.fontSize = 50;
+        this.rewardCrystalText.color = this.rewardGoldText.color = "#FCFF56";
+        this.rewardCrystalText.text = '+' + String(this.rewardCrystalValue);
+        this.rewardGoldText.text = '+' + String(this.rewardGoldValue);
+
+        
+        this.rewardCrystal.pos(pos['x']+98,pos['y']+98);
+        this.rewardCrystalText.pos(pos['x']+168,pos['y']+104);
+        this.rewardGold.pos(pos['x']+94,pos['y']+154);
+        this.rewardGoldText.pos(pos['x']+168,pos['y']+161);
+        
+        this.rewardCrystal.loadImage('ui/ending/crystal.png')
+        this.rewardGold.loadImage('ui/ending/gold.png');
+
         Laya.stage.addChild(this.endingRewardUI);
+        Laya.stage.addChild(this.rewardCrystal);
+        Laya.stage.addChild(this.rewardGold);
+        Laya.stage.addChild(this.rewardCrystalText);
+        Laya.stage.addChild(this.rewardGoldText);
+        
+        this.endingUpdateData();
     }
     showBattleInfo(): void{
         let info = new Laya.Text();
@@ -118,5 +208,12 @@ export default class EnemyInit extends Laya.Script{
             info.text = "剩餘時間: " + String(this.timeLeftValue) + "\n剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
             info.pos(player.x - 50, player.y - 400);
         }, 10)
+    }
+    endingUpdateData(): void{
+        let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+        ExtraData.currentData['crystal'] = data.crystal + this.rewardCrystalValue;
+        ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
+
+        ExtraData.saveData();
     }
 }
