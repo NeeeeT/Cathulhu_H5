@@ -617,8 +617,8 @@ export class Character extends Laya.Script {
         }, 10);
     }
     private setSkill(): void{   
-        this.m_catSkill = this.getSkillTypeByExtraData('c', 1);
-        this.m_humanSkill = this.getSkillTypeByExtraData('h', 1);
+        this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
+        this.m_humanSkill = this.getSkillTypeByExtraData('h', ExtraData.currentData['humanSkill']);
     }
     private getSkillTypeByExtraData(type: string, id: number): VirtualSkill{
         if(type === 'c'){

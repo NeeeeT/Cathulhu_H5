@@ -5,6 +5,7 @@ import OathManager from "./OathManager";
 
 export class Slam extends VirtualSkill {
     m_name = '猛擊';
+    m_info = '強大的範圍傷害';
     m_damage = 125;
     m_cost = 50;
     m_id = 2;
@@ -99,6 +100,7 @@ export class Slam extends VirtualSkill {
 
 export class BlackHole extends VirtualSkill {
     m_name = '深淵侵蝕';
+    m_info = '牽引敵人並且造成傷害';
     m_damage = 99999;
     m_dotDamage = 7;
     m_cost = 80;

@@ -1,6 +1,8 @@
 export abstract class VirtualSkill extends Laya.Script{
     /** 技能名稱 */
     abstract m_name: string;
+    /** 技能說明 */
+    abstract m_info: string;
     /** 技能傷害 */
     abstract m_damage: number;
     /** 技能獻祭值消耗 */

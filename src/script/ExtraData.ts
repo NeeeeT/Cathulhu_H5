@@ -11,8 +11,8 @@ export class ExtraData extends Laya.Script{
                 "hpLevel": Data.hpLevel,
                 "gold": Data.gold,
                 "crystal": Data.crystal,
-                "catSkill": 1,
-                "humanSkill": 1,
+                "catSkill": Data.catSkill,
+                "humanSkill": Data.humanSkill,
                 "catSkillLevel": Data.catSkillLevel,
                 "humanSkillLevel": Data.humanSkillLevel,
             }
@@ -43,7 +43,7 @@ export class ExtraData extends Laya.Script{
 
     getJsonFromURL(url: string){
         fetch(url).then(res => res.json()).then((out) =>{
-            console.log("CHECK THIS JSON! ", out);
+            console.log("CHECK THIS JSON!", out);
         }).catch(err =>{
             throw err
         });

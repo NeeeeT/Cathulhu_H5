@@ -434,7 +434,6 @@ export abstract class VirtualEnemy extends Laya.Script {
     public updateAnimation(from: EnemyStatus, to: EnemyStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void{
         if(from === to || this.m_animationChanging) return;
         this.m_state = to;
-        // console.log(from, 'convert to ', to);
         switch (this.m_state) {
             case EnemyStatus.attack:
                 this.m_animationChanging = true;

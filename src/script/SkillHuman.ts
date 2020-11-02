@@ -6,6 +6,7 @@ import { VirtualSkill } from "./SkillManager";
 
 export class Spike extends VirtualSkill {
     m_name = '突進斬';
+    m_info = '向前位移，並且擊退敵人';
     m_damage = 111;
     m_cost = 30;
     m_id = 1;
@@ -96,6 +97,7 @@ export class Spike extends VirtualSkill {
 
 export class Behead extends VirtualSkill {
     m_name = '攻其不備';
+    m_info = '製造破綻，並且追擊敵人';
     m_damage = 444;
     m_cost = 10;
     m_id = 2;

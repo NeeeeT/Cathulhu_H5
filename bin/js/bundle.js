@@ -1012,6 +1012,7 @@
         constructor() {
             super(...arguments);
             this.m_name = '突進斬';
+            this.m_info = '向前位移，並且擊退敵人';
             this.m_damage = 111;
             this.m_cost = 30;
             this.m_id = 1;
@@ -1086,6 +1087,7 @@
         constructor() {
             super(...arguments);
             this.m_name = '攻其不備';
+            this.m_info = '製造破綻，並且追擊敵人';
             this.m_damage = 444;
             this.m_cost = 10;
             this.m_id = 2;
@@ -1164,6 +1166,7 @@
         constructor() {
             super(...arguments);
             this.m_name = '猛擊';
+            this.m_info = '強大的範圍傷害';
             this.m_damage = 125;
             this.m_cost = 50;
             this.m_id = 2;
@@ -1247,6 +1250,7 @@
         constructor() {
             super(...arguments);
             this.m_name = '深淵侵蝕';
+            this.m_info = '牽引敵人並且造成傷害';
             this.m_damage = 99999;
             this.m_dotDamage = 7;
             this.m_cost = 80;
@@ -1347,6 +1351,54 @@
             let enemyFound = enemy.filter(data => (this.rectCircleIntersect(pos, data._ent.m_rectangle) === true));
             enemyFound.forEach((e) => {
                 e._ent.takeDamage(dmg);
+            });
+        }
+    }
+
+    class ExtraData extends Laya.Script {
+        static loadData() {
+            let data = Laya.LocalStorage.getItem("gameData");
+            if (data) {
+                let Data = JSON.parse(data);
+                ExtraData.currentData = {
+                    "atkDmgLevel": Data.atkDmgLevel,
+                    "hpLevel": Data.hpLevel,
+                    "gold": Data.gold,
+                    "crystal": Data.crystal,
+                    "catSkill": Data.catSkill,
+                    "humanSkill": Data.humanSkill,
+                    "catSkillLevel": Data.catSkillLevel,
+                    "humanSkillLevel": Data.humanSkillLevel,
+                };
+                console.log('成功讀取檔案!');
+                return;
+            }
+            else {
+                ExtraData.currentData = {
+                    "atkDmgLevel": 0,
+                    "hpLevel": 0,
+                    "gold": 0,
+                    "crystal": 0,
+                    "catSkill": 1,
+                    "humanSkill": 1,
+                    "catSkillLevel": 0,
+                    "humanSkillLevel": 0,
+                };
+                ExtraData.saveData();
+                console.log('創建了新的檔案');
+                return;
+            }
+        }
+        static saveData() {
+            let data = JSON.stringify(ExtraData.currentData);
+            Laya.LocalStorage.setItem("gameData", data);
+            console.log('儲存資料完畢');
+        }
+        getJsonFromURL(url) {
+            fetch(url).then(res => res.json()).then((out) => {
+                console.log("CHECK THIS JSON!", out);
+            }).catch(err => {
+                throw err;
             });
         }
     }
@@ -1705,8 +1757,8 @@
             }, 10);
         }
         setSkill() {
-            this.m_catSkill = this.getSkillTypeByExtraData('c', 1);
-            this.m_humanSkill = this.getSkillTypeByExtraData('h', 1);
+            this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
+            this.m_humanSkill = this.getSkillTypeByExtraData('h', ExtraData.currentData['humanSkill']);
         }
         getSkillTypeByExtraData(type, id) {
             if (type === 'c') {
@@ -1909,65 +1961,15 @@
         }
     }
 
-    class ExtraData extends Laya.Script {
-        static loadData() {
-            let data = Laya.LocalStorage.getItem("gameData");
-            if (data) {
-                let Data = JSON.parse(data);
-                ExtraData.currentData = {
-                    "atkDmgLevel": Data.atkDmgLevel,
-                    "hpLevel": Data.hpLevel,
-                    "gold": Data.gold,
-                    "crystal": Data.crystal,
-                    "catSkill": 1,
-                    "humanSkill": 1,
-                    "catSkillLevel": Data.catSkillLevel,
-                    "humanSkillLevel": Data.humanSkillLevel,
-                };
-                console.log('成功讀取檔案!');
-                return;
-            }
-            else {
-                ExtraData.currentData = {
-                    "atkDmgLevel": 0,
-                    "hpLevel": 0,
-                    "gold": 0,
-                    "crystal": 0,
-                    "catSkill": 1,
-                    "humanSkill": 1,
-                    "catSkillLevel": 0,
-                    "humanSkillLevel": 0,
-                };
-                ExtraData.saveData();
-                console.log('創建了新的檔案');
-                return;
-            }
-        }
-        static saveData() {
-            let data = JSON.stringify(ExtraData.currentData);
-            Laya.LocalStorage.setItem("gameData", data);
-            console.log('儲存資料完畢');
-        }
-        getJsonFromURL(url) {
-            fetch(url).then(res => res.json()).then((out) => {
-                console.log("CHECK THIS JSON! ", out);
-            }).catch(err => {
-                throw err;
-            });
-        }
-    }
-
     class SkillList extends Laya.Script {
         onStart() {
             this.updateSkillList();
         }
         updateSkillList() {
-            console.log('update!!!');
             SkillList.catSkillList.push(new Slam());
             SkillList.catSkillList.push(new BlackHole());
             SkillList.humanSkillList.push(new Spike());
             SkillList.humanSkillList.push(new Behead());
-            console.log(SkillList.catSkillList);
         }
     }
     SkillList.catSkillList = [];
@@ -2052,23 +2054,62 @@
             this.skillHuman.pos(pos['x'] + 423, pos['y'] + 158);
             this.skillCat.loadImage('ui/ending/skillBox.png');
             this.skillHuman.loadImage('ui/ending/skillBox.png');
+            let r1 = Math.floor(Math.random() * 2);
+            let r2 = Math.floor(Math.random() * 2);
             this.skillCatIcon = new Laya.Sprite();
             this.skillHumanIcon = new Laya.Sprite();
             this.skillCatIcon.width = this.skillHumanIcon.width = 88;
             this.skillCatIcon.height = this.skillHumanIcon.height = 88;
             this.skillCatIcon.pos(this.skillCat.x + 21, this.skillCat.y + 21);
             this.skillHumanIcon.pos(this.skillHuman.x + 21, this.skillHuman.y + 21);
-            let n = Math.floor(Math.random() * 2);
-            this.skillCatIcon.loadImage(SkillList.catSkillList[n].m_iconB);
-            this.skillHumanIcon.loadImage(SkillList.humanSkillList[n].m_iconB);
+            this.skillCatIcon.loadImage(SkillList.catSkillList[r1].m_iconB);
+            this.skillHumanIcon.loadImage(SkillList.humanSkillList[r2].m_iconB);
             this.skillCatBtn = new Laya.Button();
             this.skillHumanBtn = new Laya.Button();
             this.skillCatBtn.width = this.skillHumanBtn.width = 92;
             this.skillCatBtn.height = this.skillHumanBtn.height = 33;
             this.skillCatBtn.pos(pos['x'] + 155, pos['y'] + 302);
             this.skillHumanBtn.pos(pos['x'] + 442, pos['y'] + 302);
-            this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
             this.skillCatBtn.loadImage("ui/ending/chooseBtn.png");
+            this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
+            this.skillCatBtn.on(Laya.Event.CLICK, this, () => {
+                console.log('r1111');
+                ExtraData['catSkill'] = r1 + 1;
+                ExtraData.saveData();
+                this.changeToVillage();
+                this.clearUI();
+            });
+            this.skillHumanBtn.on(Laya.Event.CLICK, this, () => {
+                console.log('r222');
+                ExtraData['humanSkill'] = r2 + 1;
+                ExtraData.saveData();
+                this.changeToVillage();
+                this.clearUI();
+            });
+            this.skillCatInfo = new Laya.Sprite();
+            this.skillHumanInfo = new Laya.Sprite();
+            this.skillCatInfo.width = this.skillHumanInfo.width = 205;
+            this.skillCatInfo.height = this.skillHumanInfo.height = 110;
+            this.skillCatInfo.pos(pos['x'] + 98, pos['y'] + 356);
+            this.skillHumanInfo.pos(pos['x'] + 385, pos['y'] + 356);
+            this.skillCatInfo.loadImage("ui/ending/infoBox.png");
+            this.skillHumanInfo.loadImage("ui/ending/infoBox.png");
+            this.skillCatInfoText = new Laya.Text();
+            this.skillHumanInfoText = new Laya.Text();
+            this.skillCatInfoText.width = this.skillHumanInfoText.width = 167;
+            this.skillCatInfoText.height = this.skillHumanInfoText.height = 70;
+            this.skillCatInfoText.pos(this.skillCatInfo.x + 19, this.skillCatInfo.y + 20);
+            this.skillHumanInfoText.pos(this.skillHumanInfo.x + 19, this.skillHumanInfo.y + 20);
+            this.skillCatInfoText.text = SkillList.catSkillList[r1].m_info;
+            this.skillHumanInfoText.text = SkillList.humanSkillList[r2].m_info;
+            this.skillCatInfoText.font = 'silver';
+            this.skillHumanInfoText.font = 'silver';
+            this.skillCatInfoText.color = '#fdfdfd';
+            this.skillHumanInfoText.color = '#fdfdfd';
+            this.skillCatInfoText.fontSize = 38;
+            this.skillHumanInfoText.fontSize = 38;
+            this.skillCatInfoText.wordWrap = true;
+            this.skillHumanInfoText.wordWrap = true;
             Laya.stage.addChild(this.endingSkillUI);
             Laya.stage.addChild(this.skillCat);
             Laya.stage.addChild(this.skillHuman);
@@ -2076,6 +2117,10 @@
             Laya.stage.addChild(this.skillHumanBtn);
             Laya.stage.addChild(this.skillCatIcon);
             Laya.stage.addChild(this.skillHumanIcon);
+            Laya.stage.addChild(this.skillCatInfo);
+            Laya.stage.addChild(this.skillHumanInfo);
+            Laya.stage.addChild(this.skillCatInfoText);
+            Laya.stage.addChild(this.skillHumanInfoText);
             Laya.Tween.to(this.endingSkillUI, { alpha: 1.0 }, 500, Laya.Ease.linearInOut, null, 0);
         }
         unsetCharacter() {
@@ -2147,6 +2192,23 @@
             ExtraData.currentData['crystal'] = data.crystal + this.rewardCrystalValue;
             ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
             ExtraData.saveData();
+        }
+        changeToVillage() {
+            Laya.Scene.open("Village.scene");
+            Laya.stage.x = Laya.stage.y = 0;
+        }
+        clearUI() {
+            this.endingSkillUI.destroy();
+            this.skillCat.destroy();
+            this.skillHuman.destroy();
+            this.skillCatBtn.destroy();
+            this.skillHumanBtn.destroy();
+            this.skillCatIcon.destroy();
+            this.skillHumanIcon.destroy();
+            this.skillCatInfo.destroy();
+            this.skillHumanInfo.destroy();
+            this.skillCatInfoText.destroy();
+            this.skillHumanInfoText.destroy();
         }
     }
 

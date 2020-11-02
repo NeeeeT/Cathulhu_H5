@@ -10,16 +10,10 @@ export default class SkillList extends Laya.Script{
         this.updateSkillList();
     }
     updateSkillList(): void{
-        console.log('update!!!');
-        
-
         SkillList.catSkillList.push(new cSkill.Slam());
         SkillList.catSkillList.push(new cSkill.BlackHole());
 
         SkillList.humanSkillList.push(new hSkill.Spike());
         SkillList.humanSkillList.push(new hSkill.Behead());
-
-        console.log(SkillList.catSkillList);
-        
     }
 }

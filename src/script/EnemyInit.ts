@@ -118,15 +118,16 @@ export default class EnemyInit extends Laya.Script{
         this.skillCat.loadImage('ui/ending/skillBox.png');
         this.skillHuman.loadImage('ui/ending/skillBox.png');
 
+        let r1: number = Math.floor(Math.random()*2);
+        let r2: number = Math.floor(Math.random()*2);
         this.skillCatIcon = new Laya.Sprite();
         this.skillHumanIcon = new Laya.Sprite();
         this.skillCatIcon.width = this.skillHumanIcon.width = 88;
         this.skillCatIcon.height = this.skillHumanIcon.height = 88;
         this.skillCatIcon.pos(this.skillCat.x+21,this.skillCat.y+21);
         this.skillHumanIcon.pos(this.skillHuman.x+21, this.skillHuman.y+21);
-        let n: number = Math.floor(Math.random() * 2);
-        this.skillCatIcon.loadImage(SkillList.catSkillList[n].m_iconB);
-        this.skillHumanIcon.loadImage(SkillList.humanSkillList[n].m_iconB);
+        this.skillCatIcon.loadImage(SkillList.catSkillList[r1].m_iconB);
+        this.skillHumanIcon.loadImage(SkillList.humanSkillList[r2].m_iconB);
 
         this.skillCatBtn = new Laya.Button();
         this.skillHumanBtn = new Laya.Button();
@@ -134,9 +135,48 @@ export default class EnemyInit extends Laya.Script{
         this.skillCatBtn.height = this.skillHumanBtn.height = 33;
         this.skillCatBtn.pos(pos['x']+155, pos['y']+302);    
         this.skillHumanBtn.pos(pos['x']+442, pos['y']+302);
-        this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
         this.skillCatBtn.loadImage("ui/ending/chooseBtn.png")
+        this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
 
+        this.skillCatBtn.on(Laya.Event.CLICK, this, ()=>{
+            ExtraData['catSkill'] = r1+1;
+            ExtraData.saveData();
+            this.changeToVillage();
+            this.clearUI();
+        })
+        this.skillHumanBtn.on(Laya.Event.CLICK, this, ()=>{
+            ExtraData['humanSkill'] = r2+1;
+            ExtraData.saveData();
+            this.changeToVillage();
+            this.clearUI();
+        })
+
+        this.skillCatInfo = new Laya.Sprite();
+        this.skillHumanInfo = new Laya.Sprite();
+        this.skillCatInfo.width = this.skillHumanInfo.width = 205;
+        this.skillCatInfo.height = this.skillHumanInfo.height = 110;
+        this.skillCatInfo.pos(pos['x']+98,pos['y']+356);
+        this.skillHumanInfo.pos(pos['x']+385,pos['y']+356);
+        this.skillCatInfo.loadImage("ui/ending/infoBox.png");
+        this.skillHumanInfo.loadImage("ui/ending/infoBox.png");
+
+        this.skillCatInfoText = new Laya.Text();
+        this.skillHumanInfoText = new Laya.Text();
+        this.skillCatInfoText.width = this.skillHumanInfoText.width = 167;
+        this.skillCatInfoText.height = this.skillHumanInfoText.height = 70;
+        this.skillCatInfoText.pos(this.skillCatInfo.x+19,this.skillCatInfo.y+20);
+        this.skillHumanInfoText.pos(this.skillHumanInfo.x+19,this.skillHumanInfo.y+20);
+        this.skillCatInfoText.text = SkillList.catSkillList[r1].m_info;
+        this.skillHumanInfoText.text = SkillList.humanSkillList[r2].m_info;
+        this.skillCatInfoText.font = 'silver';
+        this.skillHumanInfoText.font = 'silver';
+        this.skillCatInfoText.color = '#fdfdfd';
+        this.skillHumanInfoText.color = '#fdfdfd';
+        this.skillCatInfoText.fontSize = 38;
+        this.skillHumanInfoText.fontSize = 38;
+        this.skillCatInfoText.wordWrap = true;
+        this.skillHumanInfoText.wordWrap = true;
+        
         Laya.stage.addChild(this.endingSkillUI);
         Laya.stage.addChild(this.skillCat);
         Laya.stage.addChild(this.skillHuman);
@@ -144,6 +184,10 @@ export default class EnemyInit extends Laya.Script{
         Laya.stage.addChild(this.skillHumanBtn);
         Laya.stage.addChild(this.skillCatIcon);
         Laya.stage.addChild(this.skillHumanIcon);
+        Laya.stage.addChild(this.skillCatInfo);
+        Laya.stage.addChild(this.skillHumanInfo);
+        Laya.stage.addChild(this.skillCatInfoText);
+        Laya.stage.addChild(this.skillHumanInfoText);
 
         Laya.Tween.to(this.endingSkillUI, {alpha: 1.0}, 500, Laya.Ease.linearInOut, null, 0);
     }
@@ -189,7 +233,6 @@ export default class EnemyInit extends Laya.Script{
         this.rewardCrystalText.pos(pos['x']+168,pos['y']+104);
         this.rewardGold.pos(pos['x']+94,pos['y']+154);
         this.rewardGoldText.pos(pos['x']+168,pos['y']+161);
-        
         this.rewardCrystal.loadImage('ui/ending/crystal.png')
         this.rewardGold.loadImage('ui/ending/gold.png');
 
@@ -229,5 +272,22 @@ export default class EnemyInit extends Laya.Script{
         ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
 
         ExtraData.saveData();
+    }
+    changeToVillage(): void{
+        Laya.Scene.open("Village.scene");
+        Laya.stage.x = Laya.stage.y = 0; 
+    }
+    clearUI(): void{
+        this.endingSkillUI.destroy();
+        this.skillCat.destroy();
+        this.skillHuman.destroy();
+        this.skillCatBtn.destroy();
+        this.skillHumanBtn.destroy();
+        this.skillCatIcon.destroy();
+        this.skillHumanIcon.destroy();
+        this.skillCatInfo.destroy();
+        this.skillHumanInfo.destroy();
+        this.skillCatInfoText.destroy();
+        this.skillHumanInfoText.destroy();
     }
 }
