@@ -209,17 +209,7 @@ export default class Village extends Laya.Script{
         ExtraData.currentData['hpLevel'] = this.c_hpLevel;
         ExtraData.currentData['gold'] = this.c_gold;
         ExtraData.currentData['crystal'] = this.c_crystal;
-
-
-        // ExtraData['atkDmgLevel'] = this.c_atkDmgLevel;
-        // ExtraData['hpLevel'] = 555;
-        // ExtraData['gold'] = this.c_gold;
-        // ExtraData['crystal'] = 555;
-
-        console.log(this.c_atkDmgLevel);
-        console.log(this.c_hpLevel);
         
-
         ExtraData.saveData();
     }
 }

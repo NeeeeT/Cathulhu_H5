@@ -157,7 +157,6 @@ export class Behead extends VirtualSkill {
         // this.m_animation.play();
 
         setTimeout(() => {
-            // owner.m_rigidbody.setVelocity({ x: 0.0, y: 10.0 });
             owner.m_rigidbody.linearVelocity = {x:0.0, y: 10.0};
             this.attackRangeCheck(owner,
                 {

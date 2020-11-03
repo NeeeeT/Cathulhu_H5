@@ -139,13 +139,13 @@ export default class EnemyInit extends Laya.Script{
         this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
 
         this.skillCatBtn.on(Laya.Event.CLICK, this, ()=>{
-            ExtraData['catSkill'] = r1+1;
+            ExtraData.currentData['catSkill'] = r1+1;
             ExtraData.saveData();
             this.changeToVillage();
             this.clearUI();
         })
         this.skillHumanBtn.on(Laya.Event.CLICK, this, ()=>{
-            ExtraData['humanSkill'] = r2+1;
+            ExtraData.currentData['humanSkill'] = r2+1;
             ExtraData.saveData();
             this.changeToVillage();
             this.clearUI();

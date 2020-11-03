@@ -1764,11 +1764,11 @@
             if (type === 'c') {
                 switch (id) {
                     case 1:
-                        return new BlackHole();
-                    case 2:
                         return new Slam();
-                    default:
+                    case 2:
                         return new BlackHole();
+                    default:
+                        return new Slam();
                 }
             }
             else if (type === 'h') {
@@ -2073,15 +2073,13 @@
             this.skillCatBtn.loadImage("ui/ending/chooseBtn.png");
             this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
             this.skillCatBtn.on(Laya.Event.CLICK, this, () => {
-                console.log('r1111');
-                ExtraData['catSkill'] = r1 + 1;
+                ExtraData.currentData['catSkill'] = r1 + 1;
                 ExtraData.saveData();
                 this.changeToVillage();
                 this.clearUI();
             });
             this.skillHumanBtn.on(Laya.Event.CLICK, this, () => {
-                console.log('r222');
-                ExtraData['humanSkill'] = r2 + 1;
+                ExtraData.currentData['humanSkill'] = r2 + 1;
                 ExtraData.saveData();
                 this.changeToVillage();
                 this.clearUI();
@@ -2410,8 +2408,6 @@
             ExtraData.currentData['hpLevel'] = this.c_hpLevel;
             ExtraData.currentData['gold'] = this.c_gold;
             ExtraData.currentData['crystal'] = this.c_crystal;
-            console.log(this.c_atkDmgLevel);
-            console.log(this.c_hpLevel);
             ExtraData.saveData();
         }
     }

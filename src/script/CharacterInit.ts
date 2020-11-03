@@ -624,11 +624,11 @@ export class Character extends Laya.Script {
         if(type === 'c'){
             switch (id) {
                 case 1:
-                    return new cSkill.BlackHole();
-                case 2:
                     return new cSkill.Slam();
-                default:
+                case 2:
                     return new cSkill.BlackHole();
+                default:
+                    return new cSkill.Slam();
             }
         }
         else if(type === 'h'){

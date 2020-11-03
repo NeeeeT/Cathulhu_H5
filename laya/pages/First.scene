@@ -82,7 +82,7 @@
             "source":"src/script/EnemyInit.ts",
             "searchKey":"Script,EnemyInit",
             "removeAble":true,
-            "props":{"enemyLeft":1,"enemyGenerateTime":1000,"EnemyGenerateTime":5000},
+            "props":{"enemyLeft":10,"enemyGenerateTime":1000,"EnemyGenerateTime":5000},
             "nodeParent":2,
             "label":"EnemyInit",
             "isDirectory":false,
