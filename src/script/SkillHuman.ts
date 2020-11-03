@@ -1,4 +1,5 @@
 // import CharacterInit from "./CharacterInit";
+import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
@@ -127,7 +128,8 @@ export class Behead extends VirtualSkill {
         this.m_animation.source = "comp/Target.atlas";
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 30;
-        this.m_animation.zOrder = 10;
+        this.m_animation.alpha = 0.8;
+        this.m_animation.zOrder = 5;
 
         this.m_canUse = false;
         this.castRoar(position);
@@ -166,7 +168,6 @@ export class Behead extends VirtualSkill {
                     "y1": offsetY + this.m_animation.height,
                 });
             //this.m_animation.play();
-             owner.m_state = CharacterStatus.attackTwo;
         }, this.m_preTime * 1000);
         setTimeout(() => {
             this.m_canUse = true;
@@ -189,8 +190,48 @@ export class Behead extends VirtualSkill {
         owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y;
         //this.m_animation.pos(owner.m_animation.x, owner.m_animation.y);
 
-        owner.updateAnimation(owner.m_state, CharacterStatus.attackTwo, null, false, 125);
-
+        setTimeout(() => {
+            this.targetSlash(CharacterInit.playerEnt,
+                {
+                    x: CharacterInit.playerEnt.m_animation.x,
+                    y: CharacterInit.playerEnt.m_animation.y,
+                });
+       }, 15);
+       setTimeout(() => {
         enemy[targetEnemy]._ent.takeDamage(this.m_damage);
+       }, 80);
+       enemy[targetEnemy]._ent.takeDamage(this.m_damage);
+    }
+    targetSlash(owner: any, position: object): void {
+        let slash : Laya.Animation = new Laya.Animation;
+        let rightSide: boolean = owner.m_isFacingRight;
+
+        slash = new Laya.Animation();
+        slash.scaleX = 1.15;
+        slash.scaleY = 1.15;
+        slash.pos(rightSide ? position['x'] - 150 : position['x'] - 400, position['y'] - 450);
+
+
+        slash.source = "comp/TargetSlash.atlas";
+        slash.autoPlay = true;
+        slash.interval = 20;
+        slash.alpha = 0.83;
+        slash.zOrder = 5;
+        // owner.
+        let colorMat: Array<number> =
+        [
+            3, 2, 2, 0, -250, //R
+            1, 4, 1, 0, -250, //G
+            3, 1, 5, 0, -250, //B
+            0, 0, 0, 2, 0, //A
+        ];
+    let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#0065ff", 8, 0, 0);
+    let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+    slash.filters = [glowFilter, colorFilter];
+         slash.on(Laya.Event.COMPLETE, this, function () {
+            slash.destroy();
+            slash.destroyed = true;
+        });
+    Laya.stage.addChild(slash);
     }
 }

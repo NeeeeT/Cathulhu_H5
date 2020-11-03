@@ -173,7 +173,7 @@
             }
             if (critical) {
                 this.delayMove(0.2);
-                this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -10.0 : 10.0, y: 0.0 };
+                this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -6.0 : 6.0, y: 0.0 };
             }
             this.enemyInjuredColor();
         }
@@ -1144,7 +1144,8 @@
             this.m_animation.source = "comp/Target.atlas";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 30;
-            this.m_animation.zOrder = 10;
+            this.m_animation.alpha = 0.8;
+            this.m_animation.zOrder = 5;
             this.m_canUse = false;
             this.castRoar(position);
             owner.delayMove(this.m_preTime);
@@ -1172,7 +1173,6 @@
                     "y0": offsetY,
                     "y1": offsetY + this.m_animation.height,
                 });
-                owner.m_state = CharacterStatus.attackTwo;
             }, this.m_preTime * 1000);
             setTimeout(() => {
                 this.m_canUse = true;
@@ -1188,8 +1188,43 @@
             console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
             owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 50 : -50);
             owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y;
-            owner.updateAnimation(owner.m_state, CharacterStatus.attackTwo, null, false, 125);
+            setTimeout(() => {
+                this.targetSlash(CharacterInit.playerEnt, {
+                    x: CharacterInit.playerEnt.m_animation.x,
+                    y: CharacterInit.playerEnt.m_animation.y,
+                });
+            }, 15);
+            setTimeout(() => {
+                enemy[targetEnemy]._ent.takeDamage(this.m_damage);
+            }, 80);
             enemy[targetEnemy]._ent.takeDamage(this.m_damage);
+        }
+        targetSlash(owner, position) {
+            let slash = new Laya.Animation;
+            let rightSide = owner.m_isFacingRight;
+            slash = new Laya.Animation();
+            slash.scaleX = 1.15;
+            slash.scaleY = 1.15;
+            slash.pos(rightSide ? position['x'] - 150 : position['x'] - 400, position['y'] - 450);
+            slash.source = "comp/TargetSlash.atlas";
+            slash.autoPlay = true;
+            slash.interval = 20;
+            slash.alpha = 0.83;
+            slash.zOrder = 5;
+            let colorMat = [
+                3, 2, 2, 0, -250,
+                1, 4, 1, 0, -250,
+                3, 1, 5, 0, -250,
+                0, 0, 0, 2, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#0065ff", 8, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            slash.filters = [glowFilter, colorFilter];
+            slash.on(Laya.Event.COMPLETE, this, function () {
+                slash.destroy();
+                slash.destroyed = true;
+            });
+            Laya.stage.addChild(slash);
         }
     }
 

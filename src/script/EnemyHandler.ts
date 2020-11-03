@@ -173,7 +173,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
         if (critical){
             this.delayMove(0.2);
-            this.m_rigidbody.linearVelocity = {x: this.m_isFacingRight?-10.0:10.0, y:0.0};
+            this.m_rigidbody.linearVelocity = {x: this.m_isFacingRight?-6.0:6.0, y:0.0};
         }
         this.enemyInjuredColor();
     }
