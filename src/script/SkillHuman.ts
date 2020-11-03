@@ -6,10 +6,14 @@ import { VirtualSkill } from "./SkillManager";
 
 export class Spike extends VirtualSkill {
     m_name = '突進斬';
+    m_info = '向前位移，並且擊退敵人';
     m_damage = 111;
     m_cost = 30;
     m_id = 1;
     m_cd = 3;
+
+    m_iconA = "ui/icon/spikeA.png";
+    m_iconB = "ui/icon/spikeB.png";
 
     /** 技能衝刺的持續時間 */
     m_lastTime: number = 0.2;
@@ -93,10 +97,14 @@ export class Spike extends VirtualSkill {
 
 export class Behead extends VirtualSkill {
     m_name = '攻其不備';
+    m_info = '製造破綻，並且追擊敵人';
     m_damage = 444;
     m_cost = 10;
     m_id = 2;
     m_cd = 3;
+
+    m_iconA = "ui/icon/beheadA.png";
+    m_iconB = "ui/icon/beheadB.png";
 
     /** 技能的準備時間 */
     m_preTime: number = 0.56;

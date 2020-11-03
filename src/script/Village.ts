@@ -42,7 +42,6 @@ export default class Village extends Laya.Script{
         })
         this.templeBtn.on(Laya.Event.CLICK, this, function(){
             console.log("temple");
-            // this.clearReinforceUI();
         })
         this.battleBtn.on(Laya.Event.CLICK, this, function(){
             // Laya.Scene.open("First.scene");
@@ -51,11 +50,15 @@ export default class Village extends Laya.Script{
         })
     }
     updateData(): void{
-        let p = new ExtraData();
-        this.c_gold = p.e_gold;
-        this.c_crystal = p.e_crystal;
-        this.c_hpLevel = p.e_hpLevel;
-        this.c_atkDmgLevel = p.e_atkDmgLevel;
+        ExtraData.loadData();
+
+        let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+        this.c_gold = data.gold;
+        this.c_crystal = data.crystal;
+        this.c_hpLevel = data.hpLevel;
+        this.c_atkDmgLevel = data.atkDmgLevel;
+        
+        this.saveData();
     }
     showReinforceUI(): void{
         this.setReinfoceUI();
@@ -187,6 +190,7 @@ export default class Village extends Laya.Script{
             this.setReinfoceAtkDmgLevel();
             this.setReinfoceAtkDmgCost();
             this.setReinfoceGoldValue();
+            this.saveData();
         })
         Laya.stage.addChild(this.reinforceAtkDmgCostBtn);
     }
@@ -204,7 +208,26 @@ export default class Village extends Laya.Script{
             this.setReinfoceHpLevel();
             this.setReinfoceHpCost();
             this.setReinfoceGoldValue();
+            this.saveData();
         })
         Laya.stage.addChild(this.reinforceHpCostBtn);
+    }
+    saveData(): void{
+        ExtraData.currentData['atkDmgLevel'] = this.c_atkDmgLevel;
+        ExtraData.currentData['hpLevel'] = this.c_hpLevel;
+        ExtraData.currentData['gold'] = this.c_gold;
+        ExtraData.currentData['crystal'] = this.c_crystal;
+
+
+        // ExtraData['atkDmgLevel'] = this.c_atkDmgLevel;
+        // ExtraData['hpLevel'] = 555;
+        // ExtraData['gold'] = this.c_gold;
+        // ExtraData['crystal'] = 555;
+
+        console.log(this.c_atkDmgLevel);
+        console.log(this.c_hpLevel);
+        
+
+        ExtraData.saveData();
     }
 }

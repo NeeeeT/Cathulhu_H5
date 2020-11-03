@@ -1,5 +1,3 @@
-// import CharacterInit from "./CharacterInit";
-
 export default class SceneInit extends Laya.Script {
     /** @prop {name:sceneBackgroundColor,tips:"戰鬥場景的背景顏色",type:string,default:"#4a4a4a"}*/
     sceneBackgroundColor: string = '#4a4a4a';

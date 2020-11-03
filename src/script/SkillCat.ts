@@ -5,10 +5,15 @@ import OathManager from "./OathManager";
 
 export class Slam extends VirtualSkill {
     m_name = '猛擊';
+    m_info = '強大的範圍傷害';
     m_damage = 125;
     m_cost = 50;
     m_id = 2;
     m_cd = 1;
+
+    m_iconA = "ui/icon/slamA.png";
+    m_iconB = "ui/icon/slamB.png";
+
     m_injuredEnemy: VirtualEnemy[] = [];
 
     cast(owner: any, position: object): void {
@@ -95,6 +100,7 @@ export class Slam extends VirtualSkill {
 
 export class BlackHole extends VirtualSkill {
     m_name = '深淵侵蝕';
+    m_info = '牽引敵人並且造成傷害';
     m_damage = 99999;
     m_dotDamage = 7;
     m_cost = 80;
@@ -102,6 +108,9 @@ export class BlackHole extends VirtualSkill {
     m_cd = 5;
     m_lastTime = 2;
     m_radius = 100;//黑洞半徑
+
+    m_iconA = "ui/icon/blackholeA.png";
+    m_iconB = "ui/icon/blackholeB.png";
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;

@@ -102,9 +102,11 @@ P E9366A50 run_07.png
 P 479C85CB run_08.png
 D Screen(1025)
 D Screen(1027)
+D Screen(1031)
 D Skill
 P 13615EFF circle.png
 P 0A467EB4 spike.png
+D Skills(1031)
 D UI
 P C11E3596 Box.png
 P BB8D7F5A bp_100$bar.png
@@ -303,6 +305,43 @@ P 61615B3A star.png
 D Screen(1027)/3.Strengthening
 R 541C54DA 0.strengthening_example.png
 R 70D6942C strengthening.png
+D Screen(1031)/0.summary
+P E8FEF7AE Crystal.png
+P 7F35BA50 Gold.png
+P 80DCFAE5 summary.png
+P 870A4BD1 summary_.png
+D Screen(1031)/1.choice_skill
+R B54B2817 0.chioce_skill_example.png
+S 29600753 1.skill_text_color.png
+R EA6B3EA1 chioce_skill.png
+R ABBFAAF4 chioce_skill_.png
+P 46F7C59A chioce_skill_button(Bright).png
+P 0EE2179A chioce_skill_button(Dark).png
+P C22B2E13 chioce_skill_rectangle.png
+P BB4ED6B4 chioce_skill_square.png
+D Screen(1031)/2.chioce_mission
+R 0578D8B6 0.chioce_mission_example.png
+R C41EEA9D 1.mission_text_color.png
+R 5AEA3C15 chioce_mission.png
+P 5BAB5835 chioce_mission_button(Bright).png
+P 8F543625 chioce_mission_button(Dark).png
+P DEEAFC30 skull.png
+P 61615B3A star.png
+D Screen(1031)/3.Strengthening
+R 541C54DA 0.strengthening_example.png
+P 47BE033A arrow_purple.png
+P 55F1B04A arrow_red.png
+R D52DA200 strengthening.png
+D Skills(1031)/skills_Cat
+P A4382636 skill_Erosion.png
+P DA979CB8 skill_Erosion_box.png
+P C1A3A4D3 skill_Slam.png
+P D7FFF7B0 skill_Slam_box.png
+D Skills(1031)/skills_Character
+P 4ED6FDF8 skill_Assail.png
+P 73713C8A skill_Assail_box.png
+P 03A673B1 skill_Chop.png
+P FD987328 skill_Chop_box.png
 D UI(1020)/Blood
 P 6C98F162 Bar_blood.png
 P F34D34E1 Bar_blood_color.png
