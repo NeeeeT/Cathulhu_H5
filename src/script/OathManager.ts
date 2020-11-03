@@ -266,7 +266,7 @@ export default class OathManager extends Laya.Script {
     
     public static randomAddDebuff() {
         if (this.playerDebuff >= 31) return;
-        let type = Math.floor(Math.random() * Math.floor(5));
+        let type = Math.floor(Math.random() * 5);
         let isInside = false;
         for (let i = 0; i <= 4; i++) {
             if ((this.playerDebuff & 1 << i) === 1 << type) isInside = true;

@@ -2,6 +2,10 @@ import CharacterInit from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 
 export default class EnemyInit extends Laya.Script{
+
+    public static missionEnemyNum;
+    
+
     /** @prop {name:enemyGenerateTime,tips:"經過多少時間(ms)會生成1個敵人",type:int,default:3000}*/
     enemyGenerateTime: number = 5000;
     /** @prop {name:enemyLeft,tips:"生成的敵人數量",type:int,default:50}*/
@@ -19,6 +23,9 @@ export default class EnemyInit extends Laya.Script{
 
     constructor(){
         super();
+    }
+    onAwake() {
+        this.updateMissionData();
     }
     onStart(){
         this.timeLeftValue = this.roundTimeLeft;
@@ -118,5 +125,9 @@ export default class EnemyInit extends Laya.Script{
             info.text = "剩餘時間: " + String(this.timeLeftValue) + "\n剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
             info.pos(player.x - 50, player.y - 400);
         }, 10)
+    }
+
+    updateMissionData() {
+        this.enemyLeft = EnemyInit.missionEnemyNum;
     }
 }

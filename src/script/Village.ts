@@ -1,4 +1,5 @@
 import { ExtraData } from "./ExtraData";
+import MissionManager from "./MissionManager";
 
 export default class Village extends Laya.Script{
 
@@ -22,6 +23,11 @@ export default class Village extends Laya.Script{
     c_hpLevel: number;
     c_atkDmgLevel: number;
 
+    missionManager: MissionManager = new MissionManager();
+
+    onAwake() {
+        if (MissionManager.missionDataPool.length <= 0) this.missionManager.generateMissionData(9);
+    }
     onStart(){
         // Laya.stage.pos(0, 0);
         this.updateData();
@@ -39,8 +45,9 @@ export default class Village extends Laya.Script{
             // this.clearReinforceUI();
         })
         this.battleBtn.on(Laya.Event.CLICK, this, function(){
-            Laya.Scene.open("First.scene");
+            // Laya.Scene.open("First.scene");
             // this.clearReinforceUI();
+            this.missionManager.showMissionUI();
         })
     }
     updateData(): void{

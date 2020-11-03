@@ -904,7 +904,7 @@
         static randomAddDebuff() {
             if (this.playerDebuff >= 31)
                 return;
-            let type = Math.floor(Math.random() * Math.floor(5));
+            let type = Math.floor(Math.random() * 5);
             let isInside = false;
             for (let i = 0; i <= 4; i++) {
                 if ((this.playerDebuff & 1 << i) === 1 << type)
@@ -1963,6 +1963,9 @@
             this.battleToggle = true;
             this.battleTimer = null;
         }
+        onAwake() {
+            this.updateMissionData();
+        }
         onStart() {
             this.timeLeftValue = this.roundTimeLeft;
             let player = CharacterInit.playerEnt.m_animation;
@@ -2055,7 +2058,180 @@
                 info.pos(player.x - 50, player.y - 400);
             }, 10);
         }
+        updateMissionData() {
+            this.enemyLeft = EnemyInit.missionEnemyNum;
+        }
     }
+
+    class MissionManager extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.roundAddEnemy = 5;
+            this.missionNum = 3;
+            this.missionDifficultyArr = [];
+            this.missionUI = null;
+            this.eliteIcons = [];
+            this.difficultyIcons = [];
+            this.crystalNums = [];
+            this.moneyNums = [];
+            this.confirmIcons = [];
+        }
+        onStart() {
+        }
+        showMissionUI() {
+            this.missionUI = new Laya.Sprite();
+            this.missionUI.loadImage("UI/chioce_mission.png");
+            this.missionUI.width = 1024;
+            this.missionUI.height = 576;
+            this.missionUI.pos(171, 96);
+            this.missionUI.alpha = 1;
+            Laya.stage.addChild(this.missionUI);
+            for (let i = 0; i < this.missionNum; i++) {
+                this.setEliteIcon(i, MissionManager.missionDataPool[i]["eliteNum"]);
+                this.setDifficultyIcon(i, MissionManager.missionDataPool[i]["difficulty"]);
+                this.setRewardInfo(i, MissionManager.missionDataPool[i]["crystal"], MissionManager.missionDataPool[i]["money"]);
+                this.setConfirmIcon(i, MissionManager.missionDataPool[i]);
+            }
+            for (let i = 0; i < this.eliteIcons.length; i++) {
+                Laya.stage.addChild(this.eliteIcons[i]);
+            }
+            for (let i = 0; i < this.difficultyIcons.length; i++) {
+                Laya.stage.addChild(this.difficultyIcons[i]);
+            }
+            for (let i = 0; i < this.crystalNums.length; i++) {
+                Laya.stage.addChild(this.crystalNums[i]);
+            }
+            for (let i = 0; i < this.moneyNums.length; i++) {
+                Laya.stage.addChild(this.moneyNums[i]);
+            }
+            for (let i = 0; i < this.confirmIcons.length; i++) {
+                Laya.stage.addChild(this.confirmIcons[i]);
+            }
+        }
+        clearMissionUI() {
+            for (let i = 0; i < this.eliteIcons.length; i++) {
+                this.eliteIcons[i].destroy();
+                this.eliteIcons[i] = null;
+            }
+            for (let i = 0; i < this.difficultyIcons.length; i++) {
+                this.difficultyIcons[i].destroy();
+                this.difficultyIcons[i] = null;
+            }
+            for (let i = 0; i < this.crystalNums.length; i++) {
+                this.crystalNums[i].destroy();
+                this.crystalNums[i] = null;
+            }
+            for (let i = 0; i < this.moneyNums.length; i++) {
+                this.moneyNums[i].destroy();
+                this.moneyNums[i] = null;
+            }
+            for (let i = 0; i < this.confirmIcons.length; i++) {
+                this.confirmIcons[i].destroy();
+                this.confirmIcons[i] = null;
+            }
+            this.missionUI.destroy();
+            this.missionUI = null;
+        }
+        setEliteIcon(col, eliteNum) {
+            let eliteIcon = new Laya.Sprite();
+            if (eliteNum > 0)
+                eliteIcon.loadImage("UI/skull.png");
+            eliteIcon.width = 49;
+            eliteIcon.height = 66;
+            eliteIcon.pos(171 + 198.5 + col * (256 + 34), 135 + 96);
+            this.eliteIcons.push(eliteIcon);
+        }
+        setDifficultyIcon(col, difficulty) {
+            let difficultyStage = 0;
+            if (difficulty > 35 && difficulty <= 50) {
+                difficultyStage = 3;
+            }
+            else if (difficulty > 20 && difficulty <= 35) {
+                difficultyStage = 2;
+            }
+            else if (difficulty >= 5 && difficulty <= 20) {
+                difficultyStage = 1;
+            }
+            for (let i = 0; i < difficultyStage; i++) {
+                let difficultyIcon_temp = new Laya.Sprite();
+                difficultyIcon_temp.loadImage("UI/star.png");
+                difficultyIcon_temp.width = 39;
+                difficultyIcon_temp.height = 39;
+                difficultyIcon_temp.pos(171 + 137.5 + col * (256 + 34) + (131 / (difficultyStage + 1)) * (i + 1), 308 + 10);
+                this.difficultyIcons.push(difficultyIcon_temp);
+            }
+        }
+        setRewardInfo(col, crystal, money) {
+            let crystalNum = new Laya.Text();
+            let moneyNum = new Laya.Text();
+            crystalNum.font = "silver";
+            moneyNum.font = "silver";
+            crystalNum.fontSize = 30;
+            moneyNum.fontSize = 30;
+            crystalNum.text = crystal.toString();
+            moneyNum.text = money.toString();
+            crystalNum.pos(171 + 252 + 5 + col * (256 + 34), 305 + 96);
+            moneyNum.pos(171 + 252 + 5 + col * (256 + 34), 375 + 96);
+            this.crystalNums.push(crystalNum);
+            this.moneyNums.push(moneyNum);
+        }
+        setConfirmIcon(col, data) {
+            let confirmIcon = new Laya.Button();
+            confirmIcon.width = 100;
+            confirmIcon.height = 50;
+            confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
+            confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
+            confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
+                confirmIcon.loadImage("UI/chioce_mission_button_Dark.png");
+            });
+            confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
+                confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
+            });
+            confirmIcon.on(Laya.Event.CLICK, this, () => {
+                this.clearMissionUI();
+                console.log(data["enemyNum"]);
+                this.sendMissionData(data);
+                Laya.Scene.open("First.scene");
+            });
+            this.confirmIcons.push(confirmIcon);
+        }
+        generateMissionData(total) {
+            for (let i = 0; i < total; i++) {
+                if (i < total / 3)
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 35);
+                if (i >= total / 3 && i < total * 2 / 3)
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 20);
+                if (i >= total * 2 / 3)
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 5);
+            }
+            this.missionDifficultyArr.sort();
+            this.missionDifficultyArr.reverse();
+            for (let i = 0; i < total; i++) {
+                let missionData = {
+                    id: i,
+                    missionName: "殲滅來犯敵軍",
+                    difficulty: this.missionDifficultyArr[i],
+                    enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
+                    enemyHp: 1000,
+                    enemyAtk: 100,
+                    eliteNum: Math.round(Math.random()),
+                    eliteHpMultiplier: 1.5,
+                    eliteAtkMultiplier: 1.5,
+                    crystal: Math.round(100 + 100 * (1 + this.missionDifficultyArr[i] / 100)),
+                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
+                    map: "forest",
+                };
+                MissionManager.missionDataPool.push(missionData);
+            }
+            console.log(MissionManager.missionDataPool);
+            return MissionManager.missionDataPool;
+        }
+        sendMissionData(data) {
+            EnemyInit.missionEnemyNum = data["enemyNum"];
+        }
+    }
+    MissionManager.missionRound = 0;
+    MissionManager.missionDataPool = [];
 
     class Village extends Laya.Script {
         constructor() {
@@ -2072,6 +2248,11 @@
             this.reinforceHpCostBtn = null;
             this.reinforceAtkDmgCost = null;
             this.reinforceAtkDmgCostBtn = null;
+            this.missionManager = new MissionManager();
+        }
+        onAwake() {
+            if (MissionManager.missionDataPool.length <= 0)
+                this.missionManager.generateMissionData(9);
         }
         onStart() {
             this.updateData();
@@ -2087,7 +2268,7 @@
                 console.log("temple");
             });
             this.battleBtn.on(Laya.Event.CLICK, this, function () {
-                Laya.Scene.open("First.scene");
+                this.missionManager.showMissionUI();
             });
         }
         updateData() {
