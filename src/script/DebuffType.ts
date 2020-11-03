@@ -85,14 +85,14 @@ export class Blind extends DebuffProto{
         this.blindSprite = new Laya.Sprite();
         this.blindBlackBg = new Laya.Sprite();
         this.blindCircleMask = new Laya.Sprite();
+        this.blindSprite.cacheAs = "bitmap";
+        Laya.stage.addChild(this.blindSprite);
         
         this.blindBlackBg.graphics.drawRect(this.player.m_animation.x, 0, 1400, 768, "000");
         this.blindCircleMask.graphics.drawCircle(this.player.m_animation.x, this.player.m_animation.y, 150, "000");
         this.blindSprite.addChild(this.blindBlackBg);
+        this.blindCircleMask.blendMode = "destination-out";
         this.blindSprite.addChild(this.blindCircleMask);
-        // this.blindBlackBg.cacheAs = "bitmap";
-        // this.blindCircleMask.blendMode = "destination-out";
-        Laya.stage.addChild(this.blindSprite);
 
         this.blindHandler = setInterval(() => {
             this.debuffUpdate();
@@ -105,6 +105,7 @@ export class Blind extends DebuffProto{
     }
 
     public stopBlind() {
+        console.log("停止Blind");
         this.blindSprite.graphics.clear();
         this.blindBlackBg.graphics.clear();
         this.blindCircleMask.graphics.clear();
@@ -149,6 +150,8 @@ export class BodyCrumble extends DebuffProto{
     }
 
     public stopBodyCrumble() {
+        console.log("停止BodyCrumble");
+        
          this.player.m_basic_xMaxVelocity = this.originXMaxVel_basic;
          this.player.m_buff_xMaxVelocity = this.originXMaxVel_buff;
         this.player.m_velocityMultiplier = this.originVM;
@@ -174,7 +177,7 @@ export class Insane extends DebuffProto{
     }
 
     public stopInsane() {
-
+        console.log("停止Insane");
     }
 }
 
@@ -196,7 +199,7 @@ export class Predator extends DebuffProto{
     }
 
     public stopPredator() {
-
+        console.log("停止BodyPredator");
     }
 }
 
@@ -254,6 +257,7 @@ export class Decay extends DebuffProto{
     }
     
     public stopDecay() {
+        console.log("停止Decay");
         this.isDecaying = false;
         clearInterval(this.decayHandler);
     }

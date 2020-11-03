@@ -10,6 +10,7 @@ export default class OathManager extends Laya.Script {
     public static increaseBloodyPoint: number = 10;
     public static isCharging: boolean = false;
     public static overChargeCount: number = 0;
+    public static addDebuffTimer = null;
     public static playerDebuff: DebuffType = DebuffType.none;
     public static blindProto: Blind = null;
     public static bodyCrumbleProto: BodyCrumble = null;
@@ -123,45 +124,45 @@ export default class OathManager extends Laya.Script {
     public static removeDebuff(type: number): void {
         switch (type) {
             case 1 << 0:
+                OathManager.playerDebuff ^= DebuffType.blind;
                 if (this.blindProto != null) {
                     this.blindProto.stopBlind();
                     this.blindProto = null;
                 }
-                OathManager.playerDebuff ^= DebuffType.blind;
                 break;
             case 1 << 1:
+                OathManager.playerDebuff ^= DebuffType.bodyCrumble;
                 if (this.bodyCrumbleProto != null) {
                     this.bodyCrumbleProto.stopBodyCrumble();
                     this.bodyCrumbleProto = null;
                 }
-                OathManager.playerDebuff ^= DebuffType.bodyCrumble;
                 break;
             case 1 << 2:
+                OathManager.playerDebuff ^= DebuffType.insane;
                 if (this.insaneProto != null) {
                     this.insaneProto.stopInsane();
                     this.insaneProto = null;
                 }
-                OathManager.playerDebuff ^= DebuffType.insane;
                 break;
             case 1 << 3:
+                OathManager.playerDebuff ^= DebuffType.predator;
                 if (this.predatorProto != null) {
                     this.predatorProto.stopPredator();
                     this.predatorProto = null;
                 }
-                OathManager.playerDebuff ^= DebuffType.predator;
                 break;
             case 1 << 4:
+                OathManager.playerDebuff ^= DebuffType.decay;
                 if (this.decayProto != null) {
                     this.decayProto.stopDecay();
                     this.decayProto = null;
                 }
-                OathManager.playerDebuff ^= DebuffType.decay;
                 break;
         }
     }
 
     public static oathUpdate() {
-        let addDebuffTimer = null;
+        
         switch (this.oathState) {
             case OathStatus.normal:
                 //目前普通狀態無特殊效果
@@ -178,11 +179,10 @@ export default class OathManager extends Laya.Script {
                 
                 //overCharge計數達到上限，轉為overCharge狀態
                 if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && OathManager.overChargeCount >= 2) {
+                    console.log("轉態到overCharge");
                     OathManager.overChargeCount = 0;
                     OathManager.oathBar.skin = "UI/bp_150.png";
-                    addDebuffTimer = setInterval(() => {
-                        this.randomAddDebuff();
-                    }, 5000);
+                    
                     this.oathState = OathStatus.overCharge;
                     return;
                 }
@@ -207,28 +207,42 @@ export default class OathManager extends Laya.Script {
                 //     console.log("debuff", this.playerDebuff);
                     
                 // }, 5000);
-                
+                if (this.addDebuffTimer === null) {
+                    console.log(this.addDebuffTimer);
+                    
+                    console.log("添加addDebuffTimer");
+                    this.addDebuffTimer = setInterval(() => {
+                        console.log("執行addDebuffTimer內函式");
+                        console.log(this.playerDebuff);
+                        if (CharacterInit.playerEnt === null) clearInterval(this.addDebuffTimer);
+                        this.randomAddDebuff();
+
+                    }, 5000);    
+                    console.log(this.addDebuffTimer);
+                }
                 //視當前BP值轉換狀態
                 if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
                     OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
                     return;
                 }
                 if (OathManager.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                    clearInterval(addDebuffTimer);
-                    addDebuffTimer = null;
+                    clearInterval(this.addDebuffTimer);
+                    this.addDebuffTimer = null;
                     for (let i = 0; i <= 4; i++) {
                         this.removeDebuff(1 << i);
                     }
+                    this.playerDebuff = DebuffType.none;
                     OathManager.oathBar.skin = "UI/bp_100.png";
                     this.oathState = OathStatus.charge;
                     return;
                 } 
                 if (OathManager.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                    clearInterval(addDebuffTimer);
-                    addDebuffTimer = null;
+                    clearInterval(this.addDebuffTimer);
+                    this.addDebuffTimer = null;
                     for (let i = 0; i <= 4; i++) {
                         this.removeDebuff(1 << i);
                     }
+                    this.playerDebuff = DebuffType.none;
                     OathManager.oathBar.skin = "UI/bp_100.png";
                     this.oathState = OathStatus.normal;
                     return;
@@ -266,12 +280,15 @@ export default class OathManager extends Laya.Script {
     
     public static randomAddDebuff() {
         if (this.playerDebuff >= 31) return;
-        let type = Math.floor(Math.random() * Math.floor(5));
+        console.log("執行randomAddDebuff");
+        
+        let type = Math.floor(Math.random() * 5);
         let isInside = false;
         for (let i = 0; i <= 4; i++) {
             if ((this.playerDebuff & 1 << i) === 1 << type) isInside = true;
         }
         if (isInside) {
+            console.log("debuff重複，重新抽取");
             this.randomAddDebuff();
         }
         if (!isInside) {

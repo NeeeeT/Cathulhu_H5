@@ -113,6 +113,7 @@ P BB8D7F5A bp_100$bar.png
 P 8639F933 bp_100.png
 P BB8D7F5A bp_150$bar.png
 P 4B8E4554 bp_150.png
+P D3A0A1AF bp_150_broke.png
 P E8FEF7AE Crystal.png
 P 7F35BA50 Gold.png
 P F34D34E1 hp$bar.png
@@ -139,6 +140,11 @@ P F34D34E1 hp$bar.png
 P DBEFFB28 hp.png
 R 032CFE08 UI位置.txt
 D Village
+R AE883E5A chioce_mission.png
+P 5BAB5835 chioce_mission_button.png
+P 8F543625 chioce_mission_button_g.png
+P DEEAFC30 skull.png
+P 61615B3A star.png
 R D137205B Village.png
 D Background(0912)/Red Forest
 R DADB2C9D 0.red forest_bgrd.png
