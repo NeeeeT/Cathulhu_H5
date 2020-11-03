@@ -537,11 +537,13 @@
             this.blindSprite = new Laya.Sprite();
             this.blindBlackBg = new Laya.Sprite();
             this.blindCircleMask = new Laya.Sprite();
+            this.blindSprite.cacheAs = "bitmap";
+            Laya.stage.addChild(this.blindSprite);
             this.blindBlackBg.graphics.drawRect(this.player.m_animation.x, 0, 1400, 768, "000");
             this.blindCircleMask.graphics.drawCircle(this.player.m_animation.x, this.player.m_animation.y, 150, "000");
             this.blindSprite.addChild(this.blindBlackBg);
+            this.blindCircleMask.blendMode = "destination-out";
             this.blindSprite.addChild(this.blindCircleMask);
-            Laya.stage.addChild(this.blindSprite);
             this.blindHandler = setInterval(() => {
                 this.debuffUpdate();
             }, 10);
@@ -558,6 +560,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopBlind() {
+            console.log("停止Blind");
             this.blindSprite.graphics.clear();
             this.blindBlackBg.graphics.clear();
             this.blindCircleMask.graphics.clear();
@@ -596,6 +599,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopBodyCrumble() {
+            console.log("停止BodyCrumble");
             this.player.m_basic_xMaxVelocity = this.originXMaxVel_basic;
             this.player.m_buff_xMaxVelocity = this.originXMaxVel_buff;
             this.player.m_velocityMultiplier = this.originVM;
@@ -615,6 +619,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopInsane() {
+            console.log("停止Insane");
         }
     }
     class Predator extends DebuffProto {
@@ -630,6 +635,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopPredator() {
+            console.log("停止BodyPredator");
         }
     }
     class Decay extends DebuffProto {
@@ -678,6 +684,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopDecay() {
+            console.log("停止Decay");
             this.isDecaying = false;
             clearInterval(this.decayHandler);
         }
@@ -713,6 +720,10 @@
             OathManager.oathBar = new Laya.ProgressBar();
             OathManager.oathBar.skin = "UI/bp_100.png";
             setInterval((() => {
+                if (CharacterInit.playerEnt.destroyed) {
+                    this.clearBloodyUI();
+                    return;
+                }
                 if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
                     OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
                 }
@@ -730,6 +741,12 @@
             }), 5);
             Laya.stage.addChild(this.characterLogo);
             this.characterLogo.play();
+        }
+        static clearBloodyUI() {
+            OathManager.oathBar.destroy();
+            OathManager.oathBar = null;
+            this.characterLogo.destroy();
+            this.characterLogo = null;
         }
         static oathChargeDetect() {
             return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? true : false;
@@ -789,44 +806,43 @@
         static removeDebuff(type) {
             switch (type) {
                 case 1 << 0:
+                    OathManager.playerDebuff ^= DebuffType.blind;
                     if (this.blindProto != null) {
                         this.blindProto.stopBlind();
                         this.blindProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.blind;
                     break;
                 case 1 << 1:
+                    OathManager.playerDebuff ^= DebuffType.bodyCrumble;
                     if (this.bodyCrumbleProto != null) {
                         this.bodyCrumbleProto.stopBodyCrumble();
                         this.bodyCrumbleProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.bodyCrumble;
                     break;
                 case 1 << 2:
+                    OathManager.playerDebuff ^= DebuffType.insane;
                     if (this.insaneProto != null) {
                         this.insaneProto.stopInsane();
                         this.insaneProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.insane;
                     break;
                 case 1 << 3:
+                    OathManager.playerDebuff ^= DebuffType.predator;
                     if (this.predatorProto != null) {
                         this.predatorProto.stopPredator();
                         this.predatorProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.predator;
                     break;
                 case 1 << 4:
+                    OathManager.playerDebuff ^= DebuffType.decay;
                     if (this.decayProto != null) {
                         this.decayProto.stopDecay();
                         this.decayProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.decay;
                     break;
             }
         }
         static oathUpdate() {
-            let addDebuffTimer = null;
             switch (this.oathState) {
                 case OathStatus.normal:
                     if (OathManager.oathChargeDetect()) {
@@ -836,11 +852,9 @@
                     break;
                 case OathStatus.charge:
                     if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && OathManager.overChargeCount >= 2) {
+                        console.log("轉態到overCharge");
                         OathManager.overChargeCount = 0;
                         OathManager.oathBar.skin = "UI/bp_150.png";
-                        addDebuffTimer = setInterval(() => {
-                            this.randomAddDebuff();
-                        }, 5000);
                         this.oathState = OathStatus.overCharge;
                         return;
                     }
@@ -856,26 +870,40 @@
                     }
                     break;
                 case OathStatus.overCharge:
+                    if (this.addDebuffTimer === null) {
+                        console.log(this.addDebuffTimer);
+                        console.log("添加addDebuffTimer");
+                        this.addDebuffTimer = setInterval(() => {
+                            console.log("執行addDebuffTimer內函式");
+                            console.log(this.playerDebuff);
+                            if (CharacterInit.playerEnt === null)
+                                clearInterval(this.addDebuffTimer);
+                            this.randomAddDebuff();
+                        }, 5000);
+                        console.log(this.addDebuffTimer);
+                    }
                     if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
                         OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
                         return;
                     }
                     if (OathManager.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        clearInterval(addDebuffTimer);
-                        addDebuffTimer = null;
+                        clearInterval(this.addDebuffTimer);
+                        this.addDebuffTimer = null;
                         for (let i = 0; i <= 4; i++) {
                             this.removeDebuff(1 << i);
                         }
+                        this.playerDebuff = DebuffType.none;
                         OathManager.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.charge;
                         return;
                     }
                     if (OathManager.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        clearInterval(addDebuffTimer);
-                        addDebuffTimer = null;
+                        clearInterval(this.addDebuffTimer);
+                        this.addDebuffTimer = null;
                         for (let i = 0; i <= 4; i++) {
                             this.removeDebuff(1 << i);
                         }
+                        this.playerDebuff = DebuffType.none;
                         OathManager.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.normal;
                         return;
@@ -905,13 +933,15 @@
         static randomAddDebuff() {
             if (this.playerDebuff >= 31)
                 return;
-            let type = Math.floor(Math.random() * Math.floor(5));
+            console.log("執行randomAddDebuff");
+            let type = Math.floor(Math.random() * 5);
             let isInside = false;
             for (let i = 0; i <= 4; i++) {
                 if ((this.playerDebuff & 1 << i) === 1 << type)
                     isInside = true;
             }
             if (isInside) {
+                console.log("debuff重複，重新抽取");
                 this.randomAddDebuff();
             }
             if (!isInside) {
@@ -929,6 +959,7 @@
     OathManager.increaseBloodyPoint = 10;
     OathManager.isCharging = false;
     OathManager.overChargeCount = 0;
+    OathManager.addDebuffTimer = null;
     OathManager.playerDebuff = DebuffType.none;
     OathManager.blindProto = null;
     OathManager.bodyCrumbleProto = null;
@@ -1986,6 +2017,9 @@
             this.rewardGoldValue = 500;
             this.rewardCrystalValue = 100;
         }
+        onAwake() {
+            this.updateMissionData();
+        }
         onStart() {
             this.timeLeftValue = this.roundTimeLeft;
             let player = CharacterInit.playerEnt.m_animation;
@@ -1994,7 +2028,6 @@
                 if (CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20)
                     return;
                 let x = Math.floor(Math.random() * 4);
-                console.log(x);
                 EnemyHandler.generator(player, x, 0);
                 this.enemyLeft--;
             }, this.enemyGenerateTime);
@@ -2185,6 +2218,9 @@
                 info.pos(player.x - 50, player.y - 400);
             }, 10);
         }
+        updateMissionData() {
+            this.enemyLeft = EnemyInit.missionEnemyNum;
+        }
         endingUpdateData() {
             let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
             ExtraData.currentData['crystal'] = data.crystal + this.rewardCrystalValue;
@@ -2192,6 +2228,7 @@
             ExtraData.saveData();
         }
         changeToVillage() {
+            OathManager.clearBloodyUI();
             Laya.Scene.open("Village.scene");
             Laya.stage.x = Laya.stage.y = 0;
         }
@@ -2210,6 +2247,176 @@
         }
     }
 
+    class MissionManager extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.roundAddEnemy = 5;
+            this.missionNum = 3;
+            this.missionDifficultyArr = [];
+            this.missionUI = null;
+            this.eliteIcons = [];
+            this.difficultyIcons = [];
+            this.crystalNums = [];
+            this.moneyNums = [];
+            this.confirmIcons = [];
+        }
+        onStart() {
+        }
+        showMissionUI() {
+            this.missionUI = new Laya.Sprite();
+            this.missionUI.loadImage("UI/chioce_mission.png");
+            this.missionUI.width = 1024;
+            this.missionUI.height = 576;
+            this.missionUI.pos(171, 96);
+            this.missionUI.alpha = 1;
+            Laya.stage.addChild(this.missionUI);
+            for (let i = 0; i < this.missionNum; i++) {
+                this.setEliteIcon(i, MissionManager.missionDataPool[i]["eliteNum"]);
+                this.setDifficultyIcon(i, MissionManager.missionDataPool[i]["difficulty"]);
+                this.setRewardInfo(i, MissionManager.missionDataPool[i]["crystal"], MissionManager.missionDataPool[i]["money"]);
+                this.setConfirmIcon(i, MissionManager.missionDataPool[i]);
+            }
+            for (let i = 0; i < this.eliteIcons.length; i++) {
+                Laya.stage.addChild(this.eliteIcons[i]);
+            }
+            for (let i = 0; i < this.difficultyIcons.length; i++) {
+                Laya.stage.addChild(this.difficultyIcons[i]);
+            }
+            for (let i = 0; i < this.crystalNums.length; i++) {
+                Laya.stage.addChild(this.crystalNums[i]);
+            }
+            for (let i = 0; i < this.moneyNums.length; i++) {
+                Laya.stage.addChild(this.moneyNums[i]);
+            }
+            for (let i = 0; i < this.confirmIcons.length; i++) {
+                Laya.stage.addChild(this.confirmIcons[i]);
+            }
+        }
+        clearMissionUI() {
+            for (let i = 0; i < this.eliteIcons.length; i++) {
+                this.eliteIcons[i].destroy();
+                this.eliteIcons[i] = null;
+            }
+            for (let i = 0; i < this.difficultyIcons.length; i++) {
+                this.difficultyIcons[i].destroy();
+                this.difficultyIcons[i] = null;
+            }
+            for (let i = 0; i < this.crystalNums.length; i++) {
+                this.crystalNums[i].destroy();
+                this.crystalNums[i] = null;
+            }
+            for (let i = 0; i < this.moneyNums.length; i++) {
+                this.moneyNums[i].destroy();
+                this.moneyNums[i] = null;
+            }
+            for (let i = 0; i < this.confirmIcons.length; i++) {
+                this.confirmIcons[i].destroy();
+                this.confirmIcons[i] = null;
+            }
+            this.missionUI.destroy();
+            this.missionUI = null;
+        }
+        setEliteIcon(col, eliteNum) {
+            let eliteIcon = new Laya.Sprite();
+            if (eliteNum > 0)
+                eliteIcon.loadImage("UI/skull.png");
+            eliteIcon.width = 49;
+            eliteIcon.height = 66;
+            eliteIcon.pos(171 + 198.5 + col * (256 + 34), 135 + 96);
+            this.eliteIcons.push(eliteIcon);
+        }
+        setDifficultyIcon(col, difficulty) {
+            let difficultyStage = 0;
+            if (difficulty > 35 && difficulty <= 50) {
+                difficultyStage = 3;
+            }
+            else if (difficulty > 20 && difficulty <= 35) {
+                difficultyStage = 2;
+            }
+            else if (difficulty >= 5 && difficulty <= 20) {
+                difficultyStage = 1;
+            }
+            for (let i = 0; i < difficultyStage; i++) {
+                let difficultyIcon_temp = new Laya.Sprite();
+                difficultyIcon_temp.loadImage("UI/star.png");
+                difficultyIcon_temp.width = 39;
+                difficultyIcon_temp.height = 39;
+                difficultyIcon_temp.pos(171 + 137.5 + col * (256 + 34) + (131 / (difficultyStage + 1)) * (i + 1), 308 + 10);
+                this.difficultyIcons.push(difficultyIcon_temp);
+            }
+        }
+        setRewardInfo(col, crystal, money) {
+            let crystalNum = new Laya.Text();
+            let moneyNum = new Laya.Text();
+            crystalNum.font = "silver";
+            moneyNum.font = "silver";
+            crystalNum.fontSize = 30;
+            moneyNum.fontSize = 30;
+            crystalNum.text = crystal.toString();
+            moneyNum.text = money.toString();
+            crystalNum.pos(171 + 252 + 5 + col * (256 + 34), 305 + 96);
+            moneyNum.pos(171 + 252 + 5 + col * (256 + 34), 375 + 96);
+            this.crystalNums.push(crystalNum);
+            this.moneyNums.push(moneyNum);
+        }
+        setConfirmIcon(col, data) {
+            let confirmIcon = new Laya.Button();
+            confirmIcon.width = 100;
+            confirmIcon.height = 50;
+            confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
+            confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
+            confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
+                confirmIcon.loadImage("UI/chioce_mission_button_Dark.png");
+            });
+            confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
+                confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
+            });
+            confirmIcon.on(Laya.Event.CLICK, this, () => {
+                this.clearMissionUI();
+                console.log(data["enemyNum"]);
+                this.sendMissionData(data);
+                Laya.Scene.open("First.scene");
+            });
+            this.confirmIcons.push(confirmIcon);
+        }
+        generateMissionData(total) {
+            for (let i = 0; i < total; i++) {
+                if (i < total / 3)
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 35);
+                if (i >= total / 3 && i < total * 2 / 3)
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 20);
+                if (i >= total * 2 / 3)
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 5);
+            }
+            this.missionDifficultyArr.sort();
+            this.missionDifficultyArr.reverse();
+            for (let i = 0; i < total; i++) {
+                let missionData = {
+                    id: i,
+                    missionName: "殲滅來犯敵軍",
+                    difficulty: this.missionDifficultyArr[i],
+                    enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
+                    enemyHp: 1000,
+                    enemyAtk: 100,
+                    eliteNum: Math.round(Math.random()),
+                    eliteHpMultiplier: 1.5,
+                    eliteAtkMultiplier: 1.5,
+                    crystal: Math.round(100 + 100 * (1 + this.missionDifficultyArr[i] / 100)),
+                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
+                    map: "forest",
+                };
+                MissionManager.missionDataPool.push(missionData);
+            }
+            console.log(MissionManager.missionDataPool);
+            return MissionManager.missionDataPool;
+        }
+        sendMissionData(data) {
+            EnemyInit.missionEnemyNum = data["enemyNum"];
+        }
+    }
+    MissionManager.missionRound = 0;
+    MissionManager.missionDataPool = [];
+
     class Village extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -2225,6 +2432,11 @@
             this.reinforceHpCostBtn = null;
             this.reinforceAtkDmgCost = null;
             this.reinforceAtkDmgCostBtn = null;
+            this.missionManager = new MissionManager();
+        }
+        onAwake() {
+            if (MissionManager.missionDataPool.length <= 0)
+                this.missionManager.generateMissionData(9);
         }
         onStart() {
             this.updateData();
@@ -2240,7 +2452,7 @@
                 console.log("temple");
             });
             this.battleBtn.on(Laya.Event.CLICK, this, function () {
-                Laya.Scene.open("First.scene");
+                this.missionManager.showMissionUI();
             });
         }
         updateData() {

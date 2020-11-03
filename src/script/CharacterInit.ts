@@ -264,7 +264,7 @@ export class Character extends Laya.Script {
 
         setInterval((() => {
             if (this.m_animation.destroyed) {
-                this.m_healthBar.destroy();
+                this.m_healthBar.destroy();              
                 this.m_healthBar.destroyed = true;
                 return;
             }
@@ -274,6 +274,7 @@ export class Character extends Laya.Script {
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
         }), 5);
     }
+
     private characterMove() {
         //Left
         if (this.m_keyDownList[37]) {

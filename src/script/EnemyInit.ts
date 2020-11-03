@@ -1,6 +1,7 @@
 import CharacterInit from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import { ExtraData } from "./ExtraData";
+import OathManager from "./OathManager";
 import SkillList from "./SkillList";
 
 export default class EnemyInit extends Laya.Script{
@@ -285,6 +286,8 @@ export default class EnemyInit extends Laya.Script{
         ExtraData.saveData();
     }
     changeToVillage(): void{
+        OathManager.clearBloodyUI();
+        
         Laya.Scene.open("Village.scene");
         Laya.stage.x = Laya.stage.y = 0; 
     }

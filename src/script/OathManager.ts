@@ -36,6 +36,10 @@ export default class OathManager extends Laya.Script {
         OathManager.oathBar = new Laya.ProgressBar();
         OathManager.oathBar.skin = "UI/bp_100.png";
         setInterval((() => {
+            if (CharacterInit.playerEnt.destroyed) {
+                this.clearBloodyUI();
+                return;
+            }
             if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
                 OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
             }
@@ -60,7 +64,12 @@ export default class OathManager extends Laya.Script {
         this.characterLogo.play();
         
     }
-    
+    public static clearBloodyUI() {
+        OathManager.oathBar.destroy();
+        OathManager.oathBar = null;
+        this.characterLogo.destroy();
+        this.characterLogo = null;
+    }
     public static oathChargeDetect(): boolean{
         return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? true : false;
     }
