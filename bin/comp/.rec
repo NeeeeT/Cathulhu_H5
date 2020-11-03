@@ -1,5 +1,5 @@
 D .
-R 10B9F894 .rec
+R F3C3BBD9 .rec
 R AA63CC8E BlackExplosion.atlas
 R 5C228EFB BlackExplosion.png
 R D71DD9C4 BlackHole.atlas
@@ -25,6 +25,8 @@ R 443055FB SlashLight.atlas
 R 73B0B328 SlashLight.png
 R AFAE159A Spike.atlas
 R 475544FE Spike.png
+R B5C48C99 Target.atlas
+R C1B48B0E Target.png
 D BlackExplosion
 P 8908EBE1 BlackholeExplsion_0036.png
 P E57B2BE9 BlackholeExplsion_0037.png
@@ -154,3 +156,25 @@ P 854D39EE Target_0013.png
 P 982C3E44 Target_0014.png
 P 26BDFC8E Target_0015.png
 P 854D39EE Target_0016.png
+D TargetSlash
+P ED610F86 TargetSlash_0012.png
+P A3B78DE9 TargetSlash_0013.png
+P DF2715D9 TargetSlash_0014.png
+P D35D8CFE TargetSlash_0015.png
+P 33AB042F TargetSlash_0016.png
+P 99268C5C TargetSlash_0017.png
+P CAE5C5D9 TargetSlash_0018.png
+P A4FB5A6C TargetSlash_0019.png
+P 6709FF40 TargetSlash_0020.png
+P E3037F75 TargetSlash_0021.png
+P 4E4D1ECB TargetSlash_0022.png
+P CB4BCD52 TargetSlash_0023.png
+P DB070340 TargetSlash_0024.png
+P B6BBF5B8 TargetSlash_0025.png
+P AE0EB694 TargetSlash_0026.png
+P A471B661 TargetSlash_0027.png
+P ACAB25EB TargetSlash_0028.png
+P EA6BD519 TargetSlash_0029.png
+P DE0A4B51 TargetSlash_0030.png
+P 22ECA100 TargetSlash_0031.png
+P 090D7664 TargetSlash_0032.png
