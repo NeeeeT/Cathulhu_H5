@@ -59,7 +59,7 @@ export default class EnemyInit extends Laya.Script{
         setInterval(() =>{
             if(CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20) return;
             let x = Math.floor(Math.random()*4);
-            console.log(x);
+            // console.log(x);
             
             EnemyHandler.generator(player, x, 0);
             this.enemyLeft--;

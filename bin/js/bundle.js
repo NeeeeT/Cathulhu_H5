@@ -338,7 +338,8 @@
             setTimeout(() => {
                 this.m_atkCd = true;
             }, 1000);
-            this.delayMove(0.3);
+            if (!this.m_moveDelayTimer)
+                this.delayMove(0.35);
         }
         delayMove(time) {
             if (this.m_moveDelayTimer) {
@@ -448,7 +449,7 @@
             this.m_speed = 7;
             this.m_tag = 's';
             this.m_attackRange = 70;
-            this.m_mdelay = 1.0;
+            this.m_mdelay = 0.7;
             this.m_dmg = 70;
             this.m_atkTag = "EnemyFastAttack";
         }
@@ -536,11 +537,13 @@
             this.blindSprite = new Laya.Sprite();
             this.blindBlackBg = new Laya.Sprite();
             this.blindCircleMask = new Laya.Sprite();
+            this.blindSprite.cacheAs = "bitmap";
+            Laya.stage.addChild(this.blindSprite);
             this.blindBlackBg.graphics.drawRect(this.player.m_animation.x, 0, 1400, 768, "000");
             this.blindCircleMask.graphics.drawCircle(this.player.m_animation.x, this.player.m_animation.y, 150, "000");
             this.blindSprite.addChild(this.blindBlackBg);
+            this.blindCircleMask.blendMode = "destination-out";
             this.blindSprite.addChild(this.blindCircleMask);
-            Laya.stage.addChild(this.blindSprite);
             this.blindHandler = setInterval(() => {
                 this.debuffUpdate();
             }, 10);
@@ -557,6 +560,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopBlind() {
+            console.log("停止Blind");
             this.blindSprite.graphics.clear();
             this.blindBlackBg.graphics.clear();
             this.blindCircleMask.graphics.clear();
@@ -595,6 +599,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopBodyCrumble() {
+            console.log("停止BodyCrumble");
             this.player.m_basic_xMaxVelocity = this.originXMaxVel_basic;
             this.player.m_buff_xMaxVelocity = this.originXMaxVel_buff;
             this.player.m_velocityMultiplier = this.originVM;
@@ -614,6 +619,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopInsane() {
+            console.log("停止Insane");
         }
     }
     class Predator extends DebuffProto {
@@ -629,6 +635,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopPredator() {
+            console.log("停止BodyPredator");
         }
     }
     class Decay extends DebuffProto {
@@ -677,6 +684,7 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopDecay() {
+            console.log("停止Decay");
             this.isDecaying = false;
             clearInterval(this.decayHandler);
         }
@@ -788,44 +796,43 @@
         static removeDebuff(type) {
             switch (type) {
                 case 1 << 0:
+                    OathManager.playerDebuff ^= DebuffType.blind;
                     if (this.blindProto != null) {
                         this.blindProto.stopBlind();
                         this.blindProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.blind;
                     break;
                 case 1 << 1:
+                    OathManager.playerDebuff ^= DebuffType.bodyCrumble;
                     if (this.bodyCrumbleProto != null) {
                         this.bodyCrumbleProto.stopBodyCrumble();
                         this.bodyCrumbleProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.bodyCrumble;
                     break;
                 case 1 << 2:
+                    OathManager.playerDebuff ^= DebuffType.insane;
                     if (this.insaneProto != null) {
                         this.insaneProto.stopInsane();
                         this.insaneProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.insane;
                     break;
                 case 1 << 3:
+                    OathManager.playerDebuff ^= DebuffType.predator;
                     if (this.predatorProto != null) {
                         this.predatorProto.stopPredator();
                         this.predatorProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.predator;
                     break;
                 case 1 << 4:
+                    OathManager.playerDebuff ^= DebuffType.decay;
                     if (this.decayProto != null) {
                         this.decayProto.stopDecay();
                         this.decayProto = null;
                     }
-                    OathManager.playerDebuff ^= DebuffType.decay;
                     break;
             }
         }
         static oathUpdate() {
-            let addDebuffTimer = null;
             switch (this.oathState) {
                 case OathStatus.normal:
                     if (OathManager.oathChargeDetect()) {
@@ -835,11 +842,9 @@
                     break;
                 case OathStatus.charge:
                     if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && OathManager.overChargeCount >= 2) {
+                        console.log("轉態到overCharge");
                         OathManager.overChargeCount = 0;
                         OathManager.oathBar.skin = "UI/bp_150.png";
-                        addDebuffTimer = setInterval(() => {
-                            this.randomAddDebuff();
-                        }, 5000);
                         this.oathState = OathStatus.overCharge;
                         return;
                     }
@@ -855,26 +860,40 @@
                     }
                     break;
                 case OathStatus.overCharge:
+                    if (this.addDebuffTimer === null) {
+                        console.log(this.addDebuffTimer);
+                        console.log("添加addDebuffTimer");
+                        this.addDebuffTimer = setInterval(() => {
+                            console.log("執行addDebuffTimer內函式");
+                            console.log(this.playerDebuff);
+                            if (CharacterInit.playerEnt === null)
+                                clearInterval(this.addDebuffTimer);
+                            this.randomAddDebuff();
+                        }, 5000);
+                        console.log(this.addDebuffTimer);
+                    }
                     if (OathManager.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
                         OathManager.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
                         return;
                     }
                     if (OathManager.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        clearInterval(addDebuffTimer);
-                        addDebuffTimer = null;
+                        clearInterval(this.addDebuffTimer);
+                        this.addDebuffTimer = null;
                         for (let i = 0; i <= 4; i++) {
                             this.removeDebuff(1 << i);
                         }
+                        this.playerDebuff = DebuffType.none;
                         OathManager.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.charge;
                         return;
                     }
                     if (OathManager.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        clearInterval(addDebuffTimer);
-                        addDebuffTimer = null;
+                        clearInterval(this.addDebuffTimer);
+                        this.addDebuffTimer = null;
                         for (let i = 0; i <= 4; i++) {
                             this.removeDebuff(1 << i);
                         }
+                        this.playerDebuff = DebuffType.none;
                         OathManager.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.normal;
                         return;
@@ -904,6 +923,7 @@
         static randomAddDebuff() {
             if (this.playerDebuff >= 31)
                 return;
+            console.log("執行randomAddDebuff");
             let type = Math.floor(Math.random() * 5);
             let isInside = false;
             for (let i = 0; i <= 4; i++) {
@@ -911,6 +931,7 @@
                     isInside = true;
             }
             if (isInside) {
+                console.log("debuff重複，重新抽取");
                 this.randomAddDebuff();
             }
             if (!isInside) {
@@ -928,6 +949,7 @@
     OathManager.increaseBloodyPoint = 10;
     OathManager.isCharging = false;
     OathManager.overChargeCount = 0;
+    OathManager.addDebuffTimer = null;
     OathManager.playerDebuff = DebuffType.none;
     OathManager.blindProto = null;
     OathManager.bodyCrumbleProto = null;
@@ -1011,10 +1033,13 @@
         constructor() {
             super(...arguments);
             this.m_name = '突進斬';
+            this.m_info = '向前位移，並且擊退敵人';
             this.m_damage = 111;
             this.m_cost = 30;
             this.m_id = 1;
             this.m_cd = 3;
+            this.m_iconA = "ui/icon/spikeA.png";
+            this.m_iconB = "ui/icon/spikeB.png";
             this.m_lastTime = 0.2;
             this.m_spikeVec = 55.0;
         }
@@ -1083,10 +1108,13 @@
         constructor() {
             super(...arguments);
             this.m_name = '攻其不備';
+            this.m_info = '製造破綻，並且追擊敵人';
             this.m_damage = 444;
             this.m_cost = 10;
             this.m_id = 2;
             this.m_cd = 3;
+            this.m_iconA = "ui/icon/beheadA.png";
+            this.m_iconB = "ui/icon/beheadB.png";
             this.m_preTime = 0.56;
         }
         cast(owner, position) {
@@ -1159,10 +1187,13 @@
         constructor() {
             super(...arguments);
             this.m_name = '猛擊';
+            this.m_info = '強大的範圍傷害';
             this.m_damage = 125;
             this.m_cost = 50;
             this.m_id = 2;
             this.m_cd = 1;
+            this.m_iconA = "ui/icon/slamA.png";
+            this.m_iconB = "ui/icon/slamB.png";
             this.m_injuredEnemy = [];
         }
         cast(owner, position) {
@@ -1240,6 +1271,7 @@
         constructor() {
             super(...arguments);
             this.m_name = '深淵侵蝕';
+            this.m_info = '牽引敵人並且造成傷害';
             this.m_damage = 99999;
             this.m_dotDamage = 7;
             this.m_cost = 80;
@@ -1247,6 +1279,8 @@
             this.m_cd = 5;
             this.m_lastTime = 2;
             this.m_radius = 100;
+            this.m_iconA = "ui/icon/blackholeA.png";
+            this.m_iconB = "ui/icon/blackholeB.png";
         }
         cast(owner, position) {
             if (!this.m_canUse)
@@ -1343,58 +1377,52 @@
     }
 
     class ExtraData extends Laya.Script {
-        constructor() {
-            super();
-            this.loadData();
-        }
-        loadData() {
-            this.e_atkDmgLevel = 1;
-            this.e_hpLevel = 1;
-            this.e_gold = 0;
-            this.e_crystal = 0;
-            this.e_cSkill = 1;
-            this.e_hSkill = 1;
-            ExtraData.currentData = {
-                "atkDmgLevel": this.e_atkDmgLevel,
-                "hpLevel": this.e_hpLevel,
-                "gold": this.e_hpLevel,
-                "crystal": this.e_crystal,
-                "catSkill": this.e_cSkill,
-                "humanSkill": this.e_hSkill,
-                "catSkillLevel": this.e_cSkillLevel,
-                "humanSkillLevel": this.e_hSkillLevel,
-            };
-        }
-        setCooike(key, value) {
-            document.cookie = "test=123";
-        }
-        parseCookie() {
-            let cookieObj = {};
-            let cookieAry = document.cookie.split(';');
-            let cookie;
-            for (let i = 0, l = cookieAry.length; i < l; ++i) {
-                cookie = String(cookieAry[i]).trim();
-                cookie = cookie.split('=');
-                cookieObj[cookie[0]] = cookie[1];
+        static loadData() {
+            let data = Laya.LocalStorage.getItem("gameData");
+            if (data) {
+                let Data = JSON.parse(data);
+                ExtraData.currentData = {
+                    "atkDmgLevel": Data.atkDmgLevel,
+                    "hpLevel": Data.hpLevel,
+                    "gold": Data.gold,
+                    "crystal": Data.crystal,
+                    "catSkill": Data.catSkill,
+                    "humanSkill": Data.humanSkill,
+                    "catSkillLevel": Data.catSkillLevel,
+                    "humanSkillLevel": Data.humanSkillLevel,
+                };
+                console.log('成功讀取檔案!');
+                return;
             }
-            return cookieObj;
-        }
-        getCookieByName(name) {
-            var value = this.parseCookie()[name];
-            if (value) {
-                value = decodeURIComponent(value);
+            else {
+                ExtraData.currentData = {
+                    "atkDmgLevel": 0,
+                    "hpLevel": 0,
+                    "gold": 0,
+                    "crystal": 0,
+                    "catSkill": 1,
+                    "humanSkill": 1,
+                    "catSkillLevel": 0,
+                    "humanSkillLevel": 0,
+                };
+                ExtraData.saveData();
+                console.log('創建了新的檔案');
+                return;
             }
-            return value;
+        }
+        static saveData() {
+            let data = JSON.stringify(ExtraData.currentData);
+            Laya.LocalStorage.setItem("gameData", data);
+            console.log('儲存資料完畢');
         }
         getJsonFromURL(url) {
             fetch(url).then(res => res.json()).then((out) => {
-                console.log("CHECK THIS JSON! ", out);
+                console.log("CHECK THIS JSON!", out);
             }).catch(err => {
                 throw err;
             });
         }
     }
-    ExtraData.currentData = {};
 
     class Character extends Laya.Script {
         constructor() {
@@ -1750,8 +1778,8 @@
             }, 10);
         }
         setSkill() {
-            this.m_catSkill = this.getSkillTypeByExtraData('c', new ExtraData().e_cSkill);
-            this.m_humanSkill = this.getSkillTypeByExtraData('h', new ExtraData().e_hSkill);
+            this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
+            this.m_humanSkill = this.getSkillTypeByExtraData('h', ExtraData.currentData['humanSkill']);
         }
         getSkillTypeByExtraData(type, id) {
             if (type === 'c') {
@@ -1954,6 +1982,20 @@
         }
     }
 
+    class SkillList extends Laya.Script {
+        onStart() {
+            this.updateSkillList();
+        }
+        updateSkillList() {
+            SkillList.catSkillList.push(new Slam());
+            SkillList.catSkillList.push(new BlackHole());
+            SkillList.humanSkillList.push(new Spike());
+            SkillList.humanSkillList.push(new Behead());
+        }
+    }
+    SkillList.catSkillList = [];
+    SkillList.humanSkillList = [];
+
     class EnemyInit extends Laya.Script {
         constructor() {
             super();
@@ -1962,6 +2004,8 @@
             this.roundTimeLeft = 180;
             this.battleToggle = true;
             this.battleTimer = null;
+            this.rewardGoldValue = 500;
+            this.rewardCrystalValue = 100;
         }
         onAwake() {
             this.updateMissionData();
@@ -1974,7 +2018,6 @@
                 if (CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20)
                     return;
                 let x = Math.floor(Math.random() * 4);
-                console.log(x);
                 EnemyHandler.generator(player, x, 0);
                 this.enemyLeft--;
             }, this.enemyGenerateTime);
@@ -2003,9 +2046,12 @@
         }
         onKeyUp(e) {
             if (this.endingRewardUI && e.keyCode === 32) {
-                Laya.Tween.to(this.endingRewardUI, { alpha: 0.2 }, 500, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(this.endingRewardUI, { alpha: 0.3 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     this.endingRewardUI.destroy();
-                    this.endingRewardUI = null;
+                    this.rewardCrystal.destroy();
+                    this.rewardGold.destroy();
+                    this.rewardCrystalText.destroy();
+                    this.rewardGoldText.destroy();
                     this.showEndSkill();
                 }), 0);
             }
@@ -2016,10 +2062,86 @@
             this.endingSkillUI = new Laya.Sprite();
             this.endingSkillUI.width = 684;
             this.endingSkillUI.height = 576;
-            this.endingSkillUI.loadImage('ui/ending/skill.png');
+            this.endingSkillUI.loadImage('ui/ending/chooseSkill.png');
             this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.x - 325), 94);
             this.endingSkillUI.alpha = 0;
+            let pos = {
+                'x': this.endingSkillUI.x,
+                'y': this.endingSkillUI.y,
+            };
+            this.skillCat = new Laya.Sprite();
+            this.skillHuman = new Laya.Sprite();
+            this.skillCat.width = this.skillHuman.width = 130;
+            this.skillCat.height = this.skillHuman.height = 130;
+            this.skillCat.pos(pos['x'] + 136, pos['y'] + 158);
+            this.skillHuman.pos(pos['x'] + 423, pos['y'] + 158);
+            this.skillCat.loadImage('ui/ending/skillBox.png');
+            this.skillHuman.loadImage('ui/ending/skillBox.png');
+            let r1 = Math.floor(Math.random() * 2);
+            let r2 = Math.floor(Math.random() * 2);
+            this.skillCatIcon = new Laya.Sprite();
+            this.skillHumanIcon = new Laya.Sprite();
+            this.skillCatIcon.width = this.skillHumanIcon.width = 88;
+            this.skillCatIcon.height = this.skillHumanIcon.height = 88;
+            this.skillCatIcon.pos(this.skillCat.x + 21, this.skillCat.y + 21);
+            this.skillHumanIcon.pos(this.skillHuman.x + 21, this.skillHuman.y + 21);
+            this.skillCatIcon.loadImage(SkillList.catSkillList[r1].m_iconB);
+            this.skillHumanIcon.loadImage(SkillList.humanSkillList[r2].m_iconB);
+            this.skillCatBtn = new Laya.Button();
+            this.skillHumanBtn = new Laya.Button();
+            this.skillCatBtn.width = this.skillHumanBtn.width = 92;
+            this.skillCatBtn.height = this.skillHumanBtn.height = 33;
+            this.skillCatBtn.pos(pos['x'] + 155, pos['y'] + 302);
+            this.skillHumanBtn.pos(pos['x'] + 442, pos['y'] + 302);
+            this.skillCatBtn.loadImage("ui/ending/chooseBtn.png");
+            this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
+            this.skillCatBtn.on(Laya.Event.CLICK, this, () => {
+                ExtraData['catSkill'] = r1 + 1;
+                ExtraData.saveData();
+                this.changeToVillage();
+                this.clearUI();
+            });
+            this.skillHumanBtn.on(Laya.Event.CLICK, this, () => {
+                ExtraData['humanSkill'] = r2 + 1;
+                ExtraData.saveData();
+                this.changeToVillage();
+                this.clearUI();
+            });
+            this.skillCatInfo = new Laya.Sprite();
+            this.skillHumanInfo = new Laya.Sprite();
+            this.skillCatInfo.width = this.skillHumanInfo.width = 205;
+            this.skillCatInfo.height = this.skillHumanInfo.height = 110;
+            this.skillCatInfo.pos(pos['x'] + 98, pos['y'] + 356);
+            this.skillHumanInfo.pos(pos['x'] + 385, pos['y'] + 356);
+            this.skillCatInfo.loadImage("ui/ending/infoBox.png");
+            this.skillHumanInfo.loadImage("ui/ending/infoBox.png");
+            this.skillCatInfoText = new Laya.Text();
+            this.skillHumanInfoText = new Laya.Text();
+            this.skillCatInfoText.width = this.skillHumanInfoText.width = 167;
+            this.skillCatInfoText.height = this.skillHumanInfoText.height = 70;
+            this.skillCatInfoText.pos(this.skillCatInfo.x + 19, this.skillCatInfo.y + 20);
+            this.skillHumanInfoText.pos(this.skillHumanInfo.x + 19, this.skillHumanInfo.y + 20);
+            this.skillCatInfoText.text = SkillList.catSkillList[r1].m_info;
+            this.skillHumanInfoText.text = SkillList.humanSkillList[r2].m_info;
+            this.skillCatInfoText.font = 'silver';
+            this.skillHumanInfoText.font = 'silver';
+            this.skillCatInfoText.color = '#fdfdfd';
+            this.skillHumanInfoText.color = '#fdfdfd';
+            this.skillCatInfoText.fontSize = 38;
+            this.skillHumanInfoText.fontSize = 38;
+            this.skillCatInfoText.wordWrap = true;
+            this.skillHumanInfoText.wordWrap = true;
             Laya.stage.addChild(this.endingSkillUI);
+            Laya.stage.addChild(this.skillCat);
+            Laya.stage.addChild(this.skillHuman);
+            Laya.stage.addChild(this.skillCatBtn);
+            Laya.stage.addChild(this.skillHumanBtn);
+            Laya.stage.addChild(this.skillCatIcon);
+            Laya.stage.addChild(this.skillHumanIcon);
+            Laya.stage.addChild(this.skillCatInfo);
+            Laya.stage.addChild(this.skillHumanInfo);
+            Laya.stage.addChild(this.skillCatInfoText);
+            Laya.stage.addChild(this.skillHumanInfoText);
             Laya.Tween.to(this.endingSkillUI, { alpha: 1.0 }, 500, Laya.Ease.linearInOut, null, 0);
         }
         unsetCharacter() {
@@ -2037,7 +2159,35 @@
             this.endingRewardUI.height = 288;
             this.endingRewardUI.loadImage('ui/ending/ending.png');
             this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
+            let pos = {
+                'x': this.endingRewardUI.x,
+                'y': this.endingRewardUI.y,
+            };
+            this.rewardCrystal = new Laya.Sprite();
+            this.rewardGold = new Laya.Sprite();
+            this.rewardCrystalText = new Laya.Text();
+            this.rewardGoldText = new Laya.Text();
+            this.rewardCrystal.width = this.rewardGold.width = 50;
+            this.rewardCrystal.height = this.rewardGold.height = 50;
+            this.rewardCrystalText.width = this.rewardGoldText.width = 135;
+            this.rewardCrystalText.height = this.rewardGoldText.height = 35;
+            this.rewardCrystalText.font = this.rewardGoldText.font = "silver";
+            this.rewardCrystalText.fontSize = this.rewardGoldText.fontSize = 50;
+            this.rewardCrystalText.color = this.rewardGoldText.color = "#FCFF56";
+            this.rewardCrystalText.text = '+' + String(this.rewardCrystalValue);
+            this.rewardGoldText.text = '+' + String(this.rewardGoldValue);
+            this.rewardCrystal.pos(pos['x'] + 98, pos['y'] + 98);
+            this.rewardCrystalText.pos(pos['x'] + 168, pos['y'] + 104);
+            this.rewardGold.pos(pos['x'] + 94, pos['y'] + 154);
+            this.rewardGoldText.pos(pos['x'] + 168, pos['y'] + 161);
+            this.rewardCrystal.loadImage('ui/ending/crystal.png');
+            this.rewardGold.loadImage('ui/ending/gold.png');
             Laya.stage.addChild(this.endingRewardUI);
+            Laya.stage.addChild(this.rewardCrystal);
+            Laya.stage.addChild(this.rewardGold);
+            Laya.stage.addChild(this.rewardCrystalText);
+            Laya.stage.addChild(this.rewardGoldText);
+            this.endingUpdateData();
         }
         showBattleInfo() {
             let info = new Laya.Text();
@@ -2060,6 +2210,29 @@
         }
         updateMissionData() {
             this.enemyLeft = EnemyInit.missionEnemyNum;
+        }
+        endingUpdateData() {
+            let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+            ExtraData.currentData['crystal'] = data.crystal + this.rewardCrystalValue;
+            ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
+            ExtraData.saveData();
+        }
+        changeToVillage() {
+            Laya.Scene.open("Village.scene");
+            Laya.stage.x = Laya.stage.y = 0;
+        }
+        clearUI() {
+            this.endingSkillUI.destroy();
+            this.skillCat.destroy();
+            this.skillHuman.destroy();
+            this.skillCatBtn.destroy();
+            this.skillHumanBtn.destroy();
+            this.skillCatIcon.destroy();
+            this.skillHumanIcon.destroy();
+            this.skillCatInfo.destroy();
+            this.skillHumanInfo.destroy();
+            this.skillCatInfoText.destroy();
+            this.skillHumanInfoText.destroy();
         }
     }
 
@@ -2272,11 +2445,13 @@
             });
         }
         updateData() {
-            let p = new ExtraData();
-            this.c_gold = p.e_gold;
-            this.c_crystal = p.e_crystal;
-            this.c_hpLevel = p.e_hpLevel;
-            this.c_atkDmgLevel = p.e_atkDmgLevel;
+            ExtraData.loadData();
+            let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+            this.c_gold = data.gold;
+            this.c_crystal = data.crystal;
+            this.c_hpLevel = data.hpLevel;
+            this.c_atkDmgLevel = data.atkDmgLevel;
+            this.saveData();
         }
         showReinforceUI() {
             this.setReinfoceUI();
@@ -2407,6 +2582,7 @@
                 this.setReinfoceAtkDmgLevel();
                 this.setReinfoceAtkDmgCost();
                 this.setReinfoceGoldValue();
+                this.saveData();
             });
             Laya.stage.addChild(this.reinforceAtkDmgCostBtn);
         }
@@ -2424,8 +2600,18 @@
                 this.setReinfoceHpLevel();
                 this.setReinfoceHpCost();
                 this.setReinfoceGoldValue();
+                this.saveData();
             });
             Laya.stage.addChild(this.reinforceHpCostBtn);
+        }
+        saveData() {
+            ExtraData.currentData['atkDmgLevel'] = this.c_atkDmgLevel;
+            ExtraData.currentData['hpLevel'] = this.c_hpLevel;
+            ExtraData.currentData['gold'] = this.c_gold;
+            ExtraData.currentData['crystal'] = this.c_crystal;
+            console.log(this.c_atkDmgLevel);
+            console.log(this.c_hpLevel);
+            ExtraData.saveData();
         }
     }
 
@@ -2437,6 +2623,7 @@
             reg("script/SceneInit.ts", SceneInit);
             reg("script/EnemyInit.ts", EnemyInit);
             reg("script/CharacterInit.ts", CharacterInit);
+            reg("script/SkillList.ts", SkillList);
             reg("script/Village.ts", Village);
         }
     }
