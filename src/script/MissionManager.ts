@@ -131,7 +131,8 @@ export default class MissionManager extends Laya.Script {
                 id: i,
                 missionName: "殲滅來犯敵軍",
                 difficulty: this.missionDifficultyArr[i],
-                enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
+                // enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
+                enemyNum: 3,
                 enemyHp: 1000,
                 enemyAtk: 100,
                 eliteNum: Math.round(Math.random()),
@@ -150,5 +151,7 @@ export default class MissionManager extends Laya.Script {
 
     sendMissionData(data: object) {
         EnemyInit.missionEnemyNum = data["enemyNum"];
+        EnemyInit.missionRewardCrystalValue = data["crystal"];
+        EnemyInit.missionRewardGoldValue = data["money"];
     }
 }

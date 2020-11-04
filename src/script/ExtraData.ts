@@ -15,6 +15,7 @@ export class ExtraData extends Laya.Script{
                 "humanSkill": Data.humanSkill,
                 "catSkillLevel": Data.catSkillLevel,
                 "humanSkillLevel": Data.humanSkillLevel,
+                "battleRound":Data.battleRound,
             }
             console.log('成功讀取檔案!');
             return;
@@ -29,6 +30,7 @@ export class ExtraData extends Laya.Script{
                 "humanSkill": 1,
                 "catSkillLevel": 0,
                 "humanSkillLevel": 0,
+                "battleRound": 0,
             }
             ExtraData.saveData();
             console.log('創建了新的檔案');

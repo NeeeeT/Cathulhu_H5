@@ -2,7 +2,6 @@
 import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
-import OathManager from "./OathManager";
 import { VirtualSkill } from "./SkillManager";
 
 export class Spike extends VirtualSkill {
@@ -23,7 +22,6 @@ export class Spike extends VirtualSkill {
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
-        if (!OathManager.oathCastSkill(this.m_cost)) return;
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
@@ -112,7 +110,6 @@ export class Behead extends VirtualSkill {
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
-        if (!OathManager.oathCastSkill(this.m_cost)) return;
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
