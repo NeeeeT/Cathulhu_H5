@@ -43,6 +43,7 @@ export default class OathManager extends Laya.Script {
             if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
                 OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
             }
+            if(CharacterInit.playerEnt != null)
             OathManager.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
             
         }), 5);
