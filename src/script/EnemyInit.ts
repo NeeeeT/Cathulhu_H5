@@ -7,6 +7,8 @@ import SkillList from "./SkillList";
 export default class EnemyInit extends Laya.Script{
 
     public static missionEnemyNum;
+    public static missionRewardGoldValue;
+    public static missionRewardCrystalValue;
     
 
     /** @prop {name:enemyGenerateTime,tips:"經過多少時間(ms)會生成1個敵人",type:int,default:3000}*/
@@ -90,6 +92,12 @@ export default class EnemyInit extends Laya.Script{
         }, 1000);
         this.showBattleInfo();
     }
+    onUpdate() {
+        // if (this.endingRewardUI && this.skillCatBtn && this.skillHumanBtn) {
+        //     console.log("貓技按鈕位置",this.skillCatBtn.x, this.skillCatBtn.y);
+        //     console.log("人技按鈕位置", this.skillHumanBtn.x, this.skillHumanBtn.y);         
+        // }
+    }
     onKeyUp(e: Laya.Event){
         if(this.endingRewardUI && e.keyCode === 32){
             Laya.Tween.to(this.endingRewardUI, {alpha: 0.3}, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
@@ -109,8 +117,18 @@ export default class EnemyInit extends Laya.Script{
         this.endingSkillUI.width = 684;
         this.endingSkillUI.height = 576;
         this.endingSkillUI.loadImage('ui/ending/chooseSkill.png');
+
         this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.x - 325), 94);//544 - 450 = 94
+        // this.endingSkillUI.pos(-683, 94);
         this.endingSkillUI.alpha = 0;
+
+        // this.endingSkillUI.on(Laya.Event., this, () => {
+            // setInterval(() => {
+            //     console.log("舞台位置：", Laya.stage.x, Laya.stage.y);
+            //     console.log("btn1 pos", this.skillCatBtn.x, this.skillCatBtn.y);
+            //     console.log("btn2 pos", this.skillHumanBtn.x, this.skillHumanBtn.y);
+            // }, 100)
+        // })
 
         let pos:object = {
             'x': this.endingSkillUI.x,
@@ -141,18 +159,23 @@ export default class EnemyInit extends Laya.Script{
         this.skillHumanBtn = new Laya.Button();
         this.skillCatBtn.width = this.skillHumanBtn.width = 92;
         this.skillCatBtn.height = this.skillHumanBtn.height = 33;
-        this.skillCatBtn.pos(pos['x']+155, pos['y']+302);    
+        this.skillCatBtn.pos(pos['x'] + 155, pos['y'] + 302);  
+        
         this.skillHumanBtn.pos(pos['x']+442, pos['y']+302);
         this.skillCatBtn.loadImage("ui/ending/chooseBtn.png")
         this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
 
-        this.skillCatBtn.on(Laya.Event.CLICK, this, ()=>{
+        this.skillCatBtn.on(Laya.Event.CLICK, this, () => {
+            
+            
             ExtraData.currentData['catSkill'] = r1+1;
             ExtraData.saveData();
             this.changeToVillage();
             this.clearUI();
         })
-        this.skillHumanBtn.on(Laya.Event.CLICK, this, ()=>{
+        this.skillHumanBtn.on(Laya.Event.CLICK, this, () => {
+            
+
             ExtraData.currentData['humanSkill'] = r2+1;
             ExtraData.saveData();
             this.changeToVillage();
@@ -214,7 +237,7 @@ export default class EnemyInit extends Laya.Script{
         this.endingRewardUI.height = 288;
         this.endingRewardUI.loadImage('ui/ending/ending.png');
         this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
-
+        // this.endingRewardUI.pos(-683, 94);
         let pos:object = {
             'x': this.endingRewardUI.x,
             'y': this.endingRewardUI.y,
@@ -277,6 +300,8 @@ export default class EnemyInit extends Laya.Script{
 
     updateMissionData() {
         this.enemyLeft = EnemyInit.missionEnemyNum;
+        this.rewardCrystalValue = EnemyInit.missionRewardCrystalValue;
+        this.rewardGoldValue = EnemyInit.missionRewardGoldValue;
     }
     endingUpdateData(): void{
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
@@ -285,11 +310,9 @@ export default class EnemyInit extends Laya.Script{
 
         ExtraData.saveData();
     }
-    changeToVillage(): void{
-        OathManager.clearBloodyUI();
-        
+    changeToVillage(): void{      
         Laya.Scene.open("Village.scene");
-        Laya.stage.x = Laya.stage.y = 0; 
+        // Laya.stage.x = Laya.stage.y = 0; 
     }
     clearUI(): void{
         this.endingSkillUI.destroy();

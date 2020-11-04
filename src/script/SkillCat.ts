@@ -1,7 +1,6 @@
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler, { VirtualEnemy } from "./EnemyHandler"
 import { VirtualSkill } from "./SkillManager";
-import OathManager from "./OathManager";
 
 export class Slam extends VirtualSkill {
     m_name = '猛擊';
@@ -18,7 +17,6 @@ export class Slam extends VirtualSkill {
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
-        if (!OathManager.oathCastSkill(this.m_cost)) return;
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
@@ -114,7 +112,6 @@ export class BlackHole extends VirtualSkill {
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
-        if (!OathManager.oathCastSkill(this.m_cost)) return;
         let rightSide: boolean = owner.m_isFacingRight;
         let explosion: Laya.Animation = new Laya.Animation();
 

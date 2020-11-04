@@ -71,6 +71,8 @@ export class Character extends Laya.Script {
     m_script: Laya.Script;
     m_healthBar: Laya.ProgressBar;
 
+    m_oathManager: OathManager;
+
     spawn() {
         this.m_state = CharacterStatus.idle;
 
@@ -157,12 +159,13 @@ export class Character extends Laya.Script {
 
         Laya.stage.addChild(this.m_animation);
 
-        OathManager.showBloodyPoint(this.m_animation);
-
-        OathManager.showBloodyLogo(this.m_animation);//角色UI狀態方法
+        this.m_oathManager = new OathManager();
+        this.m_oathManager.initOathSystem();
+        this.m_oathManager.showBloodyPoint(this.m_animation);
+        this.m_oathManager.showBloodyLogo(this.m_animation);//角色UI狀態方法
+        this.showHealth();
 
         this.cameraFollower();
-        this.showHealth();
         this.setSkill();
         // this.checkJumpTimer();
     };
@@ -419,17 +422,19 @@ export class Character extends Laya.Script {
         if (this.m_keyDownList[16]) {
             console.log(("按下shift"));
             
-            OathManager.addDebuff(1 << 0);
-            OathManager.setBloodyPoint(100);
+            this.m_oathManager.addDebuff(1 << 0);
+            this.m_oathManager.setBloodyPoint(100);
         } 
-        if (this.m_keyDownList[49]&&this.m_keyDownList[37] || this.m_keyDownList[49]&&this.m_keyDownList[39]){
+        if (this.m_keyDownList[49] && this.m_keyDownList[37] || this.m_keyDownList[49] && this.m_keyDownList[39]) {
+            if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost)) return;
             this.m_humanSkill.cast(CharacterInit.playerEnt,
             {
                 x: this.m_animation.x,
                 y: this.m_animation.y,
             });
         }
-        if (this.m_keyDownList[50]&&this.m_keyDownList[37] || this.m_keyDownList[50]&&this.m_keyDownList[39]){
+        if (this.m_keyDownList[50] && this.m_keyDownList[37] || this.m_keyDownList[50] && this.m_keyDownList[39]) {
+            if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost)) return;
             this.m_catSkill.cast(CharacterInit.playerEnt,
             {
                 x: this.m_animation.x,
@@ -529,7 +534,7 @@ export class Character extends Laya.Script {
                 // if (!OathManager.isCharging) {
                     this.setCameraShake(10, 3);
                     //誓約系統測試
-                    OathManager.setBloodyPoint(OathManager.getBloodyPoint() + OathManager.increaseBloodyPoint);
+                    this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + this.m_oathManager.increaseBloodyPoint);
                     e._ent.slashLightEffect(e._ent.m_animation);
                     this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
                     
@@ -699,7 +704,10 @@ export class Character extends Laya.Script {
         // let player_pivot_y: number = Laya.stage.height / 2;
 
         setInterval(() => {
-            if(this.m_animation.destroyed) return;
+            if (this.m_animation.destroyed) {
+                // Laya.stage.x = -683;
+                return;  
+            } 
 
             if (this.m_cameraShakingTimer > 0) {
                 let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
@@ -839,9 +847,9 @@ export default class CharacterInit extends Laya.Script {
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(oathColorMat);
         let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 10, 0, 0);
         CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
-        OathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
+        CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
 
         //更新誓約所影響的數值變化
-        OathManager.oathUpdate();
+        CharacterInit.playerEnt.m_oathManager.oathUpdate();
     }
 }
