@@ -2,4 +2,5 @@
    <item name="First.scene" props="" ifExport="Default" aName=""/>
    <item name="Village.scene" props="" ifExport="Default" aName=""/>
    <item name="Loading.scene" props="" ifExport="Default" aName=""/>
+   <item name="Died.scene" props="" ifExport="Default" aName=""/>
 </page>

@@ -122,18 +122,8 @@ export class Character extends Laya.Script {
                 this.resetMove();
                 this.m_canJump = true;
             }
-            // if (col.tag === "Enemy" && !this.m_hurtTimer) {
-            //     this.delayMove(0.15);
-            //     this.m_rigidbody.linearVelocity = {x:this.m_isFacingRight?-10.0:10.0, y:0.0};
-            //     this.takeDamage(50.0);
-            // }
             this.takeDamage(this.getEnemyAttackDamage(col.tag));
         }
-        // this.m_script.onTriggerStay = (col:Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) =>{
-        //     if (col.label === "ground") {
-        //         this.m_canJump = true;
-        //     }
-        // }
         this.m_script.onKeyUp = (e: Laya.Event) => {
             if (this.m_canJump) {
                 this.m_playerVelocity["Vx"] = 0;
@@ -172,18 +162,18 @@ export class Character extends Laya.Script {
     public setHealth(amount: number): void {
         this.m_health = amount;
         if (this.m_health <= 0) {
-            // this.setSound(0.05, "Audio/EnemyDie/death1.wav", 1)//loop:0為循環播放;
-            // this.bloodSplitEffect(this.m_animation);
-            this.m_animation.destroy();
-            this.m_animation.destroyed = true;
-            // setTimeout(()=>{
-            //   Laya.Scene.open("Village.scene");
-            // }, 1000)
+            this.death();
         }
     }
     public getHealth(): number {
         return this.m_health;
     };
+    public death(){
+        this.m_animation.destroy();
+        this.m_animation.destroyed = true;
+        Laya.Scene.open("Died.scene");
+        Laya.stage.x = Laya.stage.y = 0;
+    }
     takeDamage(amount: number) {
         if(amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted) return;
         
@@ -519,7 +509,7 @@ export class Character extends Laya.Script {
 
         this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
     }
-    private attackRangeCheck(pos:object, type: string): void{
+    public attackRangeCheck(pos:object, type: string): void{
         // 可做其他形狀的範圍偵測判斷 ex.三角形、圓形, etc...
         let enemy = EnemyHandler.enemyPool;
         switch (type) {
@@ -705,7 +695,6 @@ export class Character extends Laya.Script {
 
         setInterval(() => {
             if (this.m_animation.destroyed) {
-                // Laya.stage.x = -683;
                 return;  
             } 
 

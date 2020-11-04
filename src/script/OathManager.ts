@@ -182,9 +182,7 @@ export default class OathManager extends Laya.Script {
                 break;
         }
     }
-
     public oathUpdate() {
-        
         switch (this.oathState) {
             case OathStatus.normal:
                 //目前普通狀態無特殊效果
