@@ -727,7 +727,7 @@
                 if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
                     OathManager.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
                 }
-                if (CharacterInit.playerEnt != null)
+                if (!CharacterInit.playerEnt.m_animation.destroyed)
                     OathManager.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
             }), 5);
             Laya.stage.addChild(OathManager.oathBar);
@@ -1190,9 +1190,9 @@
             owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 50 : -50);
             owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y;
             setTimeout(() => {
-                this.targetSlash(CharacterInit.playerEnt, {
-                    x: CharacterInit.playerEnt.m_animation.x,
-                    y: CharacterInit.playerEnt.m_animation.y,
+                this.targetSlash(owner, {
+                    x: owner.m_animation.x,
+                    y: owner.m_animation.y,
                 });
             }, 15);
             setTimeout(() => {

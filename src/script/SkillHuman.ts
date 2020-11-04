@@ -1,5 +1,5 @@
 // import CharacterInit from "./CharacterInit";
-import CharacterInit from "./CharacterInit";
+// import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
 import OathManager from "./OathManager";
@@ -191,10 +191,10 @@ export class Behead extends VirtualSkill {
         //this.m_animation.pos(owner.m_animation.x, owner.m_animation.y);
 
         setTimeout(() => {
-            this.targetSlash(CharacterInit.playerEnt,
+            this.targetSlash(owner,
                 {
-                    x: CharacterInit.playerEnt.m_animation.x,
-                    y: CharacterInit.playerEnt.m_animation.y,
+                    x: owner.m_animation.x,
+                    y: owner.m_animation.y,
                 });
        }, 15);
        setTimeout(() => {
