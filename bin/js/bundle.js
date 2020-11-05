@@ -56,6 +56,7 @@
             super(...arguments);
             this.m_moveVelocity = { "Vx": 0, "Vy": 0 };
             this.m_rectangle = { "x0": 0, "x1": 0, "y0": 0, "y1": 0, "h": 0, "w": 0 };
+            this.m_playerPushVelOffset = { "Vx": 0, "Vy": 0 };
             this.m_attackRange = 100;
             this.m_hurtDelay = 0;
             this.m_atkCd = true;
@@ -321,7 +322,7 @@
             this.m_atkCd = false;
             this.m_moveVelocity["Vx"] = 0;
             let atkCircle = new Laya.Sprite();
-            let atkCircleTempX = this.m_isFacingRight ? this.m_animation.x + this.m_animation.width / 2 : this.m_animation.x - 3 * this.m_animation.width / 2 + 50;
+            let atkCircleTempX = this.m_isFacingRight ? this.m_animation.x + this.m_animation.width / 2 - 5 : this.m_animation.x - 3 * this.m_animation.width / 2 + 50;
             let atkCircleTempY = this.m_animation.y - this.m_animation.height / 2 + 30;
             atkCircle.pos(atkCircleTempX, atkCircleTempY);
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
@@ -1717,7 +1718,7 @@
             }
             if (this.m_keyDownList[32]) {
             }
-            if (this.m_keyDownList[17]) {
+            if (this.m_keyDownList[90]) {
                 if (!this.m_canAttack)
                     return;
                 if (this.m_atkTimer)
@@ -1740,10 +1741,8 @@
             }
             if (this.m_keyDownList[16]) {
                 console.log(("按下shift"));
-                this.m_oathManager.addDebuff(1 << 0);
-                this.m_oathManager.setBloodyPoint(100);
             }
-            if (this.m_keyDownList[49] && this.m_keyDownList[37] || this.m_keyDownList[49] && this.m_keyDownList[39]) {
+            if (this.m_keyDownList[88] && this.m_keyDownList[37] || this.m_keyDownList[88] && this.m_keyDownList[39]) {
                 if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost))
                     return;
                 this.m_humanSkill.cast(CharacterInit.playerEnt, {
@@ -1751,7 +1750,7 @@
                     y: this.m_animation.y,
                 });
             }
-            if (this.m_keyDownList[50] && this.m_keyDownList[37] || this.m_keyDownList[50] && this.m_keyDownList[39]) {
+            if (this.m_keyDownList[67] && this.m_keyDownList[37] || this.m_keyDownList[67] && this.m_keyDownList[39]) {
                 if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost))
                     return;
                 this.m_catSkill.cast(CharacterInit.playerEnt, {
@@ -2484,7 +2483,7 @@
                     id: i,
                     missionName: "殲滅來犯敵軍",
                     difficulty: this.missionDifficultyArr[i],
-                    enemyNum: 3,
+                    enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
                     enemyHp: 1000,
                     enemyAtk: 100,
                     eliteNum: Math.round(Math.random()),

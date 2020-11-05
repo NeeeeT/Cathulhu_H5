@@ -25,6 +25,9 @@ export abstract class VirtualEnemy extends Laya.Script {
 
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
     m_rectangle: object = { "x0": 0, "x1": 0, "y0": 0, "y1": 0, "h": 0, "w": 0 };
+    m_playerPushVelOffset: object = { "Vx": 0, "Vy": 0 };
+    // m_collideScript: Laya.Script;
+
     m_maxHealth: number;
     m_attackRange: number = 100;
     m_hurtDelay: number = 0;
@@ -89,6 +92,8 @@ export abstract class VirtualEnemy extends Laya.Script {
             // console.log(this.m_moveDelayValue);
             
         }
+
+        // this.m_collideScript = this.m_animation.addComponent(Laya.Script) as Laya.Script;
 
         this.m_collider.width = this.m_animation.width - 64;
         this.m_collider.height = this.m_animation.height - 20;
@@ -337,6 +342,12 @@ export abstract class VirtualEnemy extends Laya.Script {
         let rightSide: boolean = (this.m_player.x - this.m_animation.x) > 0;
         this.m_animation.skewY = rightSide ? 0 : 180;
         this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false
+
+        // this.m_collideScript.onTriggerEnter = function (col: Laya.BoxCollider) {
+        //     if (col.tag == "Player") {
+        //         console.log("是玩家撞到我！");
+        //     }
+        // }
         if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
             this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
         } else {

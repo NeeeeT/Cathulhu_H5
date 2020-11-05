@@ -356,7 +356,7 @@ export class Character extends Laya.Script {
             //     // this.cd_ray = true;
             // }, 500);
         }
-        if (this.m_keyDownList[17]) {
+        if (this.m_keyDownList[90]) {
             if (!this.m_canAttack) return;
 
             // this.m_animation.interval = 100;
@@ -412,10 +412,10 @@ export class Character extends Laya.Script {
         if (this.m_keyDownList[16]) {
             console.log(("按下shift"));
             
-            this.m_oathManager.addDebuff(1 << 0);
-            this.m_oathManager.setBloodyPoint(100);
+            // this.m_oathManager.addDebuff(1 << 0);
+            // this.m_oathManager.setBloodyPoint(100);
         } 
-        if (this.m_keyDownList[49] && this.m_keyDownList[37] || this.m_keyDownList[49] && this.m_keyDownList[39]) {
+        if (this.m_keyDownList[88] && this.m_keyDownList[37] || this.m_keyDownList[88] && this.m_keyDownList[39]) {
             if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost)) return;
             this.m_humanSkill.cast(CharacterInit.playerEnt,
             {
@@ -423,7 +423,7 @@ export class Character extends Laya.Script {
                 y: this.m_animation.y,
             });
         }
-        if (this.m_keyDownList[50] && this.m_keyDownList[37] || this.m_keyDownList[50] && this.m_keyDownList[39]) {
+        if (this.m_keyDownList[67] && this.m_keyDownList[37] || this.m_keyDownList[67] && this.m_keyDownList[39]) {
             if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost)) return;
             this.m_catSkill.cast(CharacterInit.playerEnt,
             {
