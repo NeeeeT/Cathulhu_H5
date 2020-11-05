@@ -56,10 +56,12 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_animation.scaleX = 1.5;
         this.m_animation.scaleY = 1.5;
 
-        this.m_animation.width = 96;
-        this.m_animation.height = 140;
+        // this.m_animation.width = 96;
+        // this.m_animation.height = 140;
+        this.m_animation.width = 160;
+        this.m_animation.height = 160;
         //
-        this.m_animation.pivotX = this.m_animation.width / 2;
+        this.m_animation.pivotX = this.m_animation.width  / 2;
         this.m_animation.pivotY = this.m_animation.height / 2;
         let enemyPos: number[] = [-200, 200];//9/12新增
         // this.m_animation.pos(player.x + enemyPos[Math.floor(Math.random() * 2)], player.y - (player.height / 2));//9/12更改
@@ -88,10 +90,12 @@ export abstract class VirtualEnemy extends Laya.Script {
             
         }
 
-        this.m_collider.width = this.m_animation.width;
-        this.m_collider.height = this.m_animation.height;
-        this.m_collider.x -= 13;
-        this.m_collider.y -= 10;
+        this.m_collider.width = this.m_animation.width - 64;
+        this.m_collider.height = this.m_animation.height - 20;
+        // this.m_collider.x -= 13;
+        // this.m_collider.y -= 10;
+        this.m_collider.x = 0;
+        this.m_collider.y = -10;
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
 
@@ -352,25 +356,30 @@ export abstract class VirtualEnemy extends Laya.Script {
     }
     private tryAttack() {
         if (this.m_atkTimer > 0 || this.m_player.destroyed) return;
-
+        
         this.m_atkCd = false;
         // this.rigidbody.setVelocity({x:0, y:this.rigidbody.linearVelocity.y});
         this.m_moveVelocity["Vx"] = 0;
         let atkCircle = new Laya.Sprite();
-        // let x_offset: number = this.m_isFacingRight
-        //     ? (this.m_animation.width * 1) / 2 + 3
-        //     : (this.m_animation.width * 5) / 4 + 3;
-        if (this.m_isFacingRight) {
-            atkCircle.pos(
-                // this.sprite.x + x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                this.m_animation.x + this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2
-            );
-        } else {
-            atkCircle.pos(
-                // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
-                this.m_animation.x - 3 * this.m_animation.width / 2 - 80, this.m_animation.y - this.m_animation.height / 2,//9/15更改
-            );
-        }
+
+        let atkCircleTempX: number = this.m_isFacingRight ? this.m_animation.x + this.m_animation.width / 2 - 5 : this.m_animation.x - 3 * this.m_animation.width / 2 + 50;
+        let atkCircleTempY: number = this.m_animation.y - this.m_animation.height / 2 + 30;
+
+        atkCircle.pos(atkCircleTempX, atkCircleTempY);
+        
+        //生成攻擊球
+        // if (this.m_isFacingRight) {
+        //     atkCircle.pos(
+        //         // this.sprite.x + x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
+        //         this.m_animation.x + this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2
+        //     );
+        // } else {
+        //     atkCircle.pos(
+        //         // this.sprite.x - x_offset, this.sprite.y - (this.sprite.height * 1) / 2 + (this.sprite.height * 1) / 8
+        //         this.m_animation.x - 3 * this.m_animation.width / 2 - 30, this.m_animation.y - this.m_animation.height / 2,//11/5更改
+        //     );
+        // }
+        
         let atkBoxCollider: Laya.BoxCollider = atkCircle.addComponent(Laya.BoxCollider) as Laya.BoxCollider;
         let atkCircleRigid: Laya.RigidBody = atkCircle.addComponent(Laya.RigidBody) as Laya.RigidBody;
 

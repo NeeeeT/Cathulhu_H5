@@ -72,8 +72,8 @@
             this.m_animation.filters = [];
             this.m_animation.scaleX = 1.5;
             this.m_animation.scaleY = 1.5;
-            this.m_animation.width = 96;
-            this.m_animation.height = 140;
+            this.m_animation.width = 160;
+            this.m_animation.height = 160;
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
             let enemyPos = [-200, 200];
@@ -96,10 +96,10 @@
                 this.enemyAIMain();
                 this.checkPosition();
             };
-            this.m_collider.width = this.m_animation.width;
-            this.m_collider.height = this.m_animation.height;
-            this.m_collider.x -= 13;
-            this.m_collider.y -= 10;
+            this.m_collider.width = this.m_animation.width - 64;
+            this.m_collider.height = this.m_animation.height - 20;
+            this.m_collider.x = 0;
+            this.m_collider.y = -10;
             this.m_collider.label = id;
             this.m_collider.tag = 'Enemy';
             this.m_rigidbody.category = 8;
@@ -321,12 +321,9 @@
             this.m_atkCd = false;
             this.m_moveVelocity["Vx"] = 0;
             let atkCircle = new Laya.Sprite();
-            if (this.m_isFacingRight) {
-                atkCircle.pos(this.m_animation.x + this.m_animation.width / 2 + 30, this.m_animation.y - this.m_animation.height / 2);
-            }
-            else {
-                atkCircle.pos(this.m_animation.x - 3 * this.m_animation.width / 2 - 80, this.m_animation.y - this.m_animation.height / 2);
-            }
+            let atkCircleTempX = this.m_isFacingRight ? this.m_animation.x + this.m_animation.width / 2 : this.m_animation.x - 3 * this.m_animation.width / 2 + 50;
+            let atkCircleTempY = this.m_animation.y - this.m_animation.height / 2 + 30;
+            atkCircle.pos(atkCircleTempX, atkCircleTempY);
             let atkBoxCollider = atkCircle.addComponent(Laya.BoxCollider);
             let atkCircleRigid = atkCircle.addComponent(Laya.RigidBody);
             atkBoxCollider.height = atkBoxCollider.width = this.m_attackRange;
