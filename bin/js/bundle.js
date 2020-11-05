@@ -4,8 +4,10 @@
     class BackToVillage extends Laya.Script {
         onKeyUp(e) {
             if (e.keyCode === 32) {
-                Laya.Scene.open("Village.scene");
+                Laya.Scene.load("ui/loading.png");
+                Laya.Scene.open("Village.scene", true);
                 Laya.stage.x = Laya.stage.y = 0;
+                Laya.SoundManager.stopAll();
             }
         }
     }
@@ -2142,10 +2144,9 @@
                 if (rangeA < this.skillCatIcon.width) {
                     this.skillChoose(1);
                 }
-                if (rangeB < this.skillHumanIcon.width) {
+                else if (rangeB < this.skillHumanIcon.width) {
                     this.skillChoose(2);
                 }
-                console.log('HELLO!!');
             }
         }
         showEndSkill() {
@@ -2154,7 +2155,7 @@
             this.endingSkillUI.width = 684;
             this.endingSkillUI.height = 576;
             this.endingSkillUI.loadImage('ui/ending/chooseSkill.png');
-            this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.m_animation.x - 325), 94);
+            this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.m_animation.x - 325), 80);
             this.endingSkillUI.alpha = 0;
             let pos = {
                 'x': this.endingSkillUI.x,
@@ -2240,7 +2241,7 @@
         }
         unsetCharacter() {
             let player = CharacterInit.playerEnt.m_animation;
-            Laya.Tween.to(player, { alpha: 0.3 }, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+            Laya.Tween.to(player, { alpha: 0.0 }, 2500, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 player.destroy();
                 player.destroyed = true;
                 this.changeToVillage();
@@ -2317,8 +2318,10 @@
             ExtraData.saveData();
         }
         changeToVillage() {
-            Laya.Scene.open("Village.scene");
+            Laya.Scene.load("Loading.scene");
+            Laya.Scene.open("Village.scene", true);
             Laya.stage.x = Laya.stage.y = 0;
+            Laya.SoundManager.stopAll();
         }
         clearUI() {
             this.endingSkillUI.destroy();
