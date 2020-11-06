@@ -20,8 +20,8 @@ export default class Village extends Laya.Script{
 
     c_gold: number;
     c_crystal: number;
-    c_hpLevel: number;
-    c_atkDmgLevel: number;
+    public static hpLevel: number;
+    public static atkDmgLevel: number;
 
     missionManager: MissionManager = new MissionManager();
 
@@ -55,8 +55,8 @@ export default class Village extends Laya.Script{
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
         this.c_gold = data.gold;
         this.c_crystal = data.crystal;
-        this.c_hpLevel = data.hpLevel;
-        this.c_atkDmgLevel = data.atkDmgLevel;
+        Village.hpLevel = data.hpLevel;
+        Village.atkDmgLevel = data.atkDmgLevel;
         
         this.saveData();
     }
@@ -118,7 +118,7 @@ export default class Village extends Laya.Script{
     }
     setReinfoceAtkDmgLevel(): void{
         if(this.reinforceAtkDmgLevel){
-            this.reinforceAtkDmgLevel.text = String(this.c_atkDmgLevel);
+            this.reinforceAtkDmgLevel.text = String(Village.atkDmgLevel);
             return;
         }
         this.reinforceAtkDmgLevel = new Laya.Text();
@@ -127,13 +127,13 @@ export default class Village extends Laya.Script{
         this.reinforceAtkDmgLevel.color = "#00FFFF";
         this.reinforceAtkDmgLevel.stroke = 10;
         this.reinforceAtkDmgLevel.strokeColor = "#000";
-        this.reinforceAtkDmgLevel.text = String(this.c_atkDmgLevel);
+        this.reinforceAtkDmgLevel.text = String(Village.atkDmgLevel);
         this.reinforceAtkDmgLevel.pos(150+578, 109+198);
         Laya.stage.addChild(this.reinforceAtkDmgLevel);
     }
     setReinfoceHpLevel(): void{
         if(this.reinforceHpLevel){
-            this.reinforceHpLevel.text = String(this.c_hpLevel);
+            this.reinforceHpLevel.text = String(Village.hpLevel);
             return;
         }
         this.reinforceHpLevel = new Laya.Text();
@@ -142,13 +142,13 @@ export default class Village extends Laya.Script{
         this.reinforceHpLevel.color = "#00FFFF";
         this.reinforceHpLevel.stroke = 10;
         this.reinforceHpLevel.strokeColor = "#000";
-        this.reinforceHpLevel.text = String(this.c_hpLevel);
+        this.reinforceHpLevel.text = String(Village.hpLevel);
         this.reinforceHpLevel.pos(150+578, 109+297);
         Laya.stage.addChild(this.reinforceHpLevel);
     }
     setReinfoceAtkDmgCost(): void{
         if(this.reinforceAtkDmgCost){
-            this.reinforceAtkDmgCost.text = '-' + String(this.c_atkDmgLevel*100);
+            this.reinforceAtkDmgCost.text = '-' + String(Village.atkDmgLevel*100);
             return;
         }
         this.reinforceAtkDmgCost = new Laya.Text();
@@ -157,13 +157,13 @@ export default class Village extends Laya.Script{
         this.reinforceAtkDmgCost.color = "#d1ce07";
         this.reinforceAtkDmgCost.stroke = 10;
         this.reinforceAtkDmgCost.strokeColor = "#000";
-        this.reinforceAtkDmgCost.text = '-' + String(this.c_atkDmgLevel*100);
+        this.reinforceAtkDmgCost.text = '-' + String(Village.atkDmgLevel*100);
         this.reinforceAtkDmgCost.pos(150+908, 109+193);
         Laya.stage.addChild(this.reinforceAtkDmgCost);
     }
     setReinfoceHpCost(): void{
         if(this.reinforceHpCost){
-            this.reinforceHpCost.text = '-' + String(this.c_hpLevel*100);
+            this.reinforceHpCost.text = '-' + String(Village.hpLevel*100);
             return;
         }
         this.reinforceHpCost = new Laya.Text();
@@ -172,7 +172,7 @@ export default class Village extends Laya.Script{
         this.reinforceHpCost.color = "#d1ce07";
         this.reinforceHpCost.stroke = 10;
         this.reinforceHpCost.strokeColor = "#000";
-        this.reinforceHpCost.text = '-' + String(this.c_hpLevel*100);
+        this.reinforceHpCost.text = '-' + String(Village.hpLevel*100);
         this.reinforceHpCost.pos(150+908, 109+299);
         Laya.stage.addChild(this.reinforceHpCost);
     }
@@ -182,11 +182,11 @@ export default class Village extends Laya.Script{
         this.reinforceAtkDmgCostBtn.height = 60;
         this.reinforceAtkDmgCostBtn.pos(150+726, 109+203);
         this.reinforceAtkDmgCostBtn.on(Laya.Event.CLICK, this, ()=>{
-            if(this.c_gold < this.c_atkDmgLevel*100){
+            if(this.c_gold < Village.atkDmgLevel*100){
                 return;
             }
-            this.c_gold -= this.c_atkDmgLevel*100;
-            this.c_atkDmgLevel++;
+            this.c_gold -= Village.atkDmgLevel*100;
+            Village.atkDmgLevel++;
             this.setReinfoceAtkDmgLevel();
             this.setReinfoceAtkDmgCost();
             this.setReinfoceGoldValue();
@@ -200,11 +200,11 @@ export default class Village extends Laya.Script{
         this.reinforceHpCostBtn.height = 60;
         this.reinforceHpCostBtn.pos(150+726, 109+307);
         this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, ()=>{            
-            if(this.c_gold < this.c_hpLevel*100){
+            if(this.c_gold < Village.hpLevel*100){
                 return;
             }
-            this.c_gold -= this.c_hpLevel*100;
-            this.c_hpLevel++;
+            this.c_gold -= Village.hpLevel*100;
+            Village.hpLevel++;
             this.setReinfoceHpLevel();
             this.setReinfoceHpCost();
             this.setReinfoceGoldValue();
@@ -213,8 +213,8 @@ export default class Village extends Laya.Script{
         Laya.stage.addChild(this.reinforceHpCostBtn);
     }
     saveData(): void{
-        ExtraData.currentData['atkDmgLevel'] = this.c_atkDmgLevel;
-        ExtraData.currentData['hpLevel'] = this.c_hpLevel;
+        ExtraData.currentData['atkDmgLevel'] = Village.atkDmgLevel;
+        ExtraData.currentData['hpLevel'] = Village.hpLevel;
         ExtraData.currentData['gold'] = this.c_gold;
         ExtraData.currentData['crystal'] = this.c_crystal;
         

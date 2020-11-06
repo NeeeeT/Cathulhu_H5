@@ -21,6 +21,7 @@ export class Character extends Laya.Script {
     m_bloodyPoint: number;
     m_maxBloodyPoint_soft: number;
     m_maxBloodyPoint_hard: number;
+    m_atk: number;
     m_defense: number;
     m_xMaxVelocity: number;
     m_yMaxVelocity: number;
@@ -57,6 +58,10 @@ export class Character extends Laya.Script {
 
     m_slashTimer = null;
 
+    //強化等級
+    m_hpLevel: number;
+    m_atkLevel: number;
+
     public m_cameraShakingTimer: number = 0;
     public m_cameraShakingMultiplyer: number = 1;
 
@@ -74,6 +79,8 @@ export class Character extends Laya.Script {
     m_oathManager: OathManager;
 
     spawn() {
+        this.loadCharacterData();
+
         this.m_state = CharacterStatus.idle;
 
         this.m_animation = new Laya.Animation();
@@ -173,6 +180,13 @@ export class Character extends Laya.Script {
         this.m_animation.destroyed = true;
         Laya.Scene.open("Died.scene");
         Laya.stage.x = Laya.stage.y = 0;
+    }
+    loadCharacterData(): void{
+        ExtraData.loadData();
+
+        let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+        this.m_hpLevel = data.hpLevel;
+        this.m_atkLevel = data.atkDmgLevel;
     }
     takeDamage(amount: number) {
         if(amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted) return;
@@ -520,8 +534,10 @@ export class Character extends Laya.Script {
                 let critical: boolean = (fakeNum <= 25);//需再修正
                 soundNum = critical ? 0 : 1;//需再修正
                 enemyFound.forEach((e) => {
-                e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
-                // if (!OathManager.isCharging) {
+                    //敵人受傷傳參
+                    e._ent.takeDamage(150);
+                    // e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+                    // if (!OathManager.isCharging) {
                     this.setCameraShake(10, 3);
                     //誓約系統測試
                     this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + this.m_oathManager.increaseBloodyPoint);
