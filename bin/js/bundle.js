@@ -1,46 +1,6 @@
 (function () {
     'use strict';
 
-    class BackToVillage extends Laya.Script {
-        onKeyUp(e) {
-            if (e.keyCode === 32) {
-                Laya.Scene.load("Loading.scene");
-                Laya.Scene.open("Village.scene", true);
-                Laya.stage.x = Laya.stage.y = 0;
-                Laya.SoundManager.stopAll();
-            }
-        }
-    }
-
-    class SceneInit extends Laya.Script {
-        constructor() {
-            super();
-            this.sceneBackgroundColor = '#4a4a4a';
-            this.resourceLoad = ["Audio/Bgm/BGM1.wav", "font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
-                "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
-                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
-                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas", "ui/loading.png",
-            ];
-        }
-        onAwake() {
-            Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
-            }));
-            Laya.stage.bgColor = this.sceneBackgroundColor;
-            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
-        }
-        setSound(volume, url, loop) {
-            Laya.SoundManager.playSound(url, loop);
-            Laya.SoundManager.setSoundVolume(volume, url);
-        }
-    }
-
-    var OathStatus;
-    (function (OathStatus) {
-        OathStatus[OathStatus["normal"] = 0] = "normal";
-        OathStatus[OathStatus["charge"] = 1] = "charge";
-        OathStatus[OathStatus["overCharge"] = 2] = "overCharge";
-    })(OathStatus || (OathStatus = {}));
-
     var EnemyStatus;
     (function (EnemyStatus) {
         EnemyStatus[EnemyStatus["idle"] = 0] = "idle";
@@ -63,7 +23,7 @@
             this.m_hurtDelay = 0;
             this.m_atkCd = true;
             this.m_isFacingRight = true;
-            this.m_moveDelayValue = 0;
+            this.m_moveDelayValue = 0.0;
             this.m_moveDelayTimer = null;
             this.m_deadTimer = null;
             this.m_animationChanging = false;
@@ -99,16 +59,20 @@
                 this.enemyAIMain();
                 this.checkPosition();
             };
+            this.m_script.onTriggerEnter = (col) => {
+                if (col.tag === 'Player') {
+                }
+            };
             this.m_collider.width = this.m_animation.width - 64;
             this.m_collider.height = this.m_animation.height - 20;
             this.m_collider.x = 0;
             this.m_collider.y = -10;
             this.m_collider.label = id;
             this.m_collider.tag = 'Enemy';
+            this.m_collider.density = 300;
             this.m_rigidbody.category = 8;
             this.m_rigidbody.mask = 4 | 2;
             this.m_rigidbody.allowRotation = false;
-            this.m_rigidbody.gravityScale = 5;
             this.m_player = player;
             Laya.stage.addChild(this.m_animation);
             this.showHealth();
@@ -277,10 +241,10 @@
             if (this.playerRangeCheck(this.m_attackRange * 2)) {
                 if (this.m_health <= 0)
                     return;
+                if (this.m_moveDelayValue <= 0.0)
+                    this.m_rigidbody.linearVelocity = { x: 0.0, y: 0.0 };
                 this.tryAttack();
                 this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer;
-                if (!this.m_moveDelayValue)
-                    this.m_rigidbody.linearVelocity = { x: 0.0, y: 0.0 };
                 return;
             }
             this.pursuitPlayer();
@@ -300,8 +264,12 @@
             }
             let dir = this.m_player.x - this.m_animation.x;
             let rightSide = (this.m_player.x - this.m_animation.x) > 0;
+            let lastDirection = this.m_isFacingRight;
             this.m_animation.skewY = rightSide ? 0 : 180;
             this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false;
+            if (lastDirection != this.m_isFacingRight) {
+                this.m_rigidbody.linearVelocity.x = 0.0;
+            }
             if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
                 this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
             }
@@ -362,8 +330,8 @@
                         this.m_moveDelayTimer = null;
                         this.m_moveDelayValue = 0;
                     }
-                    this.m_moveDelayValue -= 0.1;
-                }, 100);
+                    this.m_moveDelayValue -= 0.01;
+                }, 10);
             }
         }
         applyMoveX() {
@@ -509,9 +477,62 @@
         static getEnemyByLabel(label) {
             return this.enemyPool.filter(data => data._id === label)[0]['_ent'];
         }
+        static clearAllEnemy() {
+            let aliveEnemy = EnemyHandler.enemyPool.filter(data => data._ent.m_animation != null);
+            for (let i = 0; i < aliveEnemy.length; i++) {
+                if (aliveEnemy[i]._ent.m_animation.destroyed)
+                    return;
+                aliveEnemy[i]._ent.m_animation.zOrder = -15;
+                aliveEnemy[i]._ent.m_animation.destroy();
+                aliveEnemy[i]._ent.m_animation.destroyed = true;
+            }
+            this.enemyPool = [];
+            console.log('呼叫了');
+        }
     }
     EnemyHandler.enemyIndex = 0;
     EnemyHandler.enemyPool = [];
+
+    class BackToVillage extends Laya.Script {
+        onKeyUp(e) {
+            if (e.keyCode === 32) {
+                Laya.Scene.load("Loading.scene");
+                Laya.Scene.open("Village.scene", true);
+                Laya.stage.x = Laya.stage.y = 0;
+                Laya.SoundManager.stopAll();
+                EnemyHandler.clearAllEnemy();
+            }
+        }
+    }
+
+    class SceneInit extends Laya.Script {
+        constructor() {
+            super();
+            this.sceneBackgroundColor = '#4a4a4a';
+            this.resourceLoad = ["Audio/Bgm/BGM1.wav", "font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
+                "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
+                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
+                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas", "ui/loading.png",
+            ];
+        }
+        onAwake() {
+            Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
+            }));
+            Laya.stage.bgColor = this.sceneBackgroundColor;
+            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+        }
+        setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
+        }
+    }
+
+    var OathStatus;
+    (function (OathStatus) {
+        OathStatus[OathStatus["normal"] = 0] = "normal";
+        OathStatus[OathStatus["charge"] = 1] = "charge";
+        OathStatus[OathStatus["overCharge"] = 2] = "overCharge";
+    })(OathStatus || (OathStatus = {}));
 
     var DebuffType;
     (function (DebuffType) {
@@ -1536,6 +1557,7 @@
             this.m_animation.height = 128;
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
+            this.m_animation.destroyed = false;
             this.m_animation.pos(1345, 544);
             this.m_animation.autoPlay = true;
             this.m_animation.source = 'character/Idle.atlas';
@@ -1560,6 +1582,10 @@
                     this.m_playerVelocity["Vx"] = -this.m_xMaxVelocity;
                 if (this.m_playerVelocity["Vx"] > this.m_xMaxVelocity)
                     this.m_playerVelocity["Vx"] = this.m_xMaxVelocity;
+                if (this.m_animation.y >= 1000.0) {
+                    this.m_animation.x = 1345;
+                    this.m_animation.y = 544;
+                }
                 this.characterMove();
             };
             this.m_script.onTriggerEnter = (col) => {
@@ -1587,7 +1613,7 @@
             this.m_collider.x += 38;
             this.m_collider.y -= 1;
             this.m_collider.tag = 'Player';
-            this.m_collider.friction = 0;
+            this.m_collider.density = 1;
             this.m_rigidbody.allowRotation = false;
             this.m_rigidbody.gravityScale = 3;
             this.m_rigidbody.category = 4;
@@ -1613,11 +1639,13 @@
         }
         ;
         death() {
-            this.m_animation.destroy();
-            this.m_animation.destroyed = true;
-            Laya.Scene.open("Died.scene");
-            Laya.stage.x = Laya.stage.y = 0;
-            Laya.SoundManager.stopAll();
+            Laya.Tween.to(this.m_animation, { alpha: 0.0 }, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                this.m_animation.destroy();
+                this.m_animation.destroyed = true;
+                Laya.Scene.open("Died.scene");
+                Laya.stage.x = Laya.stage.y = 0;
+                Laya.SoundManager.stopAll();
+            }), 0);
         }
         takeDamage(amount) {
             if (amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted)
@@ -1707,24 +1735,23 @@
                 if (!this.m_canSprint)
                     return;
                 this.delayMove(0.1);
+                this.hurtedEvent(0.1);
                 this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 50.0 : -50.0, y: 0.0 };
                 this.m_rigidbody.mask = 2 | 16;
                 this.m_collider.refresh();
                 setTimeout(() => {
                     this.m_rigidbody.mask = 2 | 8 | 16;
+                    this.m_collider.density = 300;
                     this.m_collider.refresh();
+                    setTimeout(() => {
+                        this.m_collider.density = 1;
+                        this.m_collider.refresh();
+                    }, 10);
                 }, 500);
                 this.m_canSprint = false;
                 setTimeout(() => {
                     this.m_canSprint = true;
                 }, 3000);
-            }
-            if (this.m_keyDownList[38]) {
-                if (this.m_canJump) {
-                    this.m_playerVelocity["Vy"] -= 12;
-                    this.applyMoveY();
-                    this.m_canJump = false;
-                }
             }
             if (this.m_keyDownList[39]) {
                 this.m_playerVelocity["Vx"] += 1 * this.m_velocityMultiplier;
@@ -1811,13 +1838,16 @@
                     let soundNum;
                     let fakeNum = Math.random() * 100;
                     let critical = (fakeNum <= 25);
+                    let enemyCount = 0;
                     soundNum = critical ? 0 : 1;
                     enemyFound.forEach((e) => {
                         e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
                         this.setCameraShake(10, 3);
                         this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + this.m_oathManager.increaseBloodyPoint);
-                        e._ent.slashLightEffect(e._ent.m_animation);
+                        if (enemyCount < 3)
+                            e._ent.slashLightEffect(e._ent.m_animation);
                         this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
+                        enemyCount++;
                     });
                     break;
                 default:
@@ -1930,10 +1960,10 @@
         applyMoveX() {
             if (this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation)
                 return;
-            this.m_rigidbody.setVelocity({
-                x: this.m_playerVelocity["Vx"],
+            this.m_rigidbody.linearVelocity = {
+                x: this.m_playerVelocity['Vx'],
                 y: this.m_rigidbody.linearVelocity.y,
-            });
+            };
             if (!this.m_animationChanging && this.m_playerVelocity["Vx"] === 0)
                 this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         }
@@ -2115,9 +2145,10 @@
             this.timeLeftValue = this.roundTimeLeft;
             let player = CharacterInit.playerEnt.m_animation;
             let enemy = EnemyHandler.enemyPool;
+            console.log(enemy);
             this.generateTimer = setInterval(() => {
                 if (player.destroyed) {
-                    this.clearAllEnemy();
+                    EnemyHandler.clearAllEnemy();
                     clearInterval(this.generateTimer);
                     this.generateTimer = null;
                     return;
@@ -2147,7 +2178,7 @@
                     return;
                 }
                 else if (this.timeLeftValue < 0) {
-                    this.clearAllEnemy();
+                    EnemyHandler.clearAllEnemy();
                     console.log('時間到! 你輸了:(');
                     clearInterval(this.battleTimer);
                     this.battleTimer = null;
@@ -2180,16 +2211,6 @@
                 else if (rangeB < this.skillHumanIcon.width) {
                     this.skillChoose(2);
                 }
-            }
-        }
-        clearAllEnemy() {
-            let aliveEnemy = EnemyHandler.enemyPool.filter(data => data._ent.m_animation != null);
-            for (let i = 0; i < aliveEnemy.length; i++) {
-                if (aliveEnemy[i]._ent.m_animation.destroyed)
-                    return;
-                aliveEnemy[i]._ent.m_animation.zOrder = -15;
-                aliveEnemy[i]._ent.m_animation.destroy();
-                aliveEnemy[i]._ent.m_animation.destroyed = true;
             }
         }
         showEndSkill() {
@@ -2254,11 +2275,20 @@
             this.skillHumanInfoText.fontSize = 38;
             this.skillCatInfoText.wordWrap = true;
             this.skillHumanInfoText.wordWrap = true;
+            this.skillChooseHint = new Laya.Text();
+            this.skillChooseHint.width = 340;
+            this.skillChooseHint.height = 30;
+            this.skillChooseHint.pos(pos['x'] + 171, pos['y'] + 307);
+            this.skillChooseHint.fontSize = 30;
+            this.skillChooseHint.font = 'silver';
+            this.skillChooseHint.text = "到想選擇的技能下方按下空白鍵吧";
+            this.skillChooseHint.color = "#fff";
+            this.skillChooseHint.stroke = 2;
+            this.skillChooseHint.strokeColor = "#000";
             Laya.stage.addChild(this.endingSkillUI);
             Laya.stage.addChild(this.skillCat);
             Laya.stage.addChild(this.skillHuman);
-            Laya.stage.addChild(this.skillCatBtn);
-            Laya.stage.addChild(this.skillHumanBtn);
+            Laya.stage.addChild(this.skillChooseHint);
             Laya.stage.addChild(this.skillCatIcon);
             Laya.stage.addChild(this.skillHumanIcon);
             Laya.stage.addChild(this.skillCatInfo);
@@ -2346,7 +2376,6 @@
                 }
                 info.text = "剩餘時間: " + String(this.timeLeftValue) + "\n剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
                 info.pos(player.x - 50, player.y - 400);
-                console.log('info updated');
             }, 10);
         }
         updateMissionData() {
@@ -2361,7 +2390,7 @@
             ExtraData.saveData();
         }
         changeToVillage() {
-            this.clearAllEnemy();
+            EnemyHandler.clearAllEnemy();
             Laya.Scene.load("Loading.scene");
             Laya.Scene.open("Village.scene", true);
             Laya.stage.x = Laya.stage.y = 0;
@@ -2379,6 +2408,7 @@
             this.skillHumanInfo.destroy();
             this.skillCatInfoText.destroy();
             this.skillHumanInfoText.destroy();
+            this.skillChooseHint.destroy();
         }
     }
 
@@ -2785,7 +2815,7 @@
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;
-    GameConfig.physicsDebug = true;
+    GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
 

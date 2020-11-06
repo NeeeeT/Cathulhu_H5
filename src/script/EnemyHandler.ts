@@ -35,7 +35,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_atkTimer: number;
     m_isFacingRight: boolean = true;
 
-    m_moveDelayValue: number = 0;
+    m_moveDelayValue: number = 0.0;
     m_moveDelayTimer = null;
     m_deadTimer = null;
 
@@ -318,7 +318,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         if (this.playerRangeCheck(this.m_attackRange * 2)) {
             if(this.m_health <= 0) return;
             
-            if(!this.m_moveDelayValue)
+            if(this.m_moveDelayValue <= 0.0)
                 this.m_rigidbody.linearVelocity = {x:0.0,y:0.0};
                 
             this.tryAttack();
@@ -442,7 +442,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                     this.m_moveDelayValue = 0;
                 }
                 this.m_moveDelayValue -= 0.01;
-                console.log('working!', this.m_moveDelayValue);
+                // console.log('working!', this.m_moveDelayValue);
             }, 10)
         }
     }
