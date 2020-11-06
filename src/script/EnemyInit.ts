@@ -69,7 +69,7 @@ export default class EnemyInit extends Laya.Script{
 
         this.generateTimer =  setInterval(() =>{
             if(player.destroyed){
-                this.clearAllEnemy();
+                EnemyHandler.clearAllEnemy();
                 clearInterval(this.generateTimer);
                 this.generateTimer = null;
                 return;
@@ -106,7 +106,7 @@ export default class EnemyInit extends Laya.Script{
                 return;
             }
             else if(this.timeLeftValue < 0){
-                this.clearAllEnemy();
+                EnemyHandler.clearAllEnemy();
                 console.log('時間到! 你輸了:(');
                 clearInterval(this.battleTimer);
                 this.battleTimer = null;
@@ -140,15 +140,6 @@ export default class EnemyInit extends Laya.Script{
             else if(rangeB < this.skillHumanIcon.width){
                 this.skillChoose(2);
             }
-        }
-    }
-    clearAllEnemy(): void{
-        let aliveEnemy = EnemyHandler.enemyPool.filter(data => data._ent.m_animation != null);
-        for(let i = 0; i < aliveEnemy.length; i++){
-            if(aliveEnemy[i]._ent.m_animation.destroyed) return;
-            aliveEnemy[i]._ent.m_animation.zOrder = -15;
-            aliveEnemy[i]._ent.m_animation.destroy();
-            aliveEnemy[i]._ent.m_animation.destroyed = true;
         }
     }
     showEndSkill(): void{
@@ -343,7 +334,7 @@ export default class EnemyInit extends Laya.Script{
         ExtraData.saveData();
     }
     changeToVillage(): void{
-        this.clearAllEnemy();
+        EnemyHandler.clearAllEnemy();
         Laya.Scene.load("Loading.scene");
         Laya.Scene.open("Village.scene", true);
         Laya.stage.x = Laya.stage.y = 0; 
