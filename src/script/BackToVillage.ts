@@ -1,3 +1,5 @@
+import EnemyHandler from "./EnemyHandler";
+
 export default class BackToVillage extends Laya.Script{
     onKeyUp(e: Laya.Event):void{
         if(e.keyCode === 32){
@@ -8,6 +10,7 @@ export default class BackToVillage extends Laya.Script{
             Laya.Scene.open("Village.scene", true, );
             Laya.stage.x = Laya.stage.y = 0;
             Laya.SoundManager.stopAll();
+            EnemyHandler.clearAllEnemy();
         }
     }
 }

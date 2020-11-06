@@ -35,7 +35,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_atkTimer: number;
     m_isFacingRight: boolean = true;
 
-    m_moveDelayValue: number = 0;
+    m_moveDelayValue: number = 0.0;
     m_moveDelayTimer = null;
     m_deadTimer = null;
 
@@ -88,9 +88,12 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_script = this.m_animation.addComponent(Laya.Script);
         this.m_script.onUpdate = () => {
             this.enemyAIMain();
-            this.checkPosition();
-            // console.log(this.m_moveDelayValue);
-            
+            this.checkPosition();  
+        }
+        this.m_script.onTriggerEnter = (col) => {
+            if(col.tag === 'Player'){
+                // this.m_rigidbody.linearVelocity.x = 0.0;
+            }
         }
 
         // this.m_collideScript = this.m_animation.addComponent(Laya.Script) as Laya.Script;
@@ -102,11 +105,12 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
 
+        this.m_collider.density = 300;
 
         this.m_rigidbody.category = 8;
         this.m_rigidbody.mask = 4 | 2;
         this.m_rigidbody.allowRotation = false;
-        this.m_rigidbody.gravityScale = 5;
+        // this.m_rigidbody.gravityScale = 5;
 
         this.m_player = player;
 
@@ -314,11 +318,11 @@ export abstract class VirtualEnemy extends Laya.Script {
         if (this.playerRangeCheck(this.m_attackRange * 2)) {
             if(this.m_health <= 0) return;
             
+            if(this.m_moveDelayValue <= 0.0)
+                this.m_rigidbody.linearVelocity = {x:0.0,y:0.0};
+                
             this.tryAttack();
             this.m_atkTimer = (this.m_atkTimer > 0) ? (this.m_atkTimer - 1) : this.m_atkTimer
-
-            if(!this.m_moveDelayValue)
-                this.m_rigidbody.linearVelocity = {x:0.0,y:0.0};
 
             return;
         }
@@ -339,10 +343,16 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
         let dir: number = this.m_player.x - this.m_animation.x;
         let rightSide: boolean = (this.m_player.x - this.m_animation.x) > 0;
+        let lastDirection: boolean = this.m_isFacingRight;
+
         this.m_animation.skewY = rightSide ? 0 : 180;
         this.m_isFacingRight = (this.m_moveVelocity["Vx"] > 0) ? true : false
 
-        // this.m_collideScript.onTriggerEnter = function (col: Laya.BoxCollider) {
+        if(lastDirection != this.m_isFacingRight){
+            this.m_rigidbody.linearVelocity.x = 0.0;
+        }
+
+        // this.m_script.onTriggerEnter = (col: Laya.BoxCollider) =>{
         //     if (col.tag == "Player") {
         //         console.log("是玩家撞到我！");
         //     }
@@ -431,9 +441,9 @@ export abstract class VirtualEnemy extends Laya.Script {
                     // this.m_moveVelocity["Vx"] = 0;
                     this.m_moveDelayValue = 0;
                 }
-                this.m_moveDelayValue -= 0.1;
+                this.m_moveDelayValue -= 0.01;
                 // console.log('working!', this.m_moveDelayValue);
-            }, 100)
+            }, 10)
         }
     }
     private applyMoveX(): void {
@@ -591,5 +601,7 @@ export default class EnemyHandler extends Laya.Script {
             aliveEnemy[i]._ent.m_animation.destroy();
             aliveEnemy[i]._ent.m_animation.destroyed = true;
         }
+        this.enemyPool = [];
+        console.log('呼叫了');
     }
 }

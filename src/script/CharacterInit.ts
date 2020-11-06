@@ -98,7 +98,7 @@ export class Character extends Laya.Script {
 
         // this.m_bloodyPoint;
         // this.m_maxBloodyPoint;
-
+        this.m_animation.destroyed = false;
         this.m_animation.pos(1345, 544);
         this.m_animation.autoPlay = true;
         this.m_animation.source = 'character/Idle.atlas';
@@ -123,13 +123,16 @@ export class Character extends Laya.Script {
         this.m_script.onUpdate = () => {
             if (this.m_playerVelocity["Vx"] < -this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = -this.m_xMaxVelocity;
             if (this.m_playerVelocity["Vx"] > this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = this.m_xMaxVelocity;
+            if (this.m_animation.y >= 1000.0){
+                this.m_animation.x = 1345;
+                this.m_animation.y = 544;
+            }
             this.characterMove();
         }
         this.m_script.onTriggerEnter = (col: Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) => {
             if (col.tag === "Enemy"){
                 // let rig = col.owner.getComponent(Laya.RigidBody) as Laya.RigidBody;
                 // rig.mask = 2;
-                // col.refresh();
             }
             if (col.label === "ground") {
                 this.resetMove();
@@ -153,7 +156,9 @@ export class Character extends Laya.Script {
         this.m_collider.x += 38;
         this.m_collider.y -= 1;
         this.m_collider.tag = 'Player';
-        this.m_collider.friction = 0;
+        // this.m_collider.friction = 1;
+        this.m_collider.density = 1;
+
 
         this.m_rigidbody.allowRotation = false;
         this.m_rigidbody.gravityScale = 3;
@@ -182,11 +187,13 @@ export class Character extends Laya.Script {
         return this.m_health;
     };
     public death(){
-        this.m_animation.destroy();
-        this.m_animation.destroyed = true;
-        Laya.Scene.open("Died.scene");
-        Laya.stage.x = Laya.stage.y = 0;
-        Laya.SoundManager.stopAll();
+        Laya.Tween.to(this.m_animation, {alpha: 0.0}, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{            
+            this.m_animation.destroy();
+            this.m_animation.destroyed = true;
+            Laya.Scene.open("Died.scene");
+            Laya.stage.x = Laya.stage.y = 0;
+            Laya.SoundManager.stopAll();
+        }), 0);
     }
     loadCharacterData(): void{
         ExtraData.loadData();
@@ -308,13 +315,20 @@ export class Character extends Laya.Script {
         if (this.m_keyDownList[16]){
             if(!this.m_canSprint) return;
 
-            this.delayMove(0.1)
+            this.delayMove(0.1);
+            this.hurtedEvent(0.1);
+
             this.m_rigidbody.linearVelocity = {x: this.m_isFacingRight ? 50.0:-50.0, y:0.0};
             this.m_rigidbody.mask = 2 | 16;
             this.m_collider.refresh();
             setTimeout(()=>{
-                this.m_rigidbody.mask = 2 | 8 | 16; 
+                this.m_rigidbody.mask = 2 | 8 | 16;
+                this.m_collider.density = 300;
                 this.m_collider.refresh();
+                setTimeout(()=> {
+                    this.m_collider.density = 1;
+                    this.m_collider.refresh();
+                }, 10);
             }, 500)
             // Laya.Tween.to(this.m_rigidbody, {
             //     linearVelocity: {x: this.m_isFacingRight?50.0:-50.0, y:0.0},
@@ -326,13 +340,13 @@ export class Character extends Laya.Script {
             }, 3000);
         }
         //Up
-        if (this.m_keyDownList[38]) {
-            if (this.m_canJump) {
-                this.m_playerVelocity["Vy"] -= 12;
-                this.applyMoveY();
-                this.m_canJump = false;
-            }
-        }
+        // if (this.m_keyDownList[38]) {
+        //     if (this.m_canJump) {
+        //         this.m_playerVelocity["Vy"] -= 12;
+        //         this.applyMoveY();
+        //         this.m_canJump = false;
+        //     }
+        // }
         //Right
         if (this.m_keyDownList[39]) {
             this.m_playerVelocity["Vx"] += 1 * this.m_velocityMultiplier;
@@ -550,6 +564,7 @@ export class Character extends Laya.Script {
                 let soundNum : number;
                 let fakeNum = Math.random() * 100;//需再修正
                 let critical: boolean = (fakeNum <= 25);//需再修正
+                let enemyCount = 0;
                 soundNum = critical ? 0 : 1;//需再修正
                 enemyFound.forEach((e) => {
                     //敵人受傷傳參(攻擊力函式)
@@ -559,8 +574,9 @@ export class Character extends Laya.Script {
                     this.setCameraShake(10, 3);
                     //誓約系統測試
                     this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + this.m_oathManager.increaseBloodyPoint);
-                    e._ent.slashLightEffect(e._ent.m_animation);
+                    if(enemyCount < 3) e._ent.slashLightEffect(e._ent.m_animation);
                     this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
+                    enemyCount++;
                     
                 // } else {
                 //     // OathManager.chargeAttack(col.label);
@@ -703,10 +719,15 @@ export class Character extends Laya.Script {
     private applyMoveX(): void {
         if(this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation)
             return;
-        this.m_rigidbody.setVelocity({
-        x: this.m_playerVelocity["Vx"],
-        y: this.m_rigidbody.linearVelocity.y,
-        });
+        this.m_rigidbody.linearVelocity = {
+            x: this.m_playerVelocity['Vx'],
+            y: this.m_rigidbody.linearVelocity.y,
+        };
+        // this.m_rigidbody.setVelocity({
+        // x: this.m_playerVelocity["Vx"],
+        // y: this.m_rigidbody.linearVelocity.y,
+        // });
+
         if (!this.m_animationChanging && this.m_playerVelocity["Vx"] === 0)
             this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
     }

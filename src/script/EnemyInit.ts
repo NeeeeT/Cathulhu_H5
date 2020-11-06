@@ -54,6 +54,8 @@ export default class EnemyInit extends Laya.Script{
     r1: number
     r2: number
 
+    skillChooseHint: Laya.Text;
+
     
     constructor(){
         super();
@@ -67,7 +69,10 @@ export default class EnemyInit extends Laya.Script{
         let player = CharacterInit.playerEnt.m_animation;
         let enemy = EnemyHandler.enemyPool;
 
-        this.generateTimer =  setInterval(() =>{
+        console.log(enemy);
+        
+
+        this.generateTimer = setInterval(() =>{
             if(player.destroyed){
                 EnemyHandler.clearAllEnemy();
                 clearInterval(this.generateTimer);
@@ -126,7 +131,6 @@ export default class EnemyInit extends Laya.Script{
                 this.rewardGold.destroy();
                 this.rewardCrystalText.destroy();
                 this.rewardGoldText.destroy();
-                // this.endingRewardUI = null;
                 this.showEndSkill();
             }), 0);
         };
@@ -213,12 +217,24 @@ export default class EnemyInit extends Laya.Script{
         this.skillHumanInfoText.fontSize = 38;
         this.skillCatInfoText.wordWrap = true;
         this.skillHumanInfoText.wordWrap = true;
+
+        this.skillChooseHint = new Laya.Text();
+        this.skillChooseHint.width = 340;
+        this.skillChooseHint.height = 30;
+        this.skillChooseHint.pos(pos['x']+171, pos['y']+307);
+        this.skillChooseHint.fontSize = 30;
+        this.skillChooseHint.font = 'silver';
+        this.skillChooseHint.text = "到想選擇的技能下方按下空白鍵吧";
+        this.skillChooseHint.color = "#fff";
+        this.skillChooseHint.stroke = 2;
+        this.skillChooseHint.strokeColor = "#000";
         
         Laya.stage.addChild(this.endingSkillUI);
         Laya.stage.addChild(this.skillCat);
         Laya.stage.addChild(this.skillHuman);
-        Laya.stage.addChild(this.skillCatBtn);
-        Laya.stage.addChild(this.skillHumanBtn);
+        Laya.stage.addChild(this.skillChooseHint);
+        // Laya.stage.addChild(this.skillCatBtn);
+        // Laya.stage.addChild(this.skillHumanBtn);
         Laya.stage.addChild(this.skillCatIcon);
         Laya.stage.addChild(this.skillHumanIcon);
         Laya.stage.addChild(this.skillCatInfo);
@@ -352,5 +368,6 @@ export default class EnemyInit extends Laya.Script{
         this.skillHumanInfo.destroy();
         this.skillCatInfoText.destroy();
         this.skillHumanInfoText.destroy();
+        this.skillChooseHint.destroy();
     }
 }
