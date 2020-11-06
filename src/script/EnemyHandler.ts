@@ -97,12 +97,11 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         this.m_collider.width = this.m_animation.width - 64;
         this.m_collider.height = this.m_animation.height - 20;
-        // this.m_collider.x -= 13;
-        // this.m_collider.y -= 10;
         this.m_collider.x = 0;
         this.m_collider.y = -10;
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
+
 
         this.m_rigidbody.category = 8;
         this.m_rigidbody.mask = 4 | 2;
