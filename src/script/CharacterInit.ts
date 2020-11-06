@@ -90,7 +90,7 @@ export class Character extends Laya.Script {
 
         // this.m_bloodyPoint;
         // this.m_maxBloodyPoint;
-
+        this.m_animation.destroyed = false;
         this.m_animation.pos(1345, 544);
         this.m_animation.autoPlay = true;
         this.m_animation.source = 'character/Idle.atlas';
@@ -121,7 +121,6 @@ export class Character extends Laya.Script {
             if (col.tag === "Enemy"){
                 // let rig = col.owner.getComponent(Laya.RigidBody) as Laya.RigidBody;
                 // rig.mask = 2;
-                // col.refresh();
             }
             if (col.label === "ground") {
                 this.resetMove();
@@ -145,7 +144,9 @@ export class Character extends Laya.Script {
         this.m_collider.x += 38;
         this.m_collider.y -= 1;
         this.m_collider.tag = 'Player';
-        this.m_collider.friction = 0;
+        // this.m_collider.friction = 1;
+        this.m_collider.density = 1;
+
 
         this.m_rigidbody.allowRotation = false;
         this.m_rigidbody.gravityScale = 3;
@@ -174,11 +175,13 @@ export class Character extends Laya.Script {
         return this.m_health;
     };
     public death(){
-        this.m_animation.destroy();
-        this.m_animation.destroyed = true;
-        Laya.Scene.open("Died.scene");
-        Laya.stage.x = Laya.stage.y = 0;
-        Laya.SoundManager.stopAll();
+        Laya.Tween.to(this.m_animation, {alpha: 0.0}, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{            
+            this.m_animation.destroy();
+            this.m_animation.destroyed = true;
+            Laya.Scene.open("Died.scene");
+            Laya.stage.x = Laya.stage.y = 0;
+            Laya.SoundManager.stopAll();
+        }), 0);
     }
     takeDamage(amount: number) {
         if(amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted) return;
@@ -682,10 +685,15 @@ export class Character extends Laya.Script {
     private applyMoveX(): void {
         if(this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation)
             return;
-        this.m_rigidbody.setVelocity({
-        x: this.m_playerVelocity["Vx"],
-        y: this.m_rigidbody.linearVelocity.y,
-        });
+        this.m_rigidbody.linearVelocity = {
+            x: this.m_playerVelocity['Vx'],
+            y: this.m_rigidbody.linearVelocity.y,
+        };
+        // this.m_rigidbody.setVelocity({
+        // x: this.m_playerVelocity["Vx"],
+        // y: this.m_rigidbody.linearVelocity.y,
+        // });
+
         if (!this.m_animationChanging && this.m_playerVelocity["Vx"] === 0)
             this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
     }

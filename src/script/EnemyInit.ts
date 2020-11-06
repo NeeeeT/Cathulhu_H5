@@ -67,7 +67,10 @@ export default class EnemyInit extends Laya.Script{
         let player = CharacterInit.playerEnt.m_animation;
         let enemy = EnemyHandler.enemyPool;
 
-        this.generateTimer =  setInterval(() =>{
+        console.log(enemy);
+        
+
+        this.generateTimer = setInterval(() =>{
             if(player.destroyed){
                 EnemyHandler.clearAllEnemy();
                 clearInterval(this.generateTimer);
@@ -126,7 +129,6 @@ export default class EnemyInit extends Laya.Script{
                 this.rewardGold.destroy();
                 this.rewardCrystalText.destroy();
                 this.rewardGoldText.destroy();
-                // this.endingRewardUI = null;
                 this.showEndSkill();
             }), 0);
         };
