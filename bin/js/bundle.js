@@ -509,6 +509,16 @@
         static getEnemyByLabel(label) {
             return this.enemyPool.filter(data => data._id === label)[0]['_ent'];
         }
+        static clearAllEnemy() {
+            let aliveEnemy = EnemyHandler.enemyPool.filter(data => data._ent.m_animation != null);
+            for (let i = 0; i < aliveEnemy.length; i++) {
+                if (aliveEnemy[i]._ent.m_animation.destroyed)
+                    return;
+                aliveEnemy[i]._ent.m_animation.zOrder = -15;
+                aliveEnemy[i]._ent.m_animation.destroy();
+                aliveEnemy[i]._ent.m_animation.destroyed = true;
+            }
+        }
     }
     EnemyHandler.enemyIndex = 0;
     EnemyHandler.enemyPool = [];
@@ -1526,6 +1536,8 @@
             this.m_humanSkill = null;
         }
         spawn() {
+            this.loadCharacterData();
+            this.getAtkValue(this.m_atkLevel);
             this.m_state = CharacterStatus.idle;
             this.m_animation = new Laya.Animation();
             this.m_animation.scaleX = 1;
@@ -1618,6 +1630,16 @@
             Laya.Scene.open("Died.scene");
             Laya.stage.x = Laya.stage.y = 0;
             Laya.SoundManager.stopAll();
+        }
+        loadCharacterData() {
+            ExtraData.loadData();
+            let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+            this.m_hpLevel = data.hpLevel;
+            this.m_atkLevel = data.atkDmgLevel;
+        }
+        getAtkValue(atkLevel) {
+            this.m_atk = 30 + Math.round(Math.random() * 100) + atkLevel * 10;
+            return this.m_atk;
         }
         takeDamage(amount) {
             if (amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted)
@@ -1813,7 +1835,7 @@
                     let critical = (fakeNum <= 25);
                     soundNum = critical ? 0 : 1;
                     enemyFound.forEach((e) => {
-                        e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+                        e._ent.takeDamage(this.getAtkValue(this.m_atkLevel));
                         this.setCameraShake(10, 3);
                         this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + this.m_oathManager.increaseBloodyPoint);
                         e._ent.slashLightEffect(e._ent.m_animation);
@@ -2117,7 +2139,7 @@
             let enemy = EnemyHandler.enemyPool;
             this.generateTimer = setInterval(() => {
                 if (player.destroyed) {
-                    this.clearAllEnemy();
+                    EnemyHandler.clearAllEnemy();
                     clearInterval(this.generateTimer);
                     this.generateTimer = null;
                     return;
@@ -2147,7 +2169,7 @@
                     return;
                 }
                 else if (this.timeLeftValue < 0) {
-                    this.clearAllEnemy();
+                    EnemyHandler.clearAllEnemy();
                     console.log('時間到! 你輸了:(');
                     clearInterval(this.battleTimer);
                     this.battleTimer = null;
@@ -2180,16 +2202,6 @@
                 else if (rangeB < this.skillHumanIcon.width) {
                     this.skillChoose(2);
                 }
-            }
-        }
-        clearAllEnemy() {
-            let aliveEnemy = EnemyHandler.enemyPool.filter(data => data._ent.m_animation != null);
-            for (let i = 0; i < aliveEnemy.length; i++) {
-                if (aliveEnemy[i]._ent.m_animation.destroyed)
-                    return;
-                aliveEnemy[i]._ent.m_animation.zOrder = -15;
-                aliveEnemy[i]._ent.m_animation.destroy();
-                aliveEnemy[i]._ent.m_animation.destroyed = true;
             }
         }
         showEndSkill() {
@@ -2346,7 +2358,6 @@
                 }
                 info.text = "剩餘時間: " + String(this.timeLeftValue) + "\n剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
                 info.pos(player.x - 50, player.y - 400);
-                console.log('info updated');
             }, 10);
         }
         updateMissionData() {
@@ -2361,7 +2372,7 @@
             ExtraData.saveData();
         }
         changeToVillage() {
-            this.clearAllEnemy();
+            EnemyHandler.clearAllEnemy();
             Laya.Scene.load("Loading.scene");
             Laya.Scene.open("Village.scene", true);
             Laya.stage.x = Laya.stage.y = 0;
@@ -2573,8 +2584,7 @@
             this.missionManager = new MissionManager();
         }
         onAwake() {
-            if (MissionManager.missionDataPool.length <= 0)
-                this.missionManager.generateMissionData(9);
+            this.missionManager.generateMissionData(9);
         }
         onStart() {
             this.updateData();
@@ -2598,8 +2608,8 @@
             let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
             this.c_gold = data.gold;
             this.c_crystal = data.crystal;
-            this.c_hpLevel = data.hpLevel;
-            this.c_atkDmgLevel = data.atkDmgLevel;
+            Village.hpLevel = data.hpLevel;
+            Village.atkDmgLevel = data.atkDmgLevel;
             this.saveData();
         }
         showReinforceUI() {
@@ -2659,7 +2669,7 @@
         }
         setReinfoceAtkDmgLevel() {
             if (this.reinforceAtkDmgLevel) {
-                this.reinforceAtkDmgLevel.text = String(this.c_atkDmgLevel);
+                this.reinforceAtkDmgLevel.text = String(Village.atkDmgLevel);
                 return;
             }
             this.reinforceAtkDmgLevel = new Laya.Text();
@@ -2668,13 +2678,13 @@
             this.reinforceAtkDmgLevel.color = "#00FFFF";
             this.reinforceAtkDmgLevel.stroke = 10;
             this.reinforceAtkDmgLevel.strokeColor = "#000";
-            this.reinforceAtkDmgLevel.text = String(this.c_atkDmgLevel);
+            this.reinforceAtkDmgLevel.text = String(Village.atkDmgLevel);
             this.reinforceAtkDmgLevel.pos(150 + 578, 109 + 198);
             Laya.stage.addChild(this.reinforceAtkDmgLevel);
         }
         setReinfoceHpLevel() {
             if (this.reinforceHpLevel) {
-                this.reinforceHpLevel.text = String(this.c_hpLevel);
+                this.reinforceHpLevel.text = String(Village.hpLevel);
                 return;
             }
             this.reinforceHpLevel = new Laya.Text();
@@ -2683,13 +2693,13 @@
             this.reinforceHpLevel.color = "#00FFFF";
             this.reinforceHpLevel.stroke = 10;
             this.reinforceHpLevel.strokeColor = "#000";
-            this.reinforceHpLevel.text = String(this.c_hpLevel);
+            this.reinforceHpLevel.text = String(Village.hpLevel);
             this.reinforceHpLevel.pos(150 + 578, 109 + 297);
             Laya.stage.addChild(this.reinforceHpLevel);
         }
         setReinfoceAtkDmgCost() {
             if (this.reinforceAtkDmgCost) {
-                this.reinforceAtkDmgCost.text = '-' + String(this.c_atkDmgLevel * 100);
+                this.reinforceAtkDmgCost.text = '-' + String(Village.atkDmgLevel * 100);
                 return;
             }
             this.reinforceAtkDmgCost = new Laya.Text();
@@ -2698,13 +2708,13 @@
             this.reinforceAtkDmgCost.color = "#d1ce07";
             this.reinforceAtkDmgCost.stroke = 10;
             this.reinforceAtkDmgCost.strokeColor = "#000";
-            this.reinforceAtkDmgCost.text = '-' + String(this.c_atkDmgLevel * 100);
+            this.reinforceAtkDmgCost.text = '-' + String(Village.atkDmgLevel * 100);
             this.reinforceAtkDmgCost.pos(150 + 908, 109 + 193);
             Laya.stage.addChild(this.reinforceAtkDmgCost);
         }
         setReinfoceHpCost() {
             if (this.reinforceHpCost) {
-                this.reinforceHpCost.text = '-' + String(this.c_hpLevel * 100);
+                this.reinforceHpCost.text = '-' + String(Village.hpLevel * 100);
                 return;
             }
             this.reinforceHpCost = new Laya.Text();
@@ -2713,7 +2723,7 @@
             this.reinforceHpCost.color = "#d1ce07";
             this.reinforceHpCost.stroke = 10;
             this.reinforceHpCost.strokeColor = "#000";
-            this.reinforceHpCost.text = '-' + String(this.c_hpLevel * 100);
+            this.reinforceHpCost.text = '-' + String(Village.hpLevel * 100);
             this.reinforceHpCost.pos(150 + 908, 109 + 299);
             Laya.stage.addChild(this.reinforceHpCost);
         }
@@ -2723,11 +2733,11 @@
             this.reinforceAtkDmgCostBtn.height = 60;
             this.reinforceAtkDmgCostBtn.pos(150 + 726, 109 + 203);
             this.reinforceAtkDmgCostBtn.on(Laya.Event.CLICK, this, () => {
-                if (this.c_gold < this.c_atkDmgLevel * 100) {
+                if (this.c_gold < Village.atkDmgLevel * 100) {
                     return;
                 }
-                this.c_gold -= this.c_atkDmgLevel * 100;
-                this.c_atkDmgLevel++;
+                this.c_gold -= Village.atkDmgLevel * 100;
+                Village.atkDmgLevel++;
                 this.setReinfoceAtkDmgLevel();
                 this.setReinfoceAtkDmgCost();
                 this.setReinfoceGoldValue();
@@ -2741,11 +2751,11 @@
             this.reinforceHpCostBtn.height = 60;
             this.reinforceHpCostBtn.pos(150 + 726, 109 + 307);
             this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, () => {
-                if (this.c_gold < this.c_hpLevel * 100) {
+                if (this.c_gold < Village.hpLevel * 100) {
                     return;
                 }
-                this.c_gold -= this.c_hpLevel * 100;
-                this.c_hpLevel++;
+                this.c_gold -= Village.hpLevel * 100;
+                Village.hpLevel++;
                 this.setReinfoceHpLevel();
                 this.setReinfoceHpCost();
                 this.setReinfoceGoldValue();
@@ -2754,8 +2764,8 @@
             Laya.stage.addChild(this.reinforceHpCostBtn);
         }
         saveData() {
-            ExtraData.currentData['atkDmgLevel'] = this.c_atkDmgLevel;
-            ExtraData.currentData['hpLevel'] = this.c_hpLevel;
+            ExtraData.currentData['atkDmgLevel'] = Village.atkDmgLevel;
+            ExtraData.currentData['hpLevel'] = Village.hpLevel;
             ExtraData.currentData['gold'] = this.c_gold;
             ExtraData.currentData['crystal'] = this.c_crystal;
             ExtraData.saveData();

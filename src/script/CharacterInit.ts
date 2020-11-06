@@ -80,6 +80,7 @@ export class Character extends Laya.Script {
 
     spawn() {
         this.loadCharacterData();
+        this.getAtkValue(this.m_atkLevel);
 
         this.m_state = CharacterStatus.idle;
 
@@ -193,6 +194,10 @@ export class Character extends Laya.Script {
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
         this.m_hpLevel = data.hpLevel;
         this.m_atkLevel = data.atkDmgLevel;
+    }
+    getAtkValue(atkLevel: number): number {
+        this.m_atk = 30 + Math.round(Math.random() * 100) + atkLevel * 10;
+        return this.m_atk;
     }
     takeDamage(amount: number) {
         if(amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted) return;
@@ -547,8 +552,8 @@ export class Character extends Laya.Script {
                 let critical: boolean = (fakeNum <= 25);//需再修正
                 soundNum = critical ? 0 : 1;//需再修正
                 enemyFound.forEach((e) => {
-                    //敵人受傷傳參
-                    e._ent.takeDamage(150);
+                    //敵人受傷傳參(攻擊力函式)
+                    e._ent.takeDamage(this.getAtkValue(this.m_atkLevel));
                     // e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
                     // if (!OathManager.isCharging) {
                     this.setCameraShake(10, 3);
