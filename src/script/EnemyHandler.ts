@@ -530,10 +530,21 @@ export class Fast extends VirtualEnemy {
     m_health = 500;
     m_speed = 7;
     m_tag = 's';
-    m_attackRange = 70;
+    m_attackRange = 100;
     m_mdelay = 0.7;
     m_dmg = 70;
     m_atkTag = "EnemyFastAttack";
+}
+export class Newbie extends VirtualEnemy {
+    m_name = '新手敵人';
+    m_armor = 100;
+    m_health = 5000;
+    m_speed = 3;
+    m_tag = 's';
+    m_attackRange = 100;
+    m_mdelay = 1.5;
+    m_dmg = 0;
+    m_atkTag = "EnemyNewbieAttack";
 }
 
 
