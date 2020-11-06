@@ -113,6 +113,7 @@ export default class MissionManager extends Laya.Script {
             this.clearMissionUI();
             console.log(data["enemyNum"]);
             this.sendMissionData(data);
+            Laya.Scene.load("Loading.scene");
             Laya.Scene.open("First.scene");
         })
         this.confirmIcons.push(confirmIcon);

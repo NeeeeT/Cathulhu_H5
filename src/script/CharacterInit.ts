@@ -125,6 +125,11 @@ export class Character extends Laya.Script {
             this.characterMove();
         }
         this.m_script.onTriggerEnter = (col: Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) => {
+            if (col.tag === "Enemy"){
+                // let rig = col.owner.getComponent(Laya.RigidBody) as Laya.RigidBody;
+                // rig.mask = 2;
+                // col.refresh();
+            }
             if (col.label === "ground") {
                 this.resetMove();
                 this.m_canJump = true;
@@ -180,6 +185,7 @@ export class Character extends Laya.Script {
         this.m_animation.destroyed = true;
         Laya.Scene.open("Died.scene");
         Laya.stage.x = Laya.stage.y = 0;
+        Laya.SoundManager.stopAll();
     }
     loadCharacterData(): void{
         ExtraData.loadData();
@@ -285,20 +291,30 @@ export class Character extends Laya.Script {
     private characterMove() {
         //Left
         if (this.m_keyDownList[37]) {
-        this.m_playerVelocity["Vx"] += -1 * this.m_velocityMultiplier;
-        if (this.m_isFacingRight) {
-            this.m_playerVelocity["Vx"] = 0;
-            this.m_animation.skewY = 180;
-            this.m_isFacingRight = false;
-        }
-        this.applyMoveX();
-        if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
+            this.m_playerVelocity["Vx"] += -1 * this.m_velocityMultiplier;
+            if (this.m_isFacingRight) {
+                this.m_playerVelocity["Vx"] = 0;
+                this.m_animation.skewY = 180;
+                this.m_isFacingRight = false;
+            }
+            this.applyMoveX();
+            if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
         if (this.m_keyDownList[16]){
             if(!this.m_canSprint) return;
 
-            this.delayMove(0.5)
-            Laya.Tween.to(this.m_animation, {x: this.m_isFacingRight? this.m_animation.x+250:this.m_animation.x-250}, 500, Laya.Ease.linearInOut, null, 0);
+            this.delayMove(0.1)
+            this.m_rigidbody.linearVelocity = {x: this.m_isFacingRight ? 50.0:-50.0, y:0.0};
+            this.m_rigidbody.mask = 2 | 16;
+            this.m_collider.refresh();
+            setTimeout(()=>{
+                this.m_rigidbody.mask = 2 | 8 | 16; 
+                this.m_collider.refresh();
+            }, 500)
+            // Laya.Tween.to(this.m_rigidbody, {
+            //     linearVelocity: {x: this.m_isFacingRight?50.0:-50.0, y:0.0},
+            // }, 500, Laya.Ease.linearInOut, null, 0);
+
             this.m_canSprint = false;
             setTimeout(()=>{
                 this.m_canSprint = true;
@@ -315,7 +331,6 @@ export class Character extends Laya.Script {
         //Right
         if (this.m_keyDownList[39]) {
             this.m_playerVelocity["Vx"] += 1 * this.m_velocityMultiplier;
-
             if (!this.m_isFacingRight) {
                 this.m_playerVelocity["Vx"] = 0;
                 this.m_animation.skewY = 0;
@@ -324,11 +339,9 @@ export class Character extends Laya.Script {
             this.applyMoveX();
             if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
-        if (this.m_keyDownList[40]) {
-            //Down
-            // console.log('技能槽: ', '貓技: ', this.m_catSkill, '人技: ', this.m_humanSkill);
-            this.m_humanSkill = new hSkill.Behead();
-            this.m_catSkill = new cSkill.Slam();
+        if (this.m_keyDownList[40]) {//Down
+            // this.m_humanSkill = new hSkill.Behead();
+            // this.m_catSkill = new cSkill.Slam();
         }
         if (this.m_keyDownList[32]) {
             // let width_offset: number =
@@ -429,7 +442,7 @@ export class Character extends Laya.Script {
             // this.m_oathManager.addDebuff(1 << 0);
             // this.m_oathManager.setBloodyPoint(100);
         } 
-        if (this.m_keyDownList[88] && this.m_keyDownList[37] || this.m_keyDownList[88] && this.m_keyDownList[39]) {
+        if (this.m_keyDownList[88]) {
             if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost)) return;
             this.m_humanSkill.cast(CharacterInit.playerEnt,
             {
@@ -437,7 +450,7 @@ export class Character extends Laya.Script {
                 y: this.m_animation.y,
             });
         }
-        if (this.m_keyDownList[67] && this.m_keyDownList[37] || this.m_keyDownList[67] && this.m_keyDownList[39]) {
+        if (this.m_keyDownList[67]) {
             if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost)) return;
             this.m_catSkill.cast(CharacterInit.playerEnt,
             {
@@ -671,8 +684,9 @@ export class Character extends Laya.Script {
                     this.m_moveDelayTimer = null;
                     this.m_moveDelayValue = 0;
                 }
-                this.m_moveDelayValue -= 0.1;
-            }, 100)
+                this.m_moveDelayValue -= 0.01;
+                // console.log('working');
+            }, 10)
         }
     }
     private resetMove(): void {

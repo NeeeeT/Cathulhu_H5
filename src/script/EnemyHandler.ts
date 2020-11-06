@@ -97,12 +97,11 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         this.m_collider.width = this.m_animation.width - 64;
         this.m_collider.height = this.m_animation.height - 20;
-        // this.m_collider.x -= 13;
-        // this.m_collider.y -= 10;
         this.m_collider.x = 0;
         this.m_collider.y = -10;
         this.m_collider.label = id;
         this.m_collider.tag = 'Enemy';
+
 
         this.m_rigidbody.category = 8;
         this.m_rigidbody.mask = 4 | 2;
@@ -583,5 +582,14 @@ export default class EnemyHandler extends Laya.Script {
     }
     public static getEnemyByLabel(label: string): VirtualEnemy {
         return this.enemyPool.filter(data => data._id === label)[0]['_ent'] as VirtualEnemy;
+    }
+    public static clearAllEnemy(): void{
+        let aliveEnemy = EnemyHandler.enemyPool.filter(data => data._ent.m_animation != null);
+        for(let i = 0; i < aliveEnemy.length; i++){
+            if(aliveEnemy[i]._ent.m_animation.destroyed) return;
+            aliveEnemy[i]._ent.m_animation.zOrder = -15;
+            aliveEnemy[i]._ent.m_animation.destroy();
+            aliveEnemy[i]._ent.m_animation.destroyed = true;
+        }
     }
 }

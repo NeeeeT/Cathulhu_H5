@@ -17,6 +17,9 @@ export default class EnemyInit extends Laya.Script{
     /** @prop {name:roundTimeLeft,tips:"回合的時間限制(sec)",type:int,default:180}*/
     roundTimeLeft: number = 180;
 
+    roundDetectTimer = null;
+    generateTimer = null;
+
     battleToggle = true;
     battleTimer = null;
 
@@ -63,14 +66,24 @@ export default class EnemyInit extends Laya.Script{
 
         let player = CharacterInit.playerEnt.m_animation;
         let enemy = EnemyHandler.enemyPool;
-        setInterval(() =>{
-            if(CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20) return;
+
+        this.generateTimer =  setInterval(() =>{
+            if(player.destroyed){
+                EnemyHandler.clearAllEnemy();
+                clearInterval(this.generateTimer);
+                this.generateTimer = null;
+                return;
+            }
+            if(this.enemyLeft <= 0 || enemy.length >= 20){
+                clearInterval(this.generateTimer);
+                this.generateTimer = null;
+                return;
+            }
             let x = Math.floor(Math.random()*4);
-            // console.log(x);
-            
             EnemyHandler.generator(player, x, 0);
             this.enemyLeft--;
-        }, this.enemyGenerateTime)
+        }, this.enemyGenerateTime);
+
         this.battleTimer = setInterval(()=>{
             if(!player || player.destroyed){
                 clearInterval(this.battleTimer);
@@ -93,6 +106,7 @@ export default class EnemyInit extends Laya.Script{
                 return;
             }
             else if(this.timeLeftValue < 0){
+                EnemyHandler.clearAllEnemy();
                 console.log('時間到! 你輸了:(');
                 clearInterval(this.battleTimer);
                 this.battleTimer = null;
@@ -136,16 +150,8 @@ export default class EnemyInit extends Laya.Script{
         this.endingSkillUI.loadImage('ui/ending/chooseSkill.png');
 
         this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.m_animation.x - 325), 80);//544 - 450 = 94
-        // this.endingSkillUI.pos(-683, 94);
         this.endingSkillUI.alpha = 0;
 
-        // this.endingSkillUI.on(Laya.Event., this, () => {
-            // setInterval(() => {
-            //     console.log("舞台位置：", Laya.stage.x, Laya.stage.y);
-            //     console.log("btn1 pos", this.skillCatBtn.x, this.skillCatBtn.y);
-            //     console.log("btn2 pos", this.skillHumanBtn.x, this.skillHumanBtn.y);
-            // }, 100)
-        // })
 
         let pos:object = {
             'x': this.endingSkillUI.x,
@@ -302,13 +308,12 @@ export default class EnemyInit extends Laya.Script{
 
         Laya.stage.addChild(info);
 
-        let timer = setInterval(()=>{
-            if(!this.battleToggle){
-                info.pos(11111,11111);
+        this.roundDetectTimer = setInterval(()=>{
+            if(!this.battleToggle || player.destroyed){
                 info.text = "";
                 info.destroy();
-                clearInterval(timer);
-                timer = null;
+                clearInterval(this.roundDetectTimer);
+                this.roundDetectTimer = null;
                 return;
             }
             info.text = "剩餘時間: " + String(this.timeLeftValue) + "\n剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
@@ -329,6 +334,7 @@ export default class EnemyInit extends Laya.Script{
         ExtraData.saveData();
     }
     changeToVillage(): void{
+        EnemyHandler.clearAllEnemy();
         Laya.Scene.load("Loading.scene");
         Laya.Scene.open("Village.scene", true);
         Laya.stage.x = Laya.stage.y = 0; 

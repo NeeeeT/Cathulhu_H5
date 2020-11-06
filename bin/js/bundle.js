@@ -4,7 +4,7 @@
     class BackToVillage extends Laya.Script {
         onKeyUp(e) {
             if (e.keyCode === 32) {
-                Laya.Scene.load("ui/loading.png");
+                Laya.Scene.load("Loading.scene");
                 Laya.Scene.open("Village.scene", true);
                 Laya.stage.x = Laya.stage.y = 0;
                 Laya.SoundManager.stopAll();
@@ -19,7 +19,7 @@
             this.resourceLoad = ["Audio/Bgm/BGM1.wav", "font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
                 "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
                 "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
-                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas",
+                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas", "ui/loading.png",
             ];
         }
         onAwake() {
@@ -457,10 +457,24 @@
             this.m_health = 500;
             this.m_speed = 7;
             this.m_tag = 's';
-            this.m_attackRange = 70;
+            this.m_attackRange = 100;
             this.m_mdelay = 0.7;
             this.m_dmg = 70;
             this.m_atkTag = "EnemyFastAttack";
+        }
+    }
+    class Newbie extends VirtualEnemy {
+        constructor() {
+            super(...arguments);
+            this.m_name = '新手敵人';
+            this.m_armor = 100;
+            this.m_health = 5000;
+            this.m_speed = 3;
+            this.m_tag = 's';
+            this.m_attackRange = 100;
+            this.m_mdelay = 1.5;
+            this.m_dmg = 0;
+            this.m_atkTag = "EnemyNewbieAttack";
         }
     }
     class EnemyHandler extends Laya.Script {
@@ -1549,6 +1563,8 @@
                 this.characterMove();
             };
             this.m_script.onTriggerEnter = (col) => {
+                if (col.tag === "Enemy") {
+                }
                 if (col.label === "ground") {
                     this.resetMove();
                     this.m_canJump = true;
@@ -1601,6 +1617,7 @@
             this.m_animation.destroyed = true;
             Laya.Scene.open("Died.scene");
             Laya.stage.x = Laya.stage.y = 0;
+            Laya.SoundManager.stopAll();
         }
         takeDamage(amount) {
             if (amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted)
@@ -1689,8 +1706,14 @@
             if (this.m_keyDownList[16]) {
                 if (!this.m_canSprint)
                     return;
-                this.delayMove(0.5);
-                Laya.Tween.to(this.m_animation, { x: this.m_isFacingRight ? this.m_animation.x + 250 : this.m_animation.x - 250 }, 500, Laya.Ease.linearInOut, null, 0);
+                this.delayMove(0.1);
+                this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 50.0 : -50.0, y: 0.0 };
+                this.m_rigidbody.mask = 2 | 16;
+                this.m_collider.refresh();
+                setTimeout(() => {
+                    this.m_rigidbody.mask = 2 | 8 | 16;
+                    this.m_collider.refresh();
+                }, 500);
                 this.m_canSprint = false;
                 setTimeout(() => {
                     this.m_canSprint = true;
@@ -1715,8 +1738,6 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                this.m_humanSkill = new Behead();
-                this.m_catSkill = new Slam();
             }
             if (this.m_keyDownList[32]) {
             }
@@ -1744,7 +1765,7 @@
             if (this.m_keyDownList[16]) {
                 console.log(("按下shift"));
             }
-            if (this.m_keyDownList[88] && this.m_keyDownList[37] || this.m_keyDownList[88] && this.m_keyDownList[39]) {
+            if (this.m_keyDownList[88]) {
                 if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost))
                     return;
                 this.m_humanSkill.cast(CharacterInit.playerEnt, {
@@ -1752,7 +1773,7 @@
                     y: this.m_animation.y,
                 });
             }
-            if (this.m_keyDownList[67] && this.m_keyDownList[37] || this.m_keyDownList[67] && this.m_keyDownList[39]) {
+            if (this.m_keyDownList[67]) {
                 if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost))
                     return;
                 this.m_catSkill.cast(CharacterInit.playerEnt, {
@@ -1896,8 +1917,8 @@
                         this.m_moveDelayTimer = null;
                         this.m_moveDelayValue = 0;
                     }
-                    this.m_moveDelayValue -= 0.1;
-                }, 100);
+                    this.m_moveDelayValue -= 0.01;
+                }, 10);
             }
         }
         resetMove() {
@@ -2080,6 +2101,8 @@
             this.enemyGenerateTime = 5000;
             this.enemyLeft = 50;
             this.roundTimeLeft = 180;
+            this.roundDetectTimer = null;
+            this.generateTimer = null;
             this.battleToggle = true;
             this.battleTimer = null;
             this.rewardGoldValue = 500;
@@ -2092,9 +2115,18 @@
             this.timeLeftValue = this.roundTimeLeft;
             let player = CharacterInit.playerEnt.m_animation;
             let enemy = EnemyHandler.enemyPool;
-            setInterval(() => {
-                if (CharacterInit.playerEnt.m_animation.destroyed || this.enemyLeft <= 0 || enemy.length >= 20)
+            this.generateTimer = setInterval(() => {
+                if (player.destroyed) {
+                    this.clearAllEnemy();
+                    clearInterval(this.generateTimer);
+                    this.generateTimer = null;
                     return;
+                }
+                if (this.enemyLeft <= 0 || enemy.length >= 20) {
+                    clearInterval(this.generateTimer);
+                    this.generateTimer = null;
+                    return;
+                }
                 let x = Math.floor(Math.random() * 4);
                 EnemyHandler.generator(player, x, 0);
                 this.enemyLeft--;
@@ -2115,6 +2147,7 @@
                     return;
                 }
                 else if (this.timeLeftValue < 0) {
+                    this.clearAllEnemy();
                     console.log('時間到! 你輸了:(');
                     clearInterval(this.battleTimer);
                     this.battleTimer = null;
@@ -2147,6 +2180,16 @@
                 else if (rangeB < this.skillHumanIcon.width) {
                     this.skillChoose(2);
                 }
+            }
+        }
+        clearAllEnemy() {
+            let aliveEnemy = EnemyHandler.enemyPool.filter(data => data._ent.m_animation != null);
+            for (let i = 0; i < aliveEnemy.length; i++) {
+                if (aliveEnemy[i]._ent.m_animation.destroyed)
+                    return;
+                aliveEnemy[i]._ent.m_animation.zOrder = -15;
+                aliveEnemy[i]._ent.m_animation.destroy();
+                aliveEnemy[i]._ent.m_animation.destroyed = true;
             }
         }
         showEndSkill() {
@@ -2293,17 +2336,17 @@
             info.font = "silver";
             info.strokeColor = "#000";
             Laya.stage.addChild(info);
-            let timer = setInterval(() => {
-                if (!this.battleToggle) {
-                    info.pos(11111, 11111);
+            this.roundDetectTimer = setInterval(() => {
+                if (!this.battleToggle || player.destroyed) {
                     info.text = "";
                     info.destroy();
-                    clearInterval(timer);
-                    timer = null;
+                    clearInterval(this.roundDetectTimer);
+                    this.roundDetectTimer = null;
                     return;
                 }
                 info.text = "剩餘時間: " + String(this.timeLeftValue) + "\n剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
                 info.pos(player.x - 50, player.y - 400);
+                console.log('info updated');
             }, 10);
         }
         updateMissionData() {
@@ -2318,6 +2361,7 @@
             ExtraData.saveData();
         }
         changeToVillage() {
+            this.clearAllEnemy();
             Laya.Scene.load("Loading.scene");
             Laya.Scene.open("Village.scene", true);
             Laya.stage.x = Laya.stage.y = 0;
@@ -2466,6 +2510,7 @@
                 this.clearMissionUI();
                 console.log(data["enemyNum"]);
                 this.sendMissionData(data);
+                Laya.Scene.load("Loading.scene");
                 Laya.Scene.open("First.scene");
             });
             this.confirmIcons.push(confirmIcon);
