@@ -2285,7 +2285,13 @@
                     Village.isNewbie = false;
                 }
                 else {
-                    Laya.Scene.open("First.scene");
+                    let x = Math.round(Math.random());
+                    if (x > 0.5) {
+                        Laya.Scene.open("First.scene");
+                    }
+                    else {
+                        Laya.Scene.open("Town.scene");
+                    }
                 }
             });
             this.confirmIcons.push(confirmIcon);
@@ -2306,7 +2312,7 @@
                     id: i,
                     missionName: "殲滅來犯敵軍",
                     difficulty: this.missionDifficultyArr[i],
-                    enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
+                    enemyNum: 3,
                     enemyHp: 1000,
                     enemyAtk: 100,
                     eliteNum: Math.round(Math.random()),
