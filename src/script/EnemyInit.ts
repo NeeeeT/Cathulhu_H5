@@ -2,13 +2,14 @@ import CharacterInit from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import { ExtraData } from "./ExtraData";
 import SkillList from "./SkillList";
+import Village from "./Village";
 
 export default class EnemyInit extends Laya.Script{
 
     public static missionEnemyNum;
     public static missionRewardGoldValue;
     public static missionRewardCrystalValue;
-    
+    public static isWin;
 
     /** @prop {name:enemyGenerateTime,tips:"經過多少時間(ms)會生成1個敵人",type:int,default:3000}*/
     enemyGenerateTime: number = 5000;
@@ -70,7 +71,7 @@ export default class EnemyInit extends Laya.Script{
         let enemy = EnemyHandler.enemyPool;
 
         console.log(enemy);
-        
+        EnemyInit.isWin = false;
 
         this.generateTimer = setInterval(() =>{
             if(player.destroyed){
@@ -84,8 +85,12 @@ export default class EnemyInit extends Laya.Script{
                 this.generateTimer = null;
                 return;
             }
-            let x = Math.floor(Math.random()*4);
-            EnemyHandler.generator(player, x, 0);
+            let x = Math.floor(Math.random() * 4);
+            if(Village.isNewbie){
+                EnemyHandler.generator(player, 5, 0);
+            } else {
+                EnemyHandler.generator(player, x, 0);
+            }
             this.enemyLeft--;
         }, this.enemyGenerateTime);
 
@@ -99,6 +104,7 @@ export default class EnemyInit extends Laya.Script{
                 // Laya.Scene.open("Village.scene");
                 // Laya.stage.x = Laya.stage.y = 0; 
                 this.battleToggle = false;
+                EnemyInit.isWin = true;
 
                 // this.unsetCharacter();
                 Laya.Tween.to(player, {alpha: 0.3}, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{

@@ -717,9 +717,13 @@
         }
         debuffUpdate() {
             super.debuffUpdate();
-            if (this.player === null)
+            if (this.player.m_animation.destroyed) {
+                clearInterval(this.decayHandler);
+                this.decayHandler = null;
                 return;
-            if (this.isDamaging) {
+            }
+            if (this.isDamaging && !EnemyInit.isWin) {
+                console.log("正在傷害玩家");
                 this.player.setHealth(this.player.getHealth() - this.player.m_maxHealth * 0.1);
             }
         }
@@ -731,6 +735,7 @@
             console.log("停止Decay");
             this.isDecaying = false;
             clearInterval(this.decayHandler);
+            this.decayHandler = null;
         }
         killingTimerUpdate() {
             if (this.isKilling)
@@ -772,6 +777,8 @@
                 this.removeDebuff(1 << i);
             }
             this.clearBloodyUI();
+        }
+        clearAllDebuff() {
         }
         getBloodyPoint() {
             return CharacterInit.playerEnt.m_bloodyPoint;
@@ -928,6 +935,7 @@
                         console.log("轉態到overCharge");
                         this.overChargeCount = 0;
                         this.oathBar.skin = "UI/bp_150.png";
+                        this.oathBar.sizeGrid = "0,200,0,20";
                         this.oathState = OathStatus.overCharge;
                         return;
                     }
@@ -946,15 +954,6 @@
                     if (this.addDebuffTimer === null) {
                         console.log(this.addDebuffTimer);
                         console.log("添加addDebuffTimer");
-                        this.addDebuffTimer = setInterval(() => {
-                            if (CharacterInit.playerEnt.m_animation.destroyed) {
-                                clearInterval(this.addDebuffTimer);
-                                return;
-                            }
-                            console.log("執行addDebuffTimer內函式");
-                            console.log(this.playerDebuff);
-                            this.randomAddDebuff();
-                        }, 5000);
                         console.log(this.addDebuffTimer);
                     }
                     if (this.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
@@ -1547,6 +1546,8 @@
             this.m_humanSkill = null;
         }
         spawn() {
+            this.loadCharacterData();
+            this.getAtkValue(this.m_atkLevel);
             this.m_state = CharacterStatus.idle;
             this.m_animation = new Laya.Animation();
             this.m_animation.scaleX = 1;
@@ -1619,11 +1620,6 @@
             this.m_rigidbody.category = 4;
             this.m_rigidbody.mask = 2 | 8 | 16;
             Laya.stage.addChild(this.m_animation);
-            this.m_oathManager = new OathManager();
-            this.m_oathManager.initOathSystem();
-            this.m_oathManager.showBloodyPoint(this.m_animation);
-            this.m_oathManager.showBloodyLogo(this.m_animation);
-            this.showHealth();
             this.cameraFollower();
             this.setSkill();
         }
@@ -1646,6 +1642,16 @@
                 Laya.stage.x = Laya.stage.y = 0;
                 Laya.SoundManager.stopAll();
             }), 0);
+        }
+        loadCharacterData() {
+            ExtraData.loadData();
+            let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+            this.m_hpLevel = data.hpLevel;
+            this.m_atkLevel = data.atkDmgLevel;
+        }
+        getAtkValue(atkLevel) {
+            this.m_atk = 30 + Math.round(Math.random() * 100) + atkLevel * 10;
+            return this.m_atk;
         }
         takeDamage(amount) {
             if (amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted)
@@ -1841,7 +1847,7 @@
                     let enemyCount = 0;
                     soundNum = critical ? 0 : 1;
                     enemyFound.forEach((e) => {
-                        e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
+                        e._ent.takeDamage(this.getAtkValue(this.m_atkLevel));
                         this.setCameraShake(10, 3);
                         this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + this.m_oathManager.increaseBloodyPoint);
                         if (enemyCount < 3)
@@ -2061,7 +2067,7 @@
     class CharacterInit extends Laya.Script {
         constructor() {
             super();
-            this.health = 1000;
+            this.basicHealth = 1000;
             this.bloodyPoint = 0;
             this.maxBloodyPoint_soft = 100;
             this.maxBloodyPoint_hard = 150;
@@ -2079,9 +2085,14 @@
             player.spawn();
             CharacterInit.playerEnt = player;
             Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
+            player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
+            player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);
         }
         initSetting(player) {
-            player.m_maxHealth = player.m_health = this.health;
+            ExtraData.loadData();
+            let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+            this.health = this.basicHealth + data.hpLevel * 100;
+            player.m_health = player.m_maxHealth = this.health;
             player.m_bloodyPoint = this.bloodyPoint;
             player.m_maxBloodyPoint_soft = this.maxBloodyPoint_soft;
             player.m_maxBloodyPoint_hard = this.maxBloodyPoint_hard;
@@ -2092,6 +2103,9 @@
             player.m_attackRange = this.attackRange;
             player.m_basic_attackCdTime = this.attackCdTime;
             player.m_buff_attackCdTime = this.buff_attackCdTime;
+            player.m_oathManager = new OathManager();
+            player.m_oathManager.initOathSystem();
+            player.showHealth();
         }
         onUpdate() {
             if (CharacterInit.playerEnt.m_animation.destroyed)
@@ -2125,6 +2139,429 @@
     SkillList.catSkillList = [];
     SkillList.humanSkillList = [];
 
+    class MissionManager extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.roundAddEnemy = 5;
+            this.missionNum = 3;
+            this.missionDifficultyArr = [];
+            this.missionUI = null;
+            this.eliteIcons = [];
+            this.difficultyIcons = [];
+            this.crystalNums = [];
+            this.moneyNums = [];
+            this.confirmIcons = [];
+        }
+        onStart() {
+        }
+        showMissionUI() {
+            this.missionUI = new Laya.Sprite();
+            this.missionUI.loadImage("UI/chioce_mission.png");
+            this.missionUI.width = 1024;
+            this.missionUI.height = 576;
+            this.missionUI.pos(171, 96);
+            this.missionUI.alpha = 1;
+            Laya.stage.addChild(this.missionUI);
+            if (Village.isNewbie) {
+                this.setEliteIcon(0, MissionManager.missionDataPool[0]["eliteNum"]);
+                this.setDifficultyIcon(0, MissionManager.missionDataPool[0]["difficulty"]);
+                this.setRewardInfo(0, MissionManager.missionDataPool[0]["crystal"], MissionManager.missionDataPool[0]["money"]);
+                this.setConfirmIcon(0, MissionManager.missionDataPool[0]);
+                Laya.stage.addChild(this.eliteIcons[0]);
+                Laya.stage.addChild(this.difficultyIcons[0]);
+                Laya.stage.addChild(this.crystalNums[0]);
+                Laya.stage.addChild(this.moneyNums[0]);
+                Laya.stage.addChild(this.confirmIcons[0]);
+            }
+            else {
+                for (let i = 0; i < this.missionNum; i++) {
+                    this.setEliteIcon(i, MissionManager.missionDataPool[i]["eliteNum"]);
+                    this.setDifficultyIcon(i, MissionManager.missionDataPool[i]["difficulty"]);
+                    this.setRewardInfo(i, MissionManager.missionDataPool[i]["crystal"], MissionManager.missionDataPool[i]["money"]);
+                    this.setConfirmIcon(i, MissionManager.missionDataPool[i]);
+                }
+                for (let i = 0; i < this.eliteIcons.length; i++) {
+                    Laya.stage.addChild(this.eliteIcons[i]);
+                }
+                for (let i = 0; i < this.difficultyIcons.length; i++) {
+                    Laya.stage.addChild(this.difficultyIcons[i]);
+                }
+                for (let i = 0; i < this.crystalNums.length; i++) {
+                    Laya.stage.addChild(this.crystalNums[i]);
+                }
+                for (let i = 0; i < this.moneyNums.length; i++) {
+                    Laya.stage.addChild(this.moneyNums[i]);
+                }
+                for (let i = 0; i < this.confirmIcons.length; i++) {
+                    Laya.stage.addChild(this.confirmIcons[i]);
+                }
+            }
+        }
+        clearMissionUI() {
+            for (let i = 0; i < this.eliteIcons.length; i++) {
+                this.eliteIcons[i].destroy();
+                this.eliteIcons[i] = null;
+            }
+            for (let i = 0; i < this.difficultyIcons.length; i++) {
+                this.difficultyIcons[i].destroy();
+                this.difficultyIcons[i] = null;
+            }
+            for (let i = 0; i < this.crystalNums.length; i++) {
+                this.crystalNums[i].destroy();
+                this.crystalNums[i] = null;
+            }
+            for (let i = 0; i < this.moneyNums.length; i++) {
+                this.moneyNums[i].destroy();
+                this.moneyNums[i] = null;
+            }
+            for (let i = 0; i < this.confirmIcons.length; i++) {
+                this.confirmIcons[i].destroy();
+                this.confirmIcons[i] = null;
+            }
+            this.missionUI.destroy();
+            this.missionUI = null;
+        }
+        setEliteIcon(col, eliteNum) {
+            let eliteIcon = new Laya.Sprite();
+            if (eliteNum > 0)
+                eliteIcon.loadImage("UI/skull.png");
+            eliteIcon.width = 49;
+            eliteIcon.height = 66;
+            eliteIcon.pos(171 + 198.5 + col * (256 + 34), 135 + 96);
+            this.eliteIcons.push(eliteIcon);
+        }
+        setDifficultyIcon(col, difficulty) {
+            let difficultyStage = 0;
+            if (difficulty > 35 && difficulty <= 50) {
+                difficultyStage = 3;
+            }
+            else if (difficulty > 20 && difficulty <= 35) {
+                difficultyStage = 2;
+            }
+            else if (difficulty >= 5 && difficulty <= 20) {
+                difficultyStage = 1;
+            }
+            for (let i = 0; i < difficultyStage; i++) {
+                let difficultyIcon_temp = new Laya.Sprite();
+                difficultyIcon_temp.loadImage("UI/star.png");
+                difficultyIcon_temp.width = 39;
+                difficultyIcon_temp.height = 39;
+                difficultyIcon_temp.pos(171 + 137.5 + col * (256 + 34) + (131 / (difficultyStage + 1)) * (i + 1), 308 + 10);
+                this.difficultyIcons.push(difficultyIcon_temp);
+            }
+        }
+        setRewardInfo(col, crystal, money) {
+            let crystalNum = new Laya.Text();
+            let moneyNum = new Laya.Text();
+            crystalNum.font = "silver";
+            moneyNum.font = "silver";
+            crystalNum.fontSize = 30;
+            moneyNum.fontSize = 30;
+            crystalNum.text = crystal.toString();
+            moneyNum.text = money.toString();
+            crystalNum.pos(171 + 252 + 5 + col * (256 + 34), 305 + 96);
+            moneyNum.pos(171 + 252 + 5 + col * (256 + 34), 375 + 96);
+            this.crystalNums.push(crystalNum);
+            this.moneyNums.push(moneyNum);
+        }
+        setConfirmIcon(col, data) {
+            let confirmIcon = new Laya.Button();
+            confirmIcon.width = 100;
+            confirmIcon.height = 50;
+            confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
+            confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
+            confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
+                confirmIcon.loadImage("UI/chioce_mission_button_Dark.png");
+            });
+            confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
+                confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
+            });
+            confirmIcon.on(Laya.Event.CLICK, this, () => {
+                this.clearMissionUI();
+                this.sendMissionData(data);
+                Laya.Scene.load("Loading.scene");
+                if (Village.isNewbie) {
+                    Laya.Scene.open("Newbie.scene");
+                    Village.isNewbie = false;
+                }
+                else {
+                    Laya.Scene.open("First.scene");
+                }
+            });
+            this.confirmIcons.push(confirmIcon);
+        }
+        generateMissionData(total) {
+            for (let i = 0; i < total; i++) {
+                if (i < total / 3)
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 35);
+                if (i >= total / 3 && i < total * 2 / 3)
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 20);
+                if (i >= total * 2 / 3)
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 5);
+            }
+            this.missionDifficultyArr.sort();
+            this.missionDifficultyArr.reverse();
+            for (let i = 0; i < total; i++) {
+                let missionData = {
+                    id: i,
+                    missionName: "殲滅來犯敵軍",
+                    difficulty: this.missionDifficultyArr[i],
+                    enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
+                    enemyHp: 1000,
+                    enemyAtk: 100,
+                    eliteNum: Math.round(Math.random()),
+                    eliteHpMultiplier: 1.5,
+                    eliteAtkMultiplier: 1.5,
+                    crystal: Math.round(100 + 100 * (1 + this.missionDifficultyArr[i] / 100)),
+                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
+                    map: "forest",
+                };
+                MissionManager.missionDataPool.push(missionData);
+            }
+            console.log(MissionManager.missionDataPool);
+            return MissionManager.missionDataPool;
+        }
+        generateNewbieData() {
+            let missionData = {
+                id: 0,
+                missionName: "新手教學",
+                difficulty: 0,
+                enemyNum: 1,
+                enemyHp: 5000,
+                enemyAtk: 0,
+                eliteNum: 0,
+                eliteHpMultiplier: 1.5,
+                eliteAtkMultiplier: 1.5,
+                crystal: 0,
+                money: 0,
+                map: "forest",
+            };
+            MissionManager.missionDataPool.push(missionData);
+            console.log(MissionManager.missionDataPool);
+            return MissionManager.missionDataPool;
+        }
+        sendMissionData(data) {
+            EnemyInit.missionEnemyNum = data["enemyNum"];
+            EnemyInit.missionRewardCrystalValue = data["crystal"];
+            EnemyInit.missionRewardGoldValue = data["money"];
+        }
+    }
+    MissionManager.missionRound = 0;
+    MissionManager.missionDataPool = [];
+
+    class Village extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.reinforceBtn = null;
+            this.templeBtn = null;
+            this.battleBtn = null;
+            this.reinforceUI = null;
+            this.reinforceBackBtn = null;
+            this.reinforceGold = null;
+            this.reinforceHpLevel = null;
+            this.reinforceAtkDmgLevel = null;
+            this.reinforceHpCost = null;
+            this.reinforceHpCostBtn = null;
+            this.reinforceAtkDmgCost = null;
+            this.reinforceAtkDmgCostBtn = null;
+            this.missionManager = new MissionManager();
+        }
+        onAwake() {
+            if (Village.isNewbie) {
+                this.missionManager.generateNewbieData();
+            }
+            else {
+                MissionManager.missionDataPool = [];
+                this.missionManager.generateMissionData(9);
+            }
+        }
+        onStart() {
+            this.updateData();
+            Laya.stage.x = 0;
+            Laya.stage.y = 0;
+            this.reinforceBtn = this.owner.getChildByName("Reinforce");
+            this.templeBtn = this.owner.getChildByName("Temple");
+            this.battleBtn = this.owner.getChildByName("Battle");
+            this.reinforceBtn.on(Laya.Event.CLICK, this, function () {
+                this.showReinforceUI();
+            });
+            this.templeBtn.on(Laya.Event.CLICK, this, function () {
+                console.log("temple");
+            });
+            this.battleBtn.on(Laya.Event.CLICK, this, function () {
+                this.missionManager.showMissionUI();
+            });
+        }
+        updateData() {
+            ExtraData.loadData();
+            let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+            this.c_gold = data.gold;
+            this.c_crystal = data.crystal;
+            Village.hpLevel = data.hpLevel;
+            Village.atkDmgLevel = data.atkDmgLevel;
+            this.saveData();
+        }
+        showReinforceUI() {
+            this.setReinfoceUI();
+            this.setReinfoceBackBtn();
+            this.setReinfoceGoldValue();
+            this.setReinfoceAtkDmgLevel();
+            this.setReinfoceHpLevel();
+            this.setReinfoceAtkDmgCost();
+            this.setReinfoceHpCost();
+            this.setReinforceAtkDmgCostBtn();
+            this.setReinforceHpCostBtn();
+        }
+        clearReinforceUI() {
+            this.reinforceUI.destroy();
+            this.reinforceBackBtn.destroy();
+            this.reinforceGold.destroy();
+            this.reinforceAtkDmgLevel.destroy();
+            this.reinforceHpLevel.destroy();
+            this.reinforceAtkDmgCost.destroy();
+            this.reinforceHpCost.destroy();
+            this.reinforceAtkDmgCostBtn.destroy();
+            this.reinforceHpCostBtn.destroy();
+            this.reinforceUI = this.reinforceBackBtn = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
+                = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = null;
+        }
+        setReinfoceUI() {
+            this.reinforceUI = new Laya.Sprite();
+            this.reinforceUI.loadImage("ui/reinforce.png");
+            this.reinforceUI.width = 1066;
+            this.reinforceUI.height = 550;
+            this.reinforceUI.pos(150, 109);
+            this.reinforceUI.alpha = 1;
+            Laya.stage.addChild(this.reinforceUI);
+        }
+        setReinfoceBackBtn() {
+            this.reinforceBackBtn = new Laya.Button();
+            this.reinforceBackBtn.width = this.reinforceBackBtn.height = 73;
+            this.reinforceBackBtn.pos(150 + 933, 109 + 56);
+            this.reinforceBackBtn.on(Laya.Event.CLICK, this, () => {
+                this.clearReinforceUI();
+            });
+            Laya.stage.addChild(this.reinforceBackBtn);
+        }
+        setReinfoceGoldValue() {
+            if (this.reinforceGold) {
+                this.reinforceGold.text = String(this.c_gold);
+                return;
+            }
+            this.reinforceGold = new Laya.Text();
+            this.reinforceGold.font = "silver";
+            this.reinforceGold.fontSize = 100;
+            this.reinforceGold.color = "#fff";
+            this.reinforceGold.text = String(this.c_gold);
+            this.reinforceGold.pos(150 + 433, 109 + 404);
+            Laya.stage.addChild(this.reinforceGold);
+        }
+        setReinfoceAtkDmgLevel() {
+            if (this.reinforceAtkDmgLevel) {
+                this.reinforceAtkDmgLevel.text = String(Village.atkDmgLevel);
+                return;
+            }
+            this.reinforceAtkDmgLevel = new Laya.Text();
+            this.reinforceAtkDmgLevel.font = "silver";
+            this.reinforceAtkDmgLevel.fontSize = 100;
+            this.reinforceAtkDmgLevel.color = "#00FFFF";
+            this.reinforceAtkDmgLevel.stroke = 10;
+            this.reinforceAtkDmgLevel.strokeColor = "#000";
+            this.reinforceAtkDmgLevel.text = String(Village.atkDmgLevel);
+            this.reinforceAtkDmgLevel.pos(150 + 578, 109 + 198);
+            Laya.stage.addChild(this.reinforceAtkDmgLevel);
+        }
+        setReinfoceHpLevel() {
+            if (this.reinforceHpLevel) {
+                this.reinforceHpLevel.text = String(Village.hpLevel);
+                return;
+            }
+            this.reinforceHpLevel = new Laya.Text();
+            this.reinforceHpLevel.font = "silver";
+            this.reinforceHpLevel.fontSize = 100;
+            this.reinforceHpLevel.color = "#00FFFF";
+            this.reinforceHpLevel.stroke = 10;
+            this.reinforceHpLevel.strokeColor = "#000";
+            this.reinforceHpLevel.text = String(Village.hpLevel);
+            this.reinforceHpLevel.pos(150 + 578, 109 + 297);
+            Laya.stage.addChild(this.reinforceHpLevel);
+        }
+        setReinfoceAtkDmgCost() {
+            if (this.reinforceAtkDmgCost) {
+                this.reinforceAtkDmgCost.text = '-' + String(Village.atkDmgLevel * 100);
+                return;
+            }
+            this.reinforceAtkDmgCost = new Laya.Text();
+            this.reinforceAtkDmgCost.font = "silver";
+            this.reinforceAtkDmgCost.fontSize = 100;
+            this.reinforceAtkDmgCost.color = "#d1ce07";
+            this.reinforceAtkDmgCost.stroke = 10;
+            this.reinforceAtkDmgCost.strokeColor = "#000";
+            this.reinforceAtkDmgCost.text = '-' + String(Village.atkDmgLevel * 100);
+            this.reinforceAtkDmgCost.pos(150 + 908, 109 + 193);
+            Laya.stage.addChild(this.reinforceAtkDmgCost);
+        }
+        setReinfoceHpCost() {
+            if (this.reinforceHpCost) {
+                this.reinforceHpCost.text = '-' + String(Village.hpLevel * 100);
+                return;
+            }
+            this.reinforceHpCost = new Laya.Text();
+            this.reinforceHpCost.font = "silver";
+            this.reinforceHpCost.fontSize = 100;
+            this.reinforceHpCost.color = "#d1ce07";
+            this.reinforceHpCost.stroke = 10;
+            this.reinforceHpCost.strokeColor = "#000";
+            this.reinforceHpCost.text = '-' + String(Village.hpLevel * 100);
+            this.reinforceHpCost.pos(150 + 908, 109 + 299);
+            Laya.stage.addChild(this.reinforceHpCost);
+        }
+        setReinforceAtkDmgCostBtn() {
+            this.reinforceAtkDmgCostBtn = new Laya.Button();
+            this.reinforceAtkDmgCostBtn.width = 103;
+            this.reinforceAtkDmgCostBtn.height = 60;
+            this.reinforceAtkDmgCostBtn.pos(150 + 726, 109 + 203);
+            this.reinforceAtkDmgCostBtn.on(Laya.Event.CLICK, this, () => {
+                if (this.c_gold < Village.atkDmgLevel * 100) {
+                    return;
+                }
+                this.c_gold -= Village.atkDmgLevel * 100;
+                Village.atkDmgLevel++;
+                this.setReinfoceAtkDmgLevel();
+                this.setReinfoceAtkDmgCost();
+                this.setReinfoceGoldValue();
+                this.saveData();
+            });
+            Laya.stage.addChild(this.reinforceAtkDmgCostBtn);
+        }
+        setReinforceHpCostBtn() {
+            this.reinforceHpCostBtn = new Laya.Button();
+            this.reinforceHpCostBtn.width = 103;
+            this.reinforceHpCostBtn.height = 60;
+            this.reinforceHpCostBtn.pos(150 + 726, 109 + 307);
+            this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, () => {
+                if (this.c_gold < Village.hpLevel * 100) {
+                    return;
+                }
+                this.c_gold -= Village.hpLevel * 100;
+                Village.hpLevel++;
+                this.setReinfoceHpLevel();
+                this.setReinfoceHpCost();
+                this.setReinfoceGoldValue();
+                this.saveData();
+            });
+            Laya.stage.addChild(this.reinforceHpCostBtn);
+        }
+        saveData() {
+            ExtraData.currentData['atkDmgLevel'] = Village.atkDmgLevel;
+            ExtraData.currentData['hpLevel'] = Village.hpLevel;
+            ExtraData.currentData['gold'] = this.c_gold;
+            ExtraData.currentData['crystal'] = this.c_crystal;
+            ExtraData.saveData();
+        }
+    }
+    Village.isNewbie = true;
+
     class EnemyInit extends Laya.Script {
         constructor() {
             super();
@@ -2146,6 +2583,7 @@
             let player = CharacterInit.playerEnt.m_animation;
             let enemy = EnemyHandler.enemyPool;
             console.log(enemy);
+            EnemyInit.isWin = false;
             this.generateTimer = setInterval(() => {
                 if (player.destroyed) {
                     EnemyHandler.clearAllEnemy();
@@ -2159,7 +2597,12 @@
                     return;
                 }
                 let x = Math.floor(Math.random() * 4);
-                EnemyHandler.generator(player, x, 0);
+                if (Village.isNewbie) {
+                    EnemyHandler.generator(player, 5, 0);
+                }
+                else {
+                    EnemyHandler.generator(player, x, 0);
+                }
                 this.enemyLeft--;
             }, this.enemyGenerateTime);
             this.battleTimer = setInterval(() => {
@@ -2170,6 +2613,7 @@
                 }
                 if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0) {
                     this.battleToggle = false;
+                    EnemyInit.isWin = true;
                     Laya.Tween.to(player, { alpha: 0.3 }, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                         this.showEndRewardUI();
                     }), 0);
@@ -2409,386 +2853,6 @@
             this.skillCatInfoText.destroy();
             this.skillHumanInfoText.destroy();
             this.skillChooseHint.destroy();
-        }
-    }
-
-    class MissionManager extends Laya.Script {
-        constructor() {
-            super(...arguments);
-            this.roundAddEnemy = 5;
-            this.missionNum = 3;
-            this.missionDifficultyArr = [];
-            this.missionUI = null;
-            this.eliteIcons = [];
-            this.difficultyIcons = [];
-            this.crystalNums = [];
-            this.moneyNums = [];
-            this.confirmIcons = [];
-        }
-        onStart() {
-        }
-        showMissionUI() {
-            this.missionUI = new Laya.Sprite();
-            this.missionUI.loadImage("UI/chioce_mission.png");
-            this.missionUI.width = 1024;
-            this.missionUI.height = 576;
-            this.missionUI.pos(171, 96);
-            this.missionUI.alpha = 1;
-            Laya.stage.addChild(this.missionUI);
-            for (let i = 0; i < this.missionNum; i++) {
-                this.setEliteIcon(i, MissionManager.missionDataPool[i]["eliteNum"]);
-                this.setDifficultyIcon(i, MissionManager.missionDataPool[i]["difficulty"]);
-                this.setRewardInfo(i, MissionManager.missionDataPool[i]["crystal"], MissionManager.missionDataPool[i]["money"]);
-                this.setConfirmIcon(i, MissionManager.missionDataPool[i]);
-            }
-            for (let i = 0; i < this.eliteIcons.length; i++) {
-                Laya.stage.addChild(this.eliteIcons[i]);
-            }
-            for (let i = 0; i < this.difficultyIcons.length; i++) {
-                Laya.stage.addChild(this.difficultyIcons[i]);
-            }
-            for (let i = 0; i < this.crystalNums.length; i++) {
-                Laya.stage.addChild(this.crystalNums[i]);
-            }
-            for (let i = 0; i < this.moneyNums.length; i++) {
-                Laya.stage.addChild(this.moneyNums[i]);
-            }
-            for (let i = 0; i < this.confirmIcons.length; i++) {
-                Laya.stage.addChild(this.confirmIcons[i]);
-            }
-        }
-        clearMissionUI() {
-            for (let i = 0; i < this.eliteIcons.length; i++) {
-                this.eliteIcons[i].destroy();
-                this.eliteIcons[i] = null;
-            }
-            for (let i = 0; i < this.difficultyIcons.length; i++) {
-                this.difficultyIcons[i].destroy();
-                this.difficultyIcons[i] = null;
-            }
-            for (let i = 0; i < this.crystalNums.length; i++) {
-                this.crystalNums[i].destroy();
-                this.crystalNums[i] = null;
-            }
-            for (let i = 0; i < this.moneyNums.length; i++) {
-                this.moneyNums[i].destroy();
-                this.moneyNums[i] = null;
-            }
-            for (let i = 0; i < this.confirmIcons.length; i++) {
-                this.confirmIcons[i].destroy();
-                this.confirmIcons[i] = null;
-            }
-            this.missionUI.destroy();
-            this.missionUI = null;
-        }
-        setEliteIcon(col, eliteNum) {
-            let eliteIcon = new Laya.Sprite();
-            if (eliteNum > 0)
-                eliteIcon.loadImage("UI/skull.png");
-            eliteIcon.width = 49;
-            eliteIcon.height = 66;
-            eliteIcon.pos(171 + 198.5 + col * (256 + 34), 135 + 96);
-            this.eliteIcons.push(eliteIcon);
-        }
-        setDifficultyIcon(col, difficulty) {
-            let difficultyStage = 0;
-            if (difficulty > 35 && difficulty <= 50) {
-                difficultyStage = 3;
-            }
-            else if (difficulty > 20 && difficulty <= 35) {
-                difficultyStage = 2;
-            }
-            else if (difficulty >= 5 && difficulty <= 20) {
-                difficultyStage = 1;
-            }
-            for (let i = 0; i < difficultyStage; i++) {
-                let difficultyIcon_temp = new Laya.Sprite();
-                difficultyIcon_temp.loadImage("UI/star.png");
-                difficultyIcon_temp.width = 39;
-                difficultyIcon_temp.height = 39;
-                difficultyIcon_temp.pos(171 + 137.5 + col * (256 + 34) + (131 / (difficultyStage + 1)) * (i + 1), 308 + 10);
-                this.difficultyIcons.push(difficultyIcon_temp);
-            }
-        }
-        setRewardInfo(col, crystal, money) {
-            let crystalNum = new Laya.Text();
-            let moneyNum = new Laya.Text();
-            crystalNum.font = "silver";
-            moneyNum.font = "silver";
-            crystalNum.fontSize = 30;
-            moneyNum.fontSize = 30;
-            crystalNum.text = crystal.toString();
-            moneyNum.text = money.toString();
-            crystalNum.pos(171 + 252 + 5 + col * (256 + 34), 305 + 96);
-            moneyNum.pos(171 + 252 + 5 + col * (256 + 34), 375 + 96);
-            this.crystalNums.push(crystalNum);
-            this.moneyNums.push(moneyNum);
-        }
-        setConfirmIcon(col, data) {
-            let confirmIcon = new Laya.Button();
-            confirmIcon.width = 100;
-            confirmIcon.height = 50;
-            confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
-            confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
-            confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
-                confirmIcon.loadImage("UI/chioce_mission_button_Dark.png");
-            });
-            confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
-                confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
-            });
-            confirmIcon.on(Laya.Event.CLICK, this, () => {
-                this.clearMissionUI();
-                console.log(data["enemyNum"]);
-                this.sendMissionData(data);
-                Laya.Scene.load("Loading.scene");
-                Laya.Scene.open("First.scene");
-            });
-            this.confirmIcons.push(confirmIcon);
-        }
-        generateMissionData(total) {
-            for (let i = 0; i < total; i++) {
-                if (i < total / 3)
-                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 35);
-                if (i >= total / 3 && i < total * 2 / 3)
-                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 20);
-                if (i >= total * 2 / 3)
-                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 5);
-            }
-            this.missionDifficultyArr.sort();
-            this.missionDifficultyArr.reverse();
-            for (let i = 0; i < total; i++) {
-                let missionData = {
-                    id: i,
-                    missionName: "殲滅來犯敵軍",
-                    difficulty: this.missionDifficultyArr[i],
-                    enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
-                    enemyHp: 1000,
-                    enemyAtk: 100,
-                    eliteNum: Math.round(Math.random()),
-                    eliteHpMultiplier: 1.5,
-                    eliteAtkMultiplier: 1.5,
-                    crystal: Math.round(100 + 100 * (1 + this.missionDifficultyArr[i] / 100)),
-                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
-                    map: "forest",
-                };
-                MissionManager.missionDataPool.push(missionData);
-            }
-            console.log(MissionManager.missionDataPool);
-            return MissionManager.missionDataPool;
-        }
-        sendMissionData(data) {
-            EnemyInit.missionEnemyNum = data["enemyNum"];
-            EnemyInit.missionRewardCrystalValue = data["crystal"];
-            EnemyInit.missionRewardGoldValue = data["money"];
-        }
-    }
-    MissionManager.missionRound = 0;
-    MissionManager.missionDataPool = [];
-
-    class Village extends Laya.Script {
-        constructor() {
-            super(...arguments);
-            this.reinforceBtn = null;
-            this.templeBtn = null;
-            this.battleBtn = null;
-            this.reinforceUI = null;
-            this.reinforceBackBtn = null;
-            this.reinforceGold = null;
-            this.reinforceHpLevel = null;
-            this.reinforceAtkDmgLevel = null;
-            this.reinforceHpCost = null;
-            this.reinforceHpCostBtn = null;
-            this.reinforceAtkDmgCost = null;
-            this.reinforceAtkDmgCostBtn = null;
-            this.missionManager = new MissionManager();
-        }
-        onAwake() {
-            if (MissionManager.missionDataPool.length <= 0)
-                this.missionManager.generateMissionData(9);
-        }
-        onStart() {
-            this.updateData();
-            Laya.stage.x = 0;
-            Laya.stage.y = 0;
-            this.reinforceBtn = this.owner.getChildByName("Reinforce");
-            this.templeBtn = this.owner.getChildByName("Temple");
-            this.battleBtn = this.owner.getChildByName("Battle");
-            this.reinforceBtn.on(Laya.Event.CLICK, this, function () {
-                this.showReinforceUI();
-            });
-            this.templeBtn.on(Laya.Event.CLICK, this, function () {
-                console.log("temple");
-            });
-            this.battleBtn.on(Laya.Event.CLICK, this, function () {
-                this.missionManager.showMissionUI();
-            });
-        }
-        updateData() {
-            ExtraData.loadData();
-            let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
-            this.c_gold = data.gold;
-            this.c_crystal = data.crystal;
-            this.c_hpLevel = data.hpLevel;
-            this.c_atkDmgLevel = data.atkDmgLevel;
-            this.saveData();
-        }
-        showReinforceUI() {
-            this.setReinfoceUI();
-            this.setReinfoceBackBtn();
-            this.setReinfoceGoldValue();
-            this.setReinfoceAtkDmgLevel();
-            this.setReinfoceHpLevel();
-            this.setReinfoceAtkDmgCost();
-            this.setReinfoceHpCost();
-            this.setReinforceAtkDmgCostBtn();
-            this.setReinforceHpCostBtn();
-        }
-        clearReinforceUI() {
-            this.reinforceUI.destroy();
-            this.reinforceBackBtn.destroy();
-            this.reinforceGold.destroy();
-            this.reinforceAtkDmgLevel.destroy();
-            this.reinforceHpLevel.destroy();
-            this.reinforceAtkDmgCost.destroy();
-            this.reinforceHpCost.destroy();
-            this.reinforceAtkDmgCostBtn.destroy();
-            this.reinforceHpCostBtn.destroy();
-            this.reinforceUI = this.reinforceBackBtn = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
-                = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = null;
-        }
-        setReinfoceUI() {
-            this.reinforceUI = new Laya.Sprite();
-            this.reinforceUI.loadImage("ui/reinforce.png");
-            this.reinforceUI.width = 1066;
-            this.reinforceUI.height = 550;
-            this.reinforceUI.pos(150, 109);
-            this.reinforceUI.alpha = 1;
-            Laya.stage.addChild(this.reinforceUI);
-        }
-        setReinfoceBackBtn() {
-            this.reinforceBackBtn = new Laya.Button();
-            this.reinforceBackBtn.width = this.reinforceBackBtn.height = 73;
-            this.reinforceBackBtn.pos(150 + 933, 109 + 56);
-            this.reinforceBackBtn.on(Laya.Event.CLICK, this, () => {
-                this.clearReinforceUI();
-            });
-            Laya.stage.addChild(this.reinforceBackBtn);
-        }
-        setReinfoceGoldValue() {
-            if (this.reinforceGold) {
-                this.reinforceGold.text = String(this.c_gold);
-                return;
-            }
-            this.reinforceGold = new Laya.Text();
-            this.reinforceGold.font = "silver";
-            this.reinforceGold.fontSize = 100;
-            this.reinforceGold.color = "#fff";
-            this.reinforceGold.text = String(this.c_gold);
-            this.reinforceGold.pos(150 + 433, 109 + 404);
-            Laya.stage.addChild(this.reinforceGold);
-        }
-        setReinfoceAtkDmgLevel() {
-            if (this.reinforceAtkDmgLevel) {
-                this.reinforceAtkDmgLevel.text = String(this.c_atkDmgLevel);
-                return;
-            }
-            this.reinforceAtkDmgLevel = new Laya.Text();
-            this.reinforceAtkDmgLevel.font = "silver";
-            this.reinforceAtkDmgLevel.fontSize = 100;
-            this.reinforceAtkDmgLevel.color = "#00FFFF";
-            this.reinforceAtkDmgLevel.stroke = 10;
-            this.reinforceAtkDmgLevel.strokeColor = "#000";
-            this.reinforceAtkDmgLevel.text = String(this.c_atkDmgLevel);
-            this.reinforceAtkDmgLevel.pos(150 + 578, 109 + 198);
-            Laya.stage.addChild(this.reinforceAtkDmgLevel);
-        }
-        setReinfoceHpLevel() {
-            if (this.reinforceHpLevel) {
-                this.reinforceHpLevel.text = String(this.c_hpLevel);
-                return;
-            }
-            this.reinforceHpLevel = new Laya.Text();
-            this.reinforceHpLevel.font = "silver";
-            this.reinforceHpLevel.fontSize = 100;
-            this.reinforceHpLevel.color = "#00FFFF";
-            this.reinforceHpLevel.stroke = 10;
-            this.reinforceHpLevel.strokeColor = "#000";
-            this.reinforceHpLevel.text = String(this.c_hpLevel);
-            this.reinforceHpLevel.pos(150 + 578, 109 + 297);
-            Laya.stage.addChild(this.reinforceHpLevel);
-        }
-        setReinfoceAtkDmgCost() {
-            if (this.reinforceAtkDmgCost) {
-                this.reinforceAtkDmgCost.text = '-' + String(this.c_atkDmgLevel * 100);
-                return;
-            }
-            this.reinforceAtkDmgCost = new Laya.Text();
-            this.reinforceAtkDmgCost.font = "silver";
-            this.reinforceAtkDmgCost.fontSize = 100;
-            this.reinforceAtkDmgCost.color = "#d1ce07";
-            this.reinforceAtkDmgCost.stroke = 10;
-            this.reinforceAtkDmgCost.strokeColor = "#000";
-            this.reinforceAtkDmgCost.text = '-' + String(this.c_atkDmgLevel * 100);
-            this.reinforceAtkDmgCost.pos(150 + 908, 109 + 193);
-            Laya.stage.addChild(this.reinforceAtkDmgCost);
-        }
-        setReinfoceHpCost() {
-            if (this.reinforceHpCost) {
-                this.reinforceHpCost.text = '-' + String(this.c_hpLevel * 100);
-                return;
-            }
-            this.reinforceHpCost = new Laya.Text();
-            this.reinforceHpCost.font = "silver";
-            this.reinforceHpCost.fontSize = 100;
-            this.reinforceHpCost.color = "#d1ce07";
-            this.reinforceHpCost.stroke = 10;
-            this.reinforceHpCost.strokeColor = "#000";
-            this.reinforceHpCost.text = '-' + String(this.c_hpLevel * 100);
-            this.reinforceHpCost.pos(150 + 908, 109 + 299);
-            Laya.stage.addChild(this.reinforceHpCost);
-        }
-        setReinforceAtkDmgCostBtn() {
-            this.reinforceAtkDmgCostBtn = new Laya.Button();
-            this.reinforceAtkDmgCostBtn.width = 103;
-            this.reinforceAtkDmgCostBtn.height = 60;
-            this.reinforceAtkDmgCostBtn.pos(150 + 726, 109 + 203);
-            this.reinforceAtkDmgCostBtn.on(Laya.Event.CLICK, this, () => {
-                if (this.c_gold < this.c_atkDmgLevel * 100) {
-                    return;
-                }
-                this.c_gold -= this.c_atkDmgLevel * 100;
-                this.c_atkDmgLevel++;
-                this.setReinfoceAtkDmgLevel();
-                this.setReinfoceAtkDmgCost();
-                this.setReinfoceGoldValue();
-                this.saveData();
-            });
-            Laya.stage.addChild(this.reinforceAtkDmgCostBtn);
-        }
-        setReinforceHpCostBtn() {
-            this.reinforceHpCostBtn = new Laya.Button();
-            this.reinforceHpCostBtn.width = 103;
-            this.reinforceHpCostBtn.height = 60;
-            this.reinforceHpCostBtn.pos(150 + 726, 109 + 307);
-            this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, () => {
-                if (this.c_gold < this.c_hpLevel * 100) {
-                    return;
-                }
-                this.c_gold -= this.c_hpLevel * 100;
-                this.c_hpLevel++;
-                this.setReinfoceHpLevel();
-                this.setReinfoceHpCost();
-                this.setReinfoceGoldValue();
-                this.saveData();
-            });
-            Laya.stage.addChild(this.reinforceHpCostBtn);
-        }
-        saveData() {
-            ExtraData.currentData['atkDmgLevel'] = this.c_atkDmgLevel;
-            ExtraData.currentData['hpLevel'] = this.c_hpLevel;
-            ExtraData.currentData['gold'] = this.c_gold;
-            ExtraData.currentData['crystal'] = this.c_crystal;
-            ExtraData.saveData();
         }
     }
 

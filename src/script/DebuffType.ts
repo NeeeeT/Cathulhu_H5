@@ -1,5 +1,6 @@
 import CharacterInit, { Character } from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
+import EnemyInit from "./EnemyInit";
 
 export enum DebuffType{
     none = 0,
@@ -228,8 +229,14 @@ export class Decay extends DebuffProto{
 
     public debuffUpdate() {
         super.debuffUpdate();
-        if (this.player === null) return;
-        if (this.isDamaging) {
+        if (this.player.m_animation.destroyed) {
+            clearInterval(this.decayHandler);
+            this.decayHandler = null;
+            return;
+        }    
+        if (this.isDamaging && !EnemyInit.isWin) {
+            console.log("正在傷害玩家");
+            
             this.player.setHealth(this.player.getHealth() - this.player.m_maxHealth * 0.1);
         }
 
@@ -260,6 +267,7 @@ export class Decay extends DebuffProto{
         console.log("停止Decay");
         this.isDecaying = false;
         clearInterval(this.decayHandler);
+        this.decayHandler = null;
     }
     
     public killingTimerUpdate() {

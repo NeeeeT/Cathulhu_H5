@@ -167,11 +167,11 @@ export class Character extends Laya.Script {
 
         Laya.stage.addChild(this.m_animation);
 
-        this.m_oathManager = new OathManager();
-        this.m_oathManager.initOathSystem();
-        this.m_oathManager.showBloodyPoint(this.m_animation);
-        this.m_oathManager.showBloodyLogo(this.m_animation);//角色UI狀態方法
-        this.showHealth();
+        // this.m_oathManager = new OathManager();
+        // this.m_oathManager.initOathSystem();
+        // this.m_oathManager.showBloodyPoint(this.m_animation);
+        // this.m_oathManager.showBloodyLogo(this.m_animation);//角色UI狀態方法
+        // this.showHealth();
 
         this.cameraFollower();
         this.setSkill();
@@ -278,7 +278,7 @@ export class Character extends Laya.Script {
         Laya.stage.on(Laya.Event.KEY_DOWN, this, this.onKeyDown);
         Laya.stage.on(Laya.Event.KEY_UP, this, this.onKeyUp);
     }
-    private showHealth() {
+    public showHealth() {
         this.m_healthBar = new Laya.ProgressBar();
         // this.m_healthBar.height = 13;
         // this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
@@ -825,8 +825,11 @@ export class Character extends Laya.Script {
 }
 
 export default class CharacterInit extends Laya.Script {
-    /** @prop {name:health,tips:"角色初始血量",type:int,default:1000}*/
-    health: number = 1000;
+    /** @prop {name:basicHealth,tips:"角色初始血量",type:int,default:1000}*/
+    basicHealth: number = 1000;
+
+    health: number;
+
     /** @prop {name:bloodyPoint,tips:"角色初始獻祭值",type:int,default:0}*/
     bloodyPoint: number = 0;
     /** @prop {name:maxBloodyPoint_soft,tips:"角色充能獻祭值上限",type:int,default:100}*/
@@ -861,9 +864,17 @@ export default class CharacterInit extends Laya.Script {
         player.spawn();
         CharacterInit.playerEnt = player;
         Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
+        player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
+        player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);//角色UI狀態方法
     }
     private initSetting(player: Character): void {
-        player.m_maxHealth = player.m_health = this.health;
+        
+        //生命值強化公式
+        ExtraData.loadData();
+        let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
+        this.health = this.basicHealth + data.hpLevel * 100;
+        player.m_health = player.m_maxHealth = this.health;
+
         player.m_bloodyPoint = this.bloodyPoint;
         player.m_maxBloodyPoint_soft = this.maxBloodyPoint_soft;
         player.m_maxBloodyPoint_hard = this.maxBloodyPoint_hard;
@@ -875,6 +886,10 @@ export default class CharacterInit extends Laya.Script {
         player.m_attackRange = this.attackRange;
         player.m_basic_attackCdTime = this.attackCdTime;
         player.m_buff_attackCdTime = this.buff_attackCdTime;
+
+        player.m_oathManager = new OathManager();
+        player.m_oathManager.initOathSystem();
+        player.showHealth();
     }
     //9/13新增
     onUpdate() {

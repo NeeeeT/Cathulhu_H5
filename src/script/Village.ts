@@ -25,8 +25,15 @@ export default class Village extends Laya.Script{
 
     missionManager: MissionManager = new MissionManager();
 
+    public static isNewbie = true;
+
     onAwake() {
-        this.missionManager.generateMissionData(9);
+        if (Village.isNewbie) {
+            this.missionManager.generateNewbieData();
+        } else {
+            MissionManager.missionDataPool = [];
+            this.missionManager.generateMissionData(9);
+        }
     }
     onStart(){
         // Laya.stage.pos(0, 0);
