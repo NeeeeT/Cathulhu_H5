@@ -1,0 +1,127 @@
+{
+    "frames": {
+        "TargetSlash90_0003.png": {
+            "frame": {
+                "h": 2,
+                "idx": 0,
+                "w": 31,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 244,
+                "y": 247
+            }
+        },
+        "TargetSlash90_0004.png": {
+            "frame": {
+                "h": 6,
+                "idx": 0,
+                "w": 76,
+                "x": 32,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 221,
+                "y": 245
+            }
+        },
+        "TargetSlash90_0005.png": {
+            "frame": {
+                "h": 10,
+                "idx": 0,
+                "w": 123,
+                "x": 0,
+                "y": 7
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 197,
+                "y": 243
+            }
+        },
+        "TargetSlash90_0006.png": {
+            "frame": {
+                "h": 14,
+                "idx": 0,
+                "w": 173,
+                "x": 0,
+                "y": 18
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 172,
+                "y": 241
+            }
+        },
+        "TargetSlash90_0007.png": {
+            "frame": {
+                "h": 16,
+                "idx": 0,
+                "w": 201,
+                "x": 0,
+                "y": 33
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 157,
+                "y": 240
+            }
+        },
+        "TargetSlash90_0008.png": {
+            "frame": {
+                "h": 16,
+                "idx": 0,
+                "w": 201,
+                "x": 0,
+                "y": 50
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 157,
+                "y": 240
+            }
+        },
+        "TargetSlash90_0009.png": {
+            "frame": {
+                "h": 16,
+                "idx": 0,
+                "w": 201,
+                "x": 0,
+                "y": 67
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 157,
+                "y": 240
+            }
+        }
+    },
+    "meta": {
+        "image": "NewSlashLight90.png",
+        "prefix": "NewSlashLight90/"
+    }
+}
