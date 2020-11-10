@@ -67,8 +67,8 @@ export class Character extends Laya.Script {
 
     m_keyDownList: Array<boolean>;
 
-    private m_catSkill: VirtualSkill = null;
-    private m_humanSkill: VirtualSkill = null;
+    m_catSkill: VirtualSkill = null;
+    m_humanSkill: VirtualSkill = null;
 
     m_animation: Laya.Animation;
     m_rigidbody: Laya.RigidBody;
@@ -600,27 +600,36 @@ export class Character extends Laya.Script {
     }
     public createAttackEffect(player: Laya.Animation) {
         let slashEffect: Laya.Animation = new Laya.Animation();
+        let posX : number;
+        let posY : number;
         // slashEffect.source = "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
-        slashEffect.scaleX = 2;
-        slashEffect.scaleY = 2;
 
         if(this.m_atkStep === 0){
+            slashEffect.scaleX = 2;
+            slashEffect.scaleY = 2;
+            posX = 420;
+            posY = 560;
             slashEffect.source = "comp/NewSlash_1.atlas";
         }
         else if(this.m_atkStep === 1){
+            slashEffect.scaleX = 3;
+            slashEffect.scaleY = 3;
+            posX = 600;
+            posY = 850;
             slashEffect.source = "comp/NewSlash_2.atlas";
         }
+        slashEffect.pos(player.x + (this.m_isFacingRight?-posX:posX), player.y - posY + 10);
 
         let colorNum: number = Math.floor(Math.random() * 5) + 2;
         //濾鏡
         let colorMat: Array<number> =
         [
-            colorNum, 0, 4, 0, -150, //R
-            3, Math.floor(Math.random() * 4) + 2, 0, 0, -150, //G
-            0, 0, colorNum, 0, -150, //B
+            1, 0, 0, 0, 500, //R
+            0, 1, 0, 0, 500, //G
+            0, 0, 1, 0, 500, //B
             0, 0, 0, 1, 0, //A
         ];
-        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#af06ff", 10, 0, 0);
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         // if (!OathManager.isCharging) {
         slashEffect.filters = [colorFilter, glowFilter];
@@ -637,13 +646,6 @@ export class Character extends Laya.Script {
         // slashEffect.filters = [colorFilter_charge, glowFilter_charge];
         // }
         //濾鏡
-        if (this.m_isFacingRight) {
-            slashEffect.skewY = 0;
-            slashEffect.pos(player.x - 420, player.y - 560 + 10);
-        } else {
-            slashEffect.skewY = 180;
-            slashEffect.pos(player.x + 420, player.y - 560 + 10);
-        }
         // slashEffect.source =
         // "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
         slashEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -661,7 +663,7 @@ export class Character extends Laya.Script {
                 return;
             }
             slashEffect.skewY = this.m_isFacingRight? 0:180;
-            slashEffect.pos(player.x + (this.m_isFacingRight?-420:420), player.y - 560 + 10);
+            slashEffect.pos(player.x + (this.m_isFacingRight?-posX:posX), player.y - posY + 10);
         }, 10);
     }
     private setSkill(): void{   

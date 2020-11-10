@@ -1,4 +1,4 @@
-import CharacterInit, { Character } from "./CharacterInit";
+import CharacterInit from "./CharacterInit";
 
 import { OathStatus } from "./OathStatus";
 import { DebuffType, Blind, BodyCrumble, Insane, Predator, Decay } from "./DebuffType";
@@ -18,6 +18,9 @@ export default class OathManager extends Laya.Script {
     
     public characterLogo: Laya.Animation;
     public oathBar: Laya.ProgressBar;
+
+    public catSkillIcon: Laya.Sprite;
+    public humanSkillIcon: Laya.Sprite;
 
     public initOathSystem() {
         this.oathState = 0;
@@ -59,30 +62,59 @@ export default class OathManager extends Laya.Script {
     public showBloodyLogo(player: Laya.Animation) {
 
         this.characterLogo = new Laya.Animation();
+
+        this.catSkillIcon = new Laya.Sprite();
+        this.humanSkillIcon = new Laya.Sprite();
+
+        this.catSkillIcon.width = this.catSkillIcon.height = 69;
+        this.humanSkillIcon.width = this.humanSkillIcon.height = 69;
+
         // this.characterLogo.scaleX = 0.6;
         // this.characterLogo.scaleY = 0.6;
         this.characterLogo.source = "UI/Box.png";
+        this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
+        this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
         let timer = setInterval((() => {
             if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
                 if (CharacterInit.playerEnt.m_animation.destroyed) {
                     clearInterval(timer);
+                    timer = null;
                     return;
                 }
-                if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null)
+                if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null){
                     this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
+                    let pos: object = {
+                        'x': this.characterLogo.x,
+                        'y': this.characterLogo.y,
+                    }
+                    this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
+                    this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
+                }
             }
         }), 5);
         Laya.stage.addChild(this.characterLogo);
+        Laya.stage.addChild(this.catSkillIcon);
+        Laya.stage.addChild(this.humanSkillIcon);
         this.characterLogo.play();
         
     }
     public clearBloodyUI() {
-        if(this.oathBar != null)
-        this.oathBar.destroy();
-        this.oathBar = null;
-        if(this.characterLogo != null)
-        this.characterLogo.destroy();
-        this.characterLogo = null;
+        if(this.oathBar != null){
+            this.oathBar.destroy();
+            this.oathBar = null;
+        }
+        if(this.characterLogo != null){
+            this.characterLogo.destroy();
+            this.characterLogo = null;
+        }
+        if(this.catSkillIcon != null){
+            this.catSkillIcon.destroy();
+            this.catSkillIcon = null;
+        }
+        if(this.humanSkillIcon != null){
+            this.humanSkillIcon.destroy();
+            this.humanSkillIcon = null;
+        }
     }
     public oathChargeDetect(): boolean{
         return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? true : false;

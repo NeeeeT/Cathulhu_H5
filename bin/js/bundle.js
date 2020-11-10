@@ -204,25 +204,23 @@
         }
         slashLightEffect(enemy) {
             let slashLightEffect = new Laya.Animation();
-            let randomRotaion = [0, 45, 90];
-            let rotation;
-            slashLightEffect.scaleX = 1;
-            slashLightEffect.scaleY = 1;
+            let sourceArray = ["comp/NewSlahLight.atlas", "comp/NewSlashLight90.atlas", "comp/NewSlashLight-43.5.atlas"];
+            let sourceNum = Math.floor(Math.random() * 3);
+            slashLightEffect.scaleX = 2;
+            slashLightEffect.scaleY = 2;
+            slashLightEffect.interval = 15;
             let colorMat = [
-                1, 2, 1, 0, -100,
-                1, 5, 2, 0, -100,
-                1, 0, Math.floor(Math.random() * 1) + 2, 0, -100,
+                1, 0, 0, 0, 500,
+                0, 1, 0, 0, 500,
+                0, 0, 1, 0, 500,
                 0, 0, 0, 1, 0,
             ];
-            let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
+            let glowFilter = new Laya.GlowFilter("#ffffff", 40, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashLightEffect.filters = [glowFilter, colorFilter];
-            rotation = randomRotaion[Math.floor(Math.random() * 3)];
-            let checkRotation = rotation > 45;
-            slashLightEffect.rotation = rotation;
-            slashLightEffect.pos(this.m_isFacingRight ? enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320, checkRotation ? enemy.y + 0.1 * rotation - 250 + 30 : enemy.y - 2.2 * rotation - 250 + 30);
-            slashLightEffect.source = "comp/SlashLight.atlas";
-            slashLightEffect.alpha = 0.8;
+            slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 500 : enemy.x - 500, enemy.y - 500 + 30);
+            slashLightEffect.source = sourceArray[sourceNum];
+            slashLightEffect.alpha = 1;
             slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashLightEffect.destroy();
                 slashLightEffect.destroyed = true;
@@ -805,27 +803,53 @@
         }
         showBloodyLogo(player) {
             this.characterLogo = new Laya.Animation();
+            this.catSkillIcon = new Laya.Sprite();
+            this.humanSkillIcon = new Laya.Sprite();
+            this.catSkillIcon.width = this.catSkillIcon.height = 69;
+            this.humanSkillIcon.width = this.humanSkillIcon.height = 69;
             this.characterLogo.source = "UI/Box.png";
+            this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
+            this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
             let timer = setInterval((() => {
                 if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
                     if (CharacterInit.playerEnt.m_animation.destroyed) {
                         clearInterval(timer);
+                        timer = null;
                         return;
                     }
-                    if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null)
+                    if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null) {
                         this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
+                        let pos = {
+                            'x': this.characterLogo.x,
+                            'y': this.characterLogo.y,
+                        };
+                        this.catSkillIcon.pos(pos['x'] + 16, pos['y'] + 102);
+                        this.humanSkillIcon.pos(pos['x'] + 116, pos['y'] + 102);
+                    }
                 }
             }), 5);
             Laya.stage.addChild(this.characterLogo);
+            Laya.stage.addChild(this.catSkillIcon);
+            Laya.stage.addChild(this.humanSkillIcon);
             this.characterLogo.play();
         }
         clearBloodyUI() {
-            if (this.oathBar != null)
+            if (this.oathBar != null) {
                 this.oathBar.destroy();
-            this.oathBar = null;
-            if (this.characterLogo != null)
+                this.oathBar = null;
+            }
+            if (this.characterLogo != null) {
                 this.characterLogo.destroy();
-            this.characterLogo = null;
+                this.characterLogo = null;
+            }
+            if (this.catSkillIcon != null) {
+                this.catSkillIcon.destroy();
+                this.catSkillIcon = null;
+            }
+            if (this.humanSkillIcon != null) {
+                this.humanSkillIcon.destroy();
+                this.humanSkillIcon = null;
+            }
         }
         oathChargeDetect() {
             return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? true : false;
@@ -1867,32 +1891,33 @@
         }
         createAttackEffect(player) {
             let slashEffect = new Laya.Animation();
-            slashEffect.scaleX = 2;
-            slashEffect.scaleY = 2;
+            let posX;
+            let posY;
             if (this.m_atkStep === 0) {
+                slashEffect.scaleX = 2;
+                slashEffect.scaleY = 2;
+                posX = 420;
+                posY = 560;
                 slashEffect.source = "comp/NewSlash_1.atlas";
             }
             else if (this.m_atkStep === 1) {
+                slashEffect.scaleX = 3;
+                slashEffect.scaleY = 3;
+                posX = 600;
+                posY = 850;
                 slashEffect.source = "comp/NewSlash_2.atlas";
             }
+            slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
             let colorNum = Math.floor(Math.random() * 5) + 2;
             let colorMat = [
-                colorNum, 0, 4, 0, -150,
-                3, Math.floor(Math.random() * 4) + 2, 0, 0, -150,
-                0, 0, colorNum, 0, -150,
+                1, 0, 0, 0, 500,
+                0, 1, 0, 0, 500,
+                0, 0, 1, 0, 500,
                 0, 0, 0, 1, 0,
             ];
-            let glowFilter = new Laya.GlowFilter("#af06ff", 10, 0, 0);
+            let glowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashEffect.filters = [colorFilter, glowFilter];
-            if (this.m_isFacingRight) {
-                slashEffect.skewY = 0;
-                slashEffect.pos(player.x - 420, player.y - 560 + 10);
-            }
-            else {
-                slashEffect.skewY = 180;
-                slashEffect.pos(player.x + 420, player.y - 560 + 10);
-            }
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashEffect.destroy();
                 slashEffect.destroyed = true;
@@ -1906,7 +1931,7 @@
                     return;
                 }
                 slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
-                slashEffect.pos(player.x + (this.m_isFacingRight ? -420 : 420), player.y - 560 + 10);
+                slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
             }, 10);
         }
         setSkill() {

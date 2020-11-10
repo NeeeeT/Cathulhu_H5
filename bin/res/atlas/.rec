@@ -337,14 +337,14 @@ P 55F1B04A arrow_red.png
 R D52DA200 strengthening.png
 D Skills(1031)/skills_Cat
 P A4382636 skill_Erosion.png
-P DA979CB8 skill_Erosion_box.png
 P C1A3A4D3 skill_Slam.png
-P D7FFF7B0 skill_Slam_box.png
 D Skills(1031)/skills_Character
 P 4ED6FDF8 skill_Assail.png
 P 73713C8A skill_Assail_box.png
 P 03A673B1 skill_Chop.png
 P FD987328 skill_Chop_box.png
+P DA979CB8 skill_Erosion_box.png
+P D7FFF7B0 skill_Slam_box.png
 D UI(1020)/Blood
 P 6C98F162 Bar_blood.png
 P F34D34E1 Bar_blood_color.png

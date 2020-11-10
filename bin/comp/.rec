@@ -1,5 +1,5 @@
 D .
-R F3C3BBD9 .rec
+R 2B4E4EFE .rec
 R AA63CC8E BlackExplosion.atlas
 R 5C228EFB BlackExplosion.png
 R D71DD9C4 BlackHole.atlas
@@ -11,12 +11,18 @@ R 5298C6DC circle.png
 R 6F74B0F8 loading.png
 R B532E2F6 NewBlood.atlas
 R 79B448FF NewBlood.png
+R 57F78FE7 NewSlahLight.atlas
+R 7C8EF135 NewSlahLight.png
 R 753C2DA0 NewSlash.atlas
 R 2A1A3B53 NewSlash.png
 R BA674E0B NewSlash_1.atlas
 R 1A97E1F8 NewSlash_1.png
 R 943D2356 NewSlash_2.atlas
 R F6F9F535 NewSlash_2.png
+R B2C24A85 NewSlashLight-43.5.atlas
+R A1FD1D88 NewSlashLight-43.5.png
+R A2EC3B09 NewSlashLight90.atlas
+R 4B5A5BD0 NewSlashLight90.png
 R 9A178570 Slam.atlas
 R 77E7A9CC Slam.png
 R 5DFA2E1 SlashEffects.atlas
@@ -27,6 +33,8 @@ R AFAE159A Spike.atlas
 R 475544FE Spike.png
 R B5C48C99 Target.atlas
 R C1B48B0E Target.png
+R 43DD20EB TargetSlash.atlas
+R 973E8A3A TargetSlash.png
 D BlackExplosion
 P 8908EBE1 BlackholeExplsion_0036.png
 P E57B2BE9 BlackholeExplsion_0037.png
@@ -57,22 +65,6 @@ P 26119CBA BlakeHole_0037.png
 P C835C8B0 BlakeHole_0038.png
 P 038ABF49 BlakeHole_0039.png
 P 3BDDECDF BlakeHole_0040.png
-D Blood
-P F99364CB Blood_0000.png
-P 93278246 Blood_0001.png
-P 0759646D Blood_0002.png
-P 94B68D8E Blood_0003.png
-P FDF4E9B8 Blood_0004.png
-P 2D653F3F Blood_0005.png
-P EEB14B2C Blood_0006.png
-P C9991648 Blood_0007.png
-P DE195568 Blood_0008.png
-P 87F799B1 Blood_0009.png
-P D0698F1A Blood_0010.png
-P 46986722 Blood_0011.png
-P 543ADE9E Blood_0012.png
-P 8B146C23 Blood_0013.png
-P 6C8A024A Blood_0014.png
 D Loading
 R 70D35F68 loading.png
 D NewBlood
@@ -84,8 +76,14 @@ P 3E2D1716 Blood_0004.png
 P 49B7C323 Blood_0005.png
 P E4873D50 Blood_0006.png
 P 08A7ADCD Blood_0007.png
-D NewSlash
-P 854D39EE Slash_0063.png
+D NewSlahLight
+P 0DCB1B36 TargetSlash43.6_0003.png
+P AF5E4F0A TargetSlash43.6_0004.png
+P E586261B TargetSlash43.6_0005.png
+P 7103F603 TargetSlash43.6_0006.png
+P 107907B6 TargetSlash43.6_0007.png
+P 107907B6 TargetSlash43.6_0008.png
+P 107907B6 TargetSlash43.6_0009.png
 D NewSlash_1
 P F0D029D7 Slash_0060.png
 P 5EEA6326 Slash_0061.png
@@ -95,6 +93,22 @@ P 854D39EE Slash_00.png
 P 2502A87A Slash_01.png
 P 45D7B3AB Slash_02.png
 P 567EC92E Slash_03.png
+D NewSlashLight-43.5
+P 162F4559 TargetSlash-43.6_0003.png
+P 370E4A00 TargetSlash-43.6_0004.png
+P CB3A334E TargetSlash-43.6_0005.png
+P 2FAB6AF0 TargetSlash-43.6_0006.png
+P 95FDBEF6 TargetSlash-43.6_0007.png
+P 95FDBEF6 TargetSlash-43.6_0008.png
+P 95FDBEF6 TargetSlash-43.6_0009.png
+D NewSlashLight90
+P E93E49F4 TargetSlash90_0003.png
+P 0178A5B5 TargetSlash90_0004.png
+P F620D4D2 TargetSlash90_0005.png
+P 77DA9905 TargetSlash90_0006.png
+P C843D11C TargetSlash90_0007.png
+P C843D11C TargetSlash90_0008.png
+P C843D11C TargetSlash90_0009.png
 D Slam
 P 8F0E8FE8 Slam_0000.png
 P 2FC45362 Slam_0001.png
@@ -114,14 +128,6 @@ P B954FC96 Slam_0014.png
 P 0DB8B856 Slam_0015.png
 P FF04E3F7 Slam_0016.png
 P D8445AA7 Slam_0017.png
-D SlashEffects
-P 854D39EE Slash_0029.png
-P E9FE8002 Slash_0030.png
-P 1FFCAB4E Slash_0031.png
-P 706BE3B1 Slash_0032.png
-P D7A947AE Slash_0033.png
-P 64BD506E Slash_0034.png
-P 9BE393A0 Slash_0035.png
 D SlashLight
 P 772F8117 SlashLight_0000.png
 P F6A604D7 SlashLight_0001.png

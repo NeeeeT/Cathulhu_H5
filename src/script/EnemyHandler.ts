@@ -279,26 +279,25 @@ export abstract class VirtualEnemy extends Laya.Script {
     // }
     slashLightEffect(enemy: Laya.Sprite) {
         let slashLightEffect: Laya.Animation = new Laya.Animation();
-        let randomRotaion : number[] = [0,45,90];
-        let rotation : number;
-        slashLightEffect.scaleX = 1;
-        slashLightEffect.scaleY = 1;
+        let sourceArray : Array<string> = ["comp/NewSlahLight.atlas","comp/NewSlashLight90.atlas","comp/NewSlashLight-43.5.atlas"];
+        let sourceNum : number = Math.floor(Math.random() * 3);
+        slashLightEffect.scaleX = 2;
+        slashLightEffect.scaleY = 2;
+        slashLightEffect.interval = 15;
         let colorMat: Array<number> =
             [
-                1, 2, 1, 0, -100, //R
-                1, 5, 2, 0, -100, //G
-                1, 0, Math.floor(Math.random() * 1) + 2, 0, -100, //B
+                1, 0, 0, 0, 500, //R
+                0, 1, 0, 0, 500, //G
+                0, 0, 1, 0, 500, //B
                 0, 0, 0, 1, 0, //A
             ];
-        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 40, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         slashLightEffect.filters = [glowFilter, colorFilter];
-        rotation = randomRotaion[Math.floor(Math.random() * 3)];
-        let checkRotation : boolean = rotation > 45;
-        slashLightEffect.rotation = rotation;
-        slashLightEffect.pos(this.m_isFacingRight ? enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320,checkRotation ? enemy.y + 0.1 * rotation - 250 + 30 : enemy.y - 2.2 * rotation - 250 + 30);//y軸需再修正
-        slashLightEffect.source = "comp/SlashLight.atlas";
-        slashLightEffect.alpha = 0.8;
+        //enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320,checkRotation ? enemy.y + 0.1 * rotation - 250 + 30 : enemy.y - 2.2 * rotation - 250 + 30
+        slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 500 : enemy.x - 500, enemy.y - 500 + 30);//y軸需再修正
+        slashLightEffect.source = sourceArray[sourceNum];
+        slashLightEffect.alpha = 1;
         slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
             slashLightEffect.destroy();
             slashLightEffect.destroyed = true;
