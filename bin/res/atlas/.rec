@@ -29,7 +29,6 @@ P F62B59C8 Player_attack_2.png
 P 0A2FCA3B Player_attack_3.png
 P 475FFB28 Player_attack_4.png
 P D32D8CC2 Player_attack_5.png
-D Character(0903)
 D Character(0904)
 D Character(0929)
 D Character(1002)
@@ -338,14 +337,14 @@ P 55F1B04A arrow_red.png
 R D52DA200 strengthening.png
 D Skills(1031)/skills_Cat
 P A4382636 skill_Erosion.png
-P DA979CB8 skill_Erosion_box.png
 P C1A3A4D3 skill_Slam.png
-P D7FFF7B0 skill_Slam_box.png
 D Skills(1031)/skills_Character
 P 4ED6FDF8 skill_Assail.png
 P 73713C8A skill_Assail_box.png
 P 03A673B1 skill_Chop.png
 P FD987328 skill_Chop_box.png
+P DA979CB8 skill_Erosion_box.png
+P D7FFF7B0 skill_Slam_box.png
 D UI(1020)/Blood
 P 6C98F162 Bar_blood.png
 P F34D34E1 Bar_blood_color.png

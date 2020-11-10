@@ -804,27 +804,53 @@
         }
         showBloodyLogo(player) {
             this.characterLogo = new Laya.Animation();
+            this.catSkillIcon = new Laya.Sprite();
+            this.humanSkillIcon = new Laya.Sprite();
+            this.catSkillIcon.width = this.catSkillIcon.height = 69;
+            this.humanSkillIcon.width = this.humanSkillIcon.height = 69;
             this.characterLogo.source = "UI/Box.png";
+            this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
+            this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
             let timer = setInterval((() => {
                 if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
                     if (CharacterInit.playerEnt.m_animation.destroyed) {
                         clearInterval(timer);
+                        timer = null;
                         return;
                     }
-                    if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null)
+                    if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null) {
                         this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
+                        let pos = {
+                            'x': this.characterLogo.x,
+                            'y': this.characterLogo.y,
+                        };
+                        this.catSkillIcon.pos(pos['x'] + 16, pos['y'] + 102);
+                        this.humanSkillIcon.pos(pos['x'] + 116, pos['y'] + 102);
+                    }
                 }
             }), 5);
             Laya.stage.addChild(this.characterLogo);
+            Laya.stage.addChild(this.catSkillIcon);
+            Laya.stage.addChild(this.humanSkillIcon);
             this.characterLogo.play();
         }
         clearBloodyUI() {
-            if (this.oathBar != null)
+            if (this.oathBar != null) {
                 this.oathBar.destroy();
-            this.oathBar = null;
-            if (this.characterLogo != null)
+                this.oathBar = null;
+            }
+            if (this.characterLogo != null) {
                 this.characterLogo.destroy();
-            this.characterLogo = null;
+                this.characterLogo = null;
+            }
+            if (this.catSkillIcon != null) {
+                this.catSkillIcon.destroy();
+                this.catSkillIcon = null;
+            }
+            if (this.humanSkillIcon != null) {
+                this.humanSkillIcon.destroy();
+                this.humanSkillIcon = null;
+            }
         }
         oathChargeDetect() {
             return (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? true : false;

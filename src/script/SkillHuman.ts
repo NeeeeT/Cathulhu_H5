@@ -59,7 +59,7 @@ export class Spike extends VirtualSkill {
         owner.m_rigidbody.linearVelocity = {x: rightSide?this.m_spikeVec:-this.m_spikeVec};
 
         owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
-        owner.hurtedEvent(0.5);
+        owner.hurtedEvent(1.5);
 
         this.attackRangeCheck(owner,
             {

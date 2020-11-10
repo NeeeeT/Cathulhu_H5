@@ -67,8 +67,8 @@ export class Character extends Laya.Script {
 
     m_keyDownList: Array<boolean>;
 
-    private m_catSkill: VirtualSkill = null;
-    private m_humanSkill: VirtualSkill = null;
+    m_catSkill: VirtualSkill = null;
+    m_humanSkill: VirtualSkill = null;
 
     m_animation: Laya.Animation;
     m_rigidbody: Laya.RigidBody;
