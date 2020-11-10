@@ -28,9 +28,6 @@ export default class OathManager extends Laya.Script {
         }
         this.clearBloodyUI();
     }
-    public clearAllDebuff() {
-        
-    }
     public getBloodyPoint(){
         return CharacterInit.playerEnt.m_bloodyPoint;
     }
@@ -52,6 +49,8 @@ export default class OathManager extends Laya.Script {
             }
             if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
                 this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
+            console.log(CharacterInit.playerEnt.m_bloodyPoint);
+            
             
         }), 5);
         Laya.stage.addChild(this.oathBar);

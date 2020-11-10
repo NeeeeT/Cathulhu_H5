@@ -778,8 +778,6 @@
             }
             this.clearBloodyUI();
         }
-        clearAllDebuff() {
-        }
         getBloodyPoint() {
             return CharacterInit.playerEnt.m_bloodyPoint;
         }
@@ -801,6 +799,7 @@
                 }
                 if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
                     this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
+                console.log(CharacterInit.playerEnt.m_bloodyPoint);
             }), 5);
             Laya.stage.addChild(this.oathBar);
         }
@@ -1119,6 +1118,7 @@
         cast(owner, position) {
             if (!this.m_canUse)
                 return;
+            this.m_canUse = false;
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
             this.m_animation.width = 400;
@@ -1131,7 +1131,6 @@
             this.m_animation.source = "comp/Spike.atlas";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
-            this.m_canUse = false;
             this.castRoar(position);
             let colorMat = [
                 2, 0, 0, 0, -100,
@@ -1160,6 +1159,7 @@
             }, 200);
             setTimeout(() => {
                 this.m_canUse = true;
+                console.log("技能可使用");
             }, this.m_cd * 1000);
         }
         attackRangeCheck(owner, pos) {
@@ -1191,6 +1191,7 @@
         cast(owner, position) {
             if (!this.m_canUse)
                 return;
+            this.m_canUse = false;
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
             this.m_animation.width = owner.m_animation.width;
@@ -1205,7 +1206,6 @@
             this.m_animation.interval = 30;
             this.m_animation.alpha = 0.8;
             this.m_animation.zOrder = 5;
-            this.m_canUse = false;
             this.castRoar(position);
             owner.delayMove(this.m_preTime);
             owner.m_rigidbody.linearVelocity = { x: 0.0, y: 0.0 };
@@ -1303,6 +1303,7 @@
         cast(owner, position) {
             if (!this.m_canUse)
                 return;
+            this.m_canUse = false;
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
             this.m_animation.width = 350;
@@ -1350,7 +1351,6 @@
             let offsetY = position['y'] - this.m_animation.height - 70;
             let offsetInterval = 40;
             let rangeY = 0;
-            this.m_canUse = false;
             this.castRoar(position);
             this.m_injuredEnemy = [];
             setTimeout(() => {
@@ -1387,6 +1387,7 @@
         cast(owner, position) {
             if (!this.m_canUse)
                 return;
+            this.m_canUse = false;
             let rightSide = owner.m_isFacingRight;
             let explosion = new Laya.Animation();
             this.m_animation = new Laya.Animation();
@@ -1405,7 +1406,6 @@
             explosion.pos(this.m_animation.x, this.m_animation.y);
             let offsetX = rightSide ? position['x'] + 140 : position['x'] - this.m_animation.width - 65;
             let offsetY = position['y'] - this.m_animation.height / 2;
-            this.m_canUse = false;
             this.castRoar(position);
             let colorMat = [
                 4, 0, 2, 0, -150,
@@ -1795,12 +1795,10 @@
                     this.m_canAttack = true;
                 }, this.m_attackCdTime);
             }
-            if (this.m_keyDownList[16]) {
-                console.log(("按下shift"));
-            }
             if (this.m_keyDownList[88]) {
                 if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost))
                     return;
+                console.log("施放人技");
                 this.m_humanSkill.cast(CharacterInit.playerEnt, {
                     x: this.m_animation.x,
                     y: this.m_animation.y,
@@ -2287,9 +2285,11 @@
                 else {
                     let x = Math.round(Math.random());
                     if (x > 0.5) {
+                        Laya.Scene.closeAll();
                         Laya.Scene.open("First.scene");
                     }
                     else {
+                        Laya.Scene.closeAll();
                         Laya.Scene.open("Town.scene");
                     }
                 }
@@ -2312,7 +2312,7 @@
                     id: i,
                     missionName: "殲滅來犯敵軍",
                     difficulty: this.missionDifficultyArr[i],
-                    enemyNum: 3,
+                    enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
                     enemyHp: 1000,
                     enemyAtk: 100,
                     eliteNum: Math.round(Math.random()),
@@ -2332,7 +2332,7 @@
                 id: 0,
                 missionName: "新手教學",
                 difficulty: 0,
-                enemyNum: 1,
+                enemyNum: 3,
                 enemyHp: 5000,
                 enemyAtk: 0,
                 eliteNum: 0,
@@ -2884,7 +2884,7 @@
     GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
-    GameConfig.stat = true;
+    GameConfig.stat = false;
     GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
