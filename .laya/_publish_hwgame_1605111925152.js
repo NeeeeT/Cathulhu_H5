@@ -1,4 +1,4 @@
-// v1.0.5
+// v1.0.3
 const ideModuleDir = global.ideModuleDir;
 const workSpaceDir = global.workSpaceDir;
 
@@ -155,14 +155,6 @@ gulp.task("generateSign_HW", ["clearTempDir_HW"], function() {
 
 		cp.on('close', (code) => {
 			console.log(`子进程退出码：${code}`);
-			// 签名是否生成成功
-			let 
-				privatePem = path.join(projDir, "private.pem"),
-				certificatePem = path.join(projDir, "certificate.pem");
-			let isSignExits = fs.existsSync(privatePem) && fs.existsSync(certificatePem);
-			if (!isSignExits) {
-				throw new Error("签名生成失败，请检查！");
-			}
 			resolve();
 		});
 	});
@@ -358,11 +350,6 @@ gulp.task("buildRPK_HW", ["version_HW"], function() {
 
 		cp.on('close', (code) => {
 			console.log(`子进程退出码：${code}`);
-			// rpk是否生成成功
-			let distRpkPath = path.join(distPath, `${name}.rpk`);
-			if (!fs.existsSync(distRpkPath)) {
-				throw new Error("rpk生成失败，请检查！");
-			}
 			resolve();
 		});
 	});
@@ -423,7 +410,7 @@ gulp.task("updateAPK_HW", ["getDevices_HW"], function(cb) {
 		});
 	}).then(() => {
 		return new Promise((resolve, reject) => {
-			if (remoteAPKVer === localAPKVer || donotUpdate(remoteAPKVer, localAPKVer)) {
+			if (remoteAPKVer === localAPKVer) {
 				console.log("您的快应用加载器是最新版本!");
 				return resolve();
 			}
@@ -548,7 +535,7 @@ gulp.task("pushRPK_HW", ["updateAPK_HW"], function() {
 			console.log(`2) push_RPK: `);
 			let rpkFilePath = path.join(projDir, "dist", `${config.hwInfo.package}.rpk`);
 			let cmd =  `${adbPath}`;
-			let args = ["push", `"${rpkFilePath}"`, "/data/local/tmp/"];
+			let args = ["push", rpkFilePath, "/data/local/tmp/"];
 			let opts = {
 				cwd: projDir,
 				shell: true
@@ -597,33 +584,6 @@ gulp.task("pushRPK_HW", ["updateAPK_HW"], function() {
 		});
 	});
 });
-
-function donotUpdate(remoteAPKVer, localAPKVer) {
-	let remoteAPKVerN = remoteAPKVer.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)/);
-	let localAPKVerN = localAPKVer.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)/);
-	let 
-		l1n = Number(localAPKVerN[1]), // local first number
-		l2n = Number(localAPKVerN[2]),
-		l3n = Number(localAPKVerN[3]),
-		l4n = Number(localAPKVerN[4]),
-		r1n = Number(remoteAPKVerN[1]), // remote first number
-		r2n = Number(remoteAPKVerN[2]),
-		r3n = Number(remoteAPKVerN[3]);
-		r4n = Number(remoteAPKVerN[4]);
-    if (l1n > r1n) {
-        return true;
-	}
-    if (l1n === r1n && l2n > r2n) {
-        return true;
-    }
-    if (l1n === r1n && l2n === r2n && l3n > r3n) {
-        return true;
-	}
-	if (l1n === r1n && l2n === r2n && l3n === r3n && l4n >= r4n) {
-        return true;
-    }
-    return false;
-}
 
 gulp.task("buildHWProj", ["pushRPK_HW"], function() {
 	console.log("all tasks completed");

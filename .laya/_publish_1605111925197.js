@@ -1,4 +1,4 @@
-// v1.8.2
+// v1.8.0
 //是否使用IDE自带的node环境和插件，设置false后，则使用自己环境(使用命令行方式执行)
 const useIDENode = process.argv[0].indexOf("LayaAir") > -1 ? true : false;
 const useCMDNode = process.argv[1].indexOf("layaair2-cmd") > -1 ? true : false;
@@ -28,7 +28,7 @@ const babel = require(ideModuleDir + 'gulp-babel');
 
 // 结合compile.js使用
 global.publish = true;
-const fileList = ["compile.js", "publish_xmgame.js", "publish_oppogame.js", "publish_vivogame.js", "publish_biligame.js", "publish_alipaygame.js", "publish_wxgame.js", "publish_bdgame.js", "publish_qqgame.js", "publish_bytedancegame.js", "publish_hwgame.js", "publish_taobaominiapp.js"];
+const fileList = ["compile.js", "publish_xmgame.js", "publish_oppogame.js", "publish_vivogame.js", "publish_biligame.js", "publish_alipaygame.js", "publish_wxgame.js", "publish_bdgame.js", "publish_qqgame.js", "publish_bytedancegame.js", "publish_hwgame.js"];
 requireDir('./', {
 	filter: function (fullPath) {
 		// 只用到了compile.js和publish.js
@@ -55,7 +55,6 @@ let config,
 	opensslPath = "openssl";
 //任务对照列表
 const copyTasks = {
-	"taobaominiapp": "copyPlatformFile_TBMini",
 	"hwgame": "copyPlatformFile_HW",
 	"bytedancegame": "copyPlatformFile_ByteDance",
 	"biligame": "copyPlatformFile_Bili",
@@ -69,7 +68,6 @@ const copyTasks = {
 	"web": "copyPlatformLibsJsFile"
 }
 const tasks = {
-	"taobaominiapp": "buildTBMiniProj",
 	"hwgame": "buildHWProj",
 	"bytedancegame": "buildByteDanceProj",
 	"biligame": "buildBiliProj",
@@ -159,11 +157,6 @@ gulp.task("loadConfig", function (cb) {
 				opensslPath = path.join(otherLibsPath, "openssl", "darwin", "bin", "openssl");
 			} else {
 				opensslPath = path.join(otherLibsPath, "openssl", "win", "bin", "openssl.exe");
-				let opensslCnfPath = path.join(otherLibsPath, "openssl", "win", "bin", "openssl.cfg");
-				// 特别的，当windows没有openssl时，需要额外的OPENSSL_CONF设置变量
-				// childProcess.execSync(`set OPENSSL_CONF=${opensslCnfPath}`);
-				process.env.OPENSSL_CONF = opensslCnfPath;
-				console.log("OPENSSL_CONF: " + childProcess.execSync("echo %OPENSSL_CONF%"));
 			}
 			opensslPath = `"${opensslPath}"`;
 		}
@@ -211,9 +204,7 @@ gulp.task("clearReleaseDir", ["compile"], function (cb) {
 		}
 		del(delList, { force: true }).then(paths => {
 			cb();
-		}).catch((err) => {
-			throw err;
-		})
+		});
 	} else cb();
 });
 
@@ -230,18 +221,19 @@ gulp.task("copyFile", ["clearReleaseDir"], function () {
 			config.copyFilesFilter.push(`${workSpaceDir}/bin/libs/laya.opendata.js`);
 		}
 	} else if (platform === "wxgame") { // 微信项目，不拷贝index.html，不拷贝百度bin目录中的文件
-		config.copyFilesFilter = baseCopyFilter.concat([`!${workSpaceDir}/bin/{project.swan.json,swan-game-adapter.js}`]);
+		config.copyFilesFilter = baseCopyFilter.concat([`!${workSpaceDir}/bin/index.html`, `!${workSpaceDir}/bin/{project.swan.json,swan-game-adapter.js}`]);
 	} else if (platform === "bdgame") { // 百度项目，不拷贝index.html，不拷贝微信bin目录中的文件
-		config.copyFilesFilter = baseCopyFilter.concat([`!${workSpaceDir}/bin/{project.config.json,weapp-adapter.js}`]);
-	} else { // 除微信、百度外，不拷贝微信、百度在bin目录中的文件
+		config.copyFilesFilter = baseCopyFilter.concat([`!${workSpaceDir}/bin/index.html`, `!${workSpaceDir}/bin/{project.config.json,weapp-adapter.js}`]);
+	} else { // web|QQ项目|bili|快游戏，不拷贝微信、百度在bin目录中的文件
 		config.copyFilesFilter = baseCopyFilter.concat([`!${workSpaceDir}/bin/{game.js,game.json,project.config.json,weapp-adapter.js,project.swan.json,swan-game-adapter.js}`]);
 	}
 	// bili/alipay/qq，不拷贝index.html
-	if (platform !== "web") {
+	if (["biligame", "Alipaygame", "qqgame", "bytedancegame"].includes(platform)) {
 		config.copyFilesFilter = config.copyFilesFilter.concat([`!${workSpaceDir}/bin/index.html`]);
 	}
 	// 快游戏，需要新建一个快游戏项目，拷贝的只是项目的一部分，将文件先拷贝到文件夹的临时目录中去
-	if ([...QUICKGAMELIST].includes(platform)) {
+	if (QUICKGAMELIST.includes(platform)) {
+		config.copyFilesFilter = config.copyFilesFilter.concat([`!${workSpaceDir}/bin/index.html`]);
 		releaseDir = global.tempReleaseDir = path.join(releaseDir, "temprelease");
 	}
 	if (config.exclude) { // 排除文件
@@ -378,9 +370,6 @@ gulp.task("copyPlatformLibsJsFile", ["copyLibsJsFile"], function () {
 			break;
 		case "hwgame":
 			platformLibName = "laya.hwmini.js";
-			break;
-		case "taobaominiapp":
-			platformLibName = "laya.tbmini.js";
 			break;
 	}
 	let copyPath = `${workSpaceDir}/bin/libs`;
