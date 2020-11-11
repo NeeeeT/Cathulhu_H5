@@ -31,9 +31,6 @@ export default class OathManager extends Laya.Script {
         }
         this.clearBloodyUI();
     }
-    public clearAllDebuff() {
-        
-    }
     public getBloodyPoint(){
         return CharacterInit.playerEnt.m_bloodyPoint;
     }
@@ -55,6 +52,8 @@ export default class OathManager extends Laya.Script {
             }
             if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
                 this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
+            console.log(CharacterInit.playerEnt.m_bloodyPoint);
+            
             
         }), 5);
         Laya.stage.addChild(this.oathBar);
@@ -237,6 +236,17 @@ export default class OathManager extends Laya.Script {
                     this.overChargeCount = 0;
                     this.oathBar.skin = "UI/bp_150.png";
                     this.oathBar.sizeGrid = "0,200,0,20";
+
+                    this.addDebuffTimer = setInterval(() => {
+                    if (CharacterInit.playerEnt.m_animation.destroyed) {
+                            clearInterval(this.addDebuffTimer);
+                            return;
+                        }    
+                        console.log("執行addDebuffTimer內函式");
+                        // console.log(this.playerDebuff);
+                        this.randomAddDebuff();
+                    }, 5000);    
+
                     this.oathState = OathStatus.overCharge;
                     return;
                 }

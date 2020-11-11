@@ -455,14 +455,16 @@ export class Character extends Laya.Script {
                 this.m_canAttack = true;
             }, this.m_attackCdTime);
         }
-        if (this.m_keyDownList[16]) {
-            console.log(("按下shift"));
+        // if (this.m_keyDownList[16]) {
+        //     console.log(("按下shift"));
             
-            // this.m_oathManager.addDebuff(1 << 0);
-            // this.m_oathManager.setBloodyPoint(100);
-        } 
+        //     // this.m_oathManager.addDebuff(1 << 0);
+        //     // this.m_oathManager.setBloodyPoint(100);
+        // } 
         if (this.m_keyDownList[88]) {
             if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost)) return;
+            console.log("施放人技");
+            
             this.m_humanSkill.cast(CharacterInit.playerEnt,
             {
                 x: this.m_animation.x,
