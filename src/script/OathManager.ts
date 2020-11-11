@@ -236,6 +236,17 @@ export default class OathManager extends Laya.Script {
                     this.overChargeCount = 0;
                     this.oathBar.skin = "UI/bp_150.png";
                     this.oathBar.sizeGrid = "0,200,0,20";
+
+                    this.addDebuffTimer = setInterval(() => {
+                    if (CharacterInit.playerEnt.m_animation.destroyed) {
+                            clearInterval(this.addDebuffTimer);
+                            return;
+                        }    
+                        console.log("執行addDebuffTimer內函式");
+                        // console.log(this.playerDebuff);
+                        this.randomAddDebuff();
+                    }, 5000);    
+
                     this.oathState = OathStatus.overCharge;
                     return;
                 }

@@ -959,6 +959,14 @@
                         this.overChargeCount = 0;
                         this.oathBar.skin = "UI/bp_150.png";
                         this.oathBar.sizeGrid = "0,200,0,20";
+                        this.addDebuffTimer = setInterval(() => {
+                            if (CharacterInit.playerEnt.m_animation.destroyed) {
+                                clearInterval(this.addDebuffTimer);
+                                return;
+                            }
+                            console.log("執行addDebuffTimer內函式");
+                            this.randomAddDebuff();
+                        }, 5000);
                         this.oathState = OathStatus.overCharge;
                         return;
                     }
@@ -1169,7 +1177,7 @@
             owner.delayMove(this.m_lastTime);
             owner.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec : -this.m_spikeVec };
             owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
-            owner.hurtedEvent(0.5);
+            owner.hurtedEvent(1.5);
             this.attackRangeCheck(owner, {
                 "x0": offsetX,
                 "x1": offsetX + this.m_animation.width,
