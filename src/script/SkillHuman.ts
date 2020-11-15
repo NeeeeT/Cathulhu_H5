@@ -78,7 +78,7 @@ export class Spike extends VirtualSkill {
         setTimeout(() => {
             this.m_canUse = true;
         }, this.m_cd * 1000);
-
+        this.updateCdTimer();
     }
     attackRangeCheck(owner: any, pos: object): void {
         let enemy = EnemyHandler.enemyPool;
@@ -169,6 +169,7 @@ export class Behead extends VirtualSkill {
         setTimeout(() => {
             this.m_canUse = true;
         }, this.m_cd * 1000);
+        this.updateCdTimer();
     }
     attackRangeCheck(owner: any, pos: object): void {
         let enemy = EnemyHandler.enemyPool;

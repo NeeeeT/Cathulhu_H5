@@ -21,6 +21,10 @@ export default class OathManager extends Laya.Script {
 
     public catSkillIcon: Laya.Sprite;
     public humanSkillIcon: Laya.Sprite;
+    public catSkillIconCd: Laya.Text;
+    public humanSkillIconCd: Laya.Text;
+    
+    public
 
     public initOathSystem() {
         this.oathState = 0;
@@ -67,11 +71,15 @@ export default class OathManager extends Laya.Script {
         this.catSkillIcon = new Laya.Sprite();
         this.humanSkillIcon = new Laya.Sprite();
 
+        this.catSkillIconCd = new Laya.Text();
+        this.humanSkillIconCd = new Laya.Text();
+
         this.catSkillIcon.width = this.catSkillIcon.height = 69;
         this.humanSkillIcon.width = this.humanSkillIcon.height = 69;
+        this.catSkillIconCd.width = this.humanSkillIconCd.width = 100; 
+        this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = 40;
+        this.catSkillIconCd.font = this.humanSkillIconCd.font = 'silver';
 
-        // this.characterLogo.scaleX = 0.6;
-        // this.characterLogo.scaleY = 0.6;
         this.characterLogo.source = "UI/Box.png";
         this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
         this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
@@ -90,12 +98,22 @@ export default class OathManager extends Laya.Script {
                     }
                     this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
                     this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
+                    this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
+                    this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
+                    this.catSkillIconCd.pos(this.catSkillIcon.x+27,this.catSkillIcon.y+21);
+                    this.humanSkillIconCd.pos(this.humanSkillIcon.x+27,this.humanSkillIcon.y+21);
+                    this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1:0.5;
+                    this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1:0.5;
+                    this.catSkillIconCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
+                    this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
                 }
             }
         }), 5);
         Laya.stage.addChild(this.characterLogo);
         Laya.stage.addChild(this.catSkillIcon);
         Laya.stage.addChild(this.humanSkillIcon);
+        Laya.stage.addChild(this.catSkillIconCd);
+        Laya.stage.addChild(this.humanSkillIconCd)
         this.characterLogo.play();
         
     }
@@ -115,6 +133,14 @@ export default class OathManager extends Laya.Script {
         if(this.humanSkillIcon != null){
             this.humanSkillIcon.destroy();
             this.humanSkillIcon = null;
+        }
+        if(this.catSkillIconCd != null){
+            this.catSkillIconCd.destroy();
+            this.catSkillIconCd = null;
+        }
+        if(this.humanSkillIconCd != null){
+            this.humanSkillIconCd.destroy();
+            this.humanSkillIconCd = null;
         }
     }
     public oathChargeDetect(): boolean{

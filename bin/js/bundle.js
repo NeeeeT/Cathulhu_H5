@@ -806,8 +806,13 @@
             this.characterLogo = new Laya.Animation();
             this.catSkillIcon = new Laya.Sprite();
             this.humanSkillIcon = new Laya.Sprite();
+            this.catSkillIconCd = new Laya.Text();
+            this.humanSkillIconCd = new Laya.Text();
             this.catSkillIcon.width = this.catSkillIcon.height = 69;
             this.humanSkillIcon.width = this.humanSkillIcon.height = 69;
+            this.catSkillIconCd.width = this.humanSkillIconCd.width = 100;
+            this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = 40;
+            this.catSkillIconCd.font = this.humanSkillIconCd.font = 'silver';
             this.characterLogo.source = "UI/Box.png";
             this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
             this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
@@ -826,12 +831,22 @@
                         };
                         this.catSkillIcon.pos(pos['x'] + 16, pos['y'] + 102);
                         this.humanSkillIcon.pos(pos['x'] + 116, pos['y'] + 102);
+                        this.catSkillIcon.pos(pos['x'] + 16, pos['y'] + 102);
+                        this.humanSkillIcon.pos(pos['x'] + 116, pos['y'] + 102);
+                        this.catSkillIconCd.pos(this.catSkillIcon.x + 27, this.catSkillIcon.y + 21);
+                        this.humanSkillIconCd.pos(this.humanSkillIcon.x + 27, this.humanSkillIcon.y + 21);
+                        this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1 : 0.5;
+                        this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1 : 0.5;
+                        this.catSkillIconCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "" : String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
+                        this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "" : String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
                     }
                 }
             }), 5);
             Laya.stage.addChild(this.characterLogo);
             Laya.stage.addChild(this.catSkillIcon);
             Laya.stage.addChild(this.humanSkillIcon);
+            Laya.stage.addChild(this.catSkillIconCd);
+            Laya.stage.addChild(this.humanSkillIconCd);
             this.characterLogo.play();
         }
         clearBloodyUI() {
@@ -850,6 +865,14 @@
             if (this.humanSkillIcon != null) {
                 this.humanSkillIcon.destroy();
                 this.humanSkillIcon = null;
+            }
+            if (this.catSkillIconCd != null) {
+                this.catSkillIconCd.destroy();
+                this.catSkillIconCd = null;
+            }
+            if (this.humanSkillIconCd != null) {
+                this.humanSkillIconCd.destroy();
+                this.humanSkillIconCd = null;
             }
         }
         oathChargeDetect() {
@@ -1066,6 +1089,7 @@
         CharacterStatus[CharacterStatus["hurt"] = 7] = "hurt";
         CharacterStatus[CharacterStatus["defend"] = 8] = "defend";
         CharacterStatus[CharacterStatus["death"] = 9] = "death";
+        CharacterStatus[CharacterStatus["sprint"] = 10] = "sprint";
     })(CharacterStatus || (CharacterStatus = {}));
 
     class VirtualSkill extends Laya.Script {
@@ -1123,6 +1147,19 @@
             var dx = distX - rect.w / 2;
             var dy = distY - rect.h / 2;
             return (dx * dx + dy * dy <= (circle.r * circle.r));
+        }
+        updateCdTimer() {
+            this.m_cdCount = this.m_cd;
+            this.m_cdTimer = setInterval(() => {
+                if (this.m_canUse) {
+                    clearInterval(this.m_cdTimer);
+                    this.m_cdTimer = null;
+                    this.m_cdCount = 0;
+                    return;
+                }
+                this.m_cdCount = !this.m_canUse ? (this.m_cdCount - 1) : 0;
+                console.log(this.m_cdCount);
+            }, 1000);
         }
     }
 
@@ -1185,6 +1222,7 @@
             setTimeout(() => {
                 this.m_canUse = true;
             }, this.m_cd * 1000);
+            this.updateCdTimer();
         }
         attackRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
@@ -1260,6 +1298,7 @@
             setTimeout(() => {
                 this.m_canUse = true;
             }, this.m_cd * 1000);
+            this.updateCdTimer();
         }
         attackRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
@@ -1478,6 +1517,7 @@
             }, this.m_cd * 1000);
             Laya.stage.addChild(this.m_animation);
             this.m_animation.play();
+            this.updateCdTimer();
         }
         attractRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
@@ -1528,7 +1568,7 @@
             this.m_animation.source = "comp/FireBall.atlas";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
-            explosion.source = "comp/Tentacle.atlas";
+            explosion.source = "comp/BigExplosion.atlas";
             explosion.scaleX = 6;
             explosion.scaleY = 6;
             explosion.interval = 30;
@@ -1584,6 +1624,7 @@
             }, this.m_cd * 1000);
             Laya.stage.addChild(this.m_animation);
             this.m_animation.play();
+            this.updateCdTimer();
         }
         attractRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
@@ -1865,6 +1906,7 @@
                     return;
                 this.delayMove(0.1);
                 this.hurtedEvent(0.1);
+                this.updateAnimation(this.m_state, CharacterStatus.sprint, null, false, 100);
                 this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 50.0 : -50.0, y: 0.0 };
                 this.m_rigidbody.mask = 2 | 16;
                 this.m_collider.refresh();
@@ -1894,11 +1936,6 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                this.m_catSkill = new BigExplosion();
-                this.m_catSkill.cast(CharacterInit.playerEnt, {
-                    x: this.m_animation.x,
-                    y: this.m_animation.y,
-                });
             }
             if (this.m_keyDownList[32]) {
             }
@@ -2196,6 +2233,11 @@
                 case CharacterStatus.slam:
                     this.m_animationChanging = true;
                     this.m_animation.source = "character/Erosion.atlas";
+                    this.m_animation.play();
+                    break;
+                case CharacterStatus.sprint:
+                    this.m_animationChanging = true;
+                    this.m_animation.source = "character/Sprint.atlas";
                     this.m_animation.play();
                     break;
                 default:

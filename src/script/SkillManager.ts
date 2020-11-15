@@ -16,13 +16,15 @@ export abstract class VirtualSkill extends Laya.Script{
     /** 技能icon B */
     abstract m_iconB: string;
 
-    
     m_animation: Laya.Animation;
     m_rigidbody: Laya.RigidBody;
     m_script: Laya.Script;
     m_collider: Laya.BoxCollider;
 
     m_canUse: boolean = true;
+
+    m_cdTimer;
+    m_cdCount: number;
 
     cast(owner: any, position: object): void{ 
     };
@@ -79,5 +81,19 @@ export abstract class VirtualSkill extends Laya.Script{
         var dx=distX-rect.w/2;
         var dy=distY-rect.h/2;
         return (dx*dx+dy*dy<=(circle.r*circle.r));
+    }
+    updateCdTimer(): void{
+        this.m_cdCount = this.m_cd;
+        this.m_cdTimer = setInterval(()=>{
+            if(this.m_canUse){
+                clearInterval(this.m_cdTimer);
+                this.m_cdTimer = null;
+                this.m_cdCount = 0;
+                return;
+            }
+            this.m_cdCount = !this.m_canUse ? (this.m_cdCount - 1):0;
+            console.log(this.m_cdCount);
+            
+        }, 1000);
     }
 }

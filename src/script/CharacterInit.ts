@@ -317,6 +317,7 @@ export class Character extends Laya.Script {
 
             this.delayMove(0.1);
             this.hurtedEvent(0.1);
+            this.updateAnimation(this.m_state, CharacterStatus.sprint, null, false, 100);
 
             this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 50.0 : -50.0, y: 0.0 };
             this.m_rigidbody.mask = 2 | 16;
@@ -839,6 +840,11 @@ export class Character extends Laya.Script {
             case CharacterStatus.slam:
                 this.m_animationChanging = true;
                 this.m_animation.source = "character/Erosion.atlas";
+                this.m_animation.play();
+                break;
+            case CharacterStatus.sprint:
+                this.m_animationChanging = true;
+                this.m_animation.source = "character/Sprint.atlas";
                 this.m_animation.play();
                 break;
             default:

@@ -8,5 +8,6 @@ export enum CharacterStatus {
     slam,
     hurt,
     defend,
-    death
+    death,
+    sprint
 }
