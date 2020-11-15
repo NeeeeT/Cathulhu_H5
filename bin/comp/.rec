@@ -1,5 +1,7 @@
 D .
-R 2B4E4EFE .rec
+R 80318EA6 .rec
+R A6ACFA1E BigExplosion.atlas
+R 2905917E BigExplosion.png
 R AA63CC8E BlackExplosion.atlas
 R 5C228EFB BlackExplosion.png
 R D71DD9C4 BlackHole.atlas
@@ -8,6 +10,8 @@ R D0E5ADF0 Blood.atlas
 R 85AFA56A Blood.png
 R AE787599 Cat.png
 R 5298C6DC circle.png
+R A44A38E0 FireBall.atlas
+R 38E8D72C FireBall.png
 R 6F74B0F8 loading.png
 R B532E2F6 NewBlood.atlas
 R 79B448FF NewBlood.png
@@ -35,6 +39,24 @@ R B5C48C99 Target.atlas
 R C1B48B0E Target.png
 R 43DD20EB TargetSlash.atlas
 R 973E8A3A TargetSlash.png
+R 424F931D WalkEffects.atlas
+R 79B5DF1A WalkEffects.png
+D BigExplosion
+P 1D90D0DB BigExplosion_0000.png
+P 715450FA BigExplosion_0001.png
+P 2E9A1DD7 BigExplosion_0002.png
+P B129BCDA BigExplosion_0003.png
+P 276BBBE1 BigExplosion_0004.png
+P C09EF75A BigExplosion_0005.png
+P 4BAF8D8D BigExplosion_0006.png
+P A2C09650 BigExplosion_0007.png
+P 8457D570 BigExplosion_0008.png
+P 316EB8B1 BigExplosion_0009.png
+P C2EB4736 BigExplosion_0010.png
+P 511AE1FC BigExplosion_0011.png
+P AD2CBF64 BigExplosion_0012.png
+P 324C292C BigExplosion_0013.png
+P DBBEC4F0 BigExplosion_0014.png
 D BlackExplosion
 P 8908EBE1 BlackholeExplsion_0036.png
 P E57B2BE9 BlackholeExplsion_0037.png
@@ -65,6 +87,19 @@ P 26119CBA BlakeHole_0037.png
 P C835C8B0 BlakeHole_0038.png
 P 038ABF49 BlakeHole_0039.png
 P 3BDDECDF BlakeHole_0040.png
+D CatLogo
+D FireBall
+P 5583C3BD FireBall_0000.png
+P 026BE034 FireBall_0001.png
+P 98B9F2B6 FireBall_0002.png
+P CB6B1BAD FireBall_0003.png
+P 8F584BB2 FireBall_0004.png
+P A9E6EDFD FireBall_0005.png
+P D147B952 FireBall_0006.png
+P 6DEC41FD FireBall_0007.png
+P 360B9260 FireBall_0008.png
+P 8FED28CE FireBall_0009.png
+P C0161A7F FireBall_0010.png
 D Loading
 R 70D35F68 loading.png
 D NewBlood
@@ -109,6 +144,8 @@ P 77DA9905 TargetSlash90_0006.png
 P C843D11C TargetSlash90_0007.png
 P C843D11C TargetSlash90_0008.png
 P C843D11C TargetSlash90_0009.png
+D SkillTesst
+D SkillTestt
 D Slam
 P 8F0E8FE8 Slam_0000.png
 P 2FC45362 Slam_0001.png
@@ -184,3 +221,67 @@ P EA6BD519 TargetSlash_0029.png
 P DE0A4B51 TargetSlash_0030.png
 P 22ECA100 TargetSlash_0031.png
 P 090D7664 TargetSlash_0032.png
+D Tentacle
+P CA0B27B9  tentacle_0020.png
+P 20F645AA  tentacle_0021.png
+P FC2B63C3  tentacle_0022.png
+P FE7ACCF4  tentacle_0023.png
+P 237E4BE1  tentacle_0024.png
+P 617BBEA7  tentacle_0025.png
+P 1F80ECA4  tentacle_0026.png
+P 9AC0460B  tentacle_0027.png
+P 34640DA5  tentacle_0028.png
+P 25080F7E  tentacle_0029.png
+P F670E075  tentacle_0030.png
+P BE6A489A  tentacle_0031.png
+P E29CB6C1  tentacle_0032.png
+P 95718CCF  tentacle_0033.png
+P BBB952B8  tentacle_0034.png
+P E7B13D33  tentacle_0035.png
+P 6427F4CA  tentacle_0036.png
+P 2F434F77  tentacle_0037.png
+P 6D7B1D86  tentacle_0038.png
+P 149D2366  tentacle_0039.png
+P B28CC6A2  tentacle_0040.png
+P E959846D  tentacle_0041.png
+P 675D4B62  tentacle_0042.png
+P 1DEA7DCB  tentacle_0043.png
+P E408A858  tentacle_0044.png
+P CF56564C  tentacle_0045.png
+P FA39F288  tentacle_0046.png
+P 664B3335  tentacle_0047.png
+P 497D7C5F  tentacle_0048.png
+P 6B507823  tentacle_0049.png
+P 1C0C088E  tentacle_0050.png
+P 9CFE2C0E  tentacle_0051.png
+P 6BD650F1  tentacle_0052.png
+P 203EA2FD  tentacle_0053.png
+P A2898D79  tentacle_0054.png
+P 40633D31  tentacle_0055.png
+P F71BB022  tentacle_0056.png
+P BB449F30  tentacle_0057.png
+P 8DCA8ABB  tentacle_0058.png
+P 72E7E68B  tentacle_0059.png
+P F3C56976  tentacle_0060.png
+D WalkEffects
+P 24DDF7E8 WalkEffects_0010.png
+P 1B8E7D07 WalkEffects_0011.png
+P 47E90D5E WalkEffects_0012.png
+P 2C495008 WalkEffects_0013.png
+P E064D0B3 WalkEffects_0014.png
+P E8BC4A27 WalkEffects_0015.png
+P D2CD8849 WalkEffects_0016.png
+P 66B3BB0A WalkEffects_0017.png
+P B0D1C99E WalkEffects_0018.png
+P 28F29DC5 WalkEffects_0019.png
+P 78A7E3FB WalkEffects_0020.png
+P 6DC06181 WalkEffects_0021.png
+P CAE8431A WalkEffects_0022.png
+P 8C837424 WalkEffects_0023.png
+P 4E88EAA8 WalkEffects_0024.png
+P 72BD2DC9 WalkEffects_0025.png
+P 448D3EB4 WalkEffects_0026.png
+P A5353F9A WalkEffects_0027.png
+P BC8B1A68 WalkEffects_0028.png
+P E557B370 WalkEffects_0029.png
+P D7B3608A WalkEffects_0030.png

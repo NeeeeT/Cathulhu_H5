@@ -1169,7 +1169,7 @@
             owner.delayMove(this.m_lastTime);
             owner.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec : -this.m_spikeVec };
             owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
-            owner.hurtedEvent(0.5);
+            owner.hurtedEvent(1.5);
             this.attackRangeCheck(owner, {
                 "x0": offsetX,
                 "x1": offsetX + this.m_animation.width,
@@ -1499,6 +1499,104 @@
             });
         }
     }
+    class BigExplosion extends VirtualSkill {
+        constructor() {
+            super(...arguments);
+            this.m_name = '魔法大爆射';
+            this.m_info = '造成全場敵人極大的損傷';
+            this.m_damage = 99999;
+            this.m_dotDamage = 7;
+            this.m_cost = 80;
+            this.m_id = 2;
+            this.m_cd = 15;
+            this.m_lastTime = 2;
+            this.m_radius = 100;
+            this.m_iconA = "ui/icon/blackholeA.png";
+            this.m_iconB = "ui/icon/blackholeB.png";
+        }
+        cast(owner, position) {
+            if (!this.m_canUse)
+                return;
+            let rightSide = owner.m_isFacingRight;
+            let explosion = new Laya.Animation();
+            this.m_animation = new Laya.Animation();
+            this.m_animation.width = this.m_animation.height = this.m_radius;
+            this.m_animation.scaleX = 0.3;
+            this.m_animation.scaleY = 0.3;
+            this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
+            this.m_animation.alpha = 0.7;
+            this.m_animation.source = "comp/FireBall.atlas";
+            this.m_animation.autoPlay = true;
+            this.m_animation.interval = 20;
+            explosion.source = "comp/Tentacle.atlas";
+            explosion.scaleX = 6;
+            explosion.scaleY = 6;
+            explosion.interval = 30;
+            explosion.pos(this.m_animation.x - 1400, this.m_animation.y - 1500);
+            let offsetX = rightSide ? position['x'] + 140 : position['x'] - this.m_animation.width - 65;
+            let offsetY = position['y'] - this.m_animation.height / 2;
+            this.m_canUse = false;
+            this.castRoar(position);
+            let colorMat = [
+                4, 0, 2, 0, -150,
+                0, 1, 1, 0, -100,
+                1, 2, 1, 0, -150,
+                0, 0, 0, 2, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#460075", 10, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            this.m_animation.filters = [colorFilter];
+            let colorFilterex = new Laya.ColorFilter(colorMat);
+            explosion.filters = [glowFilter, colorFilter];
+            let count = 0;
+            let timer = setInterval(() => {
+                if (count >= this.m_lastTime * 1000) {
+                    Laya.stage.addChild(explosion);
+                    explosion.play();
+                    owner.setCameraShake(100, 12);
+                    setTimeout(() => {
+                        explosion.destroy();
+                    }, 300);
+                    this.attackRangeCheck(owner, {
+                        "x": offsetX,
+                        "y": offsetY,
+                        "r": this.m_radius,
+                    }, this.m_damage);
+                    clearInterval(timer);
+                }
+                this.attractRangeCheck(owner, {
+                    "x": offsetX,
+                    "y": offsetY,
+                    "r": this.m_radius + 100,
+                });
+                this.attackRangeCheck(owner, {
+                    "x": offsetX,
+                    "y": offsetY,
+                    "r": this.m_radius + 100,
+                }, this.m_dotDamage);
+                count += 100;
+            }, 100);
+            setTimeout(() => {
+                this.m_animation.destroy();
+            }, this.m_lastTime * 1000);
+            setTimeout(() => {
+                this.m_canUse = true;
+            }, this.m_cd * 1000);
+            Laya.stage.addChild(this.m_animation);
+            this.m_animation.play();
+        }
+        attractRangeCheck(owner, pos) {
+            let enemy = EnemyHandler.enemyPool;
+            let enemyFound = enemy.filter(data => (this.rectCircleIntersect(pos, data._ent.m_rectangle) === true));
+        }
+        attackRangeCheck(owner, pos, dmg) {
+            let enemy = EnemyHandler.enemyPool;
+            let enemyFound = enemy.filter(data => (this.rectCircleIntersect(pos, data._ent.m_rectangle) === true));
+            enemyFound.forEach((e) => {
+                e._ent.takeDamage(dmg);
+            });
+        }
+    }
 
     class ExtraData extends Laya.Script {
         static loadData() {
@@ -1564,6 +1662,7 @@
             this.m_hurted = false;
             this.m_hurtTimer = null;
             this.m_slashTimer = null;
+            this.m_walkTimer = null;
             this.m_cameraShakingTimer = 0;
             this.m_cameraShakingMultiplyer = 1;
             this.m_catSkill = null;
@@ -1795,6 +1894,11 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
+                this.m_catSkill = new BigExplosion();
+                this.m_catSkill.cast(CharacterInit.playerEnt, {
+                    x: this.m_animation.x,
+                    y: this.m_animation.y,
+                });
             }
             if (this.m_keyDownList[32]) {
             }
@@ -1934,6 +2038,32 @@
                 slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
             }, 10);
         }
+        createWalkEffect(player) {
+            let walkEffects = new Laya.Animation();
+            walkEffects.source = "comp/WalkEffects.atlas";
+            let posX = 280;
+            let posY = 270;
+            walkEffects.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+            let colorMat = [
+                1, 0, 0, 0, 500,
+                0, 1, 0, 0, 500,
+                0, 0, 1, 0, 500,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            Laya.stage.addChild(walkEffects);
+            walkEffects.play();
+            this.m_walkTimer = setInterval(() => {
+                if (walkEffects.destroyed) {
+                    clearInterval(this.m_walkTimer);
+                    this.m_walkTimer = null;
+                    return;
+                }
+                walkEffects.skewY = this.m_isFacingRight ? 0 : 180;
+                walkEffects.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+            }, 10);
+        }
         setSkill() {
             this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
             this.m_humanSkill = this.getSkillTypeByExtraData('h', ExtraData.currentData['humanSkill']);
@@ -2059,6 +2189,7 @@
                 case CharacterStatus.run:
                     this.m_animation.source = 'character/Run.atlas';
                     this.m_animation.play();
+                    this.createWalkEffect(this.m_animation);
                     break;
                 case CharacterStatus.slam:
                     this.m_animationChanging = true;

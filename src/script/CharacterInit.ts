@@ -10,7 +10,7 @@ import EnemyHandler, { Fast, Normal, Shield } from "./EnemyHandler";
 
 import { ExtraData } from "./ExtraData";
 
-  
+
 export class Character extends Laya.Script {
     m_state: number;
     m_name: string;
@@ -57,6 +57,7 @@ export class Character extends Laya.Script {
     m_hurtTimer = null;
 
     m_slashTimer = null;
+    m_walkTimer = null;
 
     //強化等級
     m_hpLevel: number;
@@ -105,11 +106,11 @@ export class Character extends Laya.Script {
         this.m_animation.interval = 200;
         this.m_animation.loop = true;
         this.m_animation.on(Laya.Event.COMPLETE, this, () => {
-            if(this.m_state === CharacterStatus.attackOne || this.m_state === CharacterStatus.attackTwo)
+            if (this.m_state === CharacterStatus.attackOne || this.m_state === CharacterStatus.attackTwo)
                 this.m_animation.stop();
 
             this.m_animationChanging = false;
-            if(Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
+            if (Math.abs(this.m_playerVelocity["Vx"]) <= 0 && !this.m_atkTimer)
                 this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         });
         this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
@@ -123,14 +124,14 @@ export class Character extends Laya.Script {
         this.m_script.onUpdate = () => {
             if (this.m_playerVelocity["Vx"] < -this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = -this.m_xMaxVelocity;
             if (this.m_playerVelocity["Vx"] > this.m_xMaxVelocity) this.m_playerVelocity["Vx"] = this.m_xMaxVelocity;
-            if (this.m_animation.y >= 1000.0){
+            if (this.m_animation.y >= 1000.0) {
                 this.m_animation.x = 1345;
                 this.m_animation.y = 544;
             }
             this.characterMove();
         }
         this.m_script.onTriggerEnter = (col: Laya.BoxCollider | Laya.CircleCollider | Laya.ChainCollider) => {
-            if (col.tag === "Enemy"){
+            if (col.tag === "Enemy") {
                 // let rig = col.owner.getComponent(Laya.RigidBody) as Laya.RigidBody;
                 // rig.mask = 2;
             }
@@ -186,8 +187,8 @@ export class Character extends Laya.Script {
     public getHealth(): number {
         return this.m_health;
     };
-    public death(){
-        Laya.Tween.to(this.m_animation, {alpha: 0.0}, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{            
+    public death() {
+        Laya.Tween.to(this.m_animation, { alpha: 0.0 }, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
             Laya.Scene.open("Died.scene");
@@ -195,7 +196,7 @@ export class Character extends Laya.Script {
             Laya.SoundManager.stopAll();
         }), 0);
     }
-    loadCharacterData(): void{
+    loadCharacterData(): void {
         ExtraData.loadData();
 
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
@@ -207,8 +208,8 @@ export class Character extends Laya.Script {
         return this.m_atk;
     }
     takeDamage(amount: number) {
-        if(amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted) return;
-        
+        if (amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted) return;
+
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= 33);
 
@@ -216,32 +217,31 @@ export class Character extends Laya.Script {
         this.setHealth(this.getHealth() - amount);
         this.damageTextEffect(amount, critical);
 
-        Laya.Tween.to(this.m_animation, { alpha: 0.65}, 250, Laya.Ease.linearInOut,
+        Laya.Tween.to(this.m_animation, { alpha: 0.65 }, 250, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut,
                     Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
-        
+
         this.hurtedEvent(0.5);
     }
-    private checkJumpTimer(){
-        let timer = setInterval(()=>{
-            if(!this.m_animation || this.m_animation.destroyed)
-            {
+    private checkJumpTimer() {
+        let timer = setInterval(() => {
+            if (!this.m_animation || this.m_animation.destroyed) {
                 clearInterval(timer);
                 return;
             }
-            this.m_canJump = (Math.abs(this.m_animation.y + (this.m_animation.height/2)  - 590) < 10) ? true:false;
+            this.m_canJump = (Math.abs(this.m_animation.y + (this.m_animation.height / 2) - 590) < 10) ? true : false;
             console.log(this.m_canJump);
         }, 1000);
     }
-    private hurtedEvent(time: number){
+    private hurtedEvent(time: number) {
         this.m_hurted = true;
-                
-        this.m_hurtTimer = setTimeout(()=>{
+
+        this.m_hurtTimer = setTimeout(() => {
             this.m_hurted = false;
-            this.m_hurtTimer = null;             
-        }, 1000*time);
+            this.m_hurtTimer = null;
+        }, 1000 * time);
     }
     private damageTextEffect(amount: number, critical: boolean): void {
         let damageText = new Laya.Text();
@@ -256,7 +256,7 @@ export class Character extends Laya.Script {
         damageText.color = critical ? '#ff31c8' : "red";
 
         let temp_text = "";
-        for(let i = 0; i < String(amount).length; i++){
+        for (let i = 0; i < String(amount).length; i++) {
             temp_text += String(amount)[i];
             temp_text += " ";
         }
@@ -270,7 +270,7 @@ export class Character extends Laya.Script {
         Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut,
-                Laya.Handler.create(this, ()=>{ damageText.destroy() }), 0);
+                    Laya.Handler.create(this, () => { damageText.destroy() }), 0);
             }), 0);
     }
     private listenKeyBoard(): void {
@@ -289,11 +289,11 @@ export class Character extends Laya.Script {
 
         setInterval((() => {
             if (this.m_animation.destroyed) {
-                this.m_healthBar.destroy();              
+                this.m_healthBar.destroy();
                 this.m_healthBar.destroyed = true;
                 return;
             }
-            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) { 
+            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
                 this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
             }
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
@@ -312,20 +312,20 @@ export class Character extends Laya.Script {
             this.applyMoveX();
             if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
-        if (this.m_keyDownList[16]){
-            if(!this.m_canSprint) return;
+        if (this.m_keyDownList[16]) {
+            if (!this.m_canSprint) return;
 
             this.delayMove(0.1);
             this.hurtedEvent(0.1);
 
-            this.m_rigidbody.linearVelocity = {x: this.m_isFacingRight ? 50.0:-50.0, y:0.0};
+            this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 50.0 : -50.0, y: 0.0 };
             this.m_rigidbody.mask = 2 | 16;
             this.m_collider.refresh();
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.m_rigidbody.mask = 2 | 8 | 16;
                 this.m_collider.density = 300;
                 this.m_collider.refresh();
-                setTimeout(()=> {
+                setTimeout(() => {
                     this.m_collider.density = 1;
                     this.m_collider.refresh();
                 }, 10);
@@ -335,7 +335,7 @@ export class Character extends Laya.Script {
             // }, 500, Laya.Ease.linearInOut, null, 0);
 
             this.m_canSprint = false;
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.m_canSprint = true;
             }, 3000);
         }
@@ -361,6 +361,12 @@ export class Character extends Laya.Script {
         if (this.m_keyDownList[40]) {//Down
             // this.m_humanSkill = new hSkill.Behead();
             // this.m_catSkill = new cSkill.Slam();
+            // this.m_catSkill = new cSkill.BigExplosion();
+            // this.m_catSkill.cast(CharacterInit.playerEnt,
+            //     {
+            //         x: this.m_animation.x,
+            //         y: this.m_animation.y,
+            //     });
         }
         if (this.m_keyDownList[32]) {
             // let width_offset: number =
@@ -390,7 +396,7 @@ export class Character extends Laya.Script {
             //     ] as Laya.RigidBody[];
             //     let spr: Laya.Sprite[] = Raycast_return["Sprite"] as Laya.Sprite[];
             //     let world = Laya.Physics.I.world;
-                
+
             //     //以下實作Raycast貫穿射線(foreach)，若要單體則取物件index，0為靠最近的，依此類推。
             //     spr.forEach((e) => {
             //     e.destroy();
@@ -407,7 +413,7 @@ export class Character extends Laya.Script {
 
             // this.m_animation.interval = 100;
             // this.m_animation.source = 'character/player_idle_01.png,character/player_idle_02.png,character/player_idle_03.png,character/player_idle_04.png';
-            
+
             // if(this.m_atkTimerValue > 0)
             // {
             //     this.m_atkTimerValue += this.m_atkTimerInterval;
@@ -424,17 +430,17 @@ export class Character extends Laya.Script {
             //         console.log('working..', this.m_atkTimerValue);
             //     }, 100)
             // }
-            if(this.m_atkTimer) clearInterval(this.m_atkTimer);
+            if (this.m_atkTimer) clearInterval(this.m_atkTimer);
             // this.createAttackEffect(this.m_animation);
             this.attackStepEventCheck();
 
-            if (!this.m_animationChanging){
-                if(this.m_atkStep === 1){
+            if (!this.m_animationChanging) {
+                if (this.m_atkStep === 1) {
                     // ,1,2,3,4, 逗號數為分母(圖數+1)
                     this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 3);
                     // console.log('ATTACK2');
                 }
-                else if(this.m_atkStep === 0){
+                else if (this.m_atkStep === 0) {
                     this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 8);
                     // console.log('ATTACK1');
                 }
@@ -466,18 +472,18 @@ export class Character extends Laya.Script {
             console.log("施放人技");
             
             this.m_humanSkill.cast(CharacterInit.playerEnt,
-            {
-                x: this.m_animation.x,
-                y: this.m_animation.y,
-            });
+                {
+                    x: this.m_animation.x,
+                    y: this.m_animation.y,
+                });
         }
         if (this.m_keyDownList[67]) {
             if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost)) return;
             this.m_catSkill.cast(CharacterInit.playerEnt,
-            {
-                x: this.m_animation.x,
-                y: this.m_animation.y,
-            });
+                {
+                    x: this.m_animation.x,
+                    y: this.m_animation.y,
+                });
         }
     }
     /*private createAttackCircle(player: Laya.Animation) {
@@ -532,18 +538,18 @@ export class Character extends Laya.Script {
         atkCircle.destroyed = true;
         }, 100);
     }*/
-    private attackStepEventCheck(){
-        this.m_atkTimer = setTimeout(()=>{
+    private attackStepEventCheck() {
+        this.m_atkTimer = setTimeout(() => {
             this.m_atkStep = 0;
             this.m_atkTimer = null
             this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         }, this.m_attackCdTime + 200);
     }
-    private attackSimulation(): void{
-        let temp:Laya.Animation = this.m_animation;
-        let atkRange:number = this.m_attackRange;
-        let offsetX:number = this.m_isFacingRight ? (temp.x + (temp.width*1/3)) : (temp.x - (temp.width*1/3) - atkRange);
-        let offsetY:number = temp.y - (temp.height/3);
+    private attackSimulation(): void {
+        let temp: Laya.Animation = this.m_animation;
+        let atkRange: number = this.m_attackRange;
+        let offsetX: number = this.m_isFacingRight ? (temp.x + (temp.width * 1 / 3)) : (temp.x - (temp.width * 1 / 3) - atkRange);
+        let offsetY: number = temp.y - (temp.height / 3);
         let soundNum: number = Math.floor(Math.random() * 2);
 
         // Laya.stage.graphics.drawRect(offsetX, offsetY, atkRange, atkRange, 'red', 'red', 2);
@@ -557,13 +563,13 @@ export class Character extends Laya.Script {
 
         this.setSound(0.6, "Audio/Attack/Attack" + soundNum + ".wav", 1);
     }
-    public attackRangeCheck(pos:object, type: string): void{
+    public attackRangeCheck(pos: object, type: string): void {
         // 可做其他形狀的範圍偵測判斷 ex.三角形、圓形, etc...
         let enemy = EnemyHandler.enemyPool;
         switch (type) {
             case 'rect':
                 let enemyFound = enemy.filter(data => this.rectIntersect(pos, data._ent.m_rectangle) === true);
-                let soundNum : number;
+                let soundNum: number;
                 let fakeNum = Math.random() * 100;//需再修正
                 let critical: boolean = (fakeNum <= 25);//需再修正
                 let enemyCount = 0;
@@ -576,59 +582,57 @@ export class Character extends Laya.Script {
                     this.setCameraShake(10, 3);
                     //誓約系統測試
                     this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + this.m_oathManager.increaseBloodyPoint);
-                    if(enemyCount < 3) e._ent.slashLightEffect(e._ent.m_animation);
+                    if (enemyCount < 3) e._ent.slashLightEffect(e._ent.m_animation);
                     this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
                     enemyCount++;
-                    
-                // } else {
-                //     // OathManager.chargeAttack(col.label);
-                //     Character.setCameraShake(50, 5);
-                // }
+
+                    // } else {
+                    //     // OathManager.chargeAttack(col.label);
+                    //     Character.setCameraShake(50, 5);
+                    // }
                 });
                 break;
             default:
                 break;
-            }
+        }
     }
-    public rectIntersect(r1, r2): boolean{
-        let aLeftOfB:boolean = r1.x1 < r2.x0;
-        let aRightOfB:boolean = r1.x0 > r2.x1;
-        let aAboveB:boolean = r1.y0 > r2.y1;
-        let aBelowB:boolean = r1.y1 < r2.y0;
+    public rectIntersect(r1, r2): boolean {
+        let aLeftOfB: boolean = r1.x1 < r2.x0;
+        let aRightOfB: boolean = r1.x0 > r2.x1;
+        let aAboveB: boolean = r1.y0 > r2.y1;
+        let aBelowB: boolean = r1.y1 < r2.y0;
 
-        return !( aLeftOfB || aRightOfB || aAboveB || aBelowB );
+        return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
     }
     public createAttackEffect(player: Laya.Animation) {
         let slashEffect: Laya.Animation = new Laya.Animation();
-        let posX : number;
-        let posY : number;
-        // slashEffect.source = "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
-
-        if(this.m_atkStep === 0){
+        let posX: number;
+        let posY: number;
+        if (this.m_atkStep === 0) {
             slashEffect.scaleX = 2;
             slashEffect.scaleY = 2;
             posX = 420;
             posY = 560;
             slashEffect.source = "comp/NewSlash_1.atlas";
         }
-        else if(this.m_atkStep === 1){
+        else if (this.m_atkStep === 1) {
             slashEffect.scaleX = 3;
             slashEffect.scaleY = 3;
             posX = 600;
             posY = 850;
             slashEffect.source = "comp/NewSlash_2.atlas";
         }
-        slashEffect.pos(player.x + (this.m_isFacingRight?-posX:posX), player.y - posY + 10);
+        slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
 
         let colorNum: number = Math.floor(Math.random() * 5) + 2;
         //濾鏡
         let colorMat: Array<number> =
-        [
-            1, 0, 0, 0, 500, //R
-            0, 1, 0, 0, 500, //G
-            0, 0, 1, 0, 500, //B
-            0, 0, 0, 1, 0, //A
-        ];
+            [
+                1, 0, 0, 0, 500, //R
+                0, 1, 0, 0, 500, //G
+                0, 0, 1, 0, 500, //B
+                0, 0, 0, 1, 0, //A
+            ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         // if (!OathManager.isCharging) {
@@ -649,29 +653,62 @@ export class Character extends Laya.Script {
         // slashEffect.source =
         // "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
         slashEffect.on(Laya.Event.COMPLETE, this, function () {
-        slashEffect.destroy();
-        slashEffect.destroyed = true;
-    });
+            slashEffect.destroy();
+            slashEffect.destroyed = true;
+        });
         Laya.stage.addChild(slashEffect);
         slashEffect.play();
 
-        let m_slashTimer = setInterval(()=>{
-            if(slashEffect.destroyed)
-            {
+        let m_slashTimer = setInterval(() => {
+            if (slashEffect.destroyed) {
                 clearInterval(m_slashTimer);
                 m_slashTimer = null;
                 return;
             }
-            slashEffect.skewY = this.m_isFacingRight? 0:180;
-            slashEffect.pos(player.x + (this.m_isFacingRight?-posX:posX), player.y - posY + 10);
+            slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
+            slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
         }, 10);
     }
-    private setSkill(): void{   
+    public createWalkEffect(player: Laya.Animation) {
+        let walkEffects: Laya.Animation = new Laya.Animation();
+        walkEffects.source = "comp/WalkEffects.atlas";
+        let posX: number = 280;
+        let posY: number = 270;
+        walkEffects.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+        //濾鏡
+        let colorMat: Array<number> =
+            [
+                1, 0, 0, 0, 500, //R
+                0, 1, 0, 0, 500, //G
+                0, 0, 1, 0, 500, //B
+                0, 0, 0, 1, 0, //A
+            ];
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
+        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+        //walkEffects.filters = [colorFilter, glowFilter];
+        // walkEffects.on(Laya.Event.COMPLETE, this, function () {
+        //     walkEffects.destroy();
+        //     walkEffects.destroyed = true;
+        // });
+        Laya.stage.addChild(walkEffects);
+        walkEffects.play();
+
+        this.m_walkTimer = setInterval(() => {
+            if (walkEffects.destroyed) {
+                clearInterval(this.m_walkTimer);
+                this.m_walkTimer = null;
+                return;
+            }
+            walkEffects.skewY = this.m_isFacingRight ? 0 : 180;
+            walkEffects.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+        }, 10);
+    }
+    private setSkill(): void {
         this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
         this.m_humanSkill = this.getSkillTypeByExtraData('h', ExtraData.currentData['humanSkill']);
     }
-    private getSkillTypeByExtraData(type: string, id: number): VirtualSkill{
-        if(type === 'c'){
+    private getSkillTypeByExtraData(type: string, id: number): VirtualSkill {
+        if (type === 'c') {
             switch (id) {
                 case 1:
                     return new cSkill.Slam();
@@ -681,7 +718,7 @@ export class Character extends Laya.Script {
                     return new cSkill.Slam();
             }
         }
-        else if(type === 'h'){
+        else if (type === 'h') {
             switch (id) {
                 case 1:
                     return new hSkill.Spike();
@@ -691,19 +728,19 @@ export class Character extends Laya.Script {
                     return new hSkill.Spike();
             }
         }
-        else{
+        else {
             return null;
         }
     }
     /** 設置角色移動的延遲時間，期間內可進行Velocity的改動，時間可堆疊。單位: seconds */
-    public delayMove(time: number): void{
-        if(this.m_moveDelayTimer){
+    public delayMove(time: number): void {
+        if (this.m_moveDelayTimer) {
             this.m_moveDelayValue += time;
         }
-        else{
+        else {
             this.m_moveDelayValue = time;
-            this.m_moveDelayTimer = setInterval(()=>{
-                if(this.m_moveDelayValue <= 0){
+            this.m_moveDelayTimer = setInterval(() => {
+                if (this.m_moveDelayValue <= 0) {
                     this.resetMove();
                     clearInterval(this.m_moveDelayTimer);
                     this.m_moveDelayTimer = null;
@@ -721,7 +758,7 @@ export class Character extends Laya.Script {
         this.applyMoveY();
     }
     private applyMoveX(): void {
-        if(this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation)
+        if (this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation)
             return;
         this.m_rigidbody.linearVelocity = {
             x: this.m_playerVelocity['Vx'],
@@ -736,7 +773,7 @@ export class Character extends Laya.Script {
             this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
     }
     private applyMoveY(): void {
-        if(!this.m_animation || this.m_animation.destroyed)
+        if (!this.m_animation || this.m_animation.destroyed)
             return;
         this.m_rigidbody.setVelocity({
             x: this.m_rigidbody.linearVelocity.x,
@@ -748,15 +785,15 @@ export class Character extends Laya.Script {
         Laya.SoundManager.setSoundVolume(volume, url);
     }
     private cameraFollower(): void {
-        if(this.m_animation.destroyed) return;
+        if (this.m_animation.destroyed) return;
 
         let player_pivot_x: number = Laya.stage.width / 2;
         // let player_pivot_y: number = Laya.stage.height / 2;
 
         setInterval(() => {
             if (this.m_animation.destroyed) {
-                return;  
-            } 
+                return;
+            }
 
             if (this.m_cameraShakingTimer > 0) {
                 let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
@@ -767,19 +804,19 @@ export class Character extends Laya.Script {
                 Laya.stage.x = player_pivot_x - this.m_animation.x;
                 // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
             }
-            if(Laya.stage.x >= -250.0) Laya.stage.x = -250.0;
-            if(Laya.stage.x <= -2475.0) Laya.stage.x = -2475.0;
+            if (Laya.stage.x >= -250.0) Laya.stage.x = -250.0;
+            if (Laya.stage.x <= -2475.0) Laya.stage.x = -2475.0;
         }, 10);
     }
     public setCameraShake(timer: number, multiplier: number) {
         this.m_cameraShakingMultiplyer = multiplier;
         this.m_cameraShakingTimer = timer;
     }
-    public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void{
-        if(from === to || this.m_animationChanging) return;
+    public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void {
+        if (from === to || this.m_animationChanging) return;
         this.m_state = to;
         // console.log('Player status from', from, 'convert to ', to);
-        switch(this.m_state){
+        switch (this.m_state) {
             case CharacterStatus.attackOne:
                 this.m_animationChanging = true;
                 this.m_animation.source = 'character/Attack1.atlas';
@@ -799,11 +836,12 @@ export class Character extends Laya.Script {
             case CharacterStatus.run:
                 this.m_animation.source = 'character/Run.atlas';
                 this.m_animation.play();
+                this.createWalkEffect(this.m_animation);
                 break;
             case CharacterStatus.slam:
                 this.m_animationChanging = true;
                 this.m_animation.source = "character/Erosion.atlas";
-                this.m_animation.play()
+                this.m_animation.play();
                 break;
             default:
                 this.m_animation.source = 'character/Idle.atlas';
@@ -811,10 +849,10 @@ export class Character extends Laya.Script {
                 break;
         }
         this.m_animation.interval = rate;
-        if(typeof onCallBack === 'function')
+        if (typeof onCallBack === 'function')
             onCallBack();
     }
-    public getEnemyAttackDamage(tag: string): number{
+    public getEnemyAttackDamage(tag: string): number {
         switch (tag) {
             case "EnemyNormalAttack":
                 return new Normal().m_dmg;
@@ -872,7 +910,7 @@ export default class CharacterInit extends Laya.Script {
         player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);//角色UI狀態方法
     }
     private initSetting(player: Character): void {
-        
+
         //生命值強化公式
         ExtraData.loadData();
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
@@ -897,9 +935,9 @@ export default class CharacterInit extends Laya.Script {
     }
     //9/13新增
     onUpdate() {
-        if(CharacterInit.playerEnt.m_animation.destroyed)
+        if (CharacterInit.playerEnt.m_animation.destroyed)
             return;
-            
+
         let colorNum: number = 2;
         let oathColorMat: Array<number> =
             [
