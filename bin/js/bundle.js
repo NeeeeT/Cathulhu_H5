@@ -1923,6 +1923,9 @@
                 setTimeout(() => {
                     this.m_canSprint = true;
                 }, 3000);
+                Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
+                }), 0);
             }
             if (this.m_keyDownList[39]) {
                 this.m_playerVelocity["Vx"] += 1 * this.m_velocityMultiplier;
@@ -2078,11 +2081,11 @@
             }, 10);
         }
         createWalkEffect(player) {
-            let walkEffects = new Laya.Animation();
-            walkEffects.source = "comp/WalkEffects.atlas";
+            this.m_walkeffect = new Laya.Animation();
+            this.m_walkeffect.source = "comp/WalkEffects.atlas";
             let posX = 280;
             let posY = 270;
-            walkEffects.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+            this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
             let colorMat = [
                 1, 0, 0, 0, 500,
                 0, 1, 0, 0, 500,
@@ -2091,16 +2094,16 @@
             ];
             let glowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            Laya.stage.addChild(walkEffects);
-            walkEffects.play();
+            Laya.stage.addChild(this.m_walkeffect);
+            this.m_walkeffect.play();
             this.m_walkTimer = setInterval(() => {
-                if (walkEffects.destroyed) {
+                if (this.m_walkeffect.destroyed) {
                     clearInterval(this.m_walkTimer);
                     this.m_walkTimer = null;
                     return;
                 }
-                walkEffects.skewY = this.m_isFacingRight ? 0 : 180;
-                walkEffects.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+                this.m_walkeffect.skewY = this.m_isFacingRight ? 0 : 180;
+                this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
             }, 10);
         }
         setSkill() {
@@ -2214,16 +2217,19 @@
                     this.m_animation.source = 'character/Attack1.atlas';
                     this.m_animation.play();
                     this.createAttackEffect(this.m_animation);
+                    this.m_walkeffect.destroy();
                     break;
                 case CharacterStatus.attackTwo:
                     this.m_animationChanging = true;
                     this.m_animation.source = 'character/Attack2.atlas';
                     this.m_animation.play();
                     this.createAttackEffect(this.m_animation);
+                    this.m_walkeffect.destroy();
                     break;
                 case CharacterStatus.idle:
                     this.m_animation.source = 'character/Idle.atlas';
                     this.m_animation.play();
+                    this.m_walkeffect.destroy();
                     break;
                 case CharacterStatus.run:
                     this.m_animation.source = 'character/Run.atlas';
@@ -2234,15 +2240,18 @@
                     this.m_animationChanging = true;
                     this.m_animation.source = "character/Erosion.atlas";
                     this.m_animation.play();
+                    this.m_walkeffect.destroy();
                     break;
                 case CharacterStatus.sprint:
                     this.m_animationChanging = true;
                     this.m_animation.source = "character/Sprint.atlas";
                     this.m_animation.play();
+                    this.m_walkeffect.destroy();
                     break;
                 default:
                     this.m_animation.source = 'character/Idle.atlas';
                     this.m_animation.play();
+                    this.m_walkeffect.destroy();
                     break;
             }
             this.m_animation.interval = rate;
