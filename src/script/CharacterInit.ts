@@ -72,6 +72,7 @@ export class Character extends Laya.Script {
     m_humanSkill: VirtualSkill = null;
 
     m_animation: Laya.Animation;
+    m_walkeffect: Laya.Animation;
     m_rigidbody: Laya.RigidBody;
     m_collider: Laya.BoxCollider;
     m_script: Laya.Script;
@@ -329,6 +330,7 @@ export class Character extends Laya.Script {
 
             this.delayMove(0.1);
             this.hurtedEvent(0.1);
+            this.updateAnimation(this.m_state, CharacterStatus.sprint, null, false, 100);
 
             this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 50.0 : -50.0, y: 0.0 };
             this.m_rigidbody.mask = 2 | 16;
@@ -350,6 +352,17 @@ export class Character extends Laya.Script {
             setTimeout(() => {
                 this.m_canSprint = true;
             }, 3000);
+            // setTimeout(() => {
+            //     this.m_animation.alpha = 0.7;
+            // }, 10);
+            // setTimeout(() => {
+            //     this.m_animation.alpha = 1;
+            // }, 300);
+            Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut,
+                Laya.Handler.create(this, () => {
+                    Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut,
+                        Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
+                }), 0);
         }
         //Up
         // if (this.m_keyDownList[38]) {
@@ -682,11 +695,11 @@ export class Character extends Laya.Script {
         }, 10);
     }
     public createWalkEffect(player: Laya.Animation) {
-        let walkEffects: Laya.Animation = new Laya.Animation();
-        walkEffects.source = "comp/WalkEffects.atlas";
+        this.m_walkeffect = new Laya.Animation();
+        this.m_walkeffect.source = "comp/WalkEffects.atlas";
         let posX: number = 280;
         let posY: number = 270;
-        walkEffects.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+        this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
         //濾鏡
         let colorMat: Array<number> =
             [
@@ -697,22 +710,22 @@ export class Character extends Laya.Script {
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        //walkEffects.filters = [colorFilter, glowFilter];
-        // walkEffects.on(Laya.Event.COMPLETE, this, function () {
-        //     walkEffects.destroy();
-        //     walkEffects.destroyed = true;
+        //this.m_walkeffect.filters = [colorFilter, glowFilter];
+        // this.m_walkeffect.on(Laya.Event.COMPLETE, this, function () {
+        //     this.m_walkeffect.destroy();
+        //     this.m_walkeffect.destroyed = true;
         // });
-        Laya.stage.addChild(walkEffects);
-        walkEffects.play();
+        Laya.stage.addChild(this.m_walkeffect);
+        this.m_walkeffect.play();
 
         this.m_walkTimer = setInterval(() => {
-            if (walkEffects.destroyed) {
+            if (this.m_walkeffect.destroyed) {
                 clearInterval(this.m_walkTimer);
                 this.m_walkTimer = null;
                 return;
             }
-            walkEffects.skewY = this.m_isFacingRight ? 0 : 180;
-            walkEffects.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+            this.m_walkeffect.skewY = this.m_isFacingRight ? 0 : 180;
+            this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
         }, 10);
     }
     private setSkill(): void {
@@ -834,16 +847,19 @@ export class Character extends Laya.Script {
                 this.m_animation.source = 'character/Attack1.atlas';
                 this.m_animation.play();
                 this.createAttackEffect(this.m_animation);
+                this.m_walkeffect.destroy();
                 break;
             case CharacterStatus.attackTwo:
                 this.m_animationChanging = true;
                 this.m_animation.source = 'character/Attack2.atlas';
                 this.m_animation.play();
                 this.createAttackEffect(this.m_animation);
+                this.m_walkeffect.destroy();
                 break;
             case CharacterStatus.idle:
                 this.m_animation.source = 'character/Idle.atlas';
                 this.m_animation.play();
+                this.m_walkeffect.destroy();
                 break;
             case CharacterStatus.run:
                 this.m_animation.source = 'character/Run.atlas';
@@ -854,10 +870,18 @@ export class Character extends Laya.Script {
                 this.m_animationChanging = true;
                 this.m_animation.source = "character/Erosion.atlas";
                 this.m_animation.play();
+                this.m_walkeffect.destroy();
+                break;
+            case CharacterStatus.sprint:
+                this.m_animationChanging = true;
+                this.m_animation.source = "character/Sprint.atlas";
+                this.m_animation.play();
+                this.m_walkeffect.destroy();
                 break;
             default:
                 this.m_animation.source = 'character/Idle.atlas';
                 this.m_animation.play();
+                this.m_walkeffect.destroy();
                 break;
         }
         this.m_animation.interval = rate;

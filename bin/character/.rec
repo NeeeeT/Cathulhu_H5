@@ -1,10 +1,10 @@
 D .
-R DCC70D05 .rec
+R 9DE1017A .rec
 R 285EAF9 Attack1.atlas
 R 4D8AB92B Attack1.png
 R 9F18FDB4 Attack2.atlas
 R 2EAA1942 Attack2.png
-R 56B8E82A Erosion.atlas
+R BA9CC09 Erosion.atlas
 R CD404C85 Erosion.png
 R ED59853C Idle.atlas
 R F43E2C0F Idle.png
@@ -42,3 +42,8 @@ P 6117F385 character_slam_1.png
 P 001D2A16 character_slam_2.png
 P 93E5B260 character_slam_3.png
 P ED908DA7 character_slam_4.png
+D Sprint
+P F0390DF5 character_run_1.png
+P 34038300 character_run_2.png
+P A87905B5 character_run_3.png
+P A5B36AD1 character_run_4.png

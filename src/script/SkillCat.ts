@@ -200,6 +200,7 @@ export class BlackHole extends VirtualSkill {
         }, this.m_cd * 1000);
         Laya.stage.addChild(this.m_animation);
         this.m_animation.play();
+        this.updateCdTimer();
     }
     attractRangeCheck(owner: any, pos: object): void {
         let enemy = EnemyHandler.enemyPool;
@@ -327,6 +328,7 @@ export class BigExplosion extends VirtualSkill {
         }, this.m_cd * 1000);
         Laya.stage.addChild(this.m_animation);
         this.m_animation.play();
+        this.updateCdTimer();
     }
     attractRangeCheck(owner: any, pos: object): void {
         let enemy = EnemyHandler.enemyPool;
