@@ -72,7 +72,7 @@ export class Character extends Laya.Script {
     m_humanSkill: VirtualSkill = null;
 
     m_animation: Laya.Animation;
-    m_walkeffect: Laya.Animation;
+    m_walkeffect: Laya.Animation = new Laya.Animation();
     m_rigidbody: Laya.RigidBody;
     m_collider: Laya.BoxCollider;
     m_script: Laya.Script;
@@ -825,6 +825,10 @@ export class Character extends Laya.Script {
     }
     public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void {
         if (from === to || this.m_animationChanging) return;
+        if (!this.m_walkeffect.destroyed){
+            this.m_walkeffect.destroy();
+            this.m_walkeffect.destroyed = true;
+        }
         this.m_state = to;
         // console.log('Player status from', from, 'convert to ', to);
         switch (this.m_state) {
@@ -833,19 +837,19 @@ export class Character extends Laya.Script {
                 this.m_animation.source = 'character/Attack1.atlas';
                 this.m_animation.play();
                 this.createAttackEffect(this.m_animation);
-                this.m_walkeffect.destroy();
+                // this.m_walkeffect.destroy();
                 break;
             case CharacterStatus.attackTwo:
                 this.m_animationChanging = true;
                 this.m_animation.source = 'character/Attack2.atlas';
                 this.m_animation.play();
                 this.createAttackEffect(this.m_animation);
-                this.m_walkeffect.destroy();
+                // this.m_walkeffect.destroy();
                 break;
             case CharacterStatus.idle:
                 this.m_animation.source = 'character/Idle.atlas';
                 this.m_animation.play();
-                this.m_walkeffect.destroy();
+                // this.m_walkeffect.destroy();
                 break;
             case CharacterStatus.run:
                 this.m_animation.source = 'character/Run.atlas';
@@ -856,18 +860,18 @@ export class Character extends Laya.Script {
                 this.m_animationChanging = true;
                 this.m_animation.source = "character/Erosion.atlas";
                 this.m_animation.play();
-                this.m_walkeffect.destroy();
+                // this.m_walkeffect.destroy();
                 break;
             case CharacterStatus.sprint:
                 this.m_animationChanging = true;
                 this.m_animation.source = "character/Sprint.atlas";
                 this.m_animation.play();
-                this.m_walkeffect.destroy();
+                // this.m_walkeffect.destroy();
                 break;
             default:
                 this.m_animation.source = 'character/Idle.atlas';
                 this.m_animation.play();
-                this.m_walkeffect.destroy();
+                // this.m_walkeffect.destroy();
                 break;
         }
         this.m_animation.interval = rate;

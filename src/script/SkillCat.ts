@@ -82,6 +82,7 @@ export class Slam extends VirtualSkill {
             this.m_canUse = true;
             Laya.stage.graphics.clear();
         }, this.m_cd * 1000);
+        this.updateCdTimer();
     }
     attackRangeCheck(owner: any, pos: object): void {
         let enemy = EnemyHandler.enemyPool;

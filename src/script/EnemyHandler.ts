@@ -234,7 +234,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     private showHealth() {
         this.m_healthBar = new Laya.ProgressBar();
         this.m_healthBar.height = 10;
-        this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
+        this.m_healthBar.width = this.m_animation.width;
         this.m_healthBar.skin = "comp/progress.png";
         this.m_healthBar.value = 1;
         this.m_healthBar.alpha = 1;
@@ -249,7 +249,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                 return;
             }
             this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && this.m_hurtDelay <= 0) ? 0.02 : 0;
-            this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+            this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) + 20, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
         }), 10);
     }

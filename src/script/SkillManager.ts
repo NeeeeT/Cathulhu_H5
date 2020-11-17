@@ -93,7 +93,6 @@ export abstract class VirtualSkill extends Laya.Script{
             }
             this.m_cdCount = !this.m_canUse ? (this.m_cdCount - 1):0;
             console.log(this.m_cdCount);
-            
         }, 1000);
     }
 }
