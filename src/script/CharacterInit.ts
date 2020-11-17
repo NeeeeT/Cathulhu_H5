@@ -9,6 +9,7 @@ import * as cSkill from "./SkillCat";
 import EnemyHandler, { Fast, Normal, Shield } from "./EnemyHandler";
 
 import { ExtraData } from "./ExtraData";
+import EnemyInit from "./EnemyInit";
 
 
 export class Character extends Laya.Script {
@@ -314,7 +315,7 @@ export class Character extends Laya.Script {
             if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
         if (this.m_keyDownList[16]) {
-            if (!this.m_canSprint) return;
+            if (!this.m_canSprint || EnemyInit.isWin) return;
 
             this.delayMove(0.1);
             this.hurtedEvent(0.1);
@@ -705,6 +706,10 @@ export class Character extends Laya.Script {
         this.m_walkeffect.play();
 
         this.m_walkTimer = setInterval(() => {
+            if (this.m_animation.destroyed || EnemyInit.isWin){
+                this.m_walkeffect.destroy();
+                this.m_walkeffect.destroyed = true;
+            }
             if (this.m_walkeffect.destroyed) {
                 clearInterval(this.m_walkTimer);
                 this.m_walkTimer = null;
@@ -769,7 +774,7 @@ export class Character extends Laya.Script {
         this.applyMoveY();
     }
     private applyMoveX(): void {
-        if (this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation)
+        if (this.m_moveDelayValue > 0 || this.m_animation.destroyed || !this.m_animation || EnemyInit.isWin)
             return;
         this.m_rigidbody.linearVelocity = {
             x: this.m_playerVelocity['Vx'],
