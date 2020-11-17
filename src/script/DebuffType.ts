@@ -111,6 +111,7 @@ export class Blind extends DebuffProto{
         this.blindBlackBg.graphics.clear();
         this.blindCircleMask.graphics.clear();
         clearInterval(this.blindHandler);
+        this.blindHandler = null;
     }
 }
 
@@ -141,7 +142,6 @@ export class BodyCrumble extends DebuffProto{
 
         this.bodyCrumbleHandler = setInterval(() => {
             this.debuffUpdate();
-
         }, 10)
         
     }
@@ -157,6 +157,7 @@ export class BodyCrumble extends DebuffProto{
          this.player.m_buff_xMaxVelocity = this.originXMaxVel_buff;
         this.player.m_velocityMultiplier = this.originVM;
         clearInterval(this.bodyCrumbleHandler);
+        this.bodyCrumbleHandler = null;
     }
 }
 

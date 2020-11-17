@@ -181,6 +181,13 @@ export class Character extends Laya.Script {
     public setHealth(amount: number): void {
         this.m_health = amount;
         if (this.m_health <= 0) {
+            
+            if (CharacterInit.playerEnt != null) {
+                //消除角色身上所有Debuff與Debuff計時器
+                CharacterInit.playerEnt.clearAddDebuffTimer();
+                CharacterInit.playerEnt.removeAllDebuff();
+            }
+
             this.death();
         }
     }
@@ -293,9 +300,11 @@ export class Character extends Laya.Script {
                 this.m_healthBar.destroyed = true;
                 return;
             }
-            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+            if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
                 this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
             }
+            if (Laya.stage.x >= -250) this.m_healthBar.pos(935 - Laya.stage.width / 2 + 155, 77.5);
+            if (Laya.stage.x <= -2475) this.m_healthBar.pos(3155 - Laya.stage.width / 2 + 155, 77.5);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
         }), 5);
     }
@@ -314,6 +323,9 @@ export class Character extends Laya.Script {
         }
         if (this.m_keyDownList[16]) {
             if (!this.m_canSprint) return;
+
+            //OathManager test
+            this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + 50);
 
             this.delayMove(0.1);
             this.hurtedEvent(0.1);
@@ -863,6 +875,12 @@ export class Character extends Laya.Script {
             default:
                 return 0;
         }
+    }
+    public removeAllDebuff(): void{
+        this.m_oathManager.removeAllDebuff();
+    }
+    public clearAddDebuffTimer(): void{
+        this.m_oathManager.clearAddDebuffTimer();
     }
 }
 

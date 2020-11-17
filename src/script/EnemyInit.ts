@@ -100,12 +100,15 @@ export default class EnemyInit extends Laya.Script{
                 this.battleTimer = null;
                 return;
             }
+            //消滅全部敵人時，進入結算階段
             if(this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0){
                 // Laya.Scene.open("Village.scene");
                 // Laya.stage.x = Laya.stage.y = 0; 
                 this.battleToggle = false;
                 EnemyInit.isWin = true;
-
+                //消除角色身上所有Debuff與Debuff計時器
+                CharacterInit.playerEnt.clearAddDebuffTimer();
+                CharacterInit.playerEnt.removeAllDebuff();
                 // this.unsetCharacter();
                 Laya.Tween.to(player, {alpha: 0.3}, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
                     this.showEndRewardUI();
@@ -121,7 +124,9 @@ export default class EnemyInit extends Laya.Script{
                 console.log('時間到! 你輸了:(');
                 clearInterval(this.battleTimer);
                 this.battleTimer = null;
-
+                //消除角色身上所有Debuff與Debuff計時器
+                CharacterInit.playerEnt.clearAddDebuffTimer();
+                CharacterInit.playerEnt.removeAllDebuff();
                 CharacterInit.playerEnt.death();
                 return;
             }

@@ -607,6 +607,7 @@
             this.blindBlackBg.graphics.clear();
             this.blindCircleMask.graphics.clear();
             clearInterval(this.blindHandler);
+            this.blindHandler = null;
         }
     }
     class BodyCrumble extends DebuffProto {
@@ -646,6 +647,7 @@
             this.player.m_buff_xMaxVelocity = this.originXMaxVel_buff;
             this.player.m_velocityMultiplier = this.originVM;
             clearInterval(this.bodyCrumbleHandler);
+            this.bodyCrumbleHandler = null;
         }
     }
     class Insane extends DebuffProto {
@@ -770,10 +772,9 @@
         initOathSystem() {
             this.oathState = 0;
             this.addDebuffTimer = null;
-            this.playerDebuff = DebuffType.none;
-            for (let i = 0; i <= 4; i++) {
-                this.removeDebuff(1 << i);
-            }
+            console.log("有執行initOathSystem");
+            this.clearAddDebuffTimer();
+            this.removeAllDebuff();
             this.clearBloodyUI();
         }
         getBloodyPoint() {
@@ -792,12 +793,15 @@
                     clearInterval(timer);
                     return;
                 }
-                if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+                if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
                     this.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
                 }
+                if (Laya.stage.x >= -250)
+                    this.oathBar.pos(935 - Laya.stage.width / 2 + 180, 107.5);
+                if (Laya.stage.x <= -2475)
+                    this.oathBar.pos(3155 - Laya.stage.width / 2 + 180, 107.5);
                 if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
                     this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
-                console.log(CharacterInit.playerEnt.m_bloodyPoint);
             }), 5);
             Laya.stage.addChild(this.oathBar);
         }
@@ -811,21 +815,24 @@
             this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
             this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
             let timer = setInterval((() => {
-                if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
-                    if (CharacterInit.playerEnt.m_animation.destroyed) {
-                        clearInterval(timer);
-                        timer = null;
-                        return;
-                    }
-                    if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null) {
+                if (CharacterInit.playerEnt.m_animation.destroyed) {
+                    clearInterval(timer);
+                    timer = null;
+                    return;
+                }
+                if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null) {
+                    if (Laya.stage.x < -250 && Laya.stage.x > -2475)
                         this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
-                        let pos = {
-                            'x': this.characterLogo.x,
-                            'y': this.characterLogo.y,
-                        };
-                        this.catSkillIcon.pos(pos['x'] + 16, pos['y'] + 102);
-                        this.humanSkillIcon.pos(pos['x'] + 116, pos['y'] + 102);
-                    }
+                    if (Laya.stage.x >= -250)
+                        this.characterLogo.pos(935 - Laya.stage.width / 2 + 20, 20);
+                    if (Laya.stage.x <= -2475)
+                        this.characterLogo.pos(3155 - Laya.stage.width / 2 + 20, 20);
+                    let pos = {
+                        'x': this.characterLogo.x,
+                        'y': this.characterLogo.y,
+                    };
+                    this.catSkillIcon.pos(pos['x'] + 16, pos['y'] + 102);
+                    this.humanSkillIcon.pos(pos['x'] + 116, pos['y'] + 102);
                 }
             }), 5);
             Laya.stage.addChild(this.characterLogo);
@@ -945,6 +952,16 @@
                     break;
             }
         }
+        removeAllDebuff() {
+            for (let i = 0; i <= 4; i++) {
+                this.removeDebuff(1 << i);
+            }
+            this.playerDebuff = DebuffType.none;
+        }
+        clearAddDebuffTimer() {
+            clearInterval(this.addDebuffTimer);
+            this.addDebuffTimer = null;
+        }
         oathUpdate() {
             switch (this.oathState) {
                 case OathStatus.normal:
@@ -958,7 +975,18 @@
                         console.log("轉態到overCharge");
                         this.overChargeCount = 0;
                         this.oathBar.skin = "UI/bp_150.png";
-                        this.oathBar.sizeGrid = "0,200,0,20";
+                        this.oathBar.sizeGrid = "0,200,0,50";
+                        if (this.addDebuffTimer === null) {
+                            console.log("添加addDebuffTimer");
+                            this.addDebuffTimer = setInterval(() => {
+                                if (CharacterInit.playerEnt.m_animation.destroyed || EnemyInit.isWin) {
+                                    this.clearAddDebuffTimer();
+                                    return;
+                                }
+                                console.log("執行addDebuffTimer內函式");
+                                this.randomAddDebuff();
+                            }, 5000);
+                        }
                         this.oathState = OathStatus.overCharge;
                         return;
                     }
@@ -974,33 +1002,22 @@
                     }
                     break;
                 case OathStatus.overCharge:
-                    if (this.addDebuffTimer === null) {
-                        console.log(this.addDebuffTimer);
-                        console.log("添加addDebuffTimer");
-                        console.log(this.addDebuffTimer);
-                    }
+                    if (EnemyInit.isWin)
+                        this.clearAddDebuffTimer();
                     if (this.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
                         this.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
                         return;
                     }
                     if (this.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        clearInterval(this.addDebuffTimer);
-                        this.addDebuffTimer = null;
-                        for (let i = 0; i <= 4; i++) {
-                            this.removeDebuff(1 << i);
-                        }
-                        this.playerDebuff = DebuffType.none;
+                        this.clearAddDebuffTimer();
+                        this.removeAllDebuff();
                         this.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.charge;
                         return;
                     }
                     if (this.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        clearInterval(this.addDebuffTimer);
-                        this.addDebuffTimer = null;
-                        for (let i = 0; i <= 4; i++) {
-                            this.removeDebuff(1 << i);
-                        }
-                        this.playerDebuff = DebuffType.none;
+                        this.clearAddDebuffTimer();
+                        this.removeAllDebuff();
                         this.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.normal;
                         return;
@@ -1028,6 +1045,7 @@
             }
         }
         randomAddDebuff() {
+            console.log("還是有執行randomAddDebuff，但>=31返回了，playerDebuff值 = ", this.playerDebuff);
             if (this.playerDebuff >= 31)
                 return;
             console.log("執行randomAddDebuff");
@@ -1528,7 +1546,7 @@
             this.m_animation.source = "comp/FireBall.atlas";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
-            explosion.source = "comp/Tentacle.atlas";
+            explosion.source = "comp/BigExplosion.atlas";
             explosion.scaleX = 6;
             explosion.scaleY = 6;
             explosion.interval = 30;
@@ -1750,6 +1768,10 @@
         setHealth(amount) {
             this.m_health = amount;
             if (this.m_health <= 0) {
+                if (CharacterInit.playerEnt != null) {
+                    CharacterInit.playerEnt.clearAddDebuffTimer();
+                    CharacterInit.playerEnt.removeAllDebuff();
+                }
                 this.death();
             }
         }
@@ -1842,9 +1864,13 @@
                     this.m_healthBar.destroyed = true;
                     return;
                 }
-                if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+                if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
                     this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
                 }
+                if (Laya.stage.x >= -250)
+                    this.m_healthBar.pos(935 - Laya.stage.width / 2 + 155, 77.5);
+                if (Laya.stage.x <= -2475)
+                    this.m_healthBar.pos(3155 - Laya.stage.width / 2 + 155, 77.5);
                 this.m_healthBar.value = this.m_health / this.m_maxHealth;
             }), 5);
         }
@@ -1863,6 +1889,7 @@
             if (this.m_keyDownList[16]) {
                 if (!this.m_canSprint)
                     return;
+                this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + 50);
                 this.delayMove(0.1);
                 this.hurtedEvent(0.1);
                 this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 50.0 : -50.0, y: 0.0 };
@@ -1894,11 +1921,6 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                this.m_catSkill = new BigExplosion();
-                this.m_catSkill.cast(CharacterInit.playerEnt, {
-                    x: this.m_animation.x,
-                    y: this.m_animation.y,
-                });
             }
             if (this.m_keyDownList[32]) {
             }
@@ -2216,6 +2238,12 @@
                 default:
                     return 0;
             }
+        }
+        removeAllDebuff() {
+            this.m_oathManager.removeAllDebuff();
+        }
+        clearAddDebuffTimer() {
+            this.m_oathManager.clearAddDebuffTimer();
         }
     }
     class CharacterInit extends Laya.Script {
@@ -2776,6 +2804,8 @@
                 if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0) {
                     this.battleToggle = false;
                     EnemyInit.isWin = true;
+                    CharacterInit.playerEnt.clearAddDebuffTimer();
+                    CharacterInit.playerEnt.removeAllDebuff();
                     Laya.Tween.to(player, { alpha: 0.3 }, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                         this.showEndRewardUI();
                     }), 0);
@@ -2788,6 +2818,8 @@
                     console.log('時間到! 你輸了:(');
                     clearInterval(this.battleTimer);
                     this.battleTimer = null;
+                    CharacterInit.playerEnt.clearAddDebuffTimer();
+                    CharacterInit.playerEnt.removeAllDebuff();
                     CharacterInit.playerEnt.death();
                     return;
                 }
