@@ -83,11 +83,12 @@ export default class EnemyInit extends Laya.Script{
                 this.generateTimer = null;
                 return;
             }
-            if(this.enemyLeft <= 0 || enemy.length >= 20){
+            if(this.enemyLeft <= 0){
                 clearInterval(this.generateTimer);
                 this.generateTimer = null;
                 return;
             }
+            if(EnemyHandler.getEnemiesCount() >= 10) return;
             let x = Math.floor(Math.random() * 4);
             if(Village.isNewbie){
                 EnemyHandler.generator(player, 5, 0);
@@ -216,8 +217,8 @@ export default class EnemyInit extends Laya.Script{
         this.skillCatInfoText.height = this.skillHumanInfoText.height = this.catSkillName.height = this.humanSkillName.height = 70;
         this.skillCatInfoText.pos(this.skillCatInfo.x+19,this.skillCatInfo.y+20);
         this.skillHumanInfoText.pos(this.skillHumanInfo.x+19,this.skillHumanInfo.y+20);
-        this.catSkillName.pos(pos['x']+142,pos['y']+306);
-        this.humanSkillName.pos(pos['x']+433,pos['y']+306);
+        this.catSkillName.pos(pos['x']+132,pos['y']+306);
+        this.humanSkillName.pos(pos['x']+423,pos['y']+306);
         this.skillCatInfoText.text = SkillList.catSkillList[this.r1].m_info;
         this.skillHumanInfoText.text = SkillList.humanSkillList[this.r2].m_info;
         this.catSkillName.text = player.m_catSkill.m_name;

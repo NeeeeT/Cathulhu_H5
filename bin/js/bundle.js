@@ -1925,7 +1925,7 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[16]) {
-                if (!this.m_canSprint)
+                if (!this.m_canSprint || EnemyInit.isWin)
                     return;
                 this.delayMove(0.1);
                 this.hurtedEvent(0.1);
@@ -2856,11 +2856,13 @@
                     this.generateTimer = null;
                     return;
                 }
-                if (this.enemyLeft <= 0 || enemy.length >= 20) {
+                if (this.enemyLeft <= 0) {
                     clearInterval(this.generateTimer);
                     this.generateTimer = null;
                     return;
                 }
+                if (EnemyHandler.getEnemiesCount() >= 10)
+                    return;
                 let x = Math.floor(Math.random() * 4);
                 if (Village.isNewbie) {
                     EnemyHandler.generator(player, 5, 0);
@@ -2975,8 +2977,8 @@
             this.skillCatInfoText.height = this.skillHumanInfoText.height = this.catSkillName.height = this.humanSkillName.height = 70;
             this.skillCatInfoText.pos(this.skillCatInfo.x + 19, this.skillCatInfo.y + 20);
             this.skillHumanInfoText.pos(this.skillHumanInfo.x + 19, this.skillHumanInfo.y + 20);
-            this.catSkillName.pos(pos['x'] + 142, pos['y'] + 306);
-            this.humanSkillName.pos(pos['x'] + 433, pos['y'] + 306);
+            this.catSkillName.pos(pos['x'] + 132, pos['y'] + 306);
+            this.humanSkillName.pos(pos['x'] + 423, pos['y'] + 306);
             this.skillCatInfoText.text = SkillList.catSkillList[this.r1].m_info;
             this.skillHumanInfoText.text = SkillList.humanSkillList[this.r2].m_info;
             this.catSkillName.text = player.m_catSkill.m_name;
@@ -3124,6 +3126,23 @@
         }
     }
 
+    class Loading extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.resourceLoad = ["Audio/Bgm/BGM1.wav", "font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
+                "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
+                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
+                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas", "ui/loading.png",
+            ];
+        }
+        onStart() {
+            Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
+                console.log('讀取完了!!!');
+                Laya.Scene.open("Village.scene");
+            }));
+        }
+    }
+
     class GameConfig {
         constructor() {
         }
@@ -3134,6 +3153,7 @@
             reg("script/EnemyInit.ts", EnemyInit);
             reg("script/CharacterInit.ts", CharacterInit);
             reg("script/SkillList.ts", SkillList);
+            reg("script/Loading.ts", Loading);
             reg("script/Village.ts", Village);
         }
     }
@@ -3143,7 +3163,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "Loading.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = true;

@@ -2,11 +2,10 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":4,
     "searchKey":"Scene",
     "props":{"width":1366,"sceneColor":"#000000","height":768},
     "nodeParent":-1,
-    "maxID":5,
+    "maxID":6,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -25,6 +24,23 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":4,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Script",
+            "switchAble":true,
+            "source":"src/script/Loading.ts",
+            "searchKey":"Script,Loading",
+            "removeAble":true,
+            "props":{},
+            "nodeParent":2,
+            "label":"Loading",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":5,
             "child":[
                 ]
         }],
