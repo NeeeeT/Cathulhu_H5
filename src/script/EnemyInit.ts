@@ -65,6 +65,8 @@ export default class EnemyInit extends Laya.Script{
     catSkillName: Laya.Text;
     humanSkillName: Laya.Text;
 
+    villageManager: Village = new Village();
+
     
     constructor(){
         super();
@@ -145,6 +147,10 @@ export default class EnemyInit extends Laya.Script{
         this.showBattleInfo();
     }
     onKeyUp(e: Laya.Event){
+        let player = CharacterInit.playerEnt
+        if(Village.reinforceToggle && e.keyCode === 32){
+            this.villageManager.clearReinforceUI();
+        }
         if(this.endingRewardUI && e.keyCode === 32){
             Laya.Tween.to(this.endingRewardUI, {alpha: 0.3}, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
                 this.endingRewardUI.destroy();
@@ -155,7 +161,6 @@ export default class EnemyInit extends Laya.Script{
                 this.showEndSkill();
             }), 0);
         };
-        let player = CharacterInit.playerEnt
         if(this.endingSkillUI){
             if(e.keyCode === 32){
                 if(player.m_isFacingRight){
@@ -307,7 +312,8 @@ export default class EnemyInit extends Laya.Script{
         Laya.Tween.to(player, {alpha: 0.0}, 2500, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
             player.destroy();
             player.destroyed = true;
-            this.changeToVillage();
+            // this.changeToVillage();
+            this.villageManager.showReinforceUI();
         }), 0);
     }
     showEndRewardUI(): void{

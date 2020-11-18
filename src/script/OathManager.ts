@@ -144,7 +144,7 @@ export default class OathManager extends Laya.Script {
                 this.catSkillIconCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
                 this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
 }          
-            this.sprintIconCd.text = CharacterInit.playerEnt.m_canSprint ? "":String('冷');
+            this.sprintIconCd.text = CharacterInit.playerEnt.m_canSprint ? "":String(CharacterInit.playerEnt.m_sprintCdCount);
         }), 5);
         Laya.stage.addChild(this.characterLogo);
         Laya.stage.addChild(this.catSkillIcon);
