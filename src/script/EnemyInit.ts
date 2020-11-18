@@ -25,6 +25,8 @@ export default class EnemyInit extends Laya.Script{
     battleTimer = null;
 
     timeLeftValue: number;
+    enemyLeftIcon: Laya.Sprite;
+    enemyInfo: Laya.Text;
 
     endingRewardUI: Laya.Sprite;
     endingSkillUI: Laya.Sprite;
@@ -55,7 +57,8 @@ export default class EnemyInit extends Laya.Script{
     r1: number
     r2: number
 
-    skillChooseHint: Laya.Text;
+    catSkillName: Laya.Text;
+    humanSkillName: Laya.Text;
 
     
     constructor(){
@@ -80,11 +83,12 @@ export default class EnemyInit extends Laya.Script{
                 this.generateTimer = null;
                 return;
             }
-            if(this.enemyLeft <= 0 || enemy.length >= 20){
+            if(this.enemyLeft <= 0){
                 clearInterval(this.generateTimer);
                 this.generateTimer = null;
                 return;
             }
+            if(EnemyHandler.getEnemiesCount() >= 10) return;
             let x = Math.floor(Math.random() * 4);
             if(Village.isNewbie){
                 EnemyHandler.generator(player, 5, 0);
@@ -102,8 +106,6 @@ export default class EnemyInit extends Laya.Script{
             }
             //消滅全部敵人時，進入結算階段
             if(this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0){
-                // Laya.Scene.open("Village.scene");
-                // Laya.stage.x = Laya.stage.y = 0; 
                 this.battleToggle = false;
                 EnemyInit.isWin = true;
                 //消除角色身上所有Debuff與Debuff計時器
@@ -121,7 +123,7 @@ export default class EnemyInit extends Laya.Script{
             }
             else if(this.timeLeftValue < 0){
                 EnemyHandler.clearAllEnemy();
-                console.log('時間到! 你輸了:(');
+                // console.log('時間到! 你輸了:(');
                 clearInterval(this.battleTimer);
                 this.battleTimer = null;
                 //消除角色身上所有Debuff與Debuff計時器
@@ -214,36 +216,28 @@ export default class EnemyInit extends Laya.Script{
 
         this.skillCatInfoText = new Laya.Text();
         this.skillHumanInfoText = new Laya.Text();
-        this.skillCatInfoText.width = this.skillHumanInfoText.width = 167;
-        this.skillCatInfoText.height = this.skillHumanInfoText.height = 70;
+        this.catSkillName = new Laya.Text();
+        this.humanSkillName = new Laya.Text();
+        this.skillCatInfoText.width = this.skillHumanInfoText.width = this.catSkillName.width = this.humanSkillName.width = 167;
+        this.skillCatInfoText.height = this.skillHumanInfoText.height = this.catSkillName.height = this.humanSkillName.height = 70;
         this.skillCatInfoText.pos(this.skillCatInfo.x+19,this.skillCatInfo.y+20);
         this.skillHumanInfoText.pos(this.skillHumanInfo.x+19,this.skillHumanInfo.y+20);
+        this.catSkillName.pos(pos['x']+132,pos['y']+306);
+        this.humanSkillName.pos(pos['x']+423,pos['y']+306);
         this.skillCatInfoText.text = SkillList.catSkillList[this.r1].m_info;
         this.skillHumanInfoText.text = SkillList.humanSkillList[this.r2].m_info;
-        this.skillCatInfoText.font = 'silver';
-        this.skillHumanInfoText.font = 'silver';
-        this.skillCatInfoText.color = '#fdfdfd';
-        this.skillHumanInfoText.color = '#fdfdfd';
-        this.skillCatInfoText.fontSize = 38;
-        this.skillHumanInfoText.fontSize = 38;
-        this.skillCatInfoText.wordWrap = true;
-        this.skillHumanInfoText.wordWrap = true;
+        this.catSkillName.text = player.m_catSkill.m_name;
+        this.humanSkillName.text = player.m_humanSkill.m_name;
+        this.skillCatInfoText.font = this.skillHumanInfoText.font = this.catSkillName.font = this.humanSkillName.font = 'silver';
+        this.skillCatInfoText.color = this.skillHumanInfoText.color = this.catSkillName.color = this.humanSkillName.color = '#fdfdfd';
+        this.skillCatInfoText.fontSize = this.skillHumanInfoText.fontSize = this.catSkillName.fontSize = this.humanSkillName.fontSize = 38;
+        this.skillCatInfoText.wordWrap = this.skillHumanInfoText.wordWrap = true;
 
-        this.skillChooseHint = new Laya.Text();
-        this.skillChooseHint.width = 340;
-        this.skillChooseHint.height = 30;
-        this.skillChooseHint.pos(pos['x']+171, pos['y']+307);
-        this.skillChooseHint.fontSize = 30;
-        this.skillChooseHint.font = 'silver';
-        this.skillChooseHint.text = "到想選擇的技能下方按下空白鍵吧";
-        this.skillChooseHint.color = "#fff";
-        this.skillChooseHint.stroke = 2;
-        this.skillChooseHint.strokeColor = "#000";
+        this.catSkillName.align = this.humanSkillName.align = 'center';
         
         Laya.stage.addChild(this.endingSkillUI);
         Laya.stage.addChild(this.skillCat);
         Laya.stage.addChild(this.skillHuman);
-        Laya.stage.addChild(this.skillChooseHint);
         // Laya.stage.addChild(this.skillCatBtn);
         // Laya.stage.addChild(this.skillHumanBtn);
         Laya.stage.addChild(this.skillCatIcon);
@@ -252,6 +246,8 @@ export default class EnemyInit extends Laya.Script{
         Laya.stage.addChild(this.skillHumanInfo);
         Laya.stage.addChild(this.skillCatInfoText);
         Laya.stage.addChild(this.skillHumanInfoText);
+        Laya.stage.addChild(this.catSkillName);
+        Laya.stage.addChild(this.humanSkillName);
 
         Laya.Tween.to(this.endingSkillUI, {alpha: 1.0}, 500, Laya.Ease.linearInOut, null, 0);
     }
@@ -324,30 +320,39 @@ export default class EnemyInit extends Laya.Script{
         this.endingUpdateData();
     }
     showBattleInfo(): void{
-        let info = new Laya.Text();
+        this.enemyLeftIcon = new Laya.Sprite();
+        this.enemyInfo = new Laya.Text();
         let player = CharacterInit.playerEnt.m_animation;
 
-        info.fontSize = 45;
-        info.color = "#efefef";
-        info.stroke = 3;
-        info.font = "silver";
-        info.strokeColor = "#000";
+        this.enemyInfo.fontSize = 60;
+        this.enemyInfo.color = "#fff";
+        this.enemyInfo.stroke = 3;
+        this.enemyInfo.font = "silver";
+        this.enemyInfo.strokeColor = "#000";
 
-        Laya.stage.addChild(info);
+        this.enemyLeftIcon.loadImage('ui/skull.png');
+        this.enemyLeftIcon.width = 30;
+        this.enemyLeftIcon.height = 40;
+
+        Laya.stage.addChild(this.enemyInfo);
+        Laya.stage.addChild(this.enemyLeftIcon);
 
         this.roundDetectTimer = setInterval(()=>{
             if(!this.battleToggle || player.destroyed){
-                info.text = "";
-                info.destroy();
+                this.enemyInfo.text = "";
+                this.enemyInfo.destroy();
+                this.enemyLeftIcon.destroy();
                 clearInterval(this.roundDetectTimer);
                 this.roundDetectTimer = null;
                 return;
             }
-            info.text = "剩餘時間: " + String(this.timeLeftValue) + "\n剩餘敵人數量 : " + String(this.enemyLeft) + "\n場上敵人數量 : " + EnemyHandler.getEnemiesCount();
-            info.pos(player.x - 50, player.y - 400);
-        }, 10)
+            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+                this.enemyLeftIcon.pos(player.x-70, player.y-450);
+                this.enemyInfo.pos(this.enemyLeftIcon.x+44, this.enemyLeftIcon.y-2);
+                this.enemyInfo.text = 'x' + String(EnemyHandler.getEnemiesCount());
+            }
+        }, 5);
     }
-
     updateMissionData() {
         this.enemyLeft = EnemyInit.missionEnemyNum;
         this.rewardCrystalValue = EnemyInit.missionRewardCrystalValue;
@@ -379,6 +384,7 @@ export default class EnemyInit extends Laya.Script{
         this.skillHumanInfo.destroy();
         this.skillCatInfoText.destroy();
         this.skillHumanInfoText.destroy();
-        this.skillChooseHint.destroy();
+        this.catSkillName.destroy();
+        this.humanSkillName.destroy();
     }
 }

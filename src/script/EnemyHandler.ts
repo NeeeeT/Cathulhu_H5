@@ -225,16 +225,16 @@ export abstract class VirtualEnemy extends Laya.Script {
         //this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
 
-        Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut,
+        Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 80, }, 650, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut,
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 130 }, 650, Laya.Ease.linearInOut,
                     Laya.Handler.create(this, () => { damageText.destroy() }), 0);
             }), 0);
     }
     private showHealth() {
         this.m_healthBar = new Laya.ProgressBar();
         this.m_healthBar.height = 10;
-        this.m_healthBar.width = this.m_animation.width * this.m_animation.scaleX * 1.2;
+        this.m_healthBar.width = this.m_animation.width;
         this.m_healthBar.skin = "comp/progress.png";
         this.m_healthBar.value = 1;
         this.m_healthBar.alpha = 1;
@@ -249,7 +249,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                 return;
             }
             this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && this.m_hurtDelay <= 0) ? 0.02 : 0;
-            this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) - 10, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
+            this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) + 20, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
         }), 10);
     }

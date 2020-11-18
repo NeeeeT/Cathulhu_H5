@@ -22,8 +22,12 @@ export default class OathManager extends Laya.Script {
 
     public catSkillIcon: Laya.Sprite;
     public humanSkillIcon: Laya.Sprite;
+    public sprintIcon: Laya.Sprite;
+
     public catSkillIconCd: Laya.Text;
     public humanSkillIconCd: Laya.Text;
+    public sprintIconCd: Laya.Text;
+    
     
     public
 
@@ -76,52 +80,68 @@ export default class OathManager extends Laya.Script {
 
         this.catSkillIcon = new Laya.Sprite();
         this.humanSkillIcon = new Laya.Sprite();
+        this.sprintIcon = new Laya.Sprite();
 
         this.catSkillIconCd = new Laya.Text();
         this.humanSkillIconCd = new Laya.Text();
+        this.sprintIconCd = new Laya.Text();
 
         this.catSkillIcon.width = this.catSkillIcon.height = 69;
-        this.humanSkillIcon.width = this.humanSkillIcon.height = 69;
-        this.catSkillIconCd.width = this.humanSkillIconCd.width = 100; 
-        this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = 40;
-        this.catSkillIconCd.font = this.humanSkillIconCd.font = 'silver';
+        this.humanSkillIcon.height = this.humanSkillIcon.height = 69;
+        this.sprintIcon.width = this.sprintIcon.height = 69;
+        this.catSkillIconCd.width = this.humanSkillIconCd.width = this.sprintIconCd.width = 100; 
+        this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = this.sprintIconCd.fontSize = 42;
+        this.catSkillIconCd.font = this.humanSkillIconCd.font = this.sprintIconCd.font = 'silver';
+        this.catSkillIconCd.stroke = this.humanSkillIconCd.stroke = this.sprintIconCd.stroke = 2;
+        this.catSkillIconCd.strokeColor = this.humanSkillIconCd.strokeColor = this.sprintIconCd.strokeColor = '#000';
+        this.catSkillIconCd.color = this.humanSkillIconCd.color = this.sprintIconCd.color = '#fff';
+
 
         this.characterLogo.source = "UI/Box.png";
         this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
         this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
-        let timer = setInterval((() => {        
-                if (CharacterInit.playerEnt.m_animation.destroyed) {
-                    clearInterval(timer);
-                    timer = null;
-                    return;
+             
+        this.sprintIcon.loadImage("ui/icon/sprint.png");
+        let timer = setInterval((() => {
+            
+            if (CharacterInit.playerEnt.m_animation.destroyed) {
+                clearInterval(timer);
+                timer = null;
+                return;
+            }
+            if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null){
+                if (Laya.stage.x < -250 && Laya.stage.x > -2475) this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
+                if (Laya.stage.x >= -250) this.characterLogo.pos(935 - Laya.stage.width / 2 + 20, 20);
+                if (Laya.stage.x <= -2475) this.characterLogo.pos(3155 - Laya.stage.width / 2 + 20, 20);
+                let pos: object = {
+                    'x': this.characterLogo.x,
+                    'y': this.characterLogo.y,
                 }
-                if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null){
-                    if (Laya.stage.x < -250 && Laya.stage.x > -2475) this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
-                    if (Laya.stage.x >= -250) this.characterLogo.pos(935 - Laya.stage.width / 2 + 20, 20);
-                    if (Laya.stage.x <= -2475) this.characterLogo.pos(3155 - Laya.stage.width / 2 + 20, 20);
-                    let pos: object = {
-                        'x': this.characterLogo.x,
-                        'y': this.characterLogo.y,
-                    }
-                    this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                    this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                    this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                    this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                    this.catSkillIconCd.pos(this.catSkillIcon.x+27,this.catSkillIcon.y+21);
-                    this.humanSkillIconCd.pos(this.humanSkillIcon.x+27,this.humanSkillIcon.y+21);
-                    this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1:0.5;
-                    this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1:0.5;
-                    this.catSkillIconCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
-                    this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
-                    this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                    this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                }          
+                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
+                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
+                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
+                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
+                this.sprintIcon.pos(pos['x']+65,pos['y']+146);
+                this.catSkillIconCd.pos(this.catSkillIcon.x+29,this.catSkillIcon.y+21);
+                this.humanSkillIconCd.pos(this.humanSkillIcon.x+29,this.humanSkillIcon.y+21);
+                this.sprintIconCd.pos(this.sprintIcon.x+29,this.sprintIcon.y+21);
+                this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1:0.3;
+                this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1:0.3;
+                this.sprintIcon.alpha = CharacterInit.playerEnt.m_canSprint ? 1:0.3;
+                this.catSkillIconCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
+                this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
+                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
+                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
+            }          
+            this.sprintIconCd.text = CharacterInit.playerEnt.m_canSprint ? "":String('冷');
         }), 5);
         Laya.stage.addChild(this.characterLogo);
         Laya.stage.addChild(this.catSkillIcon);
         Laya.stage.addChild(this.humanSkillIcon);
         Laya.stage.addChild(this.catSkillIconCd);
         Laya.stage.addChild(this.humanSkillIconCd)
+        Laya.stage.addChild(this.sprintIcon);
+        Laya.stage.addChild(this.sprintIconCd);
         this.characterLogo.play();
         
     }
@@ -149,6 +169,14 @@ export default class OathManager extends Laya.Script {
         if(this.humanSkillIconCd != null){
             this.humanSkillIconCd.destroy();
             this.humanSkillIconCd = null;
+        }
+        if(this.sprintIcon != null){
+            this.sprintIcon.destroy();
+            this.sprintIcon = null;
+        }
+        if(this.sprintIconCd != null){
+            this.sprintIconCd.destroy();
+            this.sprintIconCd = null;
         }
     }
     public oathChargeDetect(): boolean{
