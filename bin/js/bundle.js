@@ -3038,8 +3038,8 @@
             this.humanSkillName.pos(pos['x'] + 405, pos['y'] + 295);
             this.skillCatInfoText.text = SkillList.catSkillList[this.r1].m_info;
             this.skillHumanInfoText.text = SkillList.humanSkillList[this.r2].m_info;
-            this.catSkillName.text = player.m_catSkill.m_name;
-            this.humanSkillName.text = player.m_humanSkill.m_name;
+            this.catSkillName.text = SkillList.catSkillList[this.r1].m_name;
+            this.humanSkillName.text = SkillList.humanSkillList[this.r2].m_name;
             this.catSkillName.align = this.humanSkillName.align = 'center';
             this.skillCatInfoText.font = this.skillHumanInfoText.font = this.catSkillName.font = this.humanSkillName.font = 'silver';
             this.skillCatInfoText.color = this.skillHumanInfoText.color = this.catSkillName.color = this.humanSkillName.color = '#fdfdfd';
