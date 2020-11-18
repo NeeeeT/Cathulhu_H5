@@ -248,17 +248,18 @@
         initOathSystem() {
             this.oathState = 0;
             this.addDebuffTimer = null;
-            console.log("有執行initOathSystem");
             this.clearAddDebuffTimer();
             this.removeAllDebuff();
             this.clearBloodyUI();
         }
-        getBloodyPoint() {
+        get currentBloodyPoint() {
             return CharacterInit.playerEnt.m_bloodyPoint;
         }
-        setBloodyPoint(amount) {
+        set currentBloodyPoint(amount) {
             CharacterInit.playerEnt.m_bloodyPoint = amount;
-            return CharacterInit.playerEnt.m_bloodyPoint;
+            if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
+                this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
+            console.log("當前獻祭值量：", CharacterInit.playerEnt.m_bloodyPoint, "獻祭值條比例：", this.oathBar.value);
         }
         showBloodyPoint(player) {
             this.oathBar = new Laya.ProgressBar();
@@ -277,7 +278,7 @@
                 if (Laya.stage.x <= -2475)
                     this.oathBar.pos(3155 - Laya.stage.width / 2 + 180, 107.5);
                 if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
-                    this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
+                    this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
             }), 5);
             Laya.stage.addChild(this.oathBar);
         }
@@ -385,10 +386,12 @@
             if (this.oathChargeDetect()) {
                 CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_buff_xMaxVelocity;
                 CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_buff_attackCdTime;
+                CharacterInit.playerEnt.m_damageMultiplier = CharacterInit.playerEnt.m_buff_damageMultiPlier;
             }
             else {
                 CharacterInit.playerEnt.m_xMaxVelocity = CharacterInit.playerEnt.m_basic_xMaxVelocity;
                 CharacterInit.playerEnt.m_attackCdTime = CharacterInit.playerEnt.m_basic_attackCdTime;
+                CharacterInit.playerEnt.m_damageMultiplier = CharacterInit.playerEnt.m_basic_damageMultiPlier;
             }
         }
         addDebuff(type) {
@@ -484,16 +487,18 @@
             switch (this.oathState) {
                 case OathStatus.normal:
                     if (this.oathChargeDetect()) {
-                        this.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
+                        this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
+                        CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
                         this.oathState = OathStatus.charge;
                     }
                     break;
                 case OathStatus.charge:
-                    if (this.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && this.overChargeCount >= 2) {
+                    if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_soft && this.overChargeCount >= 2) {
                         console.log("轉態到overCharge");
                         this.overChargeCount = 0;
                         this.oathBar.skin = "UI/bp_150.png";
                         this.oathBar.sizeGrid = "0,200,0,50";
+                        CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_hard;
                         if (this.addDebuffTimer === null) {
                             console.log("添加addDebuffTimer");
                             this.addDebuffTimer = setInterval(() => {
@@ -508,12 +513,12 @@
                         this.oathState = OathStatus.overCharge;
                         return;
                     }
-                    if (this.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && this.overChargeCount < 2) {
+                    if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_soft && this.overChargeCount < 2) {
                         this.overChargeCount++;
-                        this.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
+                        this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint;
                         return;
                     }
-                    if (this.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                    if (this.currentBloodyPoint < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
                         this.overChargeCount = 0;
                         this.oathState = OathStatus.normal;
                         return;
@@ -522,21 +527,25 @@
                 case OathStatus.overCharge:
                     if (EnemyInit.isWin)
                         this.clearAddDebuffTimer();
-                    if (this.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
-                        this.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
+                    if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
+                        this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint;
                         return;
                     }
-                    if (this.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                    if (this.currentBloodyPoint === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                        this.oathBar.skin = "UI/bp_100.png";
+                        CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
+                        this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
                         this.clearAddDebuffTimer();
                         this.removeAllDebuff();
-                        this.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.charge;
                         return;
                     }
-                    if (this.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                    if (this.currentBloodyPoint < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                        this.oathBar.skin = "UI/bp_100.png";
+                        CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
+                        this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
                         this.clearAddDebuffTimer();
                         this.removeAllDebuff();
-                        this.oathBar.skin = "UI/bp_100.png";
                         this.oathState = OathStatus.normal;
                         return;
                     }
@@ -581,11 +590,14 @@
                 this.addDebuff(1 << type);
             }
         }
-        oathCastSkill(cost, valve = 30) {
-            if (this.getBloodyPoint() < valve || this.getBloodyPoint() < cost)
+        oathCastSkillCheck(cost, valve = 30) {
+            if (this.currentBloodyPoint < valve || this.currentBloodyPoint < cost)
                 return false;
-            this.setBloodyPoint(this.getBloodyPoint() - cost);
             return true;
+        }
+        oathCastSkill(cost) {
+            console.log("扣除了技能消耗的獻祭值");
+            this.currentBloodyPoint = this.currentBloodyPoint - cost;
         }
     }
 
@@ -609,7 +621,7 @@
             super(...arguments);
             this.m_canUse = true;
         }
-        cast(owner, position) {
+        cast(owner, position, oathSystemCheck) {
         }
         ;
         castRoar(pos) {
@@ -680,7 +692,6 @@
             super(...arguments);
             this.m_name = '突進斬';
             this.m_info = '向前位移，並且擊退敵人';
-            this.m_damage = 111;
             this.m_cost = 30;
             this.m_id = 1;
             this.m_cd = 3;
@@ -689,10 +700,14 @@
             this.m_lastTime = 0.2;
             this.m_spikeVec = 55.0;
         }
-        cast(owner, position) {
+        cast(owner, position, oathSystemCheck) {
             if (!this.m_canUse)
                 return;
+            if (!oathSystemCheck)
+                return;
             this.m_canUse = false;
+            CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
+            this.m_damage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_spikeDmgMultiplier);
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
             this.m_animation.width = 400;
@@ -755,7 +770,6 @@
             super(...arguments);
             this.m_name = '攻其不備';
             this.m_info = '製造破綻，並且追擊敵人';
-            this.m_damage = 444;
             this.m_cost = 10;
             this.m_id = 2;
             this.m_cd = 3;
@@ -763,10 +777,14 @@
             this.m_iconB = "ui/icon/beheadB.png";
             this.m_preTime = 0.56;
         }
-        cast(owner, position) {
+        cast(owner, position, oathSystemCheck) {
             if (!this.m_canUse)
                 return;
+            if (!oathSystemCheck)
+                return;
             this.m_canUse = false;
+            CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
+            this.m_damage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_beheadDmgMultiplier);
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
             this.m_animation.width = owner.m_animation.width;
@@ -868,7 +886,6 @@
             super(...arguments);
             this.m_name = '猛擊';
             this.m_info = '強大的範圍傷害';
-            this.m_damage = 125;
             this.m_cost = 50;
             this.m_id = 2;
             this.m_cd = 1;
@@ -876,10 +893,14 @@
             this.m_iconB = "ui/icon/slamB.png";
             this.m_injuredEnemy = [];
         }
-        cast(owner, position) {
+        cast(owner, position, oathSystemCheck) {
             if (!this.m_canUse)
                 return;
+            if (!oathSystemCheck)
+                return;
             this.m_canUse = false;
+            CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
+            this.m_damage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_slamDmgMultiplier);
             let rightSide = owner.m_isFacingRight;
             this.m_animation = new Laya.Animation();
             this.m_animation.width = 350;
@@ -951,8 +972,6 @@
             super(...arguments);
             this.m_name = '深淵侵蝕';
             this.m_info = '牽引敵人並且造成傷害';
-            this.m_damage = 99999;
-            this.m_dotDamage = 7;
             this.m_cost = 80;
             this.m_id = 2;
             this.m_cd = 5;
@@ -961,10 +980,15 @@
             this.m_iconA = "ui/icon/blackholeA.png";
             this.m_iconB = "ui/icon/blackholeB.png";
         }
-        cast(owner, position) {
+        cast(owner, position, oathSystemCheck) {
             if (!this.m_canUse)
                 return;
+            if (!oathSystemCheck)
+                return;
             this.m_canUse = false;
+            CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
+            this.m_damage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_blackHoleDmgMultiplier);
+            this.m_dotDamage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_blackHoleDotDmgMultiplier);
             let rightSide = owner.m_isFacingRight;
             let explosion = new Laya.Animation();
             this.m_animation = new Laya.Animation();
@@ -1058,7 +1082,6 @@
             super(...arguments);
             this.m_name = '魔法大爆射';
             this.m_info = '造成全場敵人極大的損傷';
-            this.m_damage = 99999;
             this.m_dotDamage = 7;
             this.m_cost = 80;
             this.m_id = 2;
@@ -1068,9 +1091,14 @@
             this.m_iconA = "ui/icon/blackholeA.png";
             this.m_iconB = "ui/icon/blackholeB.png";
         }
-        cast(owner, position) {
+        cast(owner, position, oathSystemCheck) {
             if (!this.m_canUse)
                 return;
+            if (!oathSystemCheck)
+                return;
+            this.m_canUse = false;
+            CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
+            this.m_damage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_bigExplosionDmgMultiplier);
             let rightSide = owner.m_isFacingRight;
             let explosion = new Laya.Animation();
             this.m_animation = new Laya.Animation();
@@ -1089,7 +1117,6 @@
             explosion.pos(this.m_animation.x - 1400, this.m_animation.y - 1500);
             let offsetX = rightSide ? position['x'] + 140 : position['x'] - this.m_animation.width - 65;
             let offsetY = position['y'] - this.m_animation.height / 2;
-            this.m_canUse = false;
             this.castRoar(position);
             let colorMat = [
                 4, 0, 2, 0, -150,
@@ -1237,6 +1264,7 @@
             this.m_animation.height = 128;
             this.m_animation.pivotX = this.m_animation.width / 2;
             this.m_animation.pivotY = this.m_animation.height / 2;
+            this.m_maxBloodyPoint = this.m_maxBloodyPoint_soft;
             this.m_animation.destroyed = false;
             this.m_animation.pos(1345, 544);
             this.m_animation.autoPlay = true;
@@ -1333,7 +1361,7 @@
             this.m_atkLevel = data.atkDmgLevel;
         }
         getAtkValue(atkLevel) {
-            this.m_atk = 30 + Math.round(Math.random() * 100) + atkLevel * 10;
+            this.m_atk = (30 + Math.round(Math.random() * 100)) * this.m_damageMultiplier + atkLevel * 10;
             return this.m_atk;
         }
         takeDamage(amount) {
@@ -1427,7 +1455,7 @@
             if (this.m_keyDownList[16]) {
                 if (!this.m_canSprint || EnemyInit.isWin)
                     return;
-                this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + 50);
+                this.m_oathManager.currentBloodyPoint = this.m_oathManager.currentBloodyPoint + 50;
                 this.delayMove(0.1);
                 this.hurtedEvent(0.1);
                 this.updateAnimation(this.m_state, CharacterStatus.sprint, null, false, 100);
@@ -1487,22 +1515,21 @@
                     this.m_canAttack = true;
                 }, this.m_attackCdTime);
             }
-            if (this.m_keyDownList[67]) {
-                if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost) || EnemyInit.isWin)
+            if (this.m_keyDownList[88]) {
+                if (EnemyInit.isWin)
                     return;
-                console.log("施放人技");
                 this.m_humanSkill.cast(CharacterInit.playerEnt, {
                     x: this.m_animation.x,
                     y: this.m_animation.y,
-                });
+                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
             }
-            if (this.m_keyDownList[88]) {
-                if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost) || EnemyInit.isWin)
+            if (this.m_keyDownList[67]) {
+                if (EnemyInit.isWin)
                     return;
                 this.m_catSkill.cast(CharacterInit.playerEnt, {
                     x: this.m_animation.x,
                     y: this.m_animation.y,
-                });
+                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
             }
         }
         attackStepEventCheck() {
@@ -1539,7 +1566,7 @@
                     enemyFound.forEach((e) => {
                         e._ent.takeDamage(this.getAtkValue(this.m_atkLevel));
                         this.setCameraShake(10, 3);
-                        this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + this.m_oathManager.increaseBloodyPoint);
+                        this.m_oathManager.currentBloodyPoint = this.m_oathManager.currentBloodyPoint + this.m_oathManager.increaseBloodyPoint;
                         if (enemyCount < 3)
                             e._ent.slashLightEffect(e._ent.m_animation);
                         this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);
@@ -1815,6 +1842,14 @@
             this.attackRange = 100;
             this.attackCdTime = 500;
             this.buff_attackCdTime = 425;
+            this.damageMultiplier = 1;
+            this.buff_damageMultiplier = 1.5;
+            this.spikeDmgMultiplier = 1;
+            this.beheadDmgMultiplier = 1;
+            this.slamDmgMultiplier = 1;
+            this.blackHoleDmgMultiplier = 1;
+            this.blackHoleDotDmgMultiplier = 1;
+            this.bigExplosionDmgMultiplier = 1;
         }
         onAwake() {
             let player = new Character();
@@ -1840,6 +1875,16 @@
             player.m_attackRange = this.attackRange;
             player.m_basic_attackCdTime = this.attackCdTime;
             player.m_buff_attackCdTime = this.buff_attackCdTime;
+            player.m_basic_damageMultiPlier = this.damageMultiplier;
+            player.m_buff_damageMultiPlier = this.buff_damageMultiplier;
+            player.m_spikeDmgMultiplier = this.spikeDmgMultiplier;
+            player.m_beheadDmgMultiplier = this.beheadDmgMultiplier;
+            player.m_slamDmgMultiplier = this.slamDmgMultiplier;
+            player.m_blackHoleDmgMultiplier = this.blackHoleDmgMultiplier;
+            player.m_blackHoleDotDmgMultiplier = this.blackHoleDotDmgMultiplier;
+            player.m_bigExplosionDmgMultiplier = this.bigExplosionDmgMultiplier;
+            player.m_maxBloodyPoint = player.m_maxBloodyPoint_soft;
+            player.m_bloodyPoint = 0;
             player.m_oathManager = new OathManager();
             player.m_oathManager.initOathSystem();
             player.showHealth();
@@ -1992,8 +2037,8 @@
             let moneyNum = new Laya.Text();
             crystalNum.font = "silver";
             moneyNum.font = "silver";
-            crystalNum.fontSize = 30;
-            moneyNum.fontSize = 30;
+            crystalNum.fontSize = 45;
+            moneyNum.fontSize = 45;
             crystalNum.text = crystal.toString();
             moneyNum.text = money.toString();
             crystalNum.pos(171 + 252 + 5 + col * (256 + 34), 305 + 96);
@@ -2766,6 +2811,7 @@
                         clearInterval(this.m_deadTimer);
                         this.destroy();
                         EnemyInit.enemyLeftCur--;
+                        EnemyHandler.updateEnemies();
                     }
                 }), 25);
                 return;
@@ -3233,7 +3279,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Loading.scene";
+    GameConfig.startScene = "Village.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = false;

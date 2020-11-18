@@ -24,25 +24,36 @@ export class Character extends Laya.Script {
     m_maxBloodyPoint_soft: number;
     m_maxBloodyPoint_hard: number;
     m_atk: number;
+    m_damageMultiplier: number;
     m_defense: number;
     m_xMaxVelocity: number;
     m_yMaxVelocity: number;
     m_velocityMultiplier: number;
     m_attackRange: number;
     m_attackCdTime: number;
-
+    
     m_moveDelayValue: number = 0;
     m_moveDelayTimer = null;
-
+    
     //基礎數值
     m_basic_xMaxVelocity: number;
     // m_basic_velocityMultiplier: number;
     m_basic_attackCdTime: number;
-
+    m_basic_damageMultiPlier: number;
+    
     //誓約強化數值
     // m_buff_velocityMultiplier: number;
     m_buff_xMaxVelocity: number;
     m_buff_attackCdTime: number;
+    m_buff_damageMultiPlier: number;
+    
+    //技能傷害倍率
+    m_spikeDmgMultiplier: number;
+    m_beheadDmgMultiplier: number;
+    m_slamDmgMultiplier: number;
+    m_blackHoleDmgMultiplier: number;
+    m_blackHoleDotDmgMultiplier: number;
+    m_bigExplosionDmgMultiplier: number;
 
     m_playerVelocity: object;
 
@@ -214,7 +225,7 @@ export class Character extends Laya.Script {
         this.m_atkLevel = data.atkDmgLevel;
     }
     getAtkValue(atkLevel: number): number {
-        this.m_atk = 30 + Math.round(Math.random() * 100) + atkLevel * 10;
+        this.m_atk = (30 + Math.round(Math.random() * 100)) * this.m_damageMultiplier + atkLevel * 10;
         return this.m_atk;
     }
     takeDamage(amount: number) {
@@ -496,7 +507,7 @@ export class Character extends Laya.Script {
         // } 
         if (this.m_keyDownList[88]) {
             if (EnemyInit.isWin) return;
-            console.log("施放人技");
+            // console.log("施放人技");
             
             this.m_humanSkill.cast(CharacterInit.playerEnt,
                 {
@@ -953,6 +964,27 @@ export default class CharacterInit extends Laya.Script {
     attackCdTime: number = 500;
     /** @prop {name:buff_attackCdTime,tips:"誓約充能時，角色攻擊速度，越低越快",type:int,default:425}*/
     buff_attackCdTime: number = 425;
+    /** @prop {name:damageMultiplier,tips:"調整傷害倍率",type:Number,default:1}*/
+    damageMultiplier: number = 1;
+    /** @prop {name:buff_damageMultiplier,tips:"誓約充能時，調整傷害倍率",type:Number,default:1.5}*/
+    buff_damageMultiplier: number = 1.5;
+
+    /** @prop {name:spikeDmgMultiplier,tips:"調整突進斬傷害倍率",type:Number,default:1}*/
+    spikeDmgMultiplier: number = 1;
+    /** @prop {name:beheadDmgMultiplier,tips:"調整攻其不備傷害倍率",type:Number,default:1}*/
+    beheadDmgMultiplier: number = 1;
+    /** @prop {name:slamDmgMultiplier,tips:"調整猛擊傷害倍率",type:Number,default:1}*/
+    slamDmgMultiplier: number = 1;
+    /** @prop {name:blackHoleDmgMultiplier,tips:"調整深淵侵蝕最終傷害倍率",type:Number,default:1}*/
+    blackHoleDmgMultiplier: number = 1;
+    /** @prop {name:blackHoleDotDmgMultiplier,tips:"調整深淵侵蝕持續傷害倍率",type:Number,default:1}*/
+    blackHoleDotDmgMultiplier: number = 1;
+    /** @prop {name:bigExplosionDmgMultiplier,tips:"調整魔法大爆射傷害倍率",type:Number,default:1}*/
+    bigExplosionDmgMultiplier: number = 1;
+
+
+
+
 
     public static playerEnt: Character;
 
@@ -987,6 +1019,17 @@ export default class CharacterInit extends Laya.Script {
         player.m_attackRange = this.attackRange;
         player.m_basic_attackCdTime = this.attackCdTime;
         player.m_buff_attackCdTime = this.buff_attackCdTime;
+
+        player.m_basic_damageMultiPlier = this.damageMultiplier;
+        player.m_buff_damageMultiPlier = this.buff_damageMultiplier;
+        
+        //技能傷害倍率
+        player.m_spikeDmgMultiplier = this.spikeDmgMultiplier;
+        player.m_beheadDmgMultiplier = this.beheadDmgMultiplier;
+        player.m_slamDmgMultiplier = this.slamDmgMultiplier;
+        player.m_blackHoleDmgMultiplier = this.blackHoleDmgMultiplier;
+        player.m_blackHoleDotDmgMultiplier = this.blackHoleDotDmgMultiplier;
+        player.m_bigExplosionDmgMultiplier = this.bigExplosionDmgMultiplier;
 
         player.m_maxBloodyPoint = player.m_maxBloodyPoint_soft;
         player.m_bloodyPoint = 0;

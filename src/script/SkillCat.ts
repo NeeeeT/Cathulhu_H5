@@ -6,7 +6,7 @@ import { VirtualSkill } from "./SkillManager";
 export class Slam extends VirtualSkill {
     m_name = '猛擊';
     m_info = '強大的範圍傷害';
-    m_damage = 125;
+    m_damage: number;
     m_cost = 50;
     m_id = 2;
     m_cd = 1;
@@ -22,7 +22,7 @@ export class Slam extends VirtualSkill {
         this.m_canUse = false;
 
         CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
-
+        this.m_damage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_slamDmgMultiplier);
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
@@ -105,8 +105,8 @@ export class Slam extends VirtualSkill {
 export class BlackHole extends VirtualSkill {
     m_name = '深淵侵蝕';
     m_info = '牽引敵人並且造成傷害';
-    m_damage = 99999;
-    m_dotDamage = 7;
+    m_damage: number;
+    m_dotDamage: number;
     m_cost = 80;
     m_id = 2;
     m_cd = 5;
@@ -122,6 +122,8 @@ export class BlackHole extends VirtualSkill {
         this.m_canUse = false;
 
         CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
+        this.m_damage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_blackHoleDmgMultiplier);
+        this.m_dotDamage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_blackHoleDotDmgMultiplier);
 
         let rightSide: boolean = owner.m_isFacingRight;
         let explosion: Laya.Animation = new Laya.Animation();
@@ -238,7 +240,7 @@ export class BlackHole extends VirtualSkill {
 export class BigExplosion extends VirtualSkill {
     m_name = '魔法大爆射';
     m_info = '造成全場敵人極大的損傷';
-    m_damage = 99999;
+    m_damage: number;
     m_dotDamage = 7;
     m_cost = 80;
     m_id = 2;
@@ -249,8 +251,14 @@ export class BigExplosion extends VirtualSkill {
     m_iconA = "ui/icon/blackholeA.png";
     m_iconB = "ui/icon/blackholeB.png";
 
-    cast(owner: any, position: object): void {
+    cast(owner: any, position: object, oathSystemCheck: boolean): void {
         if (!this.m_canUse) return;
+        if (!oathSystemCheck) return;
+        this.m_canUse = false;
+
+        CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
+        this.m_damage = Math.round(CharacterInit.playerEnt.getAtkValue(CharacterInit.playerEnt.m_atkLevel) * CharacterInit.playerEnt.m_bigExplosionDmgMultiplier);
+
         let rightSide: boolean = owner.m_isFacingRight;
         let explosion: Laya.Animation = new Laya.Animation();
 
@@ -275,7 +283,7 @@ export class BigExplosion extends VirtualSkill {
         let offsetX: number = rightSide ? position['x'] + 140 : position['x'] - this.m_animation.width - 65;
         let offsetY: number = position['y'] - this.m_animation.height / 2;
 
-        this.m_canUse = false;
+        
         this.castRoar(position);
 
         let colorMat: Array<number> =
