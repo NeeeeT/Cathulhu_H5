@@ -135,8 +135,10 @@ export default class MissionManager extends Laya.Script {
             } else {
                 let x = Math.round(Math.random());
                 if (x > 0.5) {
+                    Laya.Scene.closeAll();
                     Laya.Scene.open("First.scene");
                 } else {
+                    Laya.Scene.closeAll();
                     Laya.Scene.open("Town.scene");
                 }
             }
@@ -179,7 +181,7 @@ export default class MissionManager extends Laya.Script {
             id: 0,
             missionName: "新手教學",
             difficulty: 0,
-            enemyNum: 1,
+            enemyNum: 3,
             enemyHp: 5000,
             enemyAtk: 0,
             eliteNum: 0,

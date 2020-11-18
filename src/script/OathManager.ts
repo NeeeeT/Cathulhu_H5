@@ -2,6 +2,7 @@ import CharacterInit from "./CharacterInit";
 
 import { OathStatus } from "./OathStatus";
 import { DebuffType, Blind, BodyCrumble, Insane, Predator, Decay } from "./DebuffType";
+import EnemyInit from "./EnemyInit";
 
 export default class OathManager extends Laya.Script {
 
@@ -33,14 +34,15 @@ export default class OathManager extends Laya.Script {
     public initOathSystem() {
         this.oathState = 0;
         this.addDebuffTimer = null;
-        this.playerDebuff = DebuffType.none;
-        for (let i = 0; i <= 4; i++) {
-            this.removeDebuff(1 << i);
-        }
-        this.clearBloodyUI();
-    }
-    public clearAllDebuff() {
+        console.log("有執行initOathSystem");
         
+        // this.playerDebuff = DebuffType.none;
+        // for (let i = 0; i <= 4; i++) {
+        //     this.removeDebuff(1 << i);
+        // }
+        this.clearAddDebuffTimer();
+        this.removeAllDebuff();
+        this.clearBloodyUI();
     }
     public getBloodyPoint(){
         return CharacterInit.playerEnt.m_bloodyPoint;
@@ -58,11 +60,15 @@ export default class OathManager extends Laya.Script {
                 clearInterval(timer);
                 return;
             }
-            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+            if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
                 this.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
             }
+            if (Laya.stage.x >= -250) this.oathBar.pos(935 - Laya.stage.width / 2 + 180, 107.5);
+            if (Laya.stage.x <= -2475) this.oathBar.pos(3155 - Laya.stage.width / 2 + 180, 107.5);
             if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
                 this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
+            // console.log(CharacterInit.playerEnt.m_bloodyPoint);
+            
             
         }), 5);
         Laya.stage.addChild(this.oathBar);
@@ -94,36 +100,40 @@ export default class OathManager extends Laya.Script {
         this.characterLogo.source = "UI/Box.png";
         this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
         this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
+             
         this.sprintIcon.loadImage("ui/icon/sprint.png");
         let timer = setInterval((() => {
-            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
-                if (CharacterInit.playerEnt.m_animation.destroyed) {
-                    clearInterval(timer);
-                    timer = null;
-                    return;
-                }
-                if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null){
-                    this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
-                    let pos: object = {
-                        'x': this.characterLogo.x,
-                        'y': this.characterLogo.y,
-                    }
-                    this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                    this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                    this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                    this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                    this.sprintIcon.pos(pos['x']+65,pos['y']+146);
-                    this.catSkillIconCd.pos(this.catSkillIcon.x+29,this.catSkillIcon.y+21);
-                    this.humanSkillIconCd.pos(this.humanSkillIcon.x+29,this.humanSkillIcon.y+21);
-                    this.sprintIconCd.pos(this.sprintIcon.x+29,this.sprintIcon.y+21);
-                    this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1:0.3;
-                    this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1:0.3;
-                    this.sprintIcon.alpha = CharacterInit.playerEnt.m_canSprint ? 1:0.3;
-                    this.catSkillIconCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
-                    this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
-                    this.sprintIconCd.text = CharacterInit.playerEnt.m_canSprint ? "":String('冷');
-                }
+            
+            if (CharacterInit.playerEnt.m_animation.destroyed) {
+                clearInterval(timer);
+                timer = null;
+                return;
             }
+            if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null){
+                if (Laya.stage.x < -250 && Laya.stage.x > -2475) this.characterLogo.pos(player.x - Laya.stage.width / 2 + 20, 20);
+                if (Laya.stage.x >= -250) this.characterLogo.pos(935 - Laya.stage.width / 2 + 20, 20);
+                if (Laya.stage.x <= -2475) this.characterLogo.pos(3155 - Laya.stage.width / 2 + 20, 20);
+                let pos: object = {
+                    'x': this.characterLogo.x,
+                    'y': this.characterLogo.y,
+                }
+                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
+                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
+                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
+                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
+                this.sprintIcon.pos(pos['x']+65,pos['y']+146);
+                this.catSkillIconCd.pos(this.catSkillIcon.x+29,this.catSkillIcon.y+21);
+                this.humanSkillIconCd.pos(this.humanSkillIcon.x+29,this.humanSkillIcon.y+21);
+                this.sprintIconCd.pos(this.sprintIcon.x+29,this.sprintIcon.y+21);
+                this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1:0.3;
+                this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1:0.3;
+                this.sprintIcon.alpha = CharacterInit.playerEnt.m_canSprint ? 1:0.3;
+                this.catSkillIconCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
+                this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
+                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
+                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
+            }          
+            this.sprintIconCd.text = CharacterInit.playerEnt.m_canSprint ? "":String('冷');
         }), 5);
         Laya.stage.addChild(this.characterLogo);
         Laya.stage.addChild(this.catSkillIcon);
@@ -268,6 +278,18 @@ export default class OathManager extends Laya.Script {
                 break;
         }
     }
+
+    public removeAllDebuff(): void {
+        for (let i = 0; i <= 4; i++) {
+            this.removeDebuff(1 << i);
+        }
+        this.playerDebuff = DebuffType.none;
+    }
+
+    public clearAddDebuffTimer(): void{
+        clearInterval(this.addDebuffTimer);
+        this.addDebuffTimer = null;
+    }
     public oathUpdate() {
         switch (this.oathState) {
             case OathStatus.normal:
@@ -288,7 +310,20 @@ export default class OathManager extends Laya.Script {
                     console.log("轉態到overCharge");
                     this.overChargeCount = 0;
                     this.oathBar.skin = "UI/bp_150.png";
-                    this.oathBar.sizeGrid = "0,200,0,20";
+                    this.oathBar.sizeGrid = "0,200,0,50";
+
+                    if (this.addDebuffTimer === null) {
+                        console.log("添加addDebuffTimer");
+                        this.addDebuffTimer = setInterval(() => {
+                            if (CharacterInit.playerEnt.m_animation.destroyed || EnemyInit.isWin) {
+                                this.clearAddDebuffTimer();
+                                return;
+                            }    
+                            console.log("執行addDebuffTimer內函式");
+                            this.randomAddDebuff();
+                        }, 5000);    
+                    }
+
                     this.oathState = OathStatus.overCharge;
                     return;
                 }
@@ -306,53 +341,23 @@ export default class OathManager extends Laya.Script {
                 }
                 break;
             case OathStatus.overCharge:
-                //計算處於此狀態時間，時間到時給予debuff
-                // let addDebuffTimer = setTimeout(() => {
-                //     //debuff
-                //     OathManager.addDebuff(1 << Math.ceil(Math.random() * 4));
-                //     console.log("debuff", this.playerDebuff);
-                    
-                // }, 5000);
-                if (this.addDebuffTimer === null) {
-                    console.log(this.addDebuffTimer);
-                    
-                    console.log("添加addDebuffTimer");
-                    // this.addDebuffTimer = setInterval(() => {
-                    //     if (CharacterInit.playerEnt.m_animation.destroyed) {
-                    //         clearInterval(this.addDebuffTimer);
-                    //         return;
-                    //     }    
-                    //     console.log("執行addDebuffTimer內函式");
-                    //     // console.log(this.playerDebuff);
-                        
-                    //     this.randomAddDebuff();
 
-                    // }, 5000);    
-                    console.log(this.addDebuffTimer);
-                }
+                if (EnemyInit.isWin) this.clearAddDebuffTimer();
                 //視當前BP值轉換狀態
                 if (this.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
                     this.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
                     return;
                 }
                 if (this.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                    clearInterval(this.addDebuffTimer);
-                    this.addDebuffTimer = null;
-                    for (let i = 0; i <= 4; i++) {
-                        this.removeDebuff(1 << i);
-                    }
-                    this.playerDebuff = DebuffType.none;
+                    this.clearAddDebuffTimer();
+                    this.removeAllDebuff();
                     this.oathBar.skin = "UI/bp_100.png";
                     this.oathState = OathStatus.charge;
                     return;
                 } 
                 if (this.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                    clearInterval(this.addDebuffTimer);
-                    this.addDebuffTimer = null;
-                    for (let i = 0; i <= 4; i++) {
-                        this.removeDebuff(1 << i);
-                    }
-                    this.playerDebuff = DebuffType.none;
+                    this.clearAddDebuffTimer();
+                    this.removeAllDebuff();
                     this.oathBar.skin = "UI/bp_100.png";
                     this.oathState = OathStatus.normal;
                     return;
@@ -362,9 +367,7 @@ export default class OathManager extends Laya.Script {
                     this.oathState = OathStatus.normal;
                     break;
         }
-        
-        // console.log(this.playerDebuff);
-        
+        //更新Debuff中需要更新的資訊，如計時器
         this.debuffUpdate();
         //更新角色充能時數值
         this.oathBuffUpdate();
@@ -390,6 +393,8 @@ export default class OathManager extends Laya.Script {
     }
     
     public randomAddDebuff() {
+        console.log("還是有執行randomAddDebuff，但>=31返回了，playerDebuff值 = ",this.playerDebuff);
+        
         if (this.playerDebuff >= 31) return;
         console.log("執行randomAddDebuff");
         

@@ -14,9 +14,10 @@ export class Slam extends VirtualSkill {
     m_iconB = "ui/icon/slamB.png";
 
     m_injuredEnemy: VirtualEnemy[] = [];
-
+    
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
+        this.m_canUse = false;
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
@@ -74,7 +75,6 @@ export class Slam extends VirtualSkill {
         let rangeY: number = 0;
 
 
-        this.m_canUse = false;
         this.castRoar(position);
         this.m_injuredEnemy = [];//暫時用來記憶被此次技能打中的敵人，並忽略此攻擊
 
@@ -107,12 +107,13 @@ export class BlackHole extends VirtualSkill {
     m_cd = 5;
     m_lastTime = 2;
     m_radius = 100;//黑洞半徑
-
+    
     m_iconA = "ui/icon/blackholeA.png";
     m_iconB = "ui/icon/blackholeB.png";
-
+    
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
+        this.m_canUse = false;
         let rightSide: boolean = owner.m_isFacingRight;
         let explosion: Laya.Animation = new Laya.Animation();
 
@@ -138,7 +139,6 @@ export class BlackHole extends VirtualSkill {
         let offsetX: number = rightSide ? position['x'] + 140 : position['x'] - this.m_animation.width - 65;
         let offsetY: number = position['y'] - this.m_animation.height / 2;
 
-        this.m_canUse = false;
         this.castRoar(position);
 
         let colorMat: Array<number> =

@@ -22,6 +22,7 @@ export class Spike extends VirtualSkill {
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
+        this.m_canUse = false;
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
@@ -38,7 +39,6 @@ export class Spike extends VirtualSkill {
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 20;
 
-        this.m_canUse = false;
         this.castRoar(position);
 
         let colorMat: Array<number> =
@@ -77,6 +77,8 @@ export class Spike extends VirtualSkill {
         }, 200);
         setTimeout(() => {
             this.m_canUse = true;
+            console.log("技能可使用");
+            
         }, this.m_cd * 1000);
         this.updateCdTimer();
     }
@@ -110,6 +112,7 @@ export class Behead extends VirtualSkill {
 
     cast(owner: any, position: object): void {
         if (!this.m_canUse) return;
+        this.m_canUse = false;
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
@@ -128,7 +131,6 @@ export class Behead extends VirtualSkill {
         this.m_animation.alpha = 0.8;
         this.m_animation.zOrder = 5;
 
-        this.m_canUse = false;
         this.castRoar(position);
 
         owner.delayMove(this.m_preTime);
