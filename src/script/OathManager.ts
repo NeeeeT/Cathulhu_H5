@@ -89,8 +89,7 @@ export default class OathManager extends Laya.Script {
         this.characterLogo.source = "UI/Box.png";
         this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
         this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
-        let timer = setInterval((() => {
-            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
+        let timer = setInterval((() => {        
                 if (CharacterInit.playerEnt.m_animation.destroyed) {
                     clearInterval(timer);
                     timer = null;
@@ -116,9 +115,7 @@ export default class OathManager extends Laya.Script {
                     this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
                     this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
                     this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                }
-            }
-            
+                }          
         }), 5);
         Laya.stage.addChild(this.characterLogo);
         Laya.stage.addChild(this.catSkillIcon);
