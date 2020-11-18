@@ -5,6 +5,8 @@ export default class Loading extends Laya.Script{
         "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas", "ui/loading.png",
     ];
 
+    loadingProgress: Laya.ProgressBar;
+
     onStart(): void{
         Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, ()=>{
             console.log('讀取完了!!!');

@@ -1980,7 +1980,7 @@
                     }
                 }
                 this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
-                this.attackSimulation();
+                this.attackSimulation(this.m_atkStep);
                 this.m_canAttack = false;
                 setTimeout(() => {
                     this.m_canAttack = true;
@@ -2013,12 +2013,18 @@
                 this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
             }, this.m_attackCdTime + 200);
         }
-        attackSimulation() {
+        attackSimulation(type) {
             let temp = this.m_animation;
-            let atkRange = this.m_attackRange;
+            let atkRange = (type === 1) ? this.m_attackRange : this.m_attackRange * 2;
             let offsetX = this.m_isFacingRight ? (temp.x + (temp.width * 1 / 3)) : (temp.x - (temp.width * 1 / 3) - atkRange);
             let offsetY = temp.y - (temp.height / 3);
             let soundNum = Math.floor(Math.random() * 2);
+            if (type === 1) {
+                Laya.stage.graphics.drawRect(offsetX, offsetY, atkRange, atkRange, 'red', 'red', 2);
+            }
+            else if (type === 0) {
+                Laya.stage.graphics.drawRect(offsetX, offsetY, atkRange, atkRange, 'yellow', 'yellow', 2);
+            }
             this.attackRangeCheck({
                 'x0': offsetX,
                 'x1': offsetX + atkRange,
@@ -2881,11 +2887,12 @@
                 if (this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0) {
                     this.battleToggle = false;
                     EnemyInit.isWin = true;
-                    Laya.Tween.to(player, { alpha: 0.3 }, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    Laya.Tween.to(player, { alpha: 0.8 }, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                         this.showEndRewardUI();
                     }), 0);
                     clearInterval(this.battleTimer);
                     this.battleTimer = null;
+                    CharacterInit.playerEnt.m_rigidbody.linearVelocity = { x: 0, y: 0 };
                     return;
                 }
                 else if (this.timeLeftValue < 0) {
@@ -2929,8 +2936,9 @@
             this.endingSkillUI.width = 684;
             this.endingSkillUI.height = 576;
             this.endingSkillUI.loadImage('ui/ending/chooseSkill.png');
-            this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.m_animation.x - 325), 80);
-            this.endingSkillUI.alpha = 0;
+            this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.m_animation.x - 325), 30);
+            this.endingSkillUI.alpha = 0.5;
+            player.m_animation.pos(this.endingSkillUI.x + this.endingSkillUI.width / 2, player.m_animation.y);
             let pos = {
                 'x': this.endingSkillUI.x,
                 'y': this.endingSkillUI.y,
@@ -2977,8 +2985,8 @@
             this.skillCatInfoText.height = this.skillHumanInfoText.height = this.catSkillName.height = this.humanSkillName.height = 70;
             this.skillCatInfoText.pos(this.skillCatInfo.x + 19, this.skillCatInfo.y + 20);
             this.skillHumanInfoText.pos(this.skillHumanInfo.x + 19, this.skillHumanInfo.y + 20);
-            this.catSkillName.pos(pos['x'] + 132, pos['y'] + 306);
-            this.humanSkillName.pos(pos['x'] + 423, pos['y'] + 306);
+            this.catSkillName.pos(pos['x'] + 110, pos['y'] + 306);
+            this.humanSkillName.pos(pos['x'] + 401, pos['y'] + 306);
             this.skillCatInfoText.text = SkillList.catSkillList[this.r1].m_info;
             this.skillHumanInfoText.text = SkillList.humanSkillList[this.r2].m_info;
             this.catSkillName.text = player.m_catSkill.m_name;
@@ -3087,8 +3095,8 @@
                 if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
                     this.enemyLeftIcon.pos(player.x - 70, player.y - 450);
                     this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
-                    this.enemyInfo.text = 'x' + String(EnemyHandler.getEnemiesCount());
                 }
+                this.enemyInfo.text = 'x' + String(EnemyHandler.getEnemiesCount());
             }, 5);
         }
         updateMissionData() {
