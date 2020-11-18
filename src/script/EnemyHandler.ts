@@ -1,3 +1,5 @@
+import EnemyInit from "./EnemyInit";
+
 // import CharacterInit, { Character } from "./CharacterInit";
 export enum EnemyStatus{
     idle = 0,
@@ -135,8 +137,10 @@ export abstract class VirtualEnemy extends Laya.Script {
             {
                 clearInterval(this.m_deadTimer);
                 this.destroy();
+                EnemyInit.enemyLeftCur--;
+                EnemyHandler.updateEnemies();
             }
-            }), 25);//可能要在優化
+            }), 25);//可能要再優化
             return;
         }
     }
@@ -573,6 +577,8 @@ export default class EnemyHandler extends Laya.Script {
         this.enemyPool.push({ '_id': id, '_ent': enemy });
         this.updateEnemies();
 
+        console.log(this.enemyPool);
+        
         return enemy;
     }
     private static decideEnemyType(enemyType: number) {
@@ -583,11 +589,11 @@ export default class EnemyHandler extends Laya.Script {
             default: return new Normal();
         };
     }
-    private static updateEnemies(): any {
-        return this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null);
+    public static updateEnemies(): any {
+        return this.enemyPool = this.enemyPool.filter(data => data._ent.m_animation.destroyed === false);
     }
     public static getEnemiesCount(): number {
-        return (this.enemyPool = this.enemyPool.filter(data => data._ent.m_collider.owner != null)).length;
+        return (this.enemyPool = this.enemyPool.filter(data => data._ent.m_animation.destroyed === false)).length;
     }
     public static getEnemyByLabel(label: string): VirtualEnemy {
         return this.enemyPool.filter(data => data._id === label)[0]['_ent'] as VirtualEnemy;
@@ -601,6 +607,5 @@ export default class EnemyHandler extends Laya.Script {
             aliveEnemy[i]._ent.m_animation.destroyed = true;
         }
         this.enemyPool = [];
-        console.log('呼叫了');
     }
 }

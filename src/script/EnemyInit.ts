@@ -27,6 +27,8 @@ export default class EnemyInit extends Laya.Script{
     timeLeftValue: number;
     enemyLeftIcon: Laya.Sprite;
     enemyInfo: Laya.Text;
+    
+    public static enemyLeftCur: number;
 
     endingRewardUI: Laya.Sprite;
     endingSkillUI: Laya.Sprite;
@@ -72,6 +74,7 @@ export default class EnemyInit extends Laya.Script{
     }
     onStart(){
         this.timeLeftValue = this.roundTimeLeft;
+        EnemyInit.enemyLeftCur = this.enemyLeft;
 
         let player = CharacterInit.playerEnt.m_animation;
         let enemy = EnemyHandler.enemyPool;
@@ -108,7 +111,9 @@ export default class EnemyInit extends Laya.Script{
                 return;
             }
             //消滅全部敵人時，進入結算階段
-            if(this.enemyLeft <= 0 && EnemyHandler.enemyPool.length <= 0){
+            console.log(EnemyInit.enemyLeftCur, EnemyHandler.enemyPool.length);
+            
+            if(EnemyInit.enemyLeftCur <= 0){
                 this.battleToggle = false;
                 EnemyInit.isWin = true;
                 //消除角色身上所有Debuff與Debuff計時器
@@ -381,7 +386,7 @@ export default class EnemyInit extends Laya.Script{
                 this.enemyLeftIcon.pos(player.x-70, player.y-450);
                 this.enemyInfo.pos(this.enemyLeftIcon.x+44, this.enemyLeftIcon.y-2);
             }
-            this.enemyInfo.text = 'x' + String(EnemyHandler.getEnemiesCount());
+            this.enemyInfo.text = 'x' + String(EnemyInit.enemyLeftCur);
         }, 5);
     }
     updateMissionData() {
