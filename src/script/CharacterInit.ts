@@ -473,7 +473,7 @@ export class Character extends Laya.Script {
                 }
             }
             this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
-            this.attackSimulation();//另類攻擊判定
+            this.attackSimulation(this.m_atkStep);//另類攻擊判定
 
 
 
@@ -495,7 +495,7 @@ export class Character extends Laya.Script {
         //     // this.m_oathManager.setBloodyPoint(100);
         // } 
         if (this.m_keyDownList[88]) {
-            // if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost)) return;
+            if (EnemyInit.isWin) return;
             console.log("施放人技");
             
             this.m_humanSkill.cast(CharacterInit.playerEnt,
@@ -505,7 +505,7 @@ export class Character extends Laya.Script {
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
         }
         if (this.m_keyDownList[67]) {
-            // if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost)) return;
+            if (EnemyInit.isWin) return;
             this.m_catSkill.cast(CharacterInit.playerEnt,
                 {
                     x: this.m_animation.x,
@@ -572,14 +572,21 @@ export class Character extends Laya.Script {
             this.updateAnimation(this.m_state, CharacterStatus.idle, null, false, 500);
         }, this.m_attackCdTime + 200);
     }
-    private attackSimulation(): void {
+    private attackSimulation(type: number): void {
         let temp: Laya.Animation = this.m_animation;
-        let atkRange: number = this.m_attackRange;
+        let atkRange: number = (type === 1) ? this.m_attackRange : this.m_attackRange*2;
         let offsetX: number = this.m_isFacingRight ? (temp.x + (temp.width * 1 / 3)) : (temp.x - (temp.width * 1 / 3) - atkRange);
         let offsetY: number = temp.y - (temp.height / 3);
         let soundNum: number = Math.floor(Math.random() * 2);
 
-        // Laya.stage.graphics.drawRect(offsetX, offsetY, atkRange, atkRange, 'red', 'red', 2);
+        //測試攻擊距離繪圖
+        // if(type === 1){
+        //     Laya.stage.graphics.drawRect(offsetX, offsetY, atkRange, atkRange, 'red', 'red', 2);
+        // }
+        // else if(type === 0){
+        //     Laya.stage.graphics.drawRect(offsetX, offsetY, atkRange, atkRange, 'yellow', 'yellow', 2);
+        // }
+
 
         this.attackRangeCheck({
             'x0': offsetX,

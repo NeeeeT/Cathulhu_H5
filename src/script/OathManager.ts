@@ -102,7 +102,7 @@ export default class OathManager extends Laya.Script {
         this.sprintIconCd = new Laya.Text();
 
         this.catSkillIcon.width = this.catSkillIcon.height = 69;
-        this.humanSkillIcon.height = this.humanSkillIcon.height = 69;
+        this.humanSkillIcon.width = this.humanSkillIcon.height = 69;
         this.sprintIcon.width = this.sprintIcon.height = 69;
         this.catSkillIconCd.width = this.humanSkillIconCd.width = this.sprintIconCd.width = 100; 
         this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = this.sprintIconCd.fontSize = 42;
@@ -132,11 +132,9 @@ export default class OathManager extends Laya.Script {
                     'x': this.characterLogo.x,
                     'y': this.characterLogo.y,
                 }
-                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                this.sprintIcon.pos(pos['x']+65,pos['y']+146);
+                this.catSkillIcon.pos(pos['x']+16, pos['y']+87);
+                this.humanSkillIcon.pos(pos['x']+116, pos['y']+87);
+                this.sprintIcon.pos(pos['x']+66,pos['y']+37);
                 this.catSkillIconCd.pos(this.catSkillIcon.x+29,this.catSkillIcon.y+21);
                 this.humanSkillIconCd.pos(this.humanSkillIcon.x+29,this.humanSkillIcon.y+21);
                 this.sprintIconCd.pos(this.sprintIcon.x+29,this.sprintIcon.y+21);
@@ -145,9 +143,7 @@ export default class OathManager extends Laya.Script {
                 this.sprintIcon.alpha = CharacterInit.playerEnt.m_canSprint ? 1:0.3;
                 this.catSkillIconCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
                 this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "":String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
-                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-            }          
+}          
             this.sprintIconCd.text = CharacterInit.playerEnt.m_canSprint ? "":String('冷');
         }), 5);
         Laya.stage.addChild(this.characterLogo);
