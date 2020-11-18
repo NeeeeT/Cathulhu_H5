@@ -102,8 +102,8 @@ export default class MissionManager extends Laya.Script {
         let moneyNum = new Laya.Text();
         crystalNum.font = "silver";
         moneyNum.font = "silver";
-        crystalNum.fontSize = 30;
-        moneyNum.fontSize = 30;
+        crystalNum.fontSize = 45;
+        moneyNum.fontSize = 45;
         crystalNum.text = crystal.toString();
         moneyNum.text = money.toString();
         crystalNum.pos(171 + 252 + 5 + col * (256 + 34), 305 + 96); //x: 262(mid baseline) + 10(offset)

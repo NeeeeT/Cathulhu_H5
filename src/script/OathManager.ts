@@ -29,13 +29,13 @@ export default class OathManager extends Laya.Script {
     public sprintIconCd: Laya.Text;
     
     
-    public
+    
 
     public initOathSystem() {
         this.oathState = 0;
         this.addDebuffTimer = null;
-        console.log("有執行initOathSystem");
-        
+        // CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
+        // this.currentBloodyPoint = 0;
         // this.playerDebuff = DebuffType.none;
         // for (let i = 0; i <= 4; i++) {
         //     this.removeDebuff(1 << i);
@@ -44,13 +44,28 @@ export default class OathManager extends Laya.Script {
         this.removeAllDebuff();
         this.clearBloodyUI();
     }
-    public getBloodyPoint(){
+    // public getBloodyPoint(){
+    //     return CharacterInit.playerEnt.m_bloodyPoint;
+    // }
+    // public setBloodyPoint(amount: number){
+    //     CharacterInit.playerEnt.m_bloodyPoint = amount;
+    //     return CharacterInit.playerEnt.m_bloodyPoint;
+    // }
+
+    public get currentBloodyPoint() {
         return CharacterInit.playerEnt.m_bloodyPoint;
     }
-    public setBloodyPoint(amount: number){
+
+    public set currentBloodyPoint(amount: number) {
         CharacterInit.playerEnt.m_bloodyPoint = amount;
-        return CharacterInit.playerEnt.m_bloodyPoint;
+        
+        if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
+            this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
+        console.log("當前獻祭值量：",CharacterInit.playerEnt.m_bloodyPoint, "獻祭值條比例：",this.oathBar.value);
+        
     }
+        
+        
     public showBloodyPoint(player: Laya.Animation) {
         this.oathBar = new Laya.ProgressBar();
         this.oathBar.skin = "UI/bp_100.png";
@@ -66,7 +81,7 @@ export default class OathManager extends Laya.Script {
             if (Laya.stage.x >= -250) this.oathBar.pos(935 - Laya.stage.width / 2 + 180, 107.5);
             if (Laya.stage.x <= -2475) this.oathBar.pos(3155 - Laya.stage.width / 2 + 180, 107.5);
             if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
-                this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
+                this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
             // console.log(CharacterInit.playerEnt.m_bloodyPoint);
             
             
@@ -297,20 +312,20 @@ export default class OathManager extends Laya.Script {
                 
                 //若達到上限則轉為charge狀態
                 if (this.oathChargeDetect()) {
-                    this.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
-                    this.oathState = OathStatus.charge;
-                    // OathManager.addDebuff(1 << 4);
-                    
+                    this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
+                    CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
+                    this.oathState = OathStatus.charge; 
                 }
                 break;
             case OathStatus.charge:
                 
                 //overCharge計數達到上限，轉為overCharge狀態
-                if (this.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft && this.overChargeCount >= 2) {
+                if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_soft && this.overChargeCount >= 2) {
                     console.log("轉態到overCharge");
                     this.overChargeCount = 0;
                     this.oathBar.skin = "UI/bp_150.png";
                     this.oathBar.sizeGrid = "0,200,0,50";
+                    CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_hard;
 
                     if (this.addDebuffTimer === null) {
                         console.log("添加addDebuffTimer");
@@ -328,13 +343,13 @@ export default class OathManager extends Laya.Script {
                     return;
                 }
                 //overCharge計數未達到上限，增加overCharge計數
-                if (this.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_soft  && this.overChargeCount < 2) {
+                if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_soft  && this.overChargeCount < 2) {
                     this.overChargeCount ++;
-                    this.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_soft);
+                    this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint;
                     return;
                 }
                 //若BP低於上限則清空overCharge計數，並轉為normal
-                if (this.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                if (this.currentBloodyPoint < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
                     this.overChargeCount = 0;
                     this.oathState = OathStatus.normal;
                     return;
@@ -344,21 +359,25 @@ export default class OathManager extends Laya.Script {
 
                 if (EnemyInit.isWin) this.clearAddDebuffTimer();
                 //視當前BP值轉換狀態
-                if (this.getBloodyPoint() > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
-                    this.setBloodyPoint(CharacterInit.playerEnt.m_maxBloodyPoint_hard);
+                if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
+                    this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint;
                     return;
                 }
-                if (this.getBloodyPoint() === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                if (this.currentBloodyPoint === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                    this.oathBar.skin = "UI/bp_100.png";
+                    CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
+                    this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
                     this.clearAddDebuffTimer();
                     this.removeAllDebuff();
-                    this.oathBar.skin = "UI/bp_100.png";
                     this.oathState = OathStatus.charge;
                     return;
                 } 
-                if (this.getBloodyPoint() < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                if (this.currentBloodyPoint < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
+                    this.oathBar.skin = "UI/bp_100.png";
+                    CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
+                    this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
                     this.clearAddDebuffTimer();
                     this.removeAllDebuff();
-                    this.oathBar.skin = "UI/bp_100.png";
                     this.oathState = OathStatus.normal;
                     return;
                 }
@@ -412,11 +431,15 @@ export default class OathManager extends Laya.Script {
         }
     }
 
-    public oathCastSkill(cost: number, valve: number = 30): boolean {
-    //施放閥值
-        if (this.getBloodyPoint() < valve || this.getBloodyPoint() < cost) return false;
-            //操作OathManager
-            this.setBloodyPoint(this.getBloodyPoint() - cost);
-            return true;
-        }
+    public oathCastSkillCheck(cost: number, valve: number = 30): boolean{
+        //施放閥值
+        if (this.currentBloodyPoint < valve || this.currentBloodyPoint < cost) return false; 
+        return true;
+    }
+
+    public oathCastSkill(cost: number): void {
+        //操作OathManager
+        console.log("扣除了技能消耗的獻祭值");
+        this.currentBloodyPoint = this.currentBloodyPoint - cost;
+    }
 }

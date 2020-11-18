@@ -26,7 +26,7 @@ export abstract class VirtualSkill extends Laya.Script{
     m_cdTimer;
     m_cdCount: number;
 
-    cast(owner: any, position: object): void{ 
+    cast(owner: any, position: object, oathSystemCheck: boolean): void{ 
     };
     castRoar(pos): void{
         let roarText = new Laya.Text();

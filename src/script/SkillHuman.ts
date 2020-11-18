@@ -1,5 +1,6 @@
 // import CharacterInit from "./CharacterInit";
 // import CharacterInit from "./CharacterInit";
+import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
 import { VirtualSkill } from "./SkillManager";
@@ -20,9 +21,13 @@ export class Spike extends VirtualSkill {
     /** 技能給予的衝量大小 */
     m_spikeVec: number = 55.0;
 
-    cast(owner: any, position: object): void {
+    cast(owner: any, position: object, oathSystemCheck: boolean): void {
         if (!this.m_canUse) return;
+        if (!oathSystemCheck) return;
         this.m_canUse = false;
+
+        CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
+
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()
@@ -110,9 +115,13 @@ export class Behead extends VirtualSkill {
     /** 技能的準備時間 */
     m_preTime: number = 0.56;
 
-    cast(owner: any, position: object): void {
+    cast(owner: any, position: object, oathSystemCheck: boolean): void {
         if (!this.m_canUse) return;
+        if (!oathSystemCheck) return;
         this.m_canUse = false;
+
+        CharacterInit.playerEnt.m_oathManager.oathCastSkill(this.m_cost);
+
         let rightSide: boolean = owner.m_isFacingRight;
 
         this.m_animation = new Laya.Animation()

@@ -20,6 +20,7 @@ export class Character extends Laya.Script {
     m_health: number;
     m_maxHealth: number;
     m_bloodyPoint: number;
+    m_maxBloodyPoint: number;
     m_maxBloodyPoint_soft: number;
     m_maxBloodyPoint_hard: number;
     m_atk: number;
@@ -99,8 +100,8 @@ export class Character extends Laya.Script {
         this.m_animation.pivotX = this.m_animation.width / 2;
         this.m_animation.pivotY = this.m_animation.height / 2;
 
-        // this.m_bloodyPoint;
-        // this.m_maxBloodyPoint;
+        this.m_maxBloodyPoint = this.m_maxBloodyPoint_soft;
+
         this.m_animation.destroyed = false;
         this.m_animation.pos(1345, 544);
         this.m_animation.autoPlay = true;
@@ -327,7 +328,7 @@ export class Character extends Laya.Script {
             if (!this.m_canSprint || EnemyInit.isWin) return;
 
             //OathManager test
-            this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + 50);
+            this.m_oathManager.currentBloodyPoint = this.m_oathManager.currentBloodyPoint + 50;
 
             this.delayMove(0.1);
             this.hurtedEvent(0.1);
@@ -494,22 +495,22 @@ export class Character extends Laya.Script {
         //     // this.m_oathManager.setBloodyPoint(100);
         // } 
         if (this.m_keyDownList[88]) {
-            if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost)) return;
+            // if (!this.m_oathManager.oathCastSkill(this.m_humanSkill.m_cost)) return;
             console.log("施放人技");
             
             this.m_humanSkill.cast(CharacterInit.playerEnt,
                 {
                     x: this.m_animation.x,
                     y: this.m_animation.y,
-                });
+                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
         }
         if (this.m_keyDownList[67]) {
-            if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost)) return;
+            // if (!this.m_oathManager.oathCastSkill(this.m_catSkill.m_cost)) return;
             this.m_catSkill.cast(CharacterInit.playerEnt,
                 {
                     x: this.m_animation.x,
                     y: this.m_animation.y,
-                });
+                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
         }
     }
     /*private createAttackCircle(player: Laya.Animation) {
@@ -606,8 +607,8 @@ export class Character extends Laya.Script {
                     // e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
                     // if (!OathManager.isCharging) {
                     this.setCameraShake(10, 3);
-                    //誓約系統測試
-                    this.m_oathManager.setBloodyPoint(this.m_oathManager.getBloodyPoint() + this.m_oathManager.increaseBloodyPoint);
+                    //攻擊增加獻祭值
+                    this.m_oathManager.currentBloodyPoint = this.m_oathManager.currentBloodyPoint + this.m_oathManager.increaseBloodyPoint;
                     if (enemyCount < 3) e._ent.slashLightEffect(e._ent.m_animation);
                     this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
                     enemyCount++;
@@ -980,6 +981,8 @@ export default class CharacterInit extends Laya.Script {
         player.m_basic_attackCdTime = this.attackCdTime;
         player.m_buff_attackCdTime = this.buff_attackCdTime;
 
+        player.m_maxBloodyPoint = player.m_maxBloodyPoint_soft;
+        player.m_bloodyPoint = 0;
         player.m_oathManager = new OathManager();
         player.m_oathManager.initOathSystem();
         player.showHealth();
