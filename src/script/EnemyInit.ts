@@ -43,6 +43,9 @@ export default class EnemyInit extends Laya.Script{
     skillHuman: Laya.Sprite;
     skillCatIcon: Laya.Sprite;
     skillHumanIcon: Laya.Sprite;
+    
+    leftArrow: Laya.Sprite;
+    rightArrow: Laya.Sprite;
 
     skillCatInfo: Laya.Sprite;
     skillHumanInfo: Laya.Sprite;
@@ -148,14 +151,31 @@ export default class EnemyInit extends Laya.Script{
             }), 0);
         };
         let player = CharacterInit.playerEnt
-        if(this.endingSkillUI && e.keyCode === 32){
-            let rangeA = (player.m_animation.x - this.skillCatIcon.x);
-            let rangeB = (player.m_animation.x - this.skillHumanIcon.x);
-            if(rangeA < this.skillCatIcon.width){
-                this.skillChoose(1);
+        if(this.endingSkillUI){
+            if(e.keyCode === 32){
+                if(player.m_isFacingRight){
+                    this.skillChoose(2);
+                }
+                else{
+                    this.skillChoose(1);
+                }
             }
-            else if(rangeB < this.skillHumanIcon.width){
-                this.skillChoose(2);
+            if(!this.endingSkillUI.destroyed){
+                this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+            }
+        }
+    }
+    onKeyDown(e: Laya.Event){
+        if(this.endingSkillUI){
+            let player = CharacterInit.playerEnt;
+            if(!this.endingSkillUI.destroyed){
+                this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
             }
         }
     }
@@ -180,8 +200,8 @@ export default class EnemyInit extends Laya.Script{
         this.skillHuman = new Laya.Sprite();
         this.skillCat.width = this.skillHuman.width = 130;
         this.skillCat.height = this.skillHuman.height = 130;
-        this.skillCat.pos(pos['x']+136, pos['y']+158);
-        this.skillHuman.pos(pos['x']+423, pos['y']+158);
+        this.skillCat.pos(pos['x']+136, pos['y']+140);
+        this.skillHuman.pos(pos['x']+418, pos['y']+140);
         this.skillCat.loadImage('ui/ending/skillBox.png');
         this.skillHuman.loadImage('ui/ending/skillBox.png');
 
@@ -189,12 +209,14 @@ export default class EnemyInit extends Laya.Script{
         this.r2 = Math.floor(Math.random()*2);
         this.skillCatIcon = new Laya.Sprite();
         this.skillHumanIcon = new Laya.Sprite();
-        this.skillCatIcon.width = this.skillHumanIcon.width = 88;
-        this.skillCatIcon.height = this.skillHumanIcon.height = 88;
-        this.skillCatIcon.pos(this.skillCat.x+21,this.skillCat.y+21);
-        this.skillHumanIcon.pos(this.skillHuman.x+21, this.skillHuman.y+21);
+        this.skillCatIcon.width = this.skillHumanIcon.width = 100;
+        this.skillCatIcon.height = this.skillHumanIcon.height = 100;
+        this.skillCatIcon.pos(this.skillCat.x+15,this.skillCat.y+15);
+        this.skillHumanIcon.pos(this.skillHuman.x+15, this.skillHuman.y+15);
         this.skillCatIcon.loadImage(SkillList.catSkillList[this.r1].m_iconB);
         this.skillHumanIcon.loadImage(SkillList.humanSkillList[this.r2].m_iconB);
+        this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+        this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
 
         this.skillCatBtn = new Laya.Button();
         this.skillHumanBtn = new Laya.Button();
@@ -210,8 +232,8 @@ export default class EnemyInit extends Laya.Script{
         this.skillHumanInfo = new Laya.Sprite();
         this.skillCatInfo.width = this.skillHumanInfo.width = 205;
         this.skillCatInfo.height = this.skillHumanInfo.height = 110;
-        this.skillCatInfo.pos(pos['x']+98,pos['y']+356);
-        this.skillHumanInfo.pos(pos['x']+385,pos['y']+356);
+        this.skillCatInfo.pos(pos['x']+96,pos['y']+402);
+        this.skillHumanInfo.pos(pos['x']+383,pos['y']+402);
         this.skillCatInfo.loadImage("ui/ending/infoBox.png");
         this.skillHumanInfo.loadImage("ui/ending/infoBox.png");
 
@@ -221,26 +243,32 @@ export default class EnemyInit extends Laya.Script{
         this.humanSkillName = new Laya.Text();
         this.skillCatInfoText.width = this.skillHumanInfoText.width = this.catSkillName.width = this.humanSkillName.width = 167;
         this.skillCatInfoText.height = this.skillHumanInfoText.height = this.catSkillName.height = this.humanSkillName.height = 70;
-        this.skillCatInfoText.pos(this.skillCatInfo.x+19,this.skillCatInfo.y+20);
-        this.skillHumanInfoText.pos(this.skillHumanInfo.x+19,this.skillHumanInfo.y+20);
-        this.catSkillName.pos(pos['x']+110,pos['y']+306);
-        this.humanSkillName.pos(pos['x']+401,pos['y']+306);
+        this.skillCatInfoText.pos(this.skillCatInfo.x+20,this.skillCatInfo.y+20);
+        this.skillHumanInfoText.pos(this.skillHumanInfo.x+20,this.skillHumanInfo.y+20);
+        this.catSkillName.pos(pos['x']+115,pos['y']+295);
+        this.humanSkillName.pos(pos['x']+405,pos['y']+295);
         this.skillCatInfoText.text = SkillList.catSkillList[this.r1].m_info;
         this.skillHumanInfoText.text = SkillList.humanSkillList[this.r2].m_info;
         this.catSkillName.text = player.m_catSkill.m_name;
         this.humanSkillName.text = player.m_humanSkill.m_name;
+        this.catSkillName.align = this.humanSkillName.align = 'center';
         this.skillCatInfoText.font = this.skillHumanInfoText.font = this.catSkillName.font = this.humanSkillName.font = 'silver';
         this.skillCatInfoText.color = this.skillHumanInfoText.color = this.catSkillName.color = this.humanSkillName.color = '#fdfdfd';
         this.skillCatInfoText.fontSize = this.skillHumanInfoText.fontSize = this.catSkillName.fontSize = this.humanSkillName.fontSize = 38;
         this.skillCatInfoText.wordWrap = this.skillHumanInfoText.wordWrap = true;
 
-        this.catSkillName.align = this.humanSkillName.align = 'center';
+        this.leftArrow = new Laya.Sprite();
+        this.rightArrow = new Laya.Sprite();
+        this.leftArrow.pos(pos['x']+175, pos['y']+340);
+        this.rightArrow.pos(pos['x']+457, pos['y']+340);
+        this.leftArrow.loadImage('ui/leftArr.png');
+        this.rightArrow.loadImage('ui/rightArr.png');
+        this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+        this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
         
         Laya.stage.addChild(this.endingSkillUI);
         Laya.stage.addChild(this.skillCat);
         Laya.stage.addChild(this.skillHuman);
-        // Laya.stage.addChild(this.skillCatBtn);
-        // Laya.stage.addChild(this.skillHumanBtn);
         Laya.stage.addChild(this.skillCatIcon);
         Laya.stage.addChild(this.skillHumanIcon);
         Laya.stage.addChild(this.skillCatInfo);
@@ -249,6 +277,8 @@ export default class EnemyInit extends Laya.Script{
         Laya.stage.addChild(this.skillHumanInfoText);
         Laya.stage.addChild(this.catSkillName);
         Laya.stage.addChild(this.humanSkillName);
+        Laya.stage.addChild(this.leftArrow);
+        Laya.stage.addChild(this.rightArrow);
 
         Laya.Tween.to(this.endingSkillUI, {alpha: 1.0}, 500, Laya.Ease.linearInOut, null, 0);
     }
@@ -387,5 +417,7 @@ export default class EnemyInit extends Laya.Script{
         this.skillHumanInfoText.destroy();
         this.catSkillName.destroy();
         this.humanSkillName.destroy();
+        this.leftArrow.destroy();
+        this.rightArrow.destroy();
     }
 }

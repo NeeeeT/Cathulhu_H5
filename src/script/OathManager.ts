@@ -117,11 +117,9 @@ export default class OathManager extends Laya.Script {
                     'x': this.characterLogo.x,
                     'y': this.characterLogo.y,
                 }
-                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                this.catSkillIcon.pos(pos['x']+16, pos['y']+102);
-                this.humanSkillIcon.pos(pos['x']+116, pos['y']+102);
-                this.sprintIcon.pos(pos['x']+65,pos['y']+146);
+                this.catSkillIcon.pos(pos['x']+16, pos['y']+60);
+                this.humanSkillIcon.pos(pos['x']+116, pos['y']+60);
+                this.sprintIcon.pos(pos['x']+66,pos['y']+37);
                 this.catSkillIconCd.pos(this.catSkillIcon.x+29,this.catSkillIcon.y+21);
                 this.humanSkillIconCd.pos(this.humanSkillIcon.x+29,this.humanSkillIcon.y+21);
                 this.sprintIconCd.pos(this.sprintIcon.x+29,this.sprintIcon.y+21);
