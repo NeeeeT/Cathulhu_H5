@@ -733,7 +733,7 @@
             owner.delayMove(this.m_lastTime);
             owner.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec : -this.m_spikeVec };
             owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 150);
-            owner.hurtedEvent(1.5);
+            owner.hurtedEvent(2.0);
             this.attackRangeCheck(owner, {
                 "x0": offsetX,
                 "x1": offsetX + this.m_animation.width,
@@ -759,7 +759,7 @@
                 if (e._ent.m_animation.destroyed === true)
                     return;
                 e._ent.takeDamage(this.m_damage);
-                e._ent.delayMove(0.1);
+                e._ent.delayMove(0.05);
                 e._ent.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec / 3 : -this.m_spikeVec / 3 };
             });
         }
