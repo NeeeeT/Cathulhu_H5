@@ -15,9 +15,11 @@ export enum EnemyStatus{
 /** (虛擬)敵人基礎設定 */
 export abstract class VirtualEnemy extends Laya.Script {
     abstract m_health: number;
+    abstract m_dmg: number;
+    abstract m_critical: number;
+    abstract m_criticalDmgMultiplier: number;
     abstract m_armor: number;
     abstract m_speed: number;
-    abstract m_dmg: number;
     /** 受到攻擊時的硬直秒數，單位:seconds。 */
     abstract m_mdelay: number;
     abstract m_tag: string;
@@ -54,7 +56,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_state = EnemyStatus.idle;
 
 
-    spawn(player: Laya.Animation, id: string, point: object): void {
+    spawn(player: Laya.Animation, id: string, point: object, enemyType: number): void {
         this.m_animation = new Laya.Animation();
         this.m_animation.filters = [];
         //10/14匯入normalEnemy後調整
@@ -83,7 +85,41 @@ export abstract class VirtualEnemy extends Laya.Script {
             }
         })
 
+        let enemyInit: EnemyInit = new EnemyInit();
+        switch (enemyType) {
+            case 1:
+                this.m_health = enemyInit.NormalEnemyHealth;
+                this.m_dmg = enemyInit.NormalEnemyDmg;
+                this.m_critical = enemyInit.NormalEnemyCritical;
+                this.m_criticalDmgMultiplier = enemyInit.NormalEnemyCriticalDmgMultiplier;
+                break;
+            case 2:
+                this.m_health = enemyInit.ShieldEnemyHealth;
+                this.m_dmg = enemyInit.ShieldEnemyDmg;
+                this.m_critical = enemyInit.ShieldEnemyCritical;
+                this.m_criticalDmgMultiplier = enemyInit.ShieldEnemyCriticalDmgMultiplier;
+            break;
+            case 3:
+                this.m_health = enemyInit.FastEnemyHealth;
+                this.m_dmg = enemyInit.FastEnemyDmg;
+                this.m_critical = enemyInit.FastEnemyCritical;
+                this.m_criticalDmgMultiplier = enemyInit.FastEnemyCriticalDmgMultiplier;
+            break;
+            case 4:
+                this.m_health = enemyInit.NewbieEnemyHealth;
+                this.m_dmg = enemyInit.NewbieEnemyDmg;
+                this.m_critical = enemyInit.NewbieEnemyCritical;
+                this.m_criticalDmgMultiplier = enemyInit.NewbieEnemyCriticalDmgMultiplier;
+            break;
+            default:
+                break;
+        }
+
+
+
         this.m_maxHealth = this.m_health;
+
+        
 
         this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
         this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
@@ -162,14 +198,15 @@ export abstract class VirtualEnemy extends Laya.Script {
     setLabel(index: string): void {
         this.m_collider.label = index;
     };
-    takeDamage(amount: number) {
+    takeDamage(amount: number, criticalRate: number, criticalDmgRate: number) {
         if (this.m_animation.destroyed || amount <= 0 || !this.m_animation) return;
 
         let fakeNum = Math.random() * 100;
-        let critical: boolean = (fakeNum <= 25);
+        let critical: boolean = (fakeNum <= criticalRate);
 
         this.delayMove(this.m_mdelay);
-        amount *= critical ? 5 : 1;
+        amount *= critical ? criticalDmgRate : 1;
+        amount = Math.round(amount);
         this.setHealth(this.getHealth() - amount);
         this.damageTextEffect(amount, critical);
         this.m_healthBar.alpha = 1;
@@ -516,46 +553,55 @@ export abstract class VirtualEnemy extends Laya.Script {
 }
 export class Normal extends VirtualEnemy {
     m_name = '普通敵人';
-    m_health = 1000;
+    m_health: number;
+    m_dmg: number;
+    m_critical: number;
+    m_criticalDmgMultiplier: number;
     m_armor = 100;
     m_speed = 1.7;
     m_tag = 'n';
     m_attackRange = 100;
     m_mdelay = 0.1;
-    m_dmg = 33;
+
     m_atkTag = "EnemyNormalAttack";
 }
 export class Shield extends VirtualEnemy {
     m_name = '裝甲敵人';
     m_armor = 500;
-    m_health = 1500;
+    m_health: number;
+    m_dmg: number;
+    m_critical: number;
+    m_criticalDmgMultiplier: number;
     m_speed = 1.5;
     m_tag = 's';
     m_attackRange = 100;
     m_mdelay = 0.05;
-    m_dmg = 30;
     m_atkTag = "EnemyShieldAttack";
 }
 export class Fast extends VirtualEnemy {
     m_name = '快攻敵人';
     m_armor = 100;
-    m_health = 500;
+    m_health: number;
+    m_dmg: number;
+    m_critical: number;
+    m_criticalDmgMultiplier: number;
     m_speed = 7;
     m_tag = 's';
     m_attackRange = 100;
     m_mdelay = 0.7;
-    m_dmg = 70;
     m_atkTag = "EnemyFastAttack";
 }
 export class Newbie extends VirtualEnemy {
     m_name = '新手敵人';
     m_armor = 100;
-    m_health = 5000;
+    m_health: number;
+    m_dmg: number;
+    m_critical: number;
+    m_criticalDmgMultiplier: number;
     m_speed = 3;
     m_tag = 's';
     m_attackRange = 100;
     m_mdelay = 1.5;
-    m_dmg = 0;
     m_atkTag = "EnemyNewbieAttack";
 }
 
@@ -572,8 +618,8 @@ export default class EnemyHandler extends Laya.Script {
             {"x": 3935.0, "y": 450.0}
         ];
         let randomPoint = Math.floor(Math.random() * point.length);
-        enemy.spawn(player, id, point[randomPoint]);
-
+        enemy.spawn(player, id, point[randomPoint], enemyType);
+        
         this.enemyPool.push({ '_id': id, '_ent': enemy });
         this.updateEnemies();
 
@@ -586,6 +632,7 @@ export default class EnemyHandler extends Laya.Script {
             case 1: return new Normal();
             case 2: return new Shield();
             case 3: return new Fast();
+            case 4: return new Newbie();
             default: return new Normal();
         };
     }

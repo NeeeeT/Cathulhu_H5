@@ -6,7 +6,7 @@ import { CharacterStatus } from "./CharacterStatus";
 import * as hSkill from "./SkillHuman";
 import * as cSkill from "./SkillCat";
 
-import EnemyHandler, { Fast, Normal, Shield } from "./EnemyHandler";
+import EnemyHandler, { Fast, Newbie, Normal, Shield } from "./EnemyHandler";
 
 import { ExtraData } from "./ExtraData";
 import EnemyInit from "./EnemyInit";
@@ -25,6 +25,8 @@ export class Character extends Laya.Script {
     m_maxBloodyPoint_hard: number;
     m_atk: number;
     m_damageMultiplier: number;
+    m_critical: number;
+    m_criticalDmgMultiplier: number;
     m_defense: number;
     m_xMaxVelocity: number;
     m_yMaxVelocity: number;
@@ -153,7 +155,10 @@ export class Character extends Laya.Script {
                 this.resetMove();
                 this.m_canJump = true;
             }
-            this.takeDamage(this.getEnemyAttackDamage(col.tag));
+            // console.log("敵人攻擊力：",this.getEnemyAttackDamage(col.tag),"敵人爆擊率：",this.getEnemyCriticalRate(col.tag), "敵人爆傷率：", this.getEnemyCriticalDmgRate(col.tag));
+            
+            
+            this.takeDamage(this.getEnemyAttackDamage(col.tag), this.getEnemyCriticalRate(col.tag), this.getEnemyCriticalDmgRate(col.tag));
         }
         this.m_script.onKeyUp = (e: Laya.Event) => {
             if (this.m_canJump) {
@@ -228,13 +233,14 @@ export class Character extends Laya.Script {
         this.m_atk = (30 + Math.round(Math.random() * 100)) * this.m_damageMultiplier + atkLevel * 10;
         return this.m_atk;
     }
-    takeDamage(amount: number) {
+    takeDamage(amount: number, criticalRate: number, criticalDmgRate: number) {
         if (amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted) return;
 
         let fakeNum = Math.random() * 100;
-        let critical: boolean = (fakeNum <= 33);
+        let critical: boolean = (fakeNum <= criticalRate);
 
-        amount *= critical ? 3 : 1;
+        amount *= critical ? criticalDmgRate : 1;
+        amount = Math.round(amount);
         this.setHealth(this.getHealth() - amount);
         this.damageTextEffect(amount, critical);
 
@@ -621,7 +627,7 @@ export class Character extends Laya.Script {
                 soundNum = critical ? 0 : 1;//需再修正
                 enemyFound.forEach((e) => {
                     //敵人受傷傳參(攻擊力函式)
-                    e._ent.takeDamage(this.getAtkValue(this.m_atkLevel));
+                    e._ent.takeDamage(this.getAtkValue(this.m_atkLevel), this.m_critical, this.m_criticalDmgMultiplier);
                     // e._ent.takeDamage(Math.round(Math.floor(Math.random() * 51) + 150));
                     // if (!OathManager.isCharging) {
                     this.setCameraShake(10, 3);
@@ -917,13 +923,46 @@ export class Character extends Laya.Script {
             onCallBack();
     }
     public getEnemyAttackDamage(tag: string): number {
+        let enemyInit: EnemyInit = new EnemyInit();
         switch (tag) {
             case "EnemyNormalAttack":
-                return new Normal().m_dmg;
+                return enemyInit.NormalEnemyDmg;
             case "EnemyShieldAttack":
-                return new Shield().m_dmg;
+                return enemyInit.ShieldEnemyDmg;
             case "EnemyFastAttack":
-                return new Fast().m_dmg;
+                return enemyInit.FastEnemyDmg;
+            case "EnemyNewbieAttack":
+                return enemyInit.NewbieEnemyDmg;
+            default:
+                return 0;
+        }
+    }
+    public getEnemyCriticalRate(tag: string): number {
+        let enemyInit: EnemyInit = new EnemyInit();
+        switch (tag) {
+            case "EnemyNormalAttack":
+                return enemyInit.NormalEnemyCritical;
+            case "EnemyShieldAttack":
+                return enemyInit.ShieldEnemyCritical;
+            case "EnemyFastAttack":
+                return enemyInit.FastEnemyCritical;
+            case "EnemyNewbieAttack":
+                return enemyInit.NewbieEnemyCritical;
+            default:
+                return 0;
+        }
+    }
+    public getEnemyCriticalDmgRate(tag: string): number {
+        let enemyInit: EnemyInit = new EnemyInit();
+        switch (tag) {
+            case "EnemyNormalAttack":
+                return enemyInit.NormalEnemyCriticalDmgMultiplier;
+            case "EnemyShieldAttack":
+                return enemyInit.ShieldEnemyCriticalDmgMultiplier;
+            case "EnemyFastAttack":
+                return enemyInit.FastEnemyCriticalDmgMultiplier;
+            case "EnemyNewbieAttack":
+                return enemyInit.NewbieEnemyCriticalDmgMultiplier;
             default:
                 return 0;
         }
@@ -937,10 +976,18 @@ export class Character extends Laya.Script {
 }
 
 export default class CharacterInit extends Laya.Script {
+    health: number;
     /** @prop {name:basicHealth,tips:"角色初始血量",type:int,default:1000}*/
     basicHealth: number = 1000;
+    /** @prop {name:critical,tips:"角色爆擊率",type:int,default:25}*/
+    critical: number = 25;
+    /** @prop {name:criticalDmgMultiplier,tips:"角色爆擊傷害",type:Number,default:5}*/
+    criticalDmgMultiplier: number = 5;
+    /** @prop {name:damageMultiplier,tips:"調整傷害倍率",type:Number,default:1}*/
+    damageMultiplier: number = 1;
+    /** @prop {name:buff_damageMultiplier,tips:"誓約充能時，調整傷害倍率",type:Number,default:1.5}*/
+    buff_damageMultiplier: number = 1.5;
 
-    health: number;
 
     /** @prop {name:bloodyPoint,tips:"角色初始獻祭值",type:int,default:0}*/
     bloodyPoint: number = 0;
@@ -964,10 +1011,6 @@ export default class CharacterInit extends Laya.Script {
     attackCdTime: number = 500;
     /** @prop {name:buff_attackCdTime,tips:"誓約充能時，角色攻擊速度，越低越快",type:int,default:425}*/
     buff_attackCdTime: number = 425;
-    /** @prop {name:damageMultiplier,tips:"調整傷害倍率",type:Number,default:1}*/
-    damageMultiplier: number = 1;
-    /** @prop {name:buff_damageMultiplier,tips:"誓約充能時，調整傷害倍率",type:Number,default:1.5}*/
-    buff_damageMultiplier: number = 1.5;
 
     /** @prop {name:spikeDmgMultiplier,tips:"調整突進斬傷害倍率",type:Number,default:1}*/
     spikeDmgMultiplier: number = 1;
@@ -1007,6 +1050,9 @@ export default class CharacterInit extends Laya.Script {
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
         this.health = this.basicHealth + data.hpLevel * 100;
         player.m_health = player.m_maxHealth = this.health;
+
+        player.m_critical = this.critical;
+        player.m_criticalDmgMultiplier = this.criticalDmgMultiplier;
 
         player.m_bloodyPoint = this.bloodyPoint;
         player.m_maxBloodyPoint_soft = this.maxBloodyPoint_soft;

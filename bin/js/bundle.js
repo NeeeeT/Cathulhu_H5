@@ -1303,7 +1303,7 @@
                     this.resetMove();
                     this.m_canJump = true;
                 }
-                this.takeDamage(this.getEnemyAttackDamage(col.tag));
+                this.takeDamage(this.getEnemyAttackDamage(col.tag), this.getEnemyCriticalRate(col.tag), this.getEnemyCriticalDmgRate(col.tag));
             };
             this.m_script.onKeyUp = (e) => {
                 if (this.m_canJump) {
@@ -1364,12 +1364,13 @@
             this.m_atk = (30 + Math.round(Math.random() * 100)) * this.m_damageMultiplier + atkLevel * 10;
             return this.m_atk;
         }
-        takeDamage(amount) {
+        takeDamage(amount, criticalRate, criticalDmgRate) {
             if (amount <= 0 || this.m_animation.destroyed || !this.m_animation || this.m_hurted)
                 return;
             let fakeNum = Math.random() * 100;
-            let critical = (fakeNum <= 33);
-            amount *= critical ? 3 : 1;
+            let critical = (fakeNum <= criticalRate);
+            amount *= critical ? criticalDmgRate : 1;
+            amount = Math.round(amount);
             this.setHealth(this.getHealth() - amount);
             this.damageTextEffect(amount, critical);
             Laya.Tween.to(this.m_animation, { alpha: 0.65 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
@@ -1564,7 +1565,7 @@
                     let enemyCount = 0;
                     soundNum = critical ? 0 : 1;
                     enemyFound.forEach((e) => {
-                        e._ent.takeDamage(this.getAtkValue(this.m_atkLevel));
+                        e._ent.takeDamage(this.getAtkValue(this.m_atkLevel), this.m_critical, this.m_criticalDmgMultiplier);
                         this.setCameraShake(10, 3);
                         this.m_oathManager.currentBloodyPoint = this.m_oathManager.currentBloodyPoint + this.m_oathManager.increaseBloodyPoint;
                         if (enemyCount < 3)
@@ -1810,13 +1811,46 @@
                 onCallBack();
         }
         getEnemyAttackDamage(tag) {
+            let enemyInit = new EnemyInit();
             switch (tag) {
                 case "EnemyNormalAttack":
-                    return new Normal().m_dmg;
+                    return enemyInit.NormalEnemyDmg;
                 case "EnemyShieldAttack":
-                    return new Shield().m_dmg;
+                    return enemyInit.ShieldEnemyDmg;
                 case "EnemyFastAttack":
-                    return new Fast().m_dmg;
+                    return enemyInit.FastEnemyDmg;
+                case "EnemyNewbieAttack":
+                    return enemyInit.NewbieEnemyDmg;
+                default:
+                    return 0;
+            }
+        }
+        getEnemyCriticalRate(tag) {
+            let enemyInit = new EnemyInit();
+            switch (tag) {
+                case "EnemyNormalAttack":
+                    return enemyInit.NormalEnemyCritical;
+                case "EnemyShieldAttack":
+                    return enemyInit.ShieldEnemyCritical;
+                case "EnemyFastAttack":
+                    return enemyInit.FastEnemyCritical;
+                case "EnemyNewbieAttack":
+                    return enemyInit.NewbieEnemyCritical;
+                default:
+                    return 0;
+            }
+        }
+        getEnemyCriticalDmgRate(tag) {
+            let enemyInit = new EnemyInit();
+            switch (tag) {
+                case "EnemyNormalAttack":
+                    return enemyInit.NormalEnemyCriticalDmgMultiplier;
+                case "EnemyShieldAttack":
+                    return enemyInit.ShieldEnemyCriticalDmgMultiplier;
+                case "EnemyFastAttack":
+                    return enemyInit.FastEnemyCriticalDmgMultiplier;
+                case "EnemyNewbieAttack":
+                    return enemyInit.NewbieEnemyCriticalDmgMultiplier;
                 default:
                     return 0;
             }
@@ -1832,6 +1866,10 @@
         constructor() {
             super();
             this.basicHealth = 1000;
+            this.critical = 25;
+            this.criticalDmgMultiplier = 5;
+            this.damageMultiplier = 1;
+            this.buff_damageMultiplier = 1.5;
             this.bloodyPoint = 0;
             this.maxBloodyPoint_soft = 100;
             this.maxBloodyPoint_hard = 150;
@@ -1842,8 +1880,6 @@
             this.attackRange = 100;
             this.attackCdTime = 500;
             this.buff_attackCdTime = 425;
-            this.damageMultiplier = 1;
-            this.buff_damageMultiplier = 1.5;
             this.spikeDmgMultiplier = 1;
             this.beheadDmgMultiplier = 1;
             this.slamDmgMultiplier = 1;
@@ -1865,6 +1901,8 @@
             let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
             this.health = this.basicHealth + data.hpLevel * 100;
             player.m_health = player.m_maxHealth = this.health;
+            player.m_critical = this.critical;
+            player.m_criticalDmgMultiplier = this.criticalDmgMultiplier;
             player.m_bloodyPoint = this.bloodyPoint;
             player.m_maxBloodyPoint_soft = this.maxBloodyPoint_soft;
             player.m_maxBloodyPoint_hard = this.maxBloodyPoint_hard;
@@ -2064,7 +2102,6 @@
                 Laya.Scene.load("Loading.scene");
                 if (Village.isNewbie) {
                     Laya.Scene.open("Newbie.scene");
-                    Village.isNewbie = false;
                 }
                 else {
                     let x = Math.round(Math.random());
@@ -2385,6 +2422,22 @@
             this.enemyGenerateTime = 5000;
             this.enemyLeft = 50;
             this.roundTimeLeft = 180;
+            this.NormalEnemyHealth = 1000;
+            this.NormalEnemyDmg = 33;
+            this.NormalEnemyCritical = 33;
+            this.NormalEnemyCriticalDmgMultiplier = 3;
+            this.ShieldEnemyHealth = 1500;
+            this.ShieldEnemyDmg = 30;
+            this.ShieldEnemyCritical = 33;
+            this.ShieldEnemyCriticalDmgMultiplier = 3;
+            this.FastEnemyHealth = 500;
+            this.FastEnemyDmg = 70;
+            this.FastEnemyCritical = 33;
+            this.FastEnemyCriticalDmgMultiplier = 3;
+            this.NewbieEnemyHealth = 5000;
+            this.NewbieEnemyDmg = 0;
+            this.NewbieEnemyCritical = 0;
+            this.NewbieEnemyCriticalDmgMultiplier = 0;
             this.roundDetectTimer = null;
             this.generateTimer = null;
             this.battleToggle = true;
@@ -2416,9 +2469,9 @@
                 }
                 if (EnemyHandler.getEnemiesCount() >= 10)
                     return;
-                let x = Math.floor(Math.random() * 4);
+                let x = Math.floor(Math.random() * 3) + 1;
                 if (Village.isNewbie) {
-                    EnemyHandler.generator(player, 5, 0);
+                    EnemyHandler.generator(player, 4, 0);
                 }
                 else {
                     EnemyHandler.generator(player, x, 0);
@@ -2434,6 +2487,7 @@
                 console.log(EnemyInit.enemyLeftCur, EnemyHandler.enemyPool.length);
                 if (EnemyInit.enemyLeftCur <= 0) {
                     this.battleToggle = false;
+                    Village.isNewbie = false;
                     EnemyInit.isWin = true;
                     CharacterInit.playerEnt.clearAddDebuffTimer();
                     CharacterInit.playerEnt.removeAllDebuff();
@@ -2673,10 +2727,16 @@
                     this.roundDetectTimer = null;
                     return;
                 }
-                if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
-                    this.enemyLeftIcon.pos(player.x - 70, player.y - 450);
-                    this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
+                if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
+                    this.enemyLeftIcon.pos(player.x - 70, 110);
                 }
+                if (Laya.stage.x >= -250) {
+                    this.enemyLeftIcon.pos(935 - 70, 110);
+                }
+                if (Laya.stage.x <= -2475) {
+                    this.enemyLeftIcon.pos(3155 - 70, 110);
+                }
+                this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
                 this.enemyInfo.text = 'x' + String(EnemyInit.enemyLeftCur);
             }, 5);
         }
@@ -2746,7 +2806,7 @@
             this.m_hurtDelayTimer = null;
             this.m_state = EnemyStatus.idle;
         }
-        spawn(player, id, point) {
+        spawn(player, id, point, enemyType) {
             this.m_animation = new Laya.Animation();
             this.m_animation.filters = [];
             this.m_animation.scaleX = 1.5;
@@ -2767,6 +2827,35 @@
                     this.m_animation.stop();
                 }
             });
+            let enemyInit = new EnemyInit();
+            switch (enemyType) {
+                case 1:
+                    this.m_health = enemyInit.NormalEnemyHealth;
+                    this.m_dmg = enemyInit.NormalEnemyDmg;
+                    this.m_critical = enemyInit.NormalEnemyCritical;
+                    this.m_criticalDmgMultiplier = enemyInit.NormalEnemyCriticalDmgMultiplier;
+                    break;
+                case 2:
+                    this.m_health = enemyInit.ShieldEnemyHealth;
+                    this.m_dmg = enemyInit.ShieldEnemyDmg;
+                    this.m_critical = enemyInit.ShieldEnemyCritical;
+                    this.m_criticalDmgMultiplier = enemyInit.ShieldEnemyCriticalDmgMultiplier;
+                    break;
+                case 3:
+                    this.m_health = enemyInit.FastEnemyHealth;
+                    this.m_dmg = enemyInit.FastEnemyDmg;
+                    this.m_critical = enemyInit.FastEnemyCritical;
+                    this.m_criticalDmgMultiplier = enemyInit.FastEnemyCriticalDmgMultiplier;
+                    break;
+                case 4:
+                    this.m_health = enemyInit.NewbieEnemyHealth;
+                    this.m_dmg = enemyInit.NewbieEnemyDmg;
+                    this.m_critical = enemyInit.NewbieEnemyCritical;
+                    this.m_criticalDmgMultiplier = enemyInit.NewbieEnemyCriticalDmgMultiplier;
+                    break;
+                default:
+                    break;
+            }
             this.m_maxHealth = this.m_health;
             this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
             this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
@@ -2841,13 +2930,14 @@
             this.m_collider.label = index;
         }
         ;
-        takeDamage(amount) {
+        takeDamage(amount, criticalRate, criticalDmgRate) {
             if (this.m_animation.destroyed || amount <= 0 || !this.m_animation)
                 return;
             let fakeNum = Math.random() * 100;
-            let critical = (fakeNum <= 25);
+            let critical = (fakeNum <= criticalRate);
             this.delayMove(this.m_mdelay);
-            amount *= critical ? 5 : 1;
+            amount *= critical ? criticalDmgRate : 1;
+            amount = Math.round(amount);
             this.setHealth(this.getHealth() - amount);
             this.damageTextEffect(amount, critical);
             this.m_healthBar.alpha = 1;
@@ -3109,13 +3199,11 @@
         constructor() {
             super(...arguments);
             this.m_name = '普通敵人';
-            this.m_health = 1000;
             this.m_armor = 100;
             this.m_speed = 1.7;
             this.m_tag = 'n';
             this.m_attackRange = 100;
             this.m_mdelay = 0.1;
-            this.m_dmg = 33;
             this.m_atkTag = "EnemyNormalAttack";
         }
     }
@@ -3124,12 +3212,10 @@
             super(...arguments);
             this.m_name = '裝甲敵人';
             this.m_armor = 500;
-            this.m_health = 1500;
             this.m_speed = 1.5;
             this.m_tag = 's';
             this.m_attackRange = 100;
             this.m_mdelay = 0.05;
-            this.m_dmg = 30;
             this.m_atkTag = "EnemyShieldAttack";
         }
     }
@@ -3138,12 +3224,10 @@
             super(...arguments);
             this.m_name = '快攻敵人';
             this.m_armor = 100;
-            this.m_health = 500;
             this.m_speed = 7;
             this.m_tag = 's';
             this.m_attackRange = 100;
             this.m_mdelay = 0.7;
-            this.m_dmg = 70;
             this.m_atkTag = "EnemyFastAttack";
         }
     }
@@ -3152,12 +3236,10 @@
             super(...arguments);
             this.m_name = '新手敵人';
             this.m_armor = 100;
-            this.m_health = 5000;
             this.m_speed = 3;
             this.m_tag = 's';
             this.m_attackRange = 100;
             this.m_mdelay = 1.5;
-            this.m_dmg = 0;
             this.m_atkTag = "EnemyNewbieAttack";
         }
     }
@@ -3170,7 +3252,7 @@
                 { "x": 3935.0, "y": 450.0 }
             ];
             let randomPoint = Math.floor(Math.random() * point.length);
-            enemy.spawn(player, id, point[randomPoint]);
+            enemy.spawn(player, id, point[randomPoint], enemyType);
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();
             console.log(this.enemyPool);
@@ -3181,6 +3263,7 @@
                 case 1: return new Normal();
                 case 2: return new Shield();
                 case 3: return new Fast();
+                case 4: return new Newbie();
                 default: return new Normal();
             }
             ;

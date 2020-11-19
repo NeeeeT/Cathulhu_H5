@@ -131,7 +131,7 @@ export default class MissionManager extends Laya.Script {
             Laya.Scene.load("Loading.scene");
             if (Village.isNewbie) {
                 Laya.Scene.open("Newbie.scene");
-                Village.isNewbie = false;
+                // Village.isNewbie = false;
             } else {
                 let x = Math.round(Math.random());
                 if (x > 0.5) {

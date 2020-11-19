@@ -18,6 +18,42 @@ export default class EnemyInit extends Laya.Script{
     /** @prop {name:roundTimeLeft,tips:"回合的時間限制(sec)",type:int,default:180}*/
     roundTimeLeft: number = 180;
 
+    /** @prop {name:NormalEnemyHealth,tips:"普通敵人血量",type:int,default:1000}*/
+    public NormalEnemyHealth: number = 1000;
+    /** @prop {name:NormalEnemyDmg,tips:"普通敵人攻擊力",type:int,default:33}*/
+    public NormalEnemyDmg: number = 33;
+    /** @prop {name:NormalEnemyCritical,tips:"普通敵人爆擊率",type:int,default:33}*/
+    public NormalEnemyCritical: number = 33;
+    /** @prop {name:NormalEnemyCriticalDmgMultiplier,tips:"普通敵人爆傷倍率",type:int,default:3}*/
+    public NormalEnemyCriticalDmgMultiplier: number = 3;
+
+    /** @prop {name:ShieldEnemyHealth,tips:"裝甲敵人血量",type:int,default:1500}*/
+    public ShieldEnemyHealth: number = 1500;
+    /** @prop {name:ShieldEnemyDmg,tips:"裝甲敵人攻擊力",type:int,default:30}*/
+    public ShieldEnemyDmg: number = 30;
+    /** @prop {name:ShieldEnemyCritical,tips:"裝甲敵人爆擊率",type:int,default:33}*/
+    public ShieldEnemyCritical: number = 33;
+    /** @prop {name:ShieldEnemyCriticalDmgMultiplier,tips:"裝甲敵人爆傷倍率",type:int,default:3}*/
+    public ShieldEnemyCriticalDmgMultiplier: number = 3;
+
+    /** @prop {name:FastEnemyHealth,tips:"快攻敵人血量",type:int,default:500}*/
+    public FastEnemyHealth: number = 500;
+    /** @prop {name:FastEnemyDmg,tips:"快攻敵人攻擊力",type:int,default:70}*/
+    public FastEnemyDmg: number = 70;
+    /** @prop {name:FastEnemyCritical,tips:"快攻敵人爆擊率",type:int,default:33}*/
+    public FastEnemyCritical: number = 33;
+    /** @prop {name:FastEnemyCriticalDmgMultiplier,tips:"快攻敵人爆傷倍率",type:int,default:3}*/
+    public FastEnemyCriticalDmgMultiplier: number = 3;
+    
+    /** @prop {name:NewbieEnemyHealth,tips:"新手敵人血量",type:int,default:5000}*/
+    public NewbieEnemyHealth: number = 5000;
+    /** @prop {name:NewbieEnemyDmg,tips:"新手敵人攻擊力",type:int,default:0}*/
+    public NewbieEnemyDmg: number = 0;
+    /** @prop {name:NewbieEnemyCritical,tips:"新手敵人爆擊率",type:int,default:0}*/
+    public NewbieEnemyCritical: number = 0;
+    /** @prop {name:NewbieEnemyCriticalDmgMultiplier,tips:"新手敵人爆傷倍率",type:int,default:0}*/
+    public NewbieEnemyCriticalDmgMultiplier: number = 0;
+
     roundDetectTimer = null;
     generateTimer = null;
 
@@ -95,9 +131,13 @@ export default class EnemyInit extends Laya.Script{
                 return;
             }
             if(EnemyHandler.getEnemiesCount() >= 10) return;
-            let x = Math.floor(Math.random() * 4);
-            if(Village.isNewbie){
-                EnemyHandler.generator(player, 5, 0);
+            let x = Math.floor(Math.random() * 3) + 1; //1~3
+            // console.log("是否為新手關卡：",Village.isNewbie);
+            
+            if (Village.isNewbie) {
+                // console.log("生成新手敵人");
+                
+                EnemyHandler.generator(player, 4, 0);
             } else {
                 EnemyHandler.generator(player, x, 0);
             }
@@ -115,6 +155,8 @@ export default class EnemyInit extends Laya.Script{
             
             if(EnemyInit.enemyLeftCur <= 0){
                 this.battleToggle = false;
+                //新手教學結束
+                Village.isNewbie = false;
                 EnemyInit.isWin = true;
                 //消除角色身上所有Debuff與Debuff計時器
                 CharacterInit.playerEnt.clearAddDebuffTimer();
@@ -382,10 +424,17 @@ export default class EnemyInit extends Laya.Script{
                 this.roundDetectTimer = null;
                 return;
             }
-            if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
-                this.enemyLeftIcon.pos(player.x-70, player.y-450);
-                this.enemyInfo.pos(this.enemyLeftIcon.x+44, this.enemyLeftIcon.y-2);
+            if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
+                this.enemyLeftIcon.pos(player.x - 70, 110);
             }
+            if (Laya.stage.x >= -250) {
+                this.enemyLeftIcon.pos(935 - 70, 110);
+            }
+            if (Laya.stage.x <= -2475) {
+                this.enemyLeftIcon.pos(3155 - 70, 110);
+            }
+
+            this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
             this.enemyInfo.text = 'x' + String(EnemyInit.enemyLeftCur);
         }, 5);
     }
