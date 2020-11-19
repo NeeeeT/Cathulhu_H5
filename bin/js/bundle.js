@@ -332,7 +332,7 @@
                     this.catSkillIconCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "" : String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
                     this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "" : String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
                 }
-                this.sprintIconCd.text = CharacterInit.playerEnt.m_canSprint ? "" : String('冷');
+                this.sprintIconCd.text = CharacterInit.playerEnt.m_canSprint ? "" : String(CharacterInit.playerEnt.m_sprintCdCount);
             }), 5);
             Laya.stage.addChild(this.characterLogo);
             Laya.stage.addChild(this.catSkillIcon);
@@ -682,7 +682,6 @@
                     return;
                 }
                 this.m_cdCount = !this.m_canUse ? (this.m_cdCount - 1) : 0;
-                console.log(this.m_cdCount);
             }, 1000);
         }
     }
@@ -1239,6 +1238,7 @@
             this.m_canJump = true;
             this.m_canAttack = true;
             this.m_canSprint = true;
+            this.m_sprintCdTimer = null;
             this.m_atkTimer = null;
             this.m_atkStep = 0;
             this.m_hurted = false;
@@ -1476,6 +1476,7 @@
                 setTimeout(() => {
                     this.m_canSprint = true;
                 }, 3000);
+                this.updateSprintCdTimer();
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
@@ -1809,6 +1810,18 @@
             this.m_animation.interval = rate;
             if (typeof onCallBack === 'function')
                 onCallBack();
+        }
+        updateSprintCdTimer() {
+            this.m_sprintCdCount = 3;
+            this.m_sprintCdTimer = setInterval(() => {
+                if (this.m_canSprint) {
+                    clearInterval(this.m_sprintCdTimer);
+                    this.m_sprintCdTimer = null;
+                    this.m_sprintCdCount = 0;
+                    return;
+                }
+                this.m_sprintCdCount = !this.m_canSprint ? (this.m_sprintCdCount - 1) : 0;
+            }, 1000);
         }
         getEnemyAttackDamage(tag) {
             let enemyInit = new EnemyInit();
@@ -2179,7 +2192,6 @@
     class Village extends Laya.Script {
         constructor() {
             super(...arguments);
-            this.reinforceToggle = false;
             this.reinforceBtn = null;
             this.templeBtn = null;
             this.battleBtn = null;
@@ -2205,6 +2217,11 @@
                 this.missionManager.generateMissionData(9);
             }
         }
+        onKeyDown(e) {
+            if (e.keyCode === 32 && Village.reinforceToggle) {
+                this.clearReinforceUI();
+            }
+        }
         onStart() {
             this.updateData();
             Laya.stage.x = 0;
@@ -2213,6 +2230,8 @@
             this.templeBtn = this.owner.getChildByName("Temple");
             this.battleBtn = this.owner.getChildByName("Battle");
             this.reinforceBtn.on(Laya.Event.CLICK, this, function () {
+                if (this.reinforceToggle)
+                    return;
                 this.showReinforceUI();
             });
             this.templeBtn.on(Laya.Event.CLICK, this, function () {
@@ -2225,7 +2244,7 @@
         updateData() {
             ExtraData.loadData();
             let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
-            this.c_gold = data.gold;
+            Village.c_gold = data.gold;
             this.c_crystal = data.crystal;
             Village.hpLevel = data.hpLevel;
             Village.atkDmgLevel = data.atkDmgLevel;
@@ -2243,10 +2262,11 @@
             this.setReinforceHpCostBtn();
             this.setReinforceAtkDmgCostIcon();
             this.setReinforceHpCostIcon();
-            this.reinforceToggle = true;
+            this.setSkipIcon();
+            Village.reinforceToggle = true;
         }
         clearReinforceUI() {
-            if (this.reinforceToggle) {
+            if (Village.reinforceToggle) {
                 this.reinforceUI.destroy();
                 this.reinforceBackBtn.destroy();
                 this.reinforceGold.destroy();
@@ -2258,12 +2278,15 @@
                 this.reinforceHpCostBtn.destroy();
                 this.reinforceAtkDmgCostIcon.destroy();
                 this.reinforceHpCostIcon.destroy();
+                this.skipIcon.destroy();
                 this.reinforceUI = this.reinforceBackBtn = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
-                    = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon = null;
-                this.reinforceToggle = false;
+                    = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
+                        this.skipIcon = null;
+                Village.reinforceToggle = false;
             }
         }
         setReinfoceUI() {
+            Laya.stage.x = Laya.stage.y = 0;
             this.reinforceUI = new Laya.Sprite();
             this.reinforceUI.loadImage("ui/reinforce.png");
             this.reinforceUI.width = 700;
@@ -2271,6 +2294,21 @@
             this.reinforceUI.pos(333, 184);
             this.reinforceUI.alpha = 1;
             Laya.stage.addChild(this.reinforceUI);
+        }
+        setSkipIcon() {
+            this.skipIcon = new Laya.Sprite();
+            this.skipIcon.pos(this.reinforceUI.x + 281, this.reinforceUI.y + 353);
+            this.skipIcon.loadImage('ui/skip.png');
+            this.skipIcon.on(Laya.Event.MOUSE_OVER, this, () => {
+                this.skipIcon.loadImage('ui/skip2.png');
+            });
+            this.skipIcon.on(Laya.Event.MOUSE_OUT, this, () => {
+                this.skipIcon.loadImage('ui/skip.png');
+            });
+            this.skipIcon.on(Laya.Event.CLICK, this, () => {
+                this.clearReinforceUI();
+            });
+            Laya.stage.addChild(this.skipIcon);
         }
         setReinfoceBackBtn() {
             this.reinforceBackBtn = new Laya.Button();
@@ -2283,7 +2321,7 @@
         }
         setReinfoceGoldValue() {
             if (this.reinforceGold) {
-                this.reinforceGold.text = '$' + String(this.c_gold);
+                this.reinforceGold.text = '$' + String(Village.c_gold);
                 return;
             }
             this.reinforceGold = new Laya.Text();
@@ -2292,7 +2330,7 @@
             this.reinforceGold.color = "#FEFFF7";
             this.reinforceGold.stroke = 3;
             this.reinforceGold.strokeColor = "#000";
-            this.reinforceGold.text = '$' + String(this.c_gold);
+            this.reinforceGold.text = '$' + String(Village.c_gold);
             this.reinforceGold.pos(333 + 550, 184 + 50);
             Laya.stage.addChild(this.reinforceGold);
         }
@@ -2362,10 +2400,10 @@
             this.reinforceAtkDmgCostBtn.height = 52;
             this.reinforceAtkDmgCostBtn.pos(330 + 465, 184 + 160);
             this.reinforceAtkDmgCostBtn.on(Laya.Event.CLICK, this, () => {
-                if (this.c_gold < Village.atkDmgLevel * 100) {
+                if (Village.c_gold < Village.atkDmgLevel * 100) {
                     return;
                 }
-                this.c_gold -= Village.atkDmgLevel * 100;
+                Village.c_gold -= Village.atkDmgLevel * 100;
                 Village.atkDmgLevel++;
                 this.setReinfoceAtkDmgLevel();
                 this.setReinfoceAtkDmgCost();
@@ -2380,10 +2418,10 @@
             this.reinforceHpCostBtn.height = 52;
             this.reinforceHpCostBtn.pos(330 + 465, 184 + 275);
             this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, () => {
-                if (this.c_gold < Village.hpLevel * 100) {
+                if (Village.c_gold < Village.hpLevel * 100) {
                     return;
                 }
-                this.c_gold -= Village.hpLevel * 100;
+                Village.c_gold -= Village.hpLevel * 100;
                 Village.hpLevel++;
                 this.setReinfoceHpLevel();
                 this.setReinfoceHpCost();
@@ -2396,24 +2434,37 @@
             this.reinforceAtkDmgCostIcon = new Laya.Sprite();
             this.reinforceAtkDmgCostIcon.pos(330 + 465, 184 + 160);
             this.reinforceAtkDmgCostIcon.loadImage('ui/arrP.png');
-            this.reinforceAtkDmgCostIcon.alpha = 1;
+            this.reinforceAtkDmgCostIcon.alpha = 0.75;
+            this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OVER, this, () => {
+                this.reinforceAtkDmgCostIcon.alpha = 1;
+            });
+            this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OUT, this, () => {
+                this.reinforceAtkDmgCostIcon.alpha = 0.75;
+            });
             Laya.stage.addChild(this.reinforceAtkDmgCostIcon);
         }
         setReinforceHpCostIcon() {
             this.reinforceHpCostIcon = new Laya.Sprite();
             this.reinforceHpCostIcon.pos(330 + 465, 184 + 275);
             this.reinforceHpCostIcon.loadImage('ui/arrR.png');
-            this.reinforceHpCostIcon.alpha = 1;
+            this.reinforceHpCostIcon.alpha = 0.75;
             Laya.stage.addChild(this.reinforceHpCostIcon);
+            this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, () => {
+                this.reinforceHpCostIcon.alpha = 1.0;
+            });
+            this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OUT, this, () => {
+                this.reinforceHpCostIcon.alpha = 0.75;
+            });
         }
         saveData() {
             ExtraData.currentData['atkDmgLevel'] = Village.atkDmgLevel;
             ExtraData.currentData['hpLevel'] = Village.hpLevel;
-            ExtraData.currentData['gold'] = this.c_gold;
+            ExtraData.currentData['gold'] = Village.c_gold;
             ExtraData.currentData['crystal'] = this.c_crystal;
             ExtraData.saveData();
         }
     }
+    Village.reinforceToggle = false;
     Village.isNewbie = true;
 
     class EnemyInit extends Laya.Script {
@@ -2444,6 +2495,7 @@
             this.battleTimer = null;
             this.rewardGoldValue = 500;
             this.rewardCrystalValue = 100;
+            this.villageManager = new Village();
         }
         onAwake() {
             this.updateMissionData();
@@ -2513,6 +2565,7 @@
             this.showBattleInfo();
         }
         onKeyUp(e) {
+            let player = CharacterInit.playerEnt;
             if (this.endingRewardUI && e.keyCode === 32) {
                 Laya.Tween.to(this.endingRewardUI, { alpha: 0.3 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     this.endingRewardUI.destroy();
@@ -2524,7 +2577,6 @@
                 }), 0);
             }
             ;
-            let player = CharacterInit.playerEnt;
             if (this.endingSkillUI) {
                 if (e.keyCode === 32) {
                     if (player.m_isFacingRight) {
@@ -2664,7 +2716,7 @@
             Laya.Tween.to(player, { alpha: 0.0 }, 2500, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 player.destroy();
                 player.destroyed = true;
-                this.changeToVillage();
+                this.villageManager.showReinforceUI();
             }), 0);
         }
         showEndRewardUI() {
@@ -3362,7 +3414,7 @@
     GameConfig.screenMode = "none";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Village.scene";
+    GameConfig.startScene = "Loading.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = false;

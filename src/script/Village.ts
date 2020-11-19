@@ -3,7 +3,7 @@ import MissionManager from "./MissionManager";
 
 export default class Village extends Laya.Script{
 
-    reinforceToggle: boolean = false;
+    public static reinforceToggle: boolean = false;
 
     reinforceBtn: Laya.Button = null;
     templeBtn: Laya.Button = null;
@@ -23,8 +23,10 @@ export default class Village extends Laya.Script{
     reinforceHpCostIcon: Laya.Sprite = null;
     reinforceAtkDmgCostIcon: Laya.Sprite = null;
 
-    c_gold: number;
+    skipIcon: Laya.Sprite;
+
     c_crystal: number;
+    public static c_gold: number;
     public static hpLevel: number;
     public static atkDmgLevel: number;
 
@@ -40,6 +42,11 @@ export default class Village extends Laya.Script{
             this.missionManager.generateMissionData(9);
         }
     }
+    // onKeyDown(e: Laya.Event): void{
+    //     if(e.keyCode === 32 && Village.reinforceToggle){
+    //         this.clearReinforceUI();
+    //     }
+    // }
     onStart(){
         // Laya.stage.pos(0, 0);
         this.updateData();
@@ -50,6 +57,7 @@ export default class Village extends Laya.Script{
         this.templeBtn = this.owner.getChildByName("Temple") as Laya.Button;
         this.battleBtn = this.owner.getChildByName("Battle") as Laya.Button;
         this.reinforceBtn.on(Laya.Event.CLICK, this, function(){
+            if(this.reinforceToggle) return;
             this.showReinforceUI();
         })
         this.templeBtn.on(Laya.Event.CLICK, this, function(){
@@ -63,7 +71,7 @@ export default class Village extends Laya.Script{
         ExtraData.loadData();
 
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
-        this.c_gold = data.gold;
+        Village.c_gold = data.gold;
         this.c_crystal = data.crystal;
         Village.hpLevel = data.hpLevel;
         Village.atkDmgLevel = data.atkDmgLevel;
@@ -82,11 +90,12 @@ export default class Village extends Laya.Script{
         this.setReinforceHpCostBtn();
         this.setReinforceAtkDmgCostIcon();
         this.setReinforceHpCostIcon();
+        this.setSkipIcon();
 
-        this.reinforceToggle = true;
+        Village.reinforceToggle = true;
     }
     clearReinforceUI(): void{
-        if(this.reinforceToggle){
+        if(Village.reinforceToggle){
             this.reinforceUI.destroy();
             this.reinforceBackBtn.destroy();
             this.reinforceGold.destroy();
@@ -98,21 +107,41 @@ export default class Village extends Laya.Script{
             this.reinforceHpCostBtn.destroy();
             this.reinforceAtkDmgCostIcon.destroy();
             this.reinforceHpCostIcon.destroy();
+            this.skipIcon.destroy();
     
             this.reinforceUI = this.reinforceBackBtn = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
-            = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon = null;
+            = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
+            this.skipIcon =  null;
 
-            this.reinforceToggle = false;
+            Village.reinforceToggle = false;
         }
     }
     setReinfoceUI(): void{
+        Laya.stage.x = Laya.stage.y = 0;
         this.reinforceUI = new Laya.Sprite();
         this.reinforceUI.loadImage("ui/reinforce.png");
         this.reinforceUI.width = 700;
         this.reinforceUI.height = 400;
-        this.reinforceUI.pos(333, 184);//(1366 - 1066) / 2, (768 - 550) / 2
+        this.reinforceUI.pos(333,184);//(1366 - 1066) / 2, (768 - 550) / 2
         this.reinforceUI.alpha = 1;
         Laya.stage.addChild(this.reinforceUI);
+    }
+    setSkipIcon(): void{
+        this.skipIcon = new Laya.Sprite();
+        this.skipIcon.pos(this.reinforceUI.x+281,this.reinforceUI.y+353);
+        this.skipIcon.loadImage('ui/skip.png');
+
+        this.skipIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
+            this.skipIcon.loadImage('ui/skip2.png');
+        });
+        this.skipIcon.on(Laya.Event.MOUSE_OUT, this, ()=>{
+            this.skipIcon.loadImage('ui/skip.png');
+        })
+        this.skipIcon.on(Laya.Event.CLICK, this, ()=>{
+            this.clearReinforceUI();
+        })
+
+        Laya.stage.addChild(this.skipIcon);
     }
     setReinfoceBackBtn(): void{
         this.reinforceBackBtn = new Laya.Button();
@@ -125,7 +154,7 @@ export default class Village extends Laya.Script{
     }
     setReinfoceGoldValue(): void{
         if(this.reinforceGold){
-            this.reinforceGold.text = '$' + String(this.c_gold);
+            this.reinforceGold.text = '$' + String(Village.c_gold);
             return;
         }
         this.reinforceGold = new Laya.Text();
@@ -134,7 +163,7 @@ export default class Village extends Laya.Script{
         this.reinforceGold.color = "#FEFFF7";  
         this.reinforceGold.stroke = 3;
         this.reinforceGold.strokeColor = "#000";
-        this.reinforceGold.text = '$'+String(this.c_gold);
+        this.reinforceGold.text = '$'+String(Village.c_gold);
         this.reinforceGold.pos(333+550, 184+50);
         Laya.stage.addChild(this.reinforceGold);
     }
@@ -204,10 +233,10 @@ export default class Village extends Laya.Script{
         this.reinforceAtkDmgCostBtn.height = 52;
         this.reinforceAtkDmgCostBtn.pos(330+465, 184+160);
         this.reinforceAtkDmgCostBtn.on(Laya.Event.CLICK, this, ()=>{
-            if(this.c_gold < Village.atkDmgLevel*100){
+            if(Village.c_gold < Village.atkDmgLevel*100){
                 return;
             }
-            this.c_gold -= Village.atkDmgLevel*100;
+            Village.c_gold -= Village.atkDmgLevel*100;
             Village.atkDmgLevel++;
             this.setReinfoceAtkDmgLevel();
             this.setReinfoceAtkDmgCost();
@@ -222,10 +251,10 @@ export default class Village extends Laya.Script{
         this.reinforceHpCostBtn.height = 52;
         this.reinforceHpCostBtn.pos(330+465, 184+275);
         this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, ()=>{            
-            if(this.c_gold < Village.hpLevel*100){
+            if(Village.c_gold < Village.hpLevel*100){
                 return;
             }
-            this.c_gold -= Village.hpLevel*100;
+            Village.c_gold -= Village.hpLevel*100;
             Village.hpLevel++;
             this.setReinfoceHpLevel();
             this.setReinfoceHpCost();
@@ -238,20 +267,39 @@ export default class Village extends Laya.Script{
         this.reinforceAtkDmgCostIcon = new Laya.Sprite();
         this.reinforceAtkDmgCostIcon.pos(330+465, 184+160);
         this.reinforceAtkDmgCostIcon.loadImage('ui/arrP.png');
-        this.reinforceAtkDmgCostIcon.alpha = 1;
+        this.reinforceAtkDmgCostIcon.alpha = 0.75;
+
+        this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
+            // this.reinforceAtkDmgCostIcon.loadImage('ui/arrP2.png');
+            this.reinforceAtkDmgCostIcon.alpha = 1;
+        });
+        this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OUT, this, ()=>{
+            // this.reinforceAtkDmgCostIcon.loadImage('ui/arrP.png');
+            this.reinforceAtkDmgCostIcon.alpha = 0.75
+        })
+
         Laya.stage.addChild(this.reinforceAtkDmgCostIcon);
     }
     setReinforceHpCostIcon(): void{
         this.reinforceHpCostIcon = new Laya.Sprite();
         this.reinforceHpCostIcon.pos(330+465, 184+275);
         this.reinforceHpCostIcon.loadImage('ui/arrR.png');
-        this.reinforceHpCostIcon.alpha = 1;
+        this.reinforceHpCostIcon.alpha = 0.75;
         Laya.stage.addChild(this.reinforceHpCostIcon);
+
+        this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
+            // this.reinforceHpCostIcon.loadImage('ui/arrR2.png');
+            this.reinforceHpCostIcon.alpha = 1.0;
+        });
+        this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OUT, this, ()=>{
+            // this.reinforceHpCostIcon.loadImage('ui/arrR.png');
+            this.reinforceHpCostIcon.alpha = 0.75;
+        })
     }
     saveData(): void{
         ExtraData.currentData['atkDmgLevel'] = Village.atkDmgLevel;
         ExtraData.currentData['hpLevel'] = Village.hpLevel;
-        ExtraData.currentData['gold'] = this.c_gold;
+        ExtraData.currentData['gold'] = Village.c_gold;
         ExtraData.currentData['crystal'] = this.c_crystal;
         
         ExtraData.saveData();

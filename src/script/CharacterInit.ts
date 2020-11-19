@@ -63,7 +63,10 @@ export class Character extends Laya.Script {
     m_canJump: boolean = true;
     m_canAttack: boolean = true;
     m_canSprint: boolean = true;
+    m_sprintCdCount: number;
+    m_sprintCdTimer = null;
     m_animationChanging: boolean;
+
 
     m_atkTimer = null;
     m_atkStep: number = 0;
@@ -371,6 +374,7 @@ export class Character extends Laya.Script {
             setTimeout(() => {
                 this.m_canSprint = true;
             }, 3000);
+            this.updateSprintCdTimer();
             // setTimeout(() => {
             //     this.m_animation.alpha = 0.7;
             // }, 10);
@@ -921,6 +925,18 @@ export class Character extends Laya.Script {
         this.m_animation.interval = rate;
         if (typeof onCallBack === 'function')
             onCallBack();
+    }
+    public updateSprintCdTimer(): void{
+        this.m_sprintCdCount = 3;
+        this.m_sprintCdTimer = setInterval(()=>{
+            if(this.m_canSprint){
+                clearInterval(this.m_sprintCdTimer);
+                this.m_sprintCdTimer = null;
+                this.m_sprintCdCount = 0;
+                return;
+            }
+            this.m_sprintCdCount = !this.m_canSprint ? (this.m_sprintCdCount - 1):0;
+        }, 1000);
     }
     public getEnemyAttackDamage(tag: string): number {
         let enemyInit: EnemyInit = new EnemyInit();
