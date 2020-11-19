@@ -1,6 +1,7 @@
 import CharacterInit from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import { ExtraData } from "./ExtraData";
+import MissionManager from "./MissionManager";
 import SkillList from "./SkillList";
 import Village from "./Village";
 
@@ -102,6 +103,7 @@ export default class EnemyInit extends Laya.Script{
     humanSkillName: Laya.Text;
 
     villageManager: Village = new Village();
+    missionManager: MissionManager = new MissionManager();
 
     
     constructor(){
@@ -192,6 +194,7 @@ export default class EnemyInit extends Laya.Script{
         let player = CharacterInit.playerEnt
         if(Village.reinforceToggle && e.keyCode === 32){
             this.villageManager.clearReinforceUI();
+            // new MissionManager().showMissionUI();
         }
         if(this.endingRewardUI && e.keyCode === 32){
             Laya.Tween.to(this.endingRewardUI, {alpha: 0.3}, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{

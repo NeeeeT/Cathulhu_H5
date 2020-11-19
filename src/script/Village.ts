@@ -113,6 +113,9 @@ export default class Village extends Laya.Script{
             = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
             this.skipIcon =  null;
 
+            this.missionManager.generateMissionData(9);
+            this.missionManager.showMissionUI();
+
             Village.reinforceToggle = false;
         }
     }
@@ -140,7 +143,6 @@ export default class Village extends Laya.Script{
         this.skipIcon.on(Laya.Event.CLICK, this, ()=>{
             this.clearReinforceUI();
         })
-
         Laya.stage.addChild(this.skipIcon);
     }
     setReinfoceBackBtn(): void{

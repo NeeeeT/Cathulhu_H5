@@ -241,7 +241,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         damageText.pos(this.m_animation.x - fakeX, (this.m_animation.y - this.m_animation.height) - 100);
         damageText.bold = true;
         damageText.align = "center";
-        damageText.alpha = 1;
+        damageText.alpha = 0.5;
 
         damageText.fontSize = critical ? 40 : 20;
         damageText.color = critical ? 'orange' : "white";
