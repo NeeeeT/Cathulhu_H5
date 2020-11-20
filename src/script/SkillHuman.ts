@@ -103,7 +103,7 @@ export class Spike extends VirtualSkill {
 
 export class Behead extends VirtualSkill {
     m_name = '攻其不備';
-    m_info = '製造破綻，並且追擊敵人';
+    m_info = '製造破綻，瞬移並攻擊隨機敵人';
     m_damage: number;
     m_cost = 10;
     m_id = 2;
@@ -193,8 +193,8 @@ export class Behead extends VirtualSkill {
             return;
         }
 
-        console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
-        owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 50 : -50);
+        // console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
+        owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? -50 : 50);
         owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y;
         //this.m_animation.pos(owner.m_animation.x, owner.m_animation.y);
 
