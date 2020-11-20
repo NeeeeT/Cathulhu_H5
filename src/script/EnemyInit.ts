@@ -172,17 +172,15 @@ export default class EnemyInit extends Laya.Script{
                 EnemyHandler.clearAllEnemy();
                 return;
             }
-            else if(this.timeLeftValue < 0){
-                EnemyHandler.clearAllEnemy();
-                // console.log('時間到! 你輸了:(');
-                clearInterval(this.battleTimer);
-                this.battleTimer = null;
-                //消除角色身上所有Debuff與Debuff計時器
-                CharacterInit.playerEnt.clearAddDebuffTimer();
-                CharacterInit.playerEnt.removeAllDebuff();
-                CharacterInit.playerEnt.death();
-                return;
-            }
+            // else if(this.timeLeftValue < 0){
+            //     EnemyHandler.clearAllEnemy();
+            //     clearInterval(this.battleTimer);
+            //     this.battleTimer = null;
+            //     CharacterInit.playerEnt.clearAddDebuffTimer();
+            //     CharacterInit.playerEnt.removeAllDebuff();
+            //     CharacterInit.playerEnt.death();
+            //     return;
+            // }
             this.timeLeftValue--;
         }, 1000);
         this.showBattleInfo();
@@ -287,14 +285,14 @@ export default class EnemyInit extends Laya.Script{
         this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
         this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
 
-        this.skillCatBtn = new Laya.Button();
-        this.skillHumanBtn = new Laya.Button();
-        this.skillCatBtn.width = this.skillHumanBtn.width = 92;
-        this.skillCatBtn.height = this.skillHumanBtn.height = 33;
-        this.skillCatBtn.pos(pos['x'] + 155, pos['y'] + 302);  
-        this.skillHumanBtn.pos(pos['x']+442, pos['y']+302);
-        this.skillCatBtn.loadImage("ui/ending/chooseBtn.png")
-        this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
+        // this.skillCatBtn = new Laya.Button();
+        // this.skillHumanBtn = new Laya.Button();
+        // this.skillCatBtn.width = this.skillHumanBtn.width = 92;
+        // this.skillCatBtn.height = this.skillHumanBtn.height = 33;
+        // this.skillCatBtn.pos(pos['x'] + 155, pos['y'] + 302);  
+        // this.skillHumanBtn.pos(pos['x']+442, pos['y']+302);
+        // this.skillCatBtn.loadImage("ui/ending/chooseBtn.png")
+        // this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
 
 
         this.skillCatInfo = new Laya.Sprite();
@@ -487,8 +485,8 @@ export default class EnemyInit extends Laya.Script{
         this.endingSkillUI.destroy();
         this.skillCat.destroy();
         this.skillHuman.destroy();
-        this.skillCatBtn.destroy();
-        this.skillHumanBtn.destroy();
+        // this.skillCatBtn.destroy();
+        // this.skillHumanBtn.destroy();
         this.skillCatIcon.destroy();
         this.skillHumanIcon.destroy();
         this.skillCatInfo.destroy();

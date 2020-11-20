@@ -833,7 +833,7 @@
         attackRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
             let targetEnemy = Math.floor(Math.random() * enemy.length);
-            if (enemy.length === 0 || (enemy[targetEnemy].x0 <= 258 || enemy[targetEnemy].x0 > 3849)) {
+            if (enemy.length === 0 || (enemy[targetEnemy]._ent.m_animation.x <= 258 || enemy[targetEnemy]._ent.m_animation.x > 3849)) {
                 return;
             }
             console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
@@ -2495,15 +2495,6 @@
                     EnemyHandler.clearAllEnemy();
                     return;
                 }
-                else if (this.timeLeftValue < 0) {
-                    EnemyHandler.clearAllEnemy();
-                    clearInterval(this.battleTimer);
-                    this.battleTimer = null;
-                    CharacterInit.playerEnt.clearAddDebuffTimer();
-                    CharacterInit.playerEnt.removeAllDebuff();
-                    CharacterInit.playerEnt.death();
-                    return;
-                }
                 this.timeLeftValue--;
             }, 1000);
             this.showBattleInfo();
@@ -2598,14 +2589,6 @@
             this.skillHumanIcon.loadImage(SkillList.humanSkillList[this.r2].m_iconB);
             this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
             this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-            this.skillCatBtn = new Laya.Button();
-            this.skillHumanBtn = new Laya.Button();
-            this.skillCatBtn.width = this.skillHumanBtn.width = 92;
-            this.skillCatBtn.height = this.skillHumanBtn.height = 33;
-            this.skillCatBtn.pos(pos['x'] + 155, pos['y'] + 302);
-            this.skillHumanBtn.pos(pos['x'] + 442, pos['y'] + 302);
-            this.skillCatBtn.loadImage("ui/ending/chooseBtn.png");
-            this.skillHumanBtn.loadImage("ui/ending/chooseBtn.png");
             this.skillCatInfo = new Laya.Sprite();
             this.skillHumanInfo = new Laya.Sprite();
             this.skillCatInfo.width = this.skillHumanInfo.width = 205;
@@ -2774,8 +2757,6 @@
             this.endingSkillUI.destroy();
             this.skillCat.destroy();
             this.skillHuman.destroy();
-            this.skillCatBtn.destroy();
-            this.skillHumanBtn.destroy();
             this.skillCatIcon.destroy();
             this.skillHumanIcon.destroy();
             this.skillCatInfo.destroy();
@@ -2980,10 +2961,10 @@
             damageText.pos(this.m_animation.x - fakeX, (this.m_animation.y - this.m_animation.height) - 100);
             damageText.bold = true;
             damageText.align = "center";
-            damageText.alpha = 0.5;
+            damageText.alpha = 0.8;
             damageText.fontSize = critical ? 40 : 20;
-            damageText.color = critical ? 'orange' : "white";
-            if (amount >= 10000) {
+            damageText.color = critical ? '#FA7B1E' : "white";
+            if (amount >= 3000) {
                 damageText.fontSize = 55;
                 damageText.color = "#00DDDD";
             }
@@ -2994,17 +2975,17 @@
             }
             damageText.text = temp_text;
             damageText.font = "silver";
-            damageText.stroke = 5;
+            damageText.stroke = 3;
             damageText.strokeColor = "#000";
             Laya.stage.addChild(damageText);
-            Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 80, }, 650, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+            Laya.Tween.to(damageText, { alpha: 0.4, fontSize: damageText.fontSize + 50, y: damageText.y + 80, }, 650, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 130 }, 650, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
             }), 0);
         }
         showHealth() {
             this.m_healthBar = new Laya.ProgressBar();
             this.m_healthBar.height = 10;
-            this.m_healthBar.width = this.m_animation.width * 0.8;
+            this.m_healthBar.width = this.m_animation.width;
             this.m_healthBar.skin = "comp/progress.png";
             this.m_healthBar.value = 1;
             this.m_healthBar.alpha = 1;
@@ -3342,20 +3323,41 @@
     class Loading extends Laya.Script {
         constructor() {
             super(...arguments);
-            this.resourceLoad = ["Audio/Bgm/BGM1.wav", "font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
-                "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
-                "character/Sprint.atlas",
-                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
-                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas", "ui/loading.png",
+            this.resourceLoad = [
+                "Audio/Bgm/BGM01.wav", 'Audio/Attack/Attack0.wav', 'Audio/Attack/Attack1.wav', 'Audio/EnemyHurt/EnemyHurt0.wav', 'Audio/EnemyHurt/EnemyHurt1.wav',
+                "font/silver.ttf",
+                "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
+                "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas", "character/Sprint.atlas",
+                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas", "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas",
+                "ui/arrP.png", "ui/arrR.png", "ui/skull.png", "ui/reinforce.png", "ui/skip.png", "ui/skip2.png", 'ui/ending/chooseSkill.png', 'ui/ending/skillBox.png', "ui/ending/infoBox.png", 'ui/leftArr.png', 'ui/rightArr.png',
+                'ui/ending/ending.png', 'ui/ending/gold.png', 'ui/ending/crystal.png',
+                'ui/tutorial/1.png', 'ui/tutorial/2.png', 'ui/tutorial/3.png', 'ui/tutorial/4.png', 'ui/tutorial/5.png', 'ui/tutorial/6.png', 'ui/tutorial/7.png'
             ];
         }
         onStart() {
-            Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
+            this.setProgressBar();
+            Laya.loader.load(this.resourceLoad, null, Laya.Handler.create(this, this.onProgress, null, false));
+        }
+        setProgressBar() {
+            this.loadingProgress = new Laya.ProgressBar("comp/loading.png");
+            this.loadingProgress.width = 700;
+            this.loadingProgress.height = 20;
+            this.loadingProgress.sizeGrid = "5,5,5,5";
+            this.loadingProgress.pos(333, 487);
+            this.loadingProgress.value = 0;
+            Laya.stage.addChild(this.loadingProgress);
+        }
+        onProgress(value) {
+            this.loadingProgress.value = value;
+            if (this.loadingProgress.value >= 1) {
+                this.loadingProgress.value = 1;
                 new MissionManager().firstEnter();
                 if (Village.isNewbie) {
                     Laya.Scene.open("Newbie.scene");
                 }
-            }));
+                this.loadingProgress.destroy();
+                return;
+            }
         }
     }
 

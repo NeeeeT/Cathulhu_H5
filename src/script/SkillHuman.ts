@@ -189,7 +189,7 @@ export class Behead extends VirtualSkill {
         let targetEnemy: number = Math.floor(Math.random() * enemy.length);
         // let rightSide: boolean = owner.m_isFacingRight;
 
-        if (enemy.length === 0 || (enemy[targetEnemy].x0 <= 258 || enemy[targetEnemy].x0 > 3849)) {
+        if (enemy.length === 0 || (enemy[targetEnemy]._ent.m_animation.x <= 258 || enemy[targetEnemy]._ent.m_animation.x > 3849)) {
             return;
         }
 

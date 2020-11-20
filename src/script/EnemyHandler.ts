@@ -115,11 +115,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                 break;
         }
 
-
-
         this.m_maxHealth = this.m_health;
-
-        
 
         this.m_rigidbody = this.m_animation.addComponent(Laya.RigidBody);
         this.m_collider = this.m_animation.addComponent(Laya.BoxCollider);
@@ -133,8 +129,6 @@ export abstract class VirtualEnemy extends Laya.Script {
                 // this.m_rigidbody.linearVelocity.x = 0.0;
             }
         }
-
-        // this.m_collideScript = this.m_animation.addComponent(Laya.Script) as Laya.Script;
 
         this.m_collider.width = this.m_animation.width - 64;
         this.m_collider.height = this.m_animation.height - 20;
@@ -244,12 +238,12 @@ export abstract class VirtualEnemy extends Laya.Script {
         damageText.pos(this.m_animation.x - fakeX, (this.m_animation.y - this.m_animation.height) - 100);
         damageText.bold = true;
         damageText.align = "center";
-        damageText.alpha = 0.5;
+        damageText.alpha = 0.8;
 
         damageText.fontSize = critical ? 40 : 20;
-        damageText.color = critical ? 'orange' : "white";
+        damageText.color = critical ? '#FA7B1E' : "white";
 
-        if (amount >= 10000) {
+        if (amount >= 3000) {
             damageText.fontSize = 55;
             damageText.color = "#00DDDD";
         }
@@ -262,12 +256,12 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         damageText.text = temp_text;
         damageText.font = "silver";
-        damageText.stroke = 5;
+        damageText.stroke = 3;
         damageText.strokeColor = "#000";
 
         Laya.stage.addChild(damageText);
 
-        Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 80, }, 650, Laya.Ease.linearInOut,
+        Laya.Tween.to(damageText, { alpha: 0.4, fontSize: damageText.fontSize + 50, y: damageText.y + 80, }, 650, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 130 }, 650, Laya.Ease.linearInOut,
                     Laya.Handler.create(this, () => { damageText.destroy() }), 0);
@@ -276,7 +270,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     private showHealth() {
         this.m_healthBar = new Laya.ProgressBar();
         this.m_healthBar.height = 10;
-        this.m_healthBar.width = this.m_animation.width*0.8;
+        this.m_healthBar.width = this.m_animation.width;
         this.m_healthBar.skin = "comp/progress.png";
         this.m_healthBar.value = 1;
         this.m_healthBar.alpha = 1;

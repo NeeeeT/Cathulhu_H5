@@ -1,5 +1,6 @@
 D .
 D Background(0912)
+R 56537D3F loading.png
 R 2341F4E6 town.png
 D Blood
 P C1E52BA3 Blood_0000.png
@@ -63,7 +64,8 @@ P 5FD17798 img_bg4.png
 P 2BE22124 img_bg5.png
 P BA28BD65 img_blank.png
 P BA2A0579 label.png
-R 6F74B0F8 loading.png
+R A6AEB990 loading$bar.png
+R 7C976AD5 loading.png
 P A2078EC0 progress$bar.png
 P 7BEC43FB progress.png
 P 7BEC43FB progressYellow$bar.png
@@ -110,7 +112,7 @@ P 13615EFF circle.png
 P 0A467EB4 spike.png
 D Skills(1031)
 D UI
-P 9A0F5DCF Box.png
+P 58A772C0 Box.png
 P F5346C07 bp_100$bar.png
 P 8639F933 bp_100.png
 P 72BB79B8 bp_150$bar.png
