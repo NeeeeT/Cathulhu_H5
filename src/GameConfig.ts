@@ -14,7 +14,7 @@ export default class GameConfig{
     static width:number=1366;
     static height:number=768;
     static scaleMode:string="noscale";
-    static screenMode:string="none";
+    static screenMode:string="horizontal";
     static alignV:string="middle";
     static alignH:string="center";
     static startScene:any="Loading.scene";

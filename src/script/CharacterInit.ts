@@ -348,7 +348,7 @@ export class Character extends Laya.Script {
             if (!this.m_canSprint || EnemyInit.isWin) return;
 
             //OathManager test
-            this.m_oathManager.currentBloodyPoint = this.m_oathManager.currentBloodyPoint + 50;
+            // this.m_oathManager.currentBloodyPoint += 50;
 
             this.delayMove(0.1);
             this.hurtedEvent(0.1);
@@ -861,6 +861,7 @@ export class Character extends Laya.Script {
                 this.m_cameraShakingTimer--;
             } else {
                 Laya.stage.x = player_pivot_x - this.m_animation.x;
+                Laya.stage.y = 0
                 // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
             }
             if (Laya.stage.x >= -250.0) Laya.stage.x = -250.0;
