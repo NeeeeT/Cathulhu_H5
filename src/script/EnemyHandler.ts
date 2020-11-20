@@ -204,7 +204,9 @@ export abstract class VirtualEnemy extends Laya.Script {
         let fakeNum = Math.random() * 100;
         let critical: boolean = (fakeNum <= criticalRate);
 
-        this.delayMove(this.m_mdelay);
+        // if(!this.m_moveDelayValue)
+        //     this.delayMove(this.m_mdelay);
+
         amount *= critical ? criticalDmgRate : 1;
         amount = Math.round(amount);
         this.setHealth(this.getHealth() - amount);
@@ -225,7 +227,8 @@ export abstract class VirtualEnemy extends Laya.Script {
             }, 100);
         }
         if (critical){
-            this.delayMove(0.2);
+            if(this.m_moveDelayValue <= 0)
+                this.delayMove(0.6);
             this.m_rigidbody.linearVelocity = {x: this.m_isFacingRight?-6.0:6.0, y:0.0};
         }
         this.enemyInjuredColor();
@@ -464,7 +467,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_atkCd = true;
         }, 1000);
         if(!this.m_moveDelayTimer)
-            this.delayMove(0.35);
+            this.delayMove(0.1);
     }
     public delayMove(time: number): void {
         if (this.m_moveDelayTimer) {
@@ -480,7 +483,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                     this.m_moveDelayValue = 0;
                 }
                 this.m_moveDelayValue -= 0.01;
-                // console.log('working!', this.m_moveDelayValue);
+                console.log('working!', this.m_moveDelayValue);
             }, 10)
         }
     }
@@ -599,7 +602,7 @@ export class Newbie extends VirtualEnemy {
     m_speed = 3;
     m_tag = 's';
     m_attackRange = 100;
-    m_mdelay = 1.5;
+    m_mdelay = 0.5;
     m_atkTag = "EnemyNewbieAttack";
 }
 

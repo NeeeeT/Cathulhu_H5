@@ -2969,7 +2969,6 @@
                 return;
             let fakeNum = Math.random() * 100;
             let critical = (fakeNum <= criticalRate);
-            this.delayMove(this.m_mdelay);
             amount *= critical ? criticalDmgRate : 1;
             amount = Math.round(amount);
             this.setHealth(this.getHealth() - amount);
@@ -2990,7 +2989,8 @@
                 }, 100);
             }
             if (critical) {
-                this.delayMove(0.2);
+                if (this.m_moveDelayValue <= 0)
+                    this.delayMove(1.0);
                 this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -6.0 : 6.0, y: 0.0 };
             }
             this.enemyInjuredColor();
@@ -3156,7 +3156,7 @@
                 this.m_atkCd = true;
             }, 1000);
             if (!this.m_moveDelayTimer)
-                this.delayMove(0.35);
+                this.delayMove(0.1);
         }
         delayMove(time) {
             if (this.m_moveDelayTimer) {
@@ -3171,6 +3171,7 @@
                         this.m_moveDelayValue = 0;
                     }
                     this.m_moveDelayValue -= 0.01;
+                    console.log('working!', this.m_moveDelayValue);
                 }, 10);
             }
         }
@@ -3273,7 +3274,7 @@
             this.m_speed = 3;
             this.m_tag = 's';
             this.m_attackRange = 100;
-            this.m_mdelay = 1.5;
+            this.m_mdelay = 0.5;
             this.m_atkTag = "EnemyNewbieAttack";
         }
     }
@@ -3445,6 +3446,7 @@
                     if (e.keyCode === 32) {
                         EnemyInit.newbieDone = true;
                         this.currentHintUI.destroy();
+                        this.currentHintUI.destroyed = true;
                     }
                     break;
                 default:
@@ -3456,10 +3458,14 @@
             this.currentHintStep = turtorialHintStep.none;
             this.setHintStep(turtorialHintStep.tryMove);
             EnemyInit.enemyLeftCur = 0;
+            this.currentHintUI.destroyed = false;
             this.hintTimer = setInterval(() => {
-                if (player.destroyed) {
+                if (player.destroyed || !Village.isNewbie) {
                     clearInterval(this.hintTimer);
                     this.hintTimer = null;
+                    if (!this.currentHintUI.destroyed)
+                        this.currentHintUI.destroy();
+                    return;
                 }
                 if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
                     this.currentHintUI.pos(player.x - 150, 160);

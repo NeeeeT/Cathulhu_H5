@@ -1,6 +1,7 @@
 import CharacterInit from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import EnemyInit from "./EnemyInit";
+import Village from "./Village";
 
 enum turtorialHintStep{
     none,
@@ -21,11 +22,29 @@ export default class Turtorial extends Laya.Script{
 
     currentHintUI: Laya.Sprite = new Laya.Sprite();
     
+    // tryMoveLeft: Laya.Sprite = new Laya.Sprite();
+    // tryMoveRight: Laya.Sprite = new Laya.Sprite();
+
     hintTimer = null;
 
     onStart(): void{
         this.resetTutorial();
     }
+    // onKeyUp(e: Laya.Event): void{
+    //     if(this.stepChanging) return;
+    //     switch (this.currentHintStep){
+    //         case turtorialHintStep.tryMove:
+    //             if(e.keyCode === 37){
+    //                 this.tryMoveLeft.alpha = 1;
+    //             }
+    //             else if(e.keyCode === 39){
+    //                 this.tryMoveRight.alpha = 1;
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // }
     onKeyDown(e: Laya.Event): void{
         if(this.stepChanging) return;
         switch (this.currentHintStep) {
@@ -70,6 +89,7 @@ export default class Turtorial extends Laya.Script{
                 if(e.keyCode === 32){
                     EnemyInit.newbieDone = true;
                     this.currentHintUI.destroy();
+                    this.currentHintUI.destroyed = true;
                 }
                 break;
             default:
@@ -82,11 +102,15 @@ export default class Turtorial extends Laya.Script{
         this.currentHintStep = turtorialHintStep.none;
         this.setHintStep(turtorialHintStep.tryMove);
         EnemyInit.enemyLeftCur = 0;
+        this.currentHintUI.destroyed = false;
 
         this.hintTimer = setInterval(()=>{
-            if(player.destroyed){
+            if(player.destroyed || !Village.isNewbie){
                 clearInterval(this.hintTimer);
                 this.hintTimer = null;
+                if(!this.currentHintUI.destroyed)
+                    this.currentHintUI.destroy();
+                return;
             }
             if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
                 this.currentHintUI.pos(player.x - 150, 160);
