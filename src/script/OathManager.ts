@@ -3,6 +3,7 @@ import CharacterInit from "./CharacterInit";
 import { OathStatus } from "./OathStatus";
 import { DebuffType, Blind, BodyCrumble, Insane, Predator, Decay } from "./DebuffType";
 import EnemyInit from "./EnemyInit";
+import Turtorial from "./Tutorial";
 
 export default class OathManager extends Laya.Script {
 
@@ -58,11 +59,10 @@ export default class OathManager extends Laya.Script {
 
     public set currentBloodyPoint(amount: number) {
         CharacterInit.playerEnt.m_bloodyPoint = amount;
-        
+        if (Turtorial.noOath) return;
         if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
             this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
         console.log("當前獻祭值量：",CharacterInit.playerEnt.m_bloodyPoint, "獻祭值條比例：",this.oathBar.value);
-        
     }
         
         
@@ -113,8 +113,6 @@ export default class OathManager extends Laya.Script {
 
 
         this.characterLogo.source = "UI/Box.png";
-        this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
-        this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
              
         this.sprintIcon.loadImage("ui/icon/sprint.png");
         let timer = setInterval((() => {
@@ -132,6 +130,8 @@ export default class OathManager extends Laya.Script {
                     'x': this.characterLogo.x,
                     'y': this.characterLogo.y,
                 }
+                this.catSkillIcon.loadImage(CharacterInit.playerEnt.m_catSkill.m_iconA);
+                this.humanSkillIcon.loadImage(CharacterInit.playerEnt.m_humanSkill.m_iconA);
                 this.catSkillIcon.pos(pos['x']+16, pos['y']+87);
                 this.humanSkillIcon.pos(pos['x']+116, pos['y']+87);
                 this.sprintIcon.pos(pos['x']+66,pos['y']+37);

@@ -373,3 +373,15 @@ export class BigExplosion extends VirtualSkill {
         });
     }
 }
+
+export class None extends VirtualSkill{
+    m_name = '無';
+    m_info = '無';
+    m_damage = 0;
+    m_cost = 0;
+    m_id = -1;
+    m_cd = 0;
+
+    m_iconA = "";
+    m_iconB = "";
+}

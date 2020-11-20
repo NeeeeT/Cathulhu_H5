@@ -2,10 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
+    "selecteID":5,
     "searchKey":"Scene",
     "props":{"width":1366,"sceneColor":"#000000","height":768},
     "nodeParent":-1,
-    "maxID":5,
+    "maxID":6,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -13,20 +14,6 @@
     "hasChild":true,
     "compId":2,
     "child":[
-        {
-            "x":15,
-            "type":"Sprite",
-            "searchKey":"Sprite,died",
-            "props":{"y":0,"x":0,"texture":"UI/died.png","name":"died"},
-            "nodeParent":2,
-            "label":"died",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":3,
-            "child":[
-                ]
-        },
         {
             "x":15,
             "type":"Script",
@@ -41,6 +28,20 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":4,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Sprite",
+            "searchKey":"Sprite",
+            "props":{"y":0,"x":0,"texture":"Background(0912)/Red Forest/Died.png"},
+            "nodeParent":2,
+            "label":"Sprite",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":5,
             "child":[
                 ]
         }],

@@ -27,26 +27,14 @@ export default class Turtorial extends Laya.Script{
 
     hintTimer = null;
 
+    public static noOath: boolean = true;
+
     onStart(): void{
         this.resetTutorial();
     }
-    // onKeyUp(e: Laya.Event): void{
-    //     if(this.stepChanging) return;
-    //     switch (this.currentHintStep){
-    //         case turtorialHintStep.tryMove:
-    //             if(e.keyCode === 37){
-    //                 this.tryMoveLeft.alpha = 1;
-    //             }
-    //             else if(e.keyCode === 39){
-    //                 this.tryMoveRight.alpha = 1;
-    //             }
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // }
     onKeyDown(e: Laya.Event): void{
         if(this.stepChanging) return;
+        let player = CharacterInit.playerEnt;
         switch (this.currentHintStep) {
             case turtorialHintStep.tryMove:
                 if(e.keyCode === 37){
@@ -68,6 +56,9 @@ export default class Turtorial extends Laya.Script{
             case turtorialHintStep.tryAttack:
                 if(EnemyInit.enemyLeftCur <= 0){
                     this.setHintStep(turtorialHintStep.trySkill);
+                    player.m_catSkill = player.getSkillTypeByExtraData('c', 1);
+                    player.m_humanSkill = player.getSkillTypeByExtraData('h', 1);
+                    Turtorial.noOath = false;
                 }
                 break;
             case turtorialHintStep.trySkill:

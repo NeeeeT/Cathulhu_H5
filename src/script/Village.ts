@@ -107,6 +107,7 @@ export default class Village extends Laya.Script{
             this.missionManager.generateMissionData(9);
             this.missionManager.showMissionUI();
 
+            Laya.SoundManager.stopAll();
             Village.reinforceToggle = false;
         }
     }

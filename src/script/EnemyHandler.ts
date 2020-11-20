@@ -225,7 +225,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             if(this.m_moveDelayValue <= 0)
                 this.delayMove(0.6);
             let facingRight:boolean = (CharacterInit.playerEnt.m_animation.x - this.m_animation.x) > 0.0 ? true : false;
-            this.m_rigidbody.linearVelocity = {x: facingRight?-6.0:6.0, y:0.0};
+            this.m_rigidbody.linearVelocity = {x: facingRight?-4.0:4.0, y:0.0};
         }
         this.enemyInjuredColor();
     }

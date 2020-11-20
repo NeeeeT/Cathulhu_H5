@@ -10,6 +10,8 @@ import EnemyHandler, { Fast, Newbie, Normal, Shield } from "./EnemyHandler";
 
 import { ExtraData } from "./ExtraData";
 import EnemyInit from "./EnemyInit";
+import Village from "./Village";
+import Turtorial from "./Tutorial";
 
 
 export class Character extends Laya.Script {
@@ -277,7 +279,7 @@ export class Character extends Laya.Script {
         let damageText = new Laya.Text();
         let soundNum: number;
 
-        damageText.pos((this.m_animation.x - this.m_animation.width / 2) + 15, (this.m_animation.y - this.m_animation.height) - 3);
+        damageText.pos((this.m_animation.x - this.m_animation.width / 2) + 80, (this.m_animation.y - this.m_animation.height) - 3);
         damageText.bold = true;
         damageText.align = "left";
         damageText.alpha = 1;
@@ -293,6 +295,8 @@ export class Character extends Laya.Script {
 
         damageText.text = temp_text;
         damageText.font = "silver";
+        damageText.stroke = 3;
+        damageText.strokeColor = "#fff";
         // soundNum = critical ? 0 : 1;
         // this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
@@ -636,7 +640,8 @@ export class Character extends Laya.Script {
                     // if (!OathManager.isCharging) {
                     this.setCameraShake(10, 3);
                     //攻擊增加獻祭值
-                    this.m_oathManager.currentBloodyPoint = this.m_oathManager.currentBloodyPoint + this.m_oathManager.increaseBloodyPoint;
+                    if(!Turtorial.noOath)
+                        this.m_oathManager.currentBloodyPoint = this.m_oathManager.currentBloodyPoint + this.m_oathManager.increaseBloodyPoint;
                     if (enemyCount < 3) e._ent.slashLightEffect(e._ent.m_animation);
                     this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
                     enemyCount++;
@@ -765,26 +770,34 @@ export class Character extends Laya.Script {
     private setSkill(): void {
         this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
         this.m_humanSkill = this.getSkillTypeByExtraData('h', ExtraData.currentData['humanSkill']);
+        // if(Village.isNewbie){
+        //     this.m_catSkill = new cSkill.None();
+        //     this.m_humanSkill = new cSkill.None();
+        // }
     }
-    private getSkillTypeByExtraData(type: string, id: number): VirtualSkill {
+    public getSkillTypeByExtraData(type: string, id: number): VirtualSkill {
         if (type === 'c') {
             switch (id) {
+                case 0:
+                    return new cSkill.None();
                 case 1:
                     return new cSkill.Slam();
                 case 2:
                     return new cSkill.BlackHole();
                 default:
-                    return new cSkill.Slam();
+                    return new cSkill.None();
             }
         }
         else if (type === 'h') {
             switch (id) {
+                case 0:
+                    return new hSkill.None();
                 case 1:
                     return new hSkill.Spike();
                 case 2:
                     return new hSkill.Behead();
                 default:
-                    return new hSkill.Spike();
+                    return new hSkill.None();
             }
         }
         else {

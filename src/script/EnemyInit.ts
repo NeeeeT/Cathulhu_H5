@@ -49,9 +49,9 @@ export default class EnemyInit extends Laya.Script{
     /** @prop {name:NewbieEnemyHealth,tips:"新手敵人血量",type:int,default:5000}*/
     public NewbieEnemyHealth: number = 5000;
     /** @prop {name:NewbieEnemyDmg,tips:"新手敵人攻擊力",type:int,default:0}*/
-    public NewbieEnemyDmg: number = 0;
+    public NewbieEnemyDmg: number = 1;
     /** @prop {name:NewbieEnemyCritical,tips:"新手敵人爆擊率",type:int,default:0}*/
-    public NewbieEnemyCritical: number = 0;
+    public NewbieEnemyCritical: number = 20;
     /** @prop {name:NewbieEnemyCriticalDmgMultiplier,tips:"新手敵人爆傷倍率",type:int,default:0}*/
     public NewbieEnemyCriticalDmgMultiplier: number = 0;
 
@@ -476,7 +476,6 @@ export default class EnemyInit extends Laya.Script{
     }
     changeToVillage(): void{
         EnemyHandler.clearAllEnemy();
-        Laya.Scene.load("Loading.scene");
         Laya.Scene.open("Village.scene", true);
         Laya.stage.x = Laya.stage.y = 0; 
         Laya.SoundManager.stopAll();
