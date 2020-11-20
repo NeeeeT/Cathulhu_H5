@@ -519,7 +519,7 @@ export class Character extends Laya.Script {
         //     // this.m_oathManager.addDebuff(1 << 0);
         //     // this.m_oathManager.setBloodyPoint(100);
         // } 
-        if (this.m_keyDownList[88]) {
+        if (this.m_keyDownList[67]) {
             if (EnemyInit.isWin) return;
             // console.log("施放人技");
             
@@ -529,7 +529,7 @@ export class Character extends Laya.Script {
                     y: this.m_animation.y,
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
         }
-        if (this.m_keyDownList[67]) {
+        if (this.m_keyDownList[88]) {
             if (EnemyInit.isWin) return;
             this.m_catSkill.cast(CharacterInit.playerEnt,
                 {

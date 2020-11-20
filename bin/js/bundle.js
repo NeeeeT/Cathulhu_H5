@@ -590,7 +590,7 @@
             this.m_info = '強大的範圍傷害';
             this.m_cost = 50;
             this.m_id = 2;
-            this.m_cd = 1;
+            this.m_cd = 3;
             this.m_iconA = "ui/icon/slamA.png";
             this.m_iconB = "ui/icon/slamB.png";
             this.m_injuredEnemy = [];
@@ -1479,9 +1479,9 @@
         DebuffType[DebuffType["none"] = 0] = "none";
         DebuffType[DebuffType["blind"] = 1] = "blind";
         DebuffType[DebuffType["bodyCrumble"] = 2] = "bodyCrumble";
-        DebuffType[DebuffType["insane"] = 4] = "insane";
-        DebuffType[DebuffType["predator"] = 8] = "predator";
-        DebuffType[DebuffType["decay"] = 16] = "decay";
+        DebuffType[DebuffType["decay"] = 4] = "decay";
+        DebuffType[DebuffType["insane"] = 8] = "insane";
+        DebuffType[DebuffType["predator"] = 16] = "predator";
     })(DebuffType || (DebuffType = {}));
     class DebuffProto extends Laya.Script {
         constructor() {
@@ -1592,38 +1592,6 @@
             this.bodyCrumbleHandler = null;
         }
     }
-    class Insane extends DebuffProto {
-        constructor() {
-            super();
-            this.debuffText = "對力量的渴望會讓你拋棄理性";
-            console.log("執行 Insane Constructor");
-        }
-        debuffUpdate() {
-            super.debuffUpdate();
-        }
-        startInsane() {
-            this.debuffTextEffect(this.debuffText);
-        }
-        stopInsane() {
-            console.log("停止Insane");
-        }
-    }
-    class Predator extends DebuffProto {
-        constructor() {
-            super();
-            this.debuffText = "它們循著氣息來了";
-            console.log("執行 Predator Constructor");
-        }
-        debuffUpdate() {
-            super.debuffUpdate();
-        }
-        startPredator() {
-            this.debuffTextEffect(this.debuffText);
-        }
-        stopPredator() {
-            console.log("停止BodyPredator");
-        }
-    }
     class Decay extends DebuffProto {
         constructor() {
             super();
@@ -1665,7 +1633,6 @@
                 return;
             }
             if (this.isDamaging && !EnemyInit.isWin) {
-                console.log("正在傷害玩家");
                 this.player.setHealth(this.player.getHealth() - this.player.m_maxHealth * 0.1);
             }
         }
@@ -1691,10 +1658,39 @@
             else if (this.killingTimer <= 0) {
                 this.isDamaging = true;
             }
-            console.log("isKilling: ", this.isKilling, "killingTimer: ", this.killingTimer, "isDamaging: ", this.isDamaging);
         }
     }
-    class DebuffManager extends Laya.Script {
+    class Insane extends DebuffProto {
+        constructor() {
+            super();
+            this.debuffText = "對力量的渴望會讓你拋棄理性";
+            console.log("執行 Insane Constructor");
+        }
+        debuffUpdate() {
+            super.debuffUpdate();
+        }
+        startInsane() {
+            this.debuffTextEffect(this.debuffText);
+        }
+        stopInsane() {
+            console.log("停止Insane");
+        }
+    }
+    class Predator extends DebuffProto {
+        constructor() {
+            super();
+            this.debuffText = "它們循著氣息來了";
+            console.log("執行 Predator Constructor");
+        }
+        debuffUpdate() {
+            super.debuffUpdate();
+        }
+        startPredator() {
+            this.debuffTextEffect(this.debuffText);
+        }
+        stopPredator() {
+            console.log("停止BodyPredator");
+        }
     }
 
     var turtorialHintStep;
@@ -1858,10 +1854,10 @@
         }
         set currentBloodyPoint(amount) {
             CharacterInit.playerEnt.m_bloodyPoint = amount;
+            if (CharacterInit.playerEnt.m_bloodyPoint < 0)
+                CharacterInit.playerEnt.m_bloodyPoint = 0;
             if (Turtorial.noOath)
                 return;
-            if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
-                this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
             console.log("當前獻祭值量：", CharacterInit.playerEnt.m_bloodyPoint, "獻祭值條比例：", this.oathBar.value);
         }
         showBloodyPoint(player) {
@@ -1880,6 +1876,7 @@
                     this.oathBar.pos(935 - Laya.stage.width / 2 + 180, 107.5);
                 if (Laya.stage.x <= -2475)
                     this.oathBar.pos(3155 - Laya.stage.width / 2 + 180, 107.5);
+                console.log(CharacterInit.playerEnt.m_maxBloodyPoint);
                 if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
                     this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
             }), 5);
@@ -2015,24 +2012,24 @@
                     }
                     break;
                 case 1 << 2:
+                    this.playerDebuff |= DebuffType.decay;
+                    if (this.decayProto === null) {
+                        this.decayProto = new Decay();
+                        this.decayProto.startDecay();
+                    }
+                    break;
+                case 1 << 3:
                     this.playerDebuff |= DebuffType.insane;
                     if (this.insaneProto === null) {
                         this.insaneProto = new Insane();
                         this.insaneProto.startInsane();
                     }
                     break;
-                case 1 << 3:
+                case 1 << 4:
                     this.playerDebuff |= DebuffType.predator;
                     if (this.predatorProto === null) {
                         this.predatorProto = new Predator();
                         this.predatorProto.startPredator();
-                    }
-                    break;
-                case 1 << 4:
-                    this.playerDebuff |= DebuffType.decay;
-                    if (this.decayProto === null) {
-                        this.decayProto = new Decay();
-                        this.decayProto.startDecay();
                     }
                     break;
             }
@@ -2054,30 +2051,30 @@
                     }
                     break;
                 case 1 << 2:
-                    this.playerDebuff ^= DebuffType.insane;
-                    if (this.insaneProto != null) {
-                        this.insaneProto.stopInsane();
-                        this.insaneProto = null;
-                    }
-                    break;
-                case 1 << 3:
-                    this.playerDebuff ^= DebuffType.predator;
-                    if (this.predatorProto != null) {
-                        this.predatorProto.stopPredator();
-                        this.predatorProto = null;
-                    }
-                    break;
-                case 1 << 4:
                     this.playerDebuff ^= DebuffType.decay;
                     if (this.decayProto != null) {
                         this.decayProto.stopDecay();
                         this.decayProto = null;
                     }
                     break;
+                case 1 << 3:
+                    this.playerDebuff ^= DebuffType.insane;
+                    if (this.insaneProto != null) {
+                        this.insaneProto.stopInsane();
+                        this.insaneProto = null;
+                    }
+                    break;
+                case 1 << 4:
+                    this.playerDebuff ^= DebuffType.predator;
+                    if (this.predatorProto != null) {
+                        this.predatorProto.stopPredator();
+                        this.predatorProto = null;
+                    }
+                    break;
             }
         }
         removeAllDebuff() {
-            for (let i = 0; i <= 4; i++) {
+            for (let i = 0; i <= 2; i++) {
                 this.removeDebuff(1 << i);
             }
             this.playerDebuff = DebuffType.none;
@@ -2089,6 +2086,8 @@
         oathUpdate() {
             switch (this.oathState) {
                 case OathStatus.normal:
+                    if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
+                        this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
                     if (this.oathChargeDetect()) {
                         this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
                         CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
@@ -2102,6 +2101,7 @@
                         this.oathBar.skin = "UI/bp_150.png";
                         this.oathBar.sizeGrid = "0,200,0,50";
                         CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_hard;
+                        this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
                         if (this.addDebuffTimer === null) {
                             console.log("添加addDebuffTimer");
                             this.addDebuffTimer = setInterval(() => {
@@ -2134,19 +2134,11 @@
                         this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint;
                         return;
                     }
-                    if (this.currentBloodyPoint === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                        this.oathBar.skin = "UI/bp_100.png";
-                        CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
-                        this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
-                        this.clearAddDebuffTimer();
-                        this.removeAllDebuff();
-                        this.oathState = OathStatus.charge;
-                        return;
-                    }
                     if (this.currentBloodyPoint < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
                         this.oathBar.skin = "UI/bp_100.png";
                         CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
-                        this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
+                        if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
+                            this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
                         this.clearAddDebuffTimer();
                         this.removeAllDebuff();
                         this.oathState = OathStatus.normal;
@@ -2165,23 +2157,23 @@
             }
             if ((this.playerDebuff & DebuffType.bodyCrumble) === DebuffType.bodyCrumble) {
             }
-            if ((this.playerDebuff & DebuffType.insane) === DebuffType.insane) {
-            }
-            if ((this.playerDebuff & DebuffType.predator) === DebuffType.predator) {
-            }
             if ((this.playerDebuff & DebuffType.decay) === DebuffType.decay) {
                 if (this.decayProto != null)
                     this.decayProto.killingTimerUpdate();
             }
+            if ((this.playerDebuff & DebuffType.insane) === DebuffType.insane) {
+            }
+            if ((this.playerDebuff & DebuffType.predator) === DebuffType.predator) {
+            }
         }
         randomAddDebuff() {
             console.log("還是有執行randomAddDebuff，但>=31返回了，playerDebuff值 = ", this.playerDebuff);
-            if (this.playerDebuff >= 31)
+            if (this.playerDebuff >= 7)
                 return;
             console.log("執行randomAddDebuff");
-            let type = Math.floor(Math.random() * 5);
+            let type = Math.floor(Math.random() * 3);
             let isInside = false;
-            for (let i = 0; i <= 4; i++) {
+            for (let i = 0; i <= 2; i++) {
                 if ((this.playerDebuff & 1 << i) === 1 << type)
                     isInside = true;
             }
@@ -2493,7 +2485,7 @@
                     this.m_canAttack = true;
                 }, this.m_attackCdTime);
             }
-            if (this.m_keyDownList[88]) {
+            if (this.m_keyDownList[67]) {
                 if (EnemyInit.isWin)
                     return;
                 this.m_humanSkill.cast(CharacterInit.playerEnt, {
@@ -2501,7 +2493,7 @@
                     y: this.m_animation.y,
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
             }
-            if (this.m_keyDownList[67]) {
+            if (this.m_keyDownList[88]) {
                 if (EnemyInit.isWin)
                     return;
                 this.m_catSkill.cast(CharacterInit.playerEnt, {
@@ -3301,7 +3293,6 @@
                         this.m_moveDelayValue = 0;
                     }
                     this.m_moveDelayValue -= 0.01;
-                    console.log('working!', this.m_moveDelayValue);
                 }, 10);
             }
         }

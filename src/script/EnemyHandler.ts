@@ -479,7 +479,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                     this.m_moveDelayValue = 0;
                 }
                 this.m_moveDelayValue -= 0.01;
-                console.log('working!', this.m_moveDelayValue);
+                // console.log('working!', this.m_moveDelayValue);
             }, 10)
         }
     }

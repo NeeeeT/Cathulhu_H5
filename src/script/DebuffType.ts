@@ -6,9 +6,9 @@ export enum DebuffType{
     none = 0,
     blind = 1 << 0, //失明
     bodyCrumble = 1 << 1, //肢體崩壞
-    insane = 1 << 2, //理智喪失
-    predator = 1 << 3, //掠食者
-    decay = 1 << 4,//侵蝕
+    decay = 1 << 2,//侵蝕
+    insane = 1 << 3, //理智喪失
+    predator = 1 << 4, //掠食者
 }
 
 export abstract class DebuffProto extends Laya.Script {
@@ -34,17 +34,6 @@ export abstract class DebuffProto extends Laya.Script {
 
         damageText.fontSize = 20;
         damageText.color = "red";
-
-        // if (amount >= 10000) {
-        //     damageText.fontSize = 55;
-        //     damageText.color = "#00DDDD";
-        // }
-
-        // let temp_text = "";
-        // for (let i = 0; i < String(amount).length; i++) {
-        //     temp_text += String(amount)[i];
-        //     temp_text += " ";
-        // }
 
         damageText.text = text;
         damageText.font = "silver";
@@ -161,50 +150,6 @@ export class BodyCrumble extends DebuffProto{
     }
 }
 
-export class Insane extends DebuffProto{
-    debuffText = "對力量的渴望會讓你拋棄理性";
-    public debuffUpdate() {
-        super.debuffUpdate();
-
-    }
-    constructor() {
-        super();
-        console.log("執行 Insane Constructor");
- 
-        
-    }
-    
-    public startInsane() {
-        this.debuffTextEffect(this.debuffText);
-    }
-
-    public stopInsane() {
-        console.log("停止Insane");
-    }
-}
-
-export class Predator extends DebuffProto{
-    debuffText = "它們循著氣息來了";
-    public debuffUpdate() {
-        super.debuffUpdate();
-
-    }
-    constructor() {
-        super();
-        console.log("執行 Predator Constructor");
- 
-        
-    }
-    
-    public startPredator() {
-        this.debuffTextEffect(this.debuffText);
-    }
-
-    public stopPredator() {
-        console.log("停止BodyPredator");
-    }
-}
-
 export class Decay extends DebuffProto{
     debuffText = "為我戰鬥至到粉身碎骨吧";
     isDecaying = false;
@@ -236,7 +181,7 @@ export class Decay extends DebuffProto{
             return;
         }    
         if (this.isDamaging && !EnemyInit.isWin) {
-            console.log("正在傷害玩家");
+            // console.log("正在傷害玩家");
             
             this.player.setHealth(this.player.getHealth() - this.player.m_maxHealth * 0.1);
         }
@@ -281,7 +226,7 @@ export class Decay extends DebuffProto{
         }else if (this.killingTimer <= 0) {
             this.isDamaging = true;
         }
-        console.log("isKilling: ", this.isKilling ,"killingTimer: ",this.killingTimer, "isDamaging: ", this.isDamaging);
+        // console.log("isKilling: ", this.isKilling ,"killingTimer: ",this.killingTimer, "isDamaging: ", this.isDamaging);
         
     }
     // public checkKilling(){
@@ -311,22 +256,46 @@ export class Decay extends DebuffProto{
 
 }
 
-export class DebuffManager extends Laya.Script{
+export class Insane extends DebuffProto{
+    debuffText = "對力量的渴望會讓你拋棄理性";
+    public debuffUpdate() {
+        super.debuffUpdate();
 
-    // public static CastDeBuff(debuffType: number) {
-    //     let debuff: DebuffProto = this.decideDebuffType(debuffType);
+    }
+    constructor() {
+        super();
+        console.log("執行 Insane Constructor");
+ 
+        
+    }
+    
+    public startInsane() {
+        this.debuffTextEffect(this.debuffText);
+    }
 
-    //     debuff.debuffUpdate();
-    //     return debuff;
-    // }
+    public stopInsane() {
+        console.log("停止Insane");
+    }
+}
 
-    // private static decideDebuffType(debuffType: number) {
-    //     switch (debuffType) {
-    //         case 1 << 0: return new Blind();
-    //         case 1 << 1: return new BodyCrumble();
-    //         case 1 << 2: return new Insane();
-    //         case 1 << 3: return new Predator();
-    //         case 1 << 4: return new Decay();
-    //     };
-    // }
+export class Predator extends DebuffProto{
+    debuffText = "它們循著氣息來了";
+    public debuffUpdate() {
+        super.debuffUpdate();
+
+    }
+    constructor() {
+        super();
+        console.log("執行 Predator Constructor");
+ 
+        
+    }
+    
+    public startPredator() {
+        this.debuffTextEffect(this.debuffText);
+    }
+
+    public stopPredator() {
+        console.log("停止BodyPredator");
+    }
 }
