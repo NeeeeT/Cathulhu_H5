@@ -3339,12 +3339,13 @@
             Laya.loader.load(this.resourceLoad, null, Laya.Handler.create(this, this.onProgress, null, false));
         }
         setProgressBar() {
-            this.loadingProgress = new Laya.ProgressBar("comp/loading.png");
+            this.loadingProgress = new Laya.ProgressBar("comp/progress.png");
             this.loadingProgress.width = 700;
             this.loadingProgress.height = 20;
             this.loadingProgress.sizeGrid = "5,5,5,5";
             this.loadingProgress.pos(333, 487);
             this.loadingProgress.value = 0;
+            this.loadingProgress.changeHandler = new Laya.Handler(this, this.onChange);
             Laya.stage.addChild(this.loadingProgress);
         }
         onProgress(value) {
@@ -3358,6 +3359,9 @@
                 this.loadingProgress.destroy();
                 return;
             }
+        }
+        onChange(value) {
+            console.log(Math.floor(value * 100));
         }
     }
 
