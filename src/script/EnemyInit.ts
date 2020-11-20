@@ -66,6 +66,7 @@ export default class EnemyInit extends Laya.Script{
     enemyInfo: Laya.Text;
     
     public static enemyLeftCur: number;
+    public static newbieDone: boolean;
 
     endingRewardUI: Laya.Sprite;
     endingSkillUI: Laya.Sprite;
@@ -140,8 +141,8 @@ export default class EnemyInit extends Laya.Script{
             
             if (Village.isNewbie) {
                 // console.log("生成新手敵人");
-                
-                EnemyHandler.generator(player, 4, 0);
+                // EnemyHandler.generator(player, 4, 0);
+                // 此處改由Tutorial.ts呼叫
             } else {
                 EnemyHandler.generator(player, x, 0);
             }
@@ -157,19 +158,16 @@ export default class EnemyInit extends Laya.Script{
             //消滅全部敵人時，進入結算階段
             console.log(EnemyInit.enemyLeftCur, EnemyHandler.enemyPool.length);
             
-            if(EnemyInit.enemyLeftCur <= 0){
+            if((EnemyInit.enemyLeftCur <= 0 && !Village.isNewbie) || (Village.isNewbie && EnemyInit.newbieDone)){
                 this.battleToggle = false;
-                //新手教學結束
                 Village.isNewbie = false;
+                EnemyInit.newbieDone = false;
                 EnemyInit.isWin = true;
-                //消除角色身上所有Debuff與Debuff計時器
                 CharacterInit.playerEnt.clearAddDebuffTimer();
                 CharacterInit.playerEnt.removeAllDebuff();
-                // this.unsetCharacter();
                 Laya.Tween.to(player, {alpha: 0.8}, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
                     this.showEndRewardUI();
                 }), 0);
-
                 clearInterval(this.battleTimer);
                 this.battleTimer = null;
                 CharacterInit.playerEnt.m_rigidbody.linearVelocity = {x:0,y:0};
@@ -233,6 +231,23 @@ export default class EnemyInit extends Laya.Script{
                 this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
             }
         }
+    }
+    endTheBattle(): void{
+        this.battleToggle = false;
+                //新手教學結束
+                Village.isNewbie = false;
+                EnemyInit.isWin = true;
+                //消除角色身上所有Debuff與Debuff計時器
+                CharacterInit.playerEnt.clearAddDebuffTimer();
+                CharacterInit.playerEnt.removeAllDebuff();
+                // this.unsetCharacter();
+                Laya.Tween.to(CharacterInit.playerEnt.m_animation, {alpha: 0.8}, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
+                    this.showEndRewardUI();
+                }), 0);
+
+                clearInterval(this.battleTimer);
+                this.battleTimer = null;
+                CharacterInit.playerEnt.m_rigidbody.linearVelocity = {x:0,y:0};
     }
     showEndSkill(): void{
         let player = CharacterInit.playerEnt;
@@ -434,17 +449,18 @@ export default class EnemyInit extends Laya.Script{
                 return;
             }
             if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
-                this.enemyLeftIcon.pos(player.x - 70, 110);
+                this.enemyLeftIcon.pos(player.x - 50, 100);
             }
             if (Laya.stage.x >= -250) {
-                this.enemyLeftIcon.pos(935 - 70, 110);
+                this.enemyLeftIcon.pos(935 - 50, 100);
             }
             if (Laya.stage.x <= -2475) {
-                this.enemyLeftIcon.pos(3155 - 70, 110);
+                this.enemyLeftIcon.pos(3155 - 50, 100);
             }
 
             this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
-            this.enemyInfo.text = 'x' + String(EnemyInit.enemyLeftCur);
+            this.enemyInfo.text = (EnemyInit.enemyLeftCur === 0) ? '': 'x' + String(EnemyInit.enemyLeftCur);
+            this.enemyLeftIcon.alpha = (EnemyInit.enemyLeftCur === 0) ? 0 : 1;
         }, 5);
     }
     updateMissionData() {

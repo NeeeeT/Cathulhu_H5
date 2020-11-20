@@ -2,10 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
+    "selecteID":251,
     "searchKey":"Scene",
     "props":{"x":0,"width":4098,"skewY":0,"skewX":0,"sceneColor":"gray","pivotX":0,"height":768,"autoDestroyAtClosed":true},
     "nodeParent":-1,
-    "maxID":251,
+    "maxID":253,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -106,21 +107,6 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":220,
-            "child":[
-                ]
-        },
-        {
-            "x":15,
-            "type":"Sprite",
-            "searchKey":"Sprite,Background",
-            "props":{"y":0,"x":1,"visible":false,"texture":"Background(0912)/Red Forest/backgroundNewbie.png","rotation":0,"name":"Background"},
-            "nodeParent":2,
-            "label":"Background",
-            "isOpen":false,
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":225,
             "child":[
                 ]
         },
@@ -314,6 +300,37 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":249,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Sprite",
+            "searchKey":"Sprite",
+            "props":{"y":-1,"x":1,"texture":"Background(0912)/Red Forest/Red Forest(x3)(0912).png"},
+            "nodeParent":2,
+            "label":"Sprite",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":251,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Script",
+            "switchAble":true,
+            "source":"src/script/Tutorial.ts",
+            "searchKey":"Script,Tutorial",
+            "removeAble":true,
+            "props":{},
+            "nodeParent":2,
+            "label":"Tutorial",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":252,
             "child":[
                 ]
         }],

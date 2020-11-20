@@ -10,15 +10,12 @@ export default class Village extends Laya.Script{
     battleBtn: Laya.Button = null;
 
     reinforceUI: Laya.Sprite = null;
-    reinforceBackBtn: Laya.Button = null;
     reinforceGold: Laya.Text = null;
     reinforceHpLevel: Laya.Text = null;
     reinforceAtkDmgLevel: Laya.Text = null;
 
     reinforceHpCost: Laya.Text = null;
-    reinforceHpCostBtn: Laya.Button = null;
     reinforceAtkDmgCost: Laya.Text = null;
-    reinforceAtkDmgCostBtn: Laya.Button = null;
 
     reinforceHpCostIcon: Laya.Sprite = null;
     reinforceAtkDmgCostIcon: Laya.Sprite = null;
@@ -80,14 +77,11 @@ export default class Village extends Laya.Script{
     }
     showReinforceUI(): void{
         this.setReinfoceUI();
-        this.setReinfoceBackBtn();
         this.setReinfoceGoldValue();
         this.setReinfoceAtkDmgLevel();
         this.setReinfoceHpLevel();
         this.setReinfoceAtkDmgCost();
         this.setReinfoceHpCost();
-        this.setReinforceAtkDmgCostBtn();
-        this.setReinforceHpCostBtn();
         this.setReinforceAtkDmgCostIcon();
         this.setReinforceHpCostIcon();
         this.setSkipIcon();
@@ -97,20 +91,17 @@ export default class Village extends Laya.Script{
     clearReinforceUI(): void{
         if(Village.reinforceToggle){
             this.reinforceUI.destroy();
-            this.reinforceBackBtn.destroy();
             this.reinforceGold.destroy();
             this.reinforceAtkDmgLevel.destroy();
             this.reinforceHpLevel.destroy();
             this.reinforceAtkDmgCost.destroy();
             this.reinforceHpCost.destroy();
-            this.reinforceAtkDmgCostBtn.destroy();
-            this.reinforceHpCostBtn.destroy();
             this.reinforceAtkDmgCostIcon.destroy();
             this.reinforceHpCostIcon.destroy();
             this.skipIcon.destroy();
     
-            this.reinforceUI = this.reinforceBackBtn = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
-            = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
+            this.reinforceUI = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
+            = this.reinforceHpCost = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
             this.skipIcon =  null;
 
             this.missionManager.generateMissionData(9);
@@ -144,15 +135,6 @@ export default class Village extends Laya.Script{
             this.clearReinforceUI();
         })
         Laya.stage.addChild(this.skipIcon);
-    }
-    setReinfoceBackBtn(): void{
-        this.reinforceBackBtn = new Laya.Button();
-        this.reinforceBackBtn.width = this.reinforceBackBtn.height = 73;
-        this.reinforceBackBtn.pos(150+933, 109+56);
-        this.reinforceBackBtn.on(Laya.Event.CLICK, this, ()=>{
-            this.clearReinforceUI();
-        })
-        Laya.stage.addChild(this.reinforceBackBtn);
     }
     setReinfoceGoldValue(): void{
         if(this.reinforceGold){
@@ -229,12 +211,19 @@ export default class Village extends Laya.Script{
         this.reinforceHpCost.pos(333+550, 184+275);
         Laya.stage.addChild(this.reinforceHpCost);
     }
-    setReinforceAtkDmgCostBtn(): void{
-        this.reinforceAtkDmgCostBtn = new Laya.Button();
-        this.reinforceAtkDmgCostBtn.width = 41;
-        this.reinforceAtkDmgCostBtn.height = 52;
-        this.reinforceAtkDmgCostBtn.pos(330+465, 184+160);
-        this.reinforceAtkDmgCostBtn.on(Laya.Event.CLICK, this, ()=>{
+    setReinforceAtkDmgCostIcon(): void{
+        this.reinforceAtkDmgCostIcon = new Laya.Sprite();
+        this.reinforceAtkDmgCostIcon.pos(330+465, 184+160);
+        this.reinforceAtkDmgCostIcon.loadImage('ui/arrP.png');
+        this.reinforceAtkDmgCostIcon.alpha = 0.75;
+
+        this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
+            this.reinforceAtkDmgCostIcon.alpha = 1;
+        });
+        this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OUT, this, ()=>{
+            this.reinforceAtkDmgCostIcon.alpha = 0.75
+        })
+        this.reinforceAtkDmgCostIcon.on(Laya.Event.CLICK, this, ()=>{
             if(Village.c_gold < Village.atkDmgLevel*100){
                 return;
             }
@@ -244,40 +233,6 @@ export default class Village extends Laya.Script{
             this.setReinfoceAtkDmgCost();
             this.setReinfoceGoldValue();
             this.saveData();
-        })
-        Laya.stage.addChild(this.reinforceAtkDmgCostBtn);
-    }
-    setReinforceHpCostBtn(): void{
-        this.reinforceHpCostBtn = new Laya.Button();
-        this.reinforceHpCostBtn.width = 41;
-        this.reinforceHpCostBtn.height = 52;
-        this.reinforceHpCostBtn.pos(330+465, 184+275);
-        this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, ()=>{            
-            if(Village.c_gold < Village.hpLevel*100){
-                return;
-            }
-            Village.c_gold -= Village.hpLevel*100;
-            Village.hpLevel++;
-            this.setReinfoceHpLevel();
-            this.setReinfoceHpCost();
-            this.setReinfoceGoldValue();
-            this.saveData();
-        })
-        Laya.stage.addChild(this.reinforceHpCostBtn);
-    }
-    setReinforceAtkDmgCostIcon(): void{
-        this.reinforceAtkDmgCostIcon = new Laya.Sprite();
-        this.reinforceAtkDmgCostIcon.pos(330+465, 184+160);
-        this.reinforceAtkDmgCostIcon.loadImage('ui/arrP.png');
-        this.reinforceAtkDmgCostIcon.alpha = 0.75;
-
-        this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
-            // this.reinforceAtkDmgCostIcon.loadImage('ui/arrP2.png');
-            this.reinforceAtkDmgCostIcon.alpha = 1;
-        });
-        this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OUT, this, ()=>{
-            // this.reinforceAtkDmgCostIcon.loadImage('ui/arrP.png');
-            this.reinforceAtkDmgCostIcon.alpha = 0.75
         })
 
         Laya.stage.addChild(this.reinforceAtkDmgCostIcon);
@@ -290,12 +245,21 @@ export default class Village extends Laya.Script{
         Laya.stage.addChild(this.reinforceHpCostIcon);
 
         this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
-            // this.reinforceHpCostIcon.loadImage('ui/arrR2.png');
             this.reinforceHpCostIcon.alpha = 1.0;
         });
         this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OUT, this, ()=>{
-            // this.reinforceHpCostIcon.loadImage('ui/arrR.png');
             this.reinforceHpCostIcon.alpha = 0.75;
+        })
+        this.reinforceHpCostIcon.on(Laya.Event.CLICK, this, ()=>{
+            if(Village.c_gold < Village.hpLevel*100){
+                return;
+            }
+            Village.c_gold -= Village.hpLevel*100;
+            Village.hpLevel++;
+            this.setReinfoceHpLevel();
+            this.setReinfoceHpCost();
+            this.setReinfoceGoldValue();
+            this.saveData();
         })
     }
     saveData(): void{

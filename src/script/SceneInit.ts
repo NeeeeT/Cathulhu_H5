@@ -18,7 +18,7 @@ export default class SceneInit extends Laya.Script {
         }))
 
         Laya.stage.bgColor = this.sceneBackgroundColor;
-        this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+        this.setSound(0.6, "Audio/Bgm/BGM01.wav", 0);
     }
     private setSound(volume: number, url: string, loop: number): void {
         Laya.SoundManager.playSound(url, loop);

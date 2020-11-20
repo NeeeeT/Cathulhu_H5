@@ -262,8 +262,6 @@ export abstract class VirtualEnemy extends Laya.Script {
         damageText.stroke = 5;
         damageText.strokeColor = "#000";
 
-        //soundNum = critical ? 0 : 1;
-        //this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
 
         Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 80, }, 650, Laya.Ease.linearInOut,
@@ -275,7 +273,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     private showHealth() {
         this.m_healthBar = new Laya.ProgressBar();
         this.m_healthBar.height = 10;
-        this.m_healthBar.width = this.m_animation.width;
+        this.m_healthBar.width = this.m_animation.width*0.8;
         this.m_healthBar.skin = "comp/progress.png";
         this.m_healthBar.value = 1;
         this.m_healthBar.alpha = 1;

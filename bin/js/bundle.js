@@ -1964,14 +1964,11 @@
             this.templeBtn = null;
             this.battleBtn = null;
             this.reinforceUI = null;
-            this.reinforceBackBtn = null;
             this.reinforceGold = null;
             this.reinforceHpLevel = null;
             this.reinforceAtkDmgLevel = null;
             this.reinforceHpCost = null;
-            this.reinforceHpCostBtn = null;
             this.reinforceAtkDmgCost = null;
-            this.reinforceAtkDmgCostBtn = null;
             this.reinforceHpCostIcon = null;
             this.reinforceAtkDmgCostIcon = null;
             this.missionManager = new MissionManager();
@@ -2015,14 +2012,11 @@
         }
         showReinforceUI() {
             this.setReinfoceUI();
-            this.setReinfoceBackBtn();
             this.setReinfoceGoldValue();
             this.setReinfoceAtkDmgLevel();
             this.setReinfoceHpLevel();
             this.setReinfoceAtkDmgCost();
             this.setReinfoceHpCost();
-            this.setReinforceAtkDmgCostBtn();
-            this.setReinforceHpCostBtn();
             this.setReinforceAtkDmgCostIcon();
             this.setReinforceHpCostIcon();
             this.setSkipIcon();
@@ -2031,19 +2025,16 @@
         clearReinforceUI() {
             if (Village.reinforceToggle) {
                 this.reinforceUI.destroy();
-                this.reinforceBackBtn.destroy();
                 this.reinforceGold.destroy();
                 this.reinforceAtkDmgLevel.destroy();
                 this.reinforceHpLevel.destroy();
                 this.reinforceAtkDmgCost.destroy();
                 this.reinforceHpCost.destroy();
-                this.reinforceAtkDmgCostBtn.destroy();
-                this.reinforceHpCostBtn.destroy();
                 this.reinforceAtkDmgCostIcon.destroy();
                 this.reinforceHpCostIcon.destroy();
                 this.skipIcon.destroy();
-                this.reinforceUI = this.reinforceBackBtn = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
-                    = this.reinforceHpCost = this.reinforceAtkDmgCostBtn = this.reinforceHpCostBtn = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
+                this.reinforceUI = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
+                    = this.reinforceHpCost = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
                         this.skipIcon = null;
                 this.missionManager.generateMissionData(9);
                 this.missionManager.showMissionUI();
@@ -2074,15 +2065,6 @@
                 this.clearReinforceUI();
             });
             Laya.stage.addChild(this.skipIcon);
-        }
-        setReinfoceBackBtn() {
-            this.reinforceBackBtn = new Laya.Button();
-            this.reinforceBackBtn.width = this.reinforceBackBtn.height = 73;
-            this.reinforceBackBtn.pos(150 + 933, 109 + 56);
-            this.reinforceBackBtn.on(Laya.Event.CLICK, this, () => {
-                this.clearReinforceUI();
-            });
-            Laya.stage.addChild(this.reinforceBackBtn);
         }
         setReinfoceGoldValue() {
             if (this.reinforceGold) {
@@ -2159,42 +2141,6 @@
             this.reinforceHpCost.pos(333 + 550, 184 + 275);
             Laya.stage.addChild(this.reinforceHpCost);
         }
-        setReinforceAtkDmgCostBtn() {
-            this.reinforceAtkDmgCostBtn = new Laya.Button();
-            this.reinforceAtkDmgCostBtn.width = 41;
-            this.reinforceAtkDmgCostBtn.height = 52;
-            this.reinforceAtkDmgCostBtn.pos(330 + 465, 184 + 160);
-            this.reinforceAtkDmgCostBtn.on(Laya.Event.CLICK, this, () => {
-                if (Village.c_gold < Village.atkDmgLevel * 100) {
-                    return;
-                }
-                Village.c_gold -= Village.atkDmgLevel * 100;
-                Village.atkDmgLevel++;
-                this.setReinfoceAtkDmgLevel();
-                this.setReinfoceAtkDmgCost();
-                this.setReinfoceGoldValue();
-                this.saveData();
-            });
-            Laya.stage.addChild(this.reinforceAtkDmgCostBtn);
-        }
-        setReinforceHpCostBtn() {
-            this.reinforceHpCostBtn = new Laya.Button();
-            this.reinforceHpCostBtn.width = 41;
-            this.reinforceHpCostBtn.height = 52;
-            this.reinforceHpCostBtn.pos(330 + 465, 184 + 275);
-            this.reinforceHpCostBtn.on(Laya.Event.CLICK, this, () => {
-                if (Village.c_gold < Village.hpLevel * 100) {
-                    return;
-                }
-                Village.c_gold -= Village.hpLevel * 100;
-                Village.hpLevel++;
-                this.setReinfoceHpLevel();
-                this.setReinfoceHpCost();
-                this.setReinfoceGoldValue();
-                this.saveData();
-            });
-            Laya.stage.addChild(this.reinforceHpCostBtn);
-        }
         setReinforceAtkDmgCostIcon() {
             this.reinforceAtkDmgCostIcon = new Laya.Sprite();
             this.reinforceAtkDmgCostIcon.pos(330 + 465, 184 + 160);
@@ -2205,6 +2151,17 @@
             });
             this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OUT, this, () => {
                 this.reinforceAtkDmgCostIcon.alpha = 0.75;
+            });
+            this.reinforceAtkDmgCostIcon.on(Laya.Event.CLICK, this, () => {
+                if (Village.c_gold < Village.atkDmgLevel * 100) {
+                    return;
+                }
+                Village.c_gold -= Village.atkDmgLevel * 100;
+                Village.atkDmgLevel++;
+                this.setReinfoceAtkDmgLevel();
+                this.setReinfoceAtkDmgCost();
+                this.setReinfoceGoldValue();
+                this.saveData();
             });
             Laya.stage.addChild(this.reinforceAtkDmgCostIcon);
         }
@@ -2219,6 +2176,17 @@
             });
             this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OUT, this, () => {
                 this.reinforceHpCostIcon.alpha = 0.75;
+            });
+            this.reinforceHpCostIcon.on(Laya.Event.CLICK, this, () => {
+                if (Village.c_gold < Village.hpLevel * 100) {
+                    return;
+                }
+                Village.c_gold -= Village.hpLevel * 100;
+                Village.hpLevel++;
+                this.setReinfoceHpLevel();
+                this.setReinfoceHpCost();
+                this.setReinfoceGoldValue();
+                this.saveData();
             });
         }
         saveData() {
@@ -2520,7 +2488,6 @@
                     return;
                 let x = Math.floor(Math.random() * 3) + 1;
                 if (Village.isNewbie) {
-                    EnemyHandler.generator(player, 4, 0);
                 }
                 else {
                     EnemyHandler.generator(player, x, 0);
@@ -2534,9 +2501,10 @@
                     return;
                 }
                 console.log(EnemyInit.enemyLeftCur, EnemyHandler.enemyPool.length);
-                if (EnemyInit.enemyLeftCur <= 0) {
+                if ((EnemyInit.enemyLeftCur <= 0 && !Village.isNewbie) || (Village.isNewbie && EnemyInit.newbieDone)) {
                     this.battleToggle = false;
                     Village.isNewbie = false;
+                    EnemyInit.newbieDone = false;
                     EnemyInit.isWin = true;
                     CharacterInit.playerEnt.clearAddDebuffTimer();
                     CharacterInit.playerEnt.removeAllDebuff();
@@ -2604,6 +2572,19 @@
                     this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
                 }
             }
+        }
+        endTheBattle() {
+            this.battleToggle = false;
+            Village.isNewbie = false;
+            EnemyInit.isWin = true;
+            CharacterInit.playerEnt.clearAddDebuffTimer();
+            CharacterInit.playerEnt.removeAllDebuff();
+            Laya.Tween.to(CharacterInit.playerEnt.m_animation, { alpha: 0.8 }, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                this.showEndRewardUI();
+            }), 0);
+            clearInterval(this.battleTimer);
+            this.battleTimer = null;
+            CharacterInit.playerEnt.m_rigidbody.linearVelocity = { x: 0, y: 0 };
         }
         showEndSkill() {
             let player = CharacterInit.playerEnt;
@@ -2780,16 +2761,17 @@
                     return;
                 }
                 if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
-                    this.enemyLeftIcon.pos(player.x - 70, 110);
+                    this.enemyLeftIcon.pos(player.x - 50, 100);
                 }
                 if (Laya.stage.x >= -250) {
-                    this.enemyLeftIcon.pos(935 - 70, 110);
+                    this.enemyLeftIcon.pos(935 - 50, 100);
                 }
                 if (Laya.stage.x <= -2475) {
-                    this.enemyLeftIcon.pos(3155 - 70, 110);
+                    this.enemyLeftIcon.pos(3155 - 50, 100);
                 }
                 this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
-                this.enemyInfo.text = 'x' + String(EnemyInit.enemyLeftCur);
+                this.enemyInfo.text = (EnemyInit.enemyLeftCur === 0) ? '' : 'x' + String(EnemyInit.enemyLeftCur);
+                this.enemyLeftIcon.alpha = (EnemyInit.enemyLeftCur === 0) ? 0 : 1;
             }, 5);
         }
         updateMissionData() {
@@ -3044,7 +3026,7 @@
         showHealth() {
             this.m_healthBar = new Laya.ProgressBar();
             this.m_healthBar.height = 10;
-            this.m_healthBar.width = this.m_animation.width;
+            this.m_healthBar.width = this.m_animation.width * 0.8;
             this.m_healthBar.skin = "comp/progress.png";
             this.m_healthBar.value = 1;
             this.m_healthBar.alpha = 1;
@@ -3370,7 +3352,7 @@
             Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
             }));
             Laya.stage.bgColor = this.sceneBackgroundColor;
-            this.setSound(0.6, "Audio/Bgm/BGM1.wav", 0);
+            this.setSound(0.6, "Audio/Bgm/BGM01.wav", 0);
         }
         setSound(volume, url, loop) {
             Laya.SoundManager.playSound(url, loop);
@@ -3395,6 +3377,131 @@
         }
     }
 
+    var turtorialHintStep;
+    (function (turtorialHintStep) {
+        turtorialHintStep[turtorialHintStep["none"] = 0] = "none";
+        turtorialHintStep[turtorialHintStep["tryMove"] = 1] = "tryMove";
+        turtorialHintStep[turtorialHintStep["trySprint"] = 2] = "trySprint";
+        turtorialHintStep[turtorialHintStep["tryAttack"] = 3] = "tryAttack";
+        turtorialHintStep[turtorialHintStep["trySkill"] = 4] = "trySkill";
+        turtorialHintStep[turtorialHintStep["seeInfoA"] = 5] = "seeInfoA";
+        turtorialHintStep[turtorialHintStep["seeInfoB"] = 6] = "seeInfoB";
+        turtorialHintStep[turtorialHintStep["seeInfoC"] = 7] = "seeInfoC";
+    })(turtorialHintStep || (turtorialHintStep = {}));
+    class Turtorial extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.moveLeft = false;
+            this.moveRight = false;
+            this.stepChanging = false;
+            this.currentHintUI = new Laya.Sprite();
+            this.hintTimer = null;
+        }
+        onStart() {
+            this.resetTutorial();
+        }
+        onKeyDown(e) {
+            if (this.stepChanging)
+                return;
+            switch (this.currentHintStep) {
+                case turtorialHintStep.tryMove:
+                    if (e.keyCode === 37) {
+                        this.moveLeft = true;
+                    }
+                    else if (e.keyCode === 39) {
+                        this.moveRight = true;
+                    }
+                    if (this.moveRight && this.moveLeft) {
+                        this.setHintStep(turtorialHintStep.trySprint);
+                    }
+                    break;
+                case turtorialHintStep.trySprint:
+                    if (e.keyCode === 16) {
+                        if (CharacterInit.playerEnt.m_canSprint)
+                            this.setHintStep(turtorialHintStep.tryAttack);
+                    }
+                    break;
+                case turtorialHintStep.tryAttack:
+                    if (EnemyInit.enemyLeftCur <= 0) {
+                        this.setHintStep(turtorialHintStep.trySkill);
+                    }
+                    break;
+                case turtorialHintStep.trySkill:
+                    if (EnemyInit.enemyLeftCur <= 0) {
+                        this.setHintStep(turtorialHintStep.seeInfoA);
+                    }
+                    break;
+                case turtorialHintStep.seeInfoA:
+                    if (e.keyCode === 32) {
+                        this.setHintStep(turtorialHintStep.seeInfoB);
+                    }
+                    break;
+                case turtorialHintStep.seeInfoB:
+                    if (e.keyCode === 32) {
+                        this.setHintStep(turtorialHintStep.seeInfoC);
+                    }
+                    break;
+                case turtorialHintStep.seeInfoC:
+                    if (e.keyCode === 32) {
+                        EnemyInit.newbieDone = true;
+                        this.currentHintUI.destroy();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        resetTutorial() {
+            let player = CharacterInit.playerEnt.m_animation;
+            this.currentHintStep = turtorialHintStep.none;
+            this.setHintStep(turtorialHintStep.tryMove);
+            EnemyInit.enemyLeftCur = 0;
+            this.hintTimer = setInterval(() => {
+                if (player.destroyed) {
+                    clearInterval(this.hintTimer);
+                    this.hintTimer = null;
+                }
+                if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
+                    this.currentHintUI.pos(player.x - 150, 160);
+                }
+                if (Laya.stage.x >= -250) {
+                    this.currentHintUI.pos(935 - 150, 160);
+                }
+                if (Laya.stage.x <= -2475) {
+                    this.currentHintUI.pos(3155 - 150, 160);
+                }
+            });
+            Laya.stage.addChild(this.currentHintUI);
+        }
+        setHintStep(step) {
+            if (this.currentHintStep === turtorialHintStep.none) {
+                this.currentHintUI.loadImage('ui/tutorial/1.png');
+                this.currentHintStep = step;
+                return;
+            }
+            if (step === turtorialHintStep.tryAttack || step === turtorialHintStep.trySkill) {
+                EnemyInit.enemyLeftCur = 3;
+                let i = 0;
+                let timer = setInterval(() => {
+                    if (i >= 3) {
+                        clearInterval(timer);
+                        return;
+                    }
+                    EnemyHandler.generator(CharacterInit.playerEnt.m_animation, 4, 0);
+                    i++;
+                }, 1500);
+            }
+            this.currentHintStep = step;
+            this.stepChanging = true;
+            Laya.Tween.to(this.currentHintUI, { alpha: 0 }, 1000, Laya.Ease.linearOut, Laya.Handler.create(this, () => {
+                this.currentHintUI.loadImage('ui/tutorial/' + step + '.png');
+                Laya.Tween.to(this.currentHintUI, { alpha: 1 }, 1500, Laya.Ease.linearIn, Laya.Handler.create(this, () => {
+                    this.stepChanging = false;
+                }), 0);
+            }), 0);
+        }
+    }
+
     class GameConfig {
         constructor() {
         }
@@ -3406,6 +3513,7 @@
             reg("script/CharacterInit.ts", CharacterInit);
             reg("script/SkillList.ts", SkillList);
             reg("script/Loading.ts", Loading);
+            reg("script/Tutorial.ts", Turtorial);
             reg("script/Village.ts", Village);
         }
     }
