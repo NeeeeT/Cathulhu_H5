@@ -31,7 +31,7 @@ export abstract class VirtualSkill extends Laya.Script{
     castRoar(pos): void{
         let roarText = new Laya.Text();
 
-        roarText.pos(pos['x'] - 30, pos['y'] - 130);
+        roarText.pos(pos['x'] - 10, pos['y'] - 200);
         roarText.bold = true;
         roarText.align = "left";
         roarText.alpha = 1;
@@ -50,12 +50,14 @@ export abstract class VirtualSkill extends Laya.Script{
 
         roarText.text = temp_name;
         roarText.font = "silver";
+        roarText.strokeColor = "#fff"
+        roarText.stroke = 3
 
         Laya.stage.addChild(roarText);
 
-        Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 350, Laya.Ease.linearInOut,
+        Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
-                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 13, y: roarText.y - 50 }, 350, Laya.Ease.linearInOut,
+                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 18, y: roarText.y - 50 }, 450, Laya.Ease.linearInOut,
                 Laya.Handler.create(this, ()=> { roarText.destroy() }), 0);
             }), 0);
     }

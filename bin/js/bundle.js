@@ -523,7 +523,7 @@
         ;
         castRoar(pos) {
             let roarText = new Laya.Text();
-            roarText.pos(pos['x'] - 30, pos['y'] - 130);
+            roarText.pos(pos['x'] - 10, pos['y'] - 200);
             roarText.bold = true;
             roarText.align = "left";
             roarText.alpha = 1;
@@ -538,9 +538,11 @@
             }
             roarText.text = temp_name;
             roarText.font = "silver";
+            roarText.strokeColor = "#fff";
+            roarText.stroke = 3;
             Laya.stage.addChild(roarText);
-            Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 13, y: roarText.y - 50 }, 350, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { roarText.destroy(); }), 0);
+            Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 18, y: roarText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { roarText.destroy(); }), 0);
             }), 0);
         }
         rectIntersect(r1, r2) {
@@ -590,7 +592,7 @@
             this.m_info = '強大的範圍傷害';
             this.m_cost = 50;
             this.m_id = 2;
-            this.m_cd = 1;
+            this.m_cd = 3;
             this.m_iconA = "ui/icon/slamA.png";
             this.m_iconB = "ui/icon/slamB.png";
             this.m_injuredEnemy = [];
