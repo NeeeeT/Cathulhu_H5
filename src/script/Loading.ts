@@ -18,8 +18,10 @@ export default class Loading extends Laya.Script{
             // let mission = new MissionManager();
             // mission.generateNewbieData();
             // mission.showMissionUI();
-            Laya.Scene.open("Newbie.scene");
-            Village.updateData();
+            new MissionManager().firstEnter();
+            if(Village.isNewbie){
+                Laya.Scene.open("Newbie.scene");
+            }
         }))
     }
 }

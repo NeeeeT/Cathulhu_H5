@@ -471,7 +471,7 @@ export default class EnemyInit extends Laya.Script{
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
         // ExtraData.currentData['crystal'] = data.crystal + this.rewardCrystalValue;
         // ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
-        ExtraData.currentData['gold'] = data.gold + 1000;
+        ExtraData.currentData['gold'] = data.gold + this.rewardCrystalValue;
 
 
         ExtraData.saveData();

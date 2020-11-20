@@ -2198,6 +2198,11 @@
         }
         onStart() {
         }
+        firstEnter() {
+            MissionManager.missionDataPool = [];
+            this.generateNewbieData();
+            this.sendMissionData(MissionManager.missionDataPool[0]);
+        }
         showMissionUI() {
             this.missionUI = new Laya.Sprite();
             this.missionUI.loadImage("UI/chioce_mission.png");
@@ -2207,15 +2212,6 @@
             this.missionUI.alpha = 1;
             Laya.stage.addChild(this.missionUI);
             if (Village.isNewbie) {
-                this.setEliteIcon(0, MissionManager.missionDataPool[0]["eliteNum"]);
-                this.setDifficultyIcon(0, MissionManager.missionDataPool[0]["difficulty"]);
-                this.setRewardInfo(0, MissionManager.missionDataPool[0]["crystal"], MissionManager.missionDataPool[0]["money"]);
-                this.setConfirmIcon(0, MissionManager.missionDataPool[0]);
-                Laya.stage.addChild(this.eliteIcons[0]);
-                Laya.stage.addChild(this.difficultyIcons[0]);
-                Laya.stage.addChild(this.crystalNums[0]);
-                Laya.stage.addChild(this.moneyNums[0]);
-                Laya.stage.addChild(this.confirmIcons[0]);
             }
             else {
                 for (let i = 0; i < this.missionNum; i++) {
@@ -2383,8 +2379,8 @@
                 eliteNum: 0,
                 eliteHpMultiplier: 1.5,
                 eliteAtkMultiplier: 1.5,
-                crystal: 0,
-                money: 1000,
+                crystal: 1300,
+                money: 500,
                 map: "forest",
             };
             MissionManager.missionDataPool.push(missionData);
@@ -2764,7 +2760,7 @@
         }
         endingUpdateData() {
             let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
-            ExtraData.currentData['gold'] = data.gold + 1000;
+            ExtraData.currentData['gold'] = data.gold + this.rewardCrystalValue;
             ExtraData.saveData();
         }
         changeToVillage() {
@@ -3355,8 +3351,10 @@
         }
         onStart() {
             Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
-                Laya.Scene.open("Newbie.scene");
-                Village.updateData();
+                new MissionManager().firstEnter();
+                if (Village.isNewbie) {
+                    Laya.Scene.open("Newbie.scene");
+                }
             }));
         }
     }
