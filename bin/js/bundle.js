@@ -1983,34 +1983,18 @@
             }
         }
         onStart() {
-            this.updateData();
-            Laya.stage.x = 0;
-            Laya.stage.y = 0;
-            this.reinforceBtn = this.owner.getChildByName("Reinforce");
-            this.templeBtn = this.owner.getChildByName("Temple");
-            this.battleBtn = this.owner.getChildByName("Battle");
-            this.reinforceBtn.on(Laya.Event.CLICK, this, function () {
-                if (this.reinforceToggle)
-                    return;
-                this.showReinforceUI();
-            });
-            this.templeBtn.on(Laya.Event.CLICK, this, function () {
-                console.log("temple");
-            });
-            this.battleBtn.on(Laya.Event.CLICK, this, function () {
-                this.missionManager.showMissionUI();
-            });
+            Village.updateData();
         }
-        updateData() {
+        static updateData() {
             ExtraData.loadData();
             let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
-            Village.c_gold = data.gold;
-            this.c_crystal = data.crystal;
+            Village.gold = data.gold;
             Village.hpLevel = data.hpLevel;
             Village.atkDmgLevel = data.atkDmgLevel;
             this.saveData();
         }
         showReinforceUI() {
+            Village.updateData();
             this.setReinfoceUI();
             this.setReinfoceGoldValue();
             this.setReinfoceAtkDmgLevel();
@@ -2068,7 +2052,7 @@
         }
         setReinfoceGoldValue() {
             if (this.reinforceGold) {
-                this.reinforceGold.text = '$' + String(Village.c_gold);
+                this.reinforceGold.text = '$' + String(Village.gold);
                 return;
             }
             this.reinforceGold = new Laya.Text();
@@ -2077,7 +2061,7 @@
             this.reinforceGold.color = "#FEFFF7";
             this.reinforceGold.stroke = 3;
             this.reinforceGold.strokeColor = "#000";
-            this.reinforceGold.text = '$' + String(Village.c_gold);
+            this.reinforceGold.text = '$' + String(Village.gold);
             this.reinforceGold.pos(333 + 550, 184 + 50);
             Laya.stage.addChild(this.reinforceGold);
         }
@@ -2153,15 +2137,15 @@
                 this.reinforceAtkDmgCostIcon.alpha = 0.75;
             });
             this.reinforceAtkDmgCostIcon.on(Laya.Event.CLICK, this, () => {
-                if (Village.c_gold < Village.atkDmgLevel * 100) {
+                if (Village.gold < Village.atkDmgLevel * 100) {
                     return;
                 }
-                Village.c_gold -= Village.atkDmgLevel * 100;
+                Village.gold -= Village.atkDmgLevel * 100;
                 Village.atkDmgLevel++;
                 this.setReinfoceAtkDmgLevel();
                 this.setReinfoceAtkDmgCost();
                 this.setReinfoceGoldValue();
-                this.saveData();
+                Village.saveData();
             });
             Laya.stage.addChild(this.reinforceAtkDmgCostIcon);
         }
@@ -2178,22 +2162,21 @@
                 this.reinforceHpCostIcon.alpha = 0.75;
             });
             this.reinforceHpCostIcon.on(Laya.Event.CLICK, this, () => {
-                if (Village.c_gold < Village.hpLevel * 100) {
+                if (Village.gold < Village.hpLevel * 100) {
                     return;
                 }
-                Village.c_gold -= Village.hpLevel * 100;
+                Village.gold -= Village.hpLevel * 100;
                 Village.hpLevel++;
                 this.setReinfoceHpLevel();
                 this.setReinfoceHpCost();
                 this.setReinfoceGoldValue();
-                this.saveData();
+                Village.saveData();
             });
         }
-        saveData() {
+        static saveData() {
             ExtraData.currentData['atkDmgLevel'] = Village.atkDmgLevel;
             ExtraData.currentData['hpLevel'] = Village.hpLevel;
-            ExtraData.currentData['gold'] = Village.c_gold;
-            ExtraData.currentData['crystal'] = this.c_crystal;
+            ExtraData.currentData['gold'] = Village.gold;
             ExtraData.saveData();
         }
     }
@@ -2401,7 +2384,7 @@
                 eliteHpMultiplier: 1.5,
                 eliteAtkMultiplier: 1.5,
                 crystal: 0,
-                money: 0,
+                money: 1000,
                 map: "forest",
             };
             MissionManager.missionDataPool.push(missionData);
@@ -2479,7 +2462,7 @@
                     this.generateTimer = null;
                     return;
                 }
-                if (this.enemyLeft <= 0) {
+                if (this.enemyLeft <= 0 || EnemyInit.isWin) {
                     clearInterval(this.generateTimer);
                     this.generateTimer = null;
                     return;
@@ -2500,7 +2483,6 @@
                     this.battleTimer = null;
                     return;
                 }
-                console.log(EnemyInit.enemyLeftCur, EnemyHandler.enemyPool.length);
                 if ((EnemyInit.enemyLeftCur <= 0 && !Village.isNewbie) || (Village.isNewbie && EnemyInit.newbieDone)) {
                     this.battleToggle = false;
                     Village.isNewbie = false;
@@ -2514,6 +2496,7 @@
                     clearInterval(this.battleTimer);
                     this.battleTimer = null;
                     CharacterInit.playerEnt.m_rigidbody.linearVelocity = { x: 0, y: 0 };
+                    EnemyHandler.clearAllEnemy();
                     return;
                 }
                 else if (this.timeLeftValue < 0) {
@@ -2781,8 +2764,7 @@
         }
         endingUpdateData() {
             let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
-            ExtraData.currentData['crystal'] = data.crystal + this.rewardCrystalValue;
-            ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
+            ExtraData.currentData['gold'] = data.gold + 1000;
             ExtraData.saveData();
         }
         changeToVillage() {
@@ -2990,7 +2972,7 @@
             }
             if (critical) {
                 if (this.m_moveDelayValue <= 0)
-                    this.delayMove(1.0);
+                    this.delayMove(0.6);
                 this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? -6.0 : 6.0, y: 0.0 };
             }
             this.enemyInjuredColor();
@@ -3373,7 +3355,8 @@
         }
         onStart() {
             Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
-                Laya.Scene.open("Village.scene");
+                Laya.Scene.open("Newbie.scene");
+                Village.updateData();
             }));
         }
     }
@@ -3519,8 +3502,8 @@
             reg("script/CharacterInit.ts", CharacterInit);
             reg("script/SkillList.ts", SkillList);
             reg("script/Loading.ts", Loading);
-            reg("script/Tutorial.ts", Turtorial);
             reg("script/Village.ts", Village);
+            reg("script/Tutorial.ts", Turtorial);
         }
     }
     GameConfig.width = 1366;

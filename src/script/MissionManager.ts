@@ -188,14 +188,13 @@ export default class MissionManager extends Laya.Script {
             eliteHpMultiplier: 1.5,
             eliteAtkMultiplier: 1.5,
             crystal: 0,
-            money: 0,
+            money: 1000,
             map: "forest",
         }
         MissionManager.missionDataPool.push(missionData);
         console.log(MissionManager.missionDataPool);
         return MissionManager.missionDataPool;
     }
-
     sendMissionData(data: object) {
         EnemyInit.missionEnemyNum = data["enemyNum"];
         EnemyInit.missionRewardCrystalValue = data["crystal"];

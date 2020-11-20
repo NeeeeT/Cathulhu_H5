@@ -130,7 +130,7 @@ export default class EnemyInit extends Laya.Script{
                 this.generateTimer = null;
                 return;
             }
-            if(this.enemyLeft <= 0){
+            if(this.enemyLeft <= 0 || EnemyInit.isWin){
                 clearInterval(this.generateTimer);
                 this.generateTimer = null;
                 return;
@@ -154,15 +154,13 @@ export default class EnemyInit extends Laya.Script{
                 clearInterval(this.battleTimer);
                 this.battleTimer = null;
                 return;
-            }
-            //消滅全部敵人時，進入結算階段
-            console.log(EnemyInit.enemyLeftCur, EnemyHandler.enemyPool.length);
-            
+            }            
             if((EnemyInit.enemyLeftCur <= 0 && !Village.isNewbie) || (Village.isNewbie && EnemyInit.newbieDone)){
                 this.battleToggle = false;
                 Village.isNewbie = false;
                 EnemyInit.newbieDone = false;
                 EnemyInit.isWin = true;
+                // this.updateMissionData();
                 CharacterInit.playerEnt.clearAddDebuffTimer();
                 CharacterInit.playerEnt.removeAllDebuff();
                 Laya.Tween.to(player, {alpha: 0.8}, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
@@ -171,6 +169,7 @@ export default class EnemyInit extends Laya.Script{
                 clearInterval(this.battleTimer);
                 this.battleTimer = null;
                 CharacterInit.playerEnt.m_rigidbody.linearVelocity = {x:0,y:0};
+                EnemyHandler.clearAllEnemy();
                 return;
             }
             else if(this.timeLeftValue < 0){
@@ -470,8 +469,10 @@ export default class EnemyInit extends Laya.Script{
     }
     endingUpdateData(): void{
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
-        ExtraData.currentData['crystal'] = data.crystal + this.rewardCrystalValue;
-        ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
+        // ExtraData.currentData['crystal'] = data.crystal + this.rewardCrystalValue;
+        // ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
+        ExtraData.currentData['gold'] = data.gold + 1000;
+
 
         ExtraData.saveData();
     }

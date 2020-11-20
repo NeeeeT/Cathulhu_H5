@@ -5,8 +5,8 @@ import EnemyInit from "./script/EnemyInit"
 import CharacterInit from "./script/CharacterInit"
 import SkillList from "./script/SkillList"
 import Loading from "./script/Loading"
-import Tutorial from "./script/Tutorial"
 import Village from "./script/Village"
+import Tutorial from "./script/Tutorial"
 /*
 * 游戏初始化配置;
 */
@@ -32,8 +32,8 @@ export default class GameConfig{
         reg("script/CharacterInit.ts",CharacterInit);
         reg("script/SkillList.ts",SkillList);
         reg("script/Loading.ts",Loading);
-        reg("script/Tutorial.ts",Tutorial);
         reg("script/Village.ts",Village);
+        reg("script/Tutorial.ts",Tutorial);
     }
 }
 GameConfig.init();
