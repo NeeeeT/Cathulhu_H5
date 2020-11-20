@@ -9,7 +9,7 @@ export class Slam extends VirtualSkill {
     m_damage: number;
     m_cost = 50;
     m_id = 2;
-    m_cd = 1;
+    m_cd = 3;
 
     m_iconA = "ui/icon/slamA.png";
     m_iconB = "ui/icon/slamB.png";
