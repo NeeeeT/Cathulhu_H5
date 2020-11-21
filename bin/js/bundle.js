@@ -979,13 +979,13 @@
         constructor() {
             super(...arguments);
             this.m_name = '攻其不備';
-            this.m_info = '製造破綻，並且追擊敵人';
+            this.m_info = '製造破綻，瞬移並攻擊隨機敵人';
             this.m_cost = 10;
             this.m_id = 2;
             this.m_cd = 3;
             this.m_iconA = "ui/icon/beheadA.png";
             this.m_iconB = "ui/icon/beheadB.png";
-            this.m_preTime = 0.56;
+            this.m_preTime = 0.2;
         }
         cast(owner, position, oathSystemCheck) {
             if (!this.m_canUse)
@@ -1010,7 +1010,8 @@
             this.m_animation.alpha = 0.8;
             this.m_animation.zOrder = 5;
             this.castRoar(position);
-            owner.delayMove(this.m_preTime);
+            if (owner.m_moveDelayValue <= 0)
+                owner.delayMove(this.m_preTime);
             owner.m_rigidbody.linearVelocity = { x: 0.0, y: 0.0 };
             owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 125);
             let colorMat = [
@@ -1047,8 +1048,7 @@
             if (enemy.length === 0 || (enemy[targetEnemy]._ent.m_animation.x <= 258 || enemy[targetEnemy]._ent.m_animation.x > 3849)) {
                 return;
             }
-            console.log('攻擊標記(目前隨機)敵人: ', targetEnemy, enemy[targetEnemy]);
-            owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? 50 : -50);
+            owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? -50 : 50);
             owner.m_animation.y = enemy[targetEnemy]._ent.m_animation.y;
             setTimeout(() => {
                 this.targetSlash(owner, {
@@ -2169,7 +2169,6 @@
             }
         }
         randomAddDebuff() {
-            console.log("還是有執行randomAddDebuff，但>=31返回了，playerDebuff值 = ", this.playerDebuff);
             if (this.playerDebuff >= 7)
                 return;
             console.log("執行randomAddDebuff");
@@ -2427,10 +2426,10 @@
             if (this.m_keyDownList[16]) {
                 if (!this.m_canSprint || EnemyInit.isWin)
                     return;
-                this.delayMove(0.1);
-                this.hurtedEvent(0.1);
+                this.delayMove(0.08);
+                this.hurtedEvent(1.5);
                 this.updateAnimation(this.m_state, CharacterStatus.sprint, null, false, 100);
-                this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 50.0 : -50.0, y: 0.0 };
+                this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 100.0 : -100.0, y: 0.0 };
                 this.m_rigidbody.mask = 2 | 16;
                 this.m_collider.refresh();
                 setTimeout(() => {
@@ -3504,12 +3503,12 @@
             Laya.loader.load(this.resourceLoad, null, Laya.Handler.create(this, this.onProgress, null, false));
         }
         setProgressBar() {
-            this.loadingProgress = new Laya.ProgressBar("comp/progress.png");
+            this.loadingProgress = new Laya.ProgressBar("comp/prog.png");
             this.loadingProgress.width = 700;
             this.loadingProgress.height = 20;
-            this.loadingProgress.sizeGrid = "5,5,5,5";
+            this.loadingProgress.sizeGrid = "0,10,0,10";
             this.loadingProgress.pos(333, 487);
-            this.loadingProgress.value = 0;
+            this.loadingProgress.value = 0.5;
             this.loadingProgress.changeHandler = new Laya.Handler(this, this.onChange);
             Laya.stage.addChild(this.loadingProgress);
         }
@@ -3530,6 +3529,12 @@
         }
     }
 
+    class MainToLoading extends Laya.Script {
+        onKeyDown() {
+            Laya.Scene.open('Loading.scene', true);
+        }
+    }
+
     class GameConfig {
         constructor() {
         }
@@ -3542,6 +3547,7 @@
             reg("script/SkillList.ts", SkillList);
             reg("script/Loading.ts", Loading);
             reg("script/Village.ts", Village);
+            reg("script/MainToLoading.ts", MainToLoading);
             reg("script/Tutorial.ts", Turtorial);
         }
     }
@@ -3551,7 +3557,7 @@
     GameConfig.screenMode = "horizontal";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
-    GameConfig.startScene = "Loading.scene";
+    GameConfig.startScene = "Main.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
     GameConfig.stat = false;

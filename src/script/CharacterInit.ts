@@ -354,11 +354,11 @@ export class Character extends Laya.Script {
             //OathManager test
             // this.m_oathManager.currentBloodyPoint += 50;
 
-            this.delayMove(0.1);
-            this.hurtedEvent(0.1);
+            this.delayMove(0.08);
+            this.hurtedEvent(1.5);
             this.updateAnimation(this.m_state, CharacterStatus.sprint, null, false, 100);
 
-            this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 50.0 : -50.0, y: 0.0 };
+            this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 100.0 : -100.0, y: 0.0 };
             this.m_rigidbody.mask = 2 | 16;
             this.m_collider.refresh();
             setTimeout(() => {

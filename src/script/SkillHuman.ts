@@ -1,5 +1,3 @@
-// import CharacterInit from "./CharacterInit";
-// import CharacterInit from "./CharacterInit";
 import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
@@ -113,7 +111,7 @@ export class Behead extends VirtualSkill {
     m_iconB = "ui/icon/beheadB.png";
 
     /** 技能的準備時間 */
-    m_preTime: number = 0.56;
+    m_preTime: number = 0.2;
 
     cast(owner: any, position: object, oathSystemCheck: boolean): void {
         if (!this.m_canUse) return;
@@ -142,7 +140,8 @@ export class Behead extends VirtualSkill {
 
         this.castRoar(position);
 
-        owner.delayMove(this.m_preTime);
+        if(owner.m_moveDelayValue <= 0)
+            owner.delayMove(this.m_preTime);
         owner.m_rigidbody.linearVelocity = {x:0.0,y:0.0};
 
         owner.updateAnimation(owner.m_state, CharacterStatus.attackOne, null, false, 125);

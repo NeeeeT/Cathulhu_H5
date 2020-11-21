@@ -6,6 +6,7 @@ import CharacterInit from "./script/CharacterInit"
 import SkillList from "./script/SkillList"
 import Loading from "./script/Loading"
 import Village from "./script/Village"
+import MainToLoading from "./script/MainToLoading"
 import Tutorial from "./script/Tutorial"
 /*
 * 游戏初始化配置;
@@ -17,7 +18,7 @@ export default class GameConfig{
     static screenMode:string="horizontal";
     static alignV:string="middle";
     static alignH:string="center";
-    static startScene:any="Loading.scene";
+    static startScene:any="Main.scene";
     static sceneRoot:string="";
     static debug:boolean=false;
     static stat:boolean=false;
@@ -33,6 +34,7 @@ export default class GameConfig{
         reg("script/SkillList.ts",SkillList);
         reg("script/Loading.ts",Loading);
         reg("script/Village.ts",Village);
+        reg("script/MainToLoading.ts",MainToLoading);
         reg("script/Tutorial.ts",Tutorial);
     }
 }

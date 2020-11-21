@@ -21,12 +21,12 @@ export default class Loading extends Laya.Script{
         Laya.loader.load(this.resourceLoad, null, Laya.Handler.create(this, this.onProgress, null, false))
     }
     setProgressBar(): void{
-        this.loadingProgress = new Laya.ProgressBar("comp/progress.png");
+        this.loadingProgress = new Laya.ProgressBar("comp/prog.png");
         this.loadingProgress.width = 700;
         this.loadingProgress.height = 20;
-        this.loadingProgress.sizeGrid = "5,5,5,5";
+        this.loadingProgress.sizeGrid = "0,10,0,10";
         this.loadingProgress.pos(333,487);
-        this.loadingProgress.value = 0
+        this.loadingProgress.value = 0.5;
         this.loadingProgress.changeHandler = new Laya.Handler(this, this.onChange);
         Laya.stage.addChild(this.loadingProgress);
     }

@@ -66,6 +66,8 @@ P BA28BD65 img_blank.png
 P BA2A0579 label.png
 R A6AEB990 loading$bar.png
 R 7C976AD5 loading.png
+P 23FB4D29 prog$bar.png
+P 7BEC43FB prog.png
 P A2078EC0 progress$bar.png
 P 7BEC43FB progress.png
 P 7BEC43FB progressYellow$bar.png
