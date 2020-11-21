@@ -81,7 +81,7 @@ export default class OathManager extends Laya.Script {
             }
             if (Laya.stage.x >= -250) this.oathBar.pos(935 - Laya.stage.width / 2 + 180, 107.5);
             if (Laya.stage.x <= -2475) this.oathBar.pos(3155 - Laya.stage.width / 2 + 180, 107.5);
-            console.log(CharacterInit.playerEnt.m_maxBloodyPoint);
+            // console.log(CharacterInit.playerEnt.m_maxBloodyPoint);
             
             if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
                 this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
