@@ -256,6 +256,7 @@ export class Character extends Laya.Script {
             }), 0);
 
         this.hurtedEvent(0.5);
+        this.bloodSplitEffect(this.m_animation);
     }
     private checkJumpTimer() {
         let timer = setInterval(() => {
@@ -885,6 +886,30 @@ export class Character extends Laya.Script {
         this.m_cameraShakingMultiplyer = multiplier;
         this.m_cameraShakingTimer = timer;
     }
+    private bloodSplitEffect(enemy: Laya.Animation) {
+        let bloodEffect: Laya.Animation = new Laya.Animation();
+        bloodEffect.scaleX = 1.5;
+        bloodEffect.scaleY = 1.5;
+        let colorMat: Array<number> =
+            [
+                2, 0, 0, 0, -100, //R
+                0, 1, 0, 0, -100, //G
+                0, 0, 1, 0, -100, //B
+                0, 0, 0, 1, 0, //A
+            ];
+        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
+        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+
+        bloodEffect.filters = [glowFilter, colorFilter];
+        bloodEffect.pos(enemy.x - 420, enemy.y - 450);
+        bloodEffect.source = "comp/NewBlood.atlas";
+        bloodEffect.on(Laya.Event.COMPLETE, this, function () {
+            bloodEffect.destroy();
+            bloodEffect.destroyed = true;
+        });
+        Laya.stage.addChild(bloodEffect);
+        bloodEffect.play();
+}
     public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void {
         if (from === to || this.m_animationChanging) return;
         if (!this.m_walkeffect.destroyed){

@@ -2344,6 +2344,7 @@
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 250, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
             }), 0);
             this.hurtedEvent(0.5);
+            this.bloodSplitEffect(this.m_animation);
         }
         checkJumpTimer() {
             let timer = setInterval(() => {
@@ -2443,7 +2444,7 @@
                 this.m_canSprint = false;
                 setTimeout(() => {
                     this.m_canSprint = true;
-                }, 500);
+                }, 3000);
                 this.updateSprintCdTimer();
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
@@ -2735,6 +2736,28 @@
         setCameraShake(timer, multiplier) {
             this.m_cameraShakingMultiplyer = multiplier;
             this.m_cameraShakingTimer = timer;
+        }
+        bloodSplitEffect(enemy) {
+            let bloodEffect = new Laya.Animation();
+            bloodEffect.scaleX = 1.5;
+            bloodEffect.scaleY = 1.5;
+            let colorMat = [
+                2, 0, 0, 0, -100,
+                0, 1, 0, 0, -100,
+                0, 0, 1, 0, -100,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            bloodEffect.filters = [glowFilter, colorFilter];
+            bloodEffect.pos(enemy.x - 420, enemy.y - 450);
+            bloodEffect.source = "comp/NewBlood.atlas";
+            bloodEffect.on(Laya.Event.COMPLETE, this, function () {
+                bloodEffect.destroy();
+                bloodEffect.destroyed = true;
+            });
+            Laya.stage.addChild(bloodEffect);
+            bloodEffect.play();
         }
         updateAnimation(from, to, onCallBack = null, force = false, rate = 100) {
             if (from === to || this.m_animationChanging)
