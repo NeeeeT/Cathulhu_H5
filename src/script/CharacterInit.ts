@@ -377,7 +377,7 @@ export class Character extends Laya.Script {
             this.m_canSprint = false;
             setTimeout(() => {
                 this.m_canSprint = true;
-            }, 3000);
+            },3000);
             this.updateSprintCdTimer();
             // setTimeout(() => {
             //     this.m_animation.alpha = 0.7;

@@ -2443,7 +2443,7 @@
                 this.m_canSprint = false;
                 setTimeout(() => {
                     this.m_canSprint = true;
-                }, 3000);
+                }, 500);
                 this.updateSprintCdTimer();
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
@@ -3530,7 +3530,34 @@
 
     class MainToLoading extends Laya.Script {
         onKeyDown() {
+            this.dirtEffect.destroy();
             Laya.Scene.open('Loading.scene', true);
+        }
+        onStart() {
+            this.createDirtEffect();
+        }
+        createDirtEffect() {
+            this.dirtEffect = new Laya.Animation();
+            this.dirtEffect.source = "comp/DirtEffect.atlas";
+            this.dirtEffect.scaleX = 2;
+            this.dirtEffect.scaleY = 1.7;
+            let posX = 120;
+            let posY = -100;
+            this.dirtEffect.interval = 40;
+            this.dirtEffect.pos(posX, posY);
+            console.log(this.dirtEffect.pos);
+            let colorMat = [
+                1, 0, 0, 0, 500,
+                0, 1, 0, 0, 500,
+                0, 0, 1, 0, 500,
+                0, 0, 0, 1, 0,
+            ];
+            let glowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            this.dirtEffect.filters = [colorFilter, glowFilter];
+            this.dirtEffect.alpha = 0.5;
+            Laya.stage.addChild(this.dirtEffect);
+            this.dirtEffect.play();
         }
     }
 
