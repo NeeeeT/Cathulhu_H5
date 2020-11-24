@@ -47,7 +47,7 @@ export default class EnemyInit extends Laya.Script{
     public FastEnemyCriticalDmgMultiplier: number = 3;
     
     /** @prop {name:NewbieEnemyHealth,tips:"新手敵人血量",type:int,default:5000}*/
-    public NewbieEnemyHealth: number = 5000;
+    public NewbieEnemyHealth: number = 1000;
     /** @prop {name:NewbieEnemyDmg,tips:"新手敵人攻擊力",type:int,default:0}*/
     public NewbieEnemyDmg: number = 1;
     /** @prop {name:NewbieEnemyCritical,tips:"新手敵人爆擊率",type:int,default:0}*/
