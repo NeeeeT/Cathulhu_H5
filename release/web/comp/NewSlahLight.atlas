@@ -1,0 +1,127 @@
+{
+    "frames": {
+        "TargetSlash43.6_0003.png": {
+            "frame": {
+                "h": 24,
+                "idx": 0,
+                "w": 23,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 248,
+                "y": 236
+            }
+        },
+        "TargetSlash43.6_0004.png": {
+            "frame": {
+                "h": 56,
+                "idx": 0,
+                "w": 53,
+                "x": 0,
+                "y": 25
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 233,
+                "y": 220
+            }
+        },
+        "TargetSlash43.6_0005.png": {
+            "frame": {
+                "h": 90,
+                "idx": 0,
+                "w": 86,
+                "x": 0,
+                "y": 82
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 216,
+                "y": 204
+            }
+        },
+        "TargetSlash43.6_0006.png": {
+            "frame": {
+                "h": 126,
+                "idx": 0,
+                "w": 120,
+                "x": 0,
+                "y": 173
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 199,
+                "y": 186
+            }
+        },
+        "TargetSlash43.6_0007.png": {
+            "frame": {
+                "h": 146,
+                "idx": 0,
+                "w": 139,
+                "x": 87,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 189,
+                "y": 176
+            }
+        },
+        "TargetSlash43.6_0008.png": {
+            "frame": {
+                "h": 146,
+                "idx": 0,
+                "w": 139,
+                "x": 227,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 189,
+                "y": 176
+            }
+        },
+        "TargetSlash43.6_0009.png": {
+            "frame": {
+                "h": 146,
+                "idx": 0,
+                "w": 139,
+                "x": 121,
+                "y": 147
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 189,
+                "y": 176
+            }
+        }
+    },
+    "meta": {
+        "image": "NewSlahLight.png",
+        "prefix": "NewSlahLight/"
+    }
+}

@@ -1,0 +1,365 @@
+{
+    "frames": {
+        "WalkEffect_0010.png": {
+            "frame": {
+                "h": 63,
+                "idx": 0,
+                "w": 102,
+                "x": 0,
+                "y": 403
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 159,
+                "y": 277
+            }
+        },
+        "WalkEffect_0011.png": {
+            "frame": {
+                "h": 72,
+                "idx": 0,
+                "w": 117,
+                "x": 103,
+                "y": 413
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 150,
+                "y": 273
+            }
+        },
+        "WalkEffect_0012.png": {
+            "frame": {
+                "h": 79,
+                "idx": 0,
+                "w": 122,
+                "x": 357,
+                "y": 401
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 142,
+                "y": 270
+            }
+        },
+        "WalkEffect_0013.png": {
+            "frame": {
+                "h": 70,
+                "idx": 0,
+                "w": 132,
+                "x": 360,
+                "y": 330
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 133,
+                "y": 269
+            }
+        },
+        "WalkEffect_0014.png": {
+            "frame": {
+                "h": 77,
+                "idx": 0,
+                "w": 141,
+                "x": 360,
+                "y": 252
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 124,
+                "y": 268
+            }
+        },
+        "WalkEffect_0015.png": {
+            "frame": {
+                "h": 83,
+                "idx": 0,
+                "w": 150,
+                "x": 340,
+                "y": 168
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 117,
+                "y": 268
+            }
+        },
+        "WalkEffect_0016.png": {
+            "frame": {
+                "h": 88,
+                "idx": 0,
+                "w": 152,
+                "x": 360,
+                "y": 79
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 112,
+                "y": 270
+            }
+        },
+        "WalkEffect_0017.png": {
+            "frame": {
+                "h": 90,
+                "idx": 0,
+                "w": 135,
+                "x": 221,
+                "y": 394
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 133,
+                "y": 274
+            }
+        },
+        "WalkEffect_0018.png": {
+            "frame": {
+                "h": 95,
+                "idx": 0,
+                "w": 136,
+                "x": 223,
+                "y": 298
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 131,
+                "y": 276
+            }
+        },
+        "WalkEffect_0019.png": {
+            "frame": {
+                "h": 99,
+                "idx": 0,
+                "w": 116,
+                "x": 223,
+                "y": 198
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 149,
+                "y": 279
+            }
+        },
+        "WalkEffect_0020.png": {
+            "frame": {
+                "h": 108,
+                "idx": 0,
+                "w": 127,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 139,
+                "y": 276
+            }
+        },
+        "WalkEffect_0021.png": {
+            "frame": {
+                "h": 103,
+                "idx": 0,
+                "w": 98,
+                "x": 122,
+                "y": 309
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 165,
+                "y": 273
+            }
+        },
+        "WalkEffect_0022.png": {
+            "frame": {
+                "h": 110,
+                "idx": 0,
+                "w": 106,
+                "x": 116,
+                "y": 198
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 157,
+                "y": 272
+            }
+        },
+        "WalkEffect_0023.png": {
+            "frame": {
+                "h": 114,
+                "idx": 0,
+                "w": 117,
+                "x": 128,
+                "y": 83
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 149,
+                "y": 273
+            }
+        },
+        "WalkEffect_0024.png": {
+            "frame": {
+                "h": 76,
+                "idx": 0,
+                "w": 121,
+                "x": 0,
+                "y": 326
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 144,
+                "y": 274
+            }
+        },
+        "WalkEffect_0025.png": {
+            "frame": {
+                "h": 65,
+                "idx": 0,
+                "w": 105,
+                "x": 0,
+                "y": 260
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 157,
+                "y": 272
+            }
+        },
+        "WalkEffect_0026.png": {
+            "frame": {
+                "h": 73,
+                "idx": 0,
+                "w": 115,
+                "x": 0,
+                "y": 186
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 151,
+                "y": 270
+            }
+        },
+        "WalkEffect_0027.png": {
+            "frame": {
+                "h": 78,
+                "idx": 0,
+                "w": 118,
+                "x": 390,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 147,
+                "y": 270
+            }
+        },
+        "WalkEffect_0028.png": {
+            "frame": {
+                "h": 77,
+                "idx": 0,
+                "w": 128,
+                "x": 261,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 138,
+                "y": 270
+            }
+        },
+        "WalkEffect_0029.png": {
+            "frame": {
+                "h": 82,
+                "idx": 0,
+                "w": 132,
+                "x": 128,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 134,
+                "y": 271
+            }
+        },
+        "WalkEffect_0030.png": {
+            "frame": {
+                "h": 76,
+                "idx": 0,
+                "w": 113,
+                "x": 0,
+                "y": 109
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 153,
+                "y": 270
+            }
+        }
+    },
+    "meta": {
+        "image": "WalkEffects.png",
+        "prefix": "WalkEffects/"
+    }
+}
