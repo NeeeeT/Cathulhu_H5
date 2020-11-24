@@ -6,7 +6,7 @@
     "searchKey":"Scene",
     "props":{"x":0,"width":4098,"skewY":0,"skewX":0,"sceneColor":"gray","pivotX":0,"height":768,"autoDestroyAtClosed":true},
     "nodeParent":-1,
-    "maxID":251,
+    "maxID":252,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -320,6 +320,22 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":249,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"ColorFilterSetter",
+            "switchAble":true,
+            "searchKey":"ColorFilterSetter",
+            "removeAble":true,
+            "props":{"saturation":-2,"hue":"0","contrast":31,"color":"#000000","brightness":-7,"alpha":"0"},
+            "nodeParent":2,
+            "label":"ColorFilterSetter",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":251,
             "child":[
                 ]
         }],

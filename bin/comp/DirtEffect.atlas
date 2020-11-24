@@ -1,0 +1,858 @@
+{
+    "frames": {
+        "DirtEffect_0051.png": {
+            "frame": {
+                "h": 367,
+                "idx": 2,
+                "w": 482,
+                "x": 1409,
+                "y": 329
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 18,
+                "y": 58
+            }
+        },
+        "DirtEffect_0052.png": {
+            "frame": {
+                "h": 367,
+                "idx": 1,
+                "w": 478,
+                "x": 1377,
+                "y": 824
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 58
+            }
+        },
+        "DirtEffect_0053.png": {
+            "frame": {
+                "h": 367,
+                "idx": 1,
+                "w": 496,
+                "x": 0,
+                "y": 869
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 58
+            }
+        },
+        "DirtEffect_0054.png": {
+            "frame": {
+                "h": 367,
+                "idx": 1,
+                "w": 487,
+                "x": 497,
+                "y": 1153
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 7,
+                "y": 58
+            }
+        },
+        "DirtEffect_0055.png": {
+            "frame": {
+                "h": 366,
+                "idx": 1,
+                "w": 444,
+                "x": 0,
+                "y": 1237
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 22,
+                "y": 59
+            }
+        },
+        "DirtEffect_0056.png": {
+            "frame": {
+                "h": 365,
+                "idx": 1,
+                "w": 449,
+                "x": 445,
+                "y": 1521
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 37,
+                "y": 59
+            }
+        },
+        "DirtEffect_0057.png": {
+            "frame": {
+                "h": 365,
+                "idx": 1,
+                "w": 448,
+                "x": 895,
+                "y": 1521
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 52,
+                "y": 59
+            }
+        },
+        "DirtEffect_0058.png": {
+            "frame": {
+                "h": 364,
+                "idx": 1,
+                "w": 484,
+                "x": 1344,
+                "y": 1192
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 60
+            }
+        },
+        "DirtEffect_0059.png": {
+            "frame": {
+                "h": 363,
+                "idx": 1,
+                "w": 497,
+                "x": 1344,
+                "y": 1557
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 61
+            }
+        },
+        "DirtEffect_0060.png": {
+            "frame": {
+                "h": 344,
+                "idx": 2,
+                "w": 481,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 12,
+                "y": 80
+            }
+        },
+        "DirtEffect_0061.png": {
+            "frame": {
+                "h": 343,
+                "idx": 2,
+                "w": 471,
+                "x": 482,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 29,
+                "y": 80
+            }
+        },
+        "DirtEffect_0062.png": {
+            "frame": {
+                "h": 343,
+                "idx": 2,
+                "w": 454,
+                "x": 954,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 46,
+                "y": 80
+            }
+        },
+        "DirtEffect_0063.png": {
+            "frame": {
+                "h": 328,
+                "idx": 2,
+                "w": 391,
+                "x": 1409,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 63,
+                "y": 80
+            }
+        },
+        "DirtEffect_0064.png": {
+            "frame": {
+                "h": 328,
+                "idx": 1,
+                "w": 473,
+                "x": 903,
+                "y": 824
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 80
+            }
+        },
+        "DirtEffect_0065.png": {
+            "frame": {
+                "h": 327,
+                "idx": 2,
+                "w": 492,
+                "x": 482,
+                "y": 344
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 80
+            }
+        },
+        "DirtEffect_0066.png": {
+            "frame": {
+                "h": 327,
+                "idx": 2,
+                "w": 500,
+                "x": 0,
+                "y": 672
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 80
+            }
+        },
+        "DirtEffect_0067.png": {
+            "frame": {
+                "h": 327,
+                "idx": 2,
+                "w": 381,
+                "x": 501,
+                "y": 672
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 6,
+                "y": 80
+            }
+        },
+        "DirtEffect_0068.png": {
+            "frame": {
+                "h": 327,
+                "idx": 2,
+                "w": 377,
+                "x": 883,
+                "y": 672
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 24,
+                "y": 80
+            }
+        },
+        "DirtEffect_0069.png": {
+            "frame": {
+                "h": 328,
+                "idx": 2,
+                "w": 373,
+                "x": 1261,
+                "y": 697
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 42,
+                "y": 79
+            }
+        },
+        "DirtEffect_0070.png": {
+            "frame": {
+                "h": 328,
+                "idx": 2,
+                "w": 371,
+                "x": 1635,
+                "y": 697
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 58,
+                "y": 79
+            }
+        },
+        "DirtEffect_0071.png": {
+            "frame": {
+                "h": 328,
+                "idx": 2,
+                "w": 369,
+                "x": 0,
+                "y": 1000
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 74,
+                "y": 79
+            }
+        },
+        "DirtEffect_0072.png": {
+            "frame": {
+                "h": 327,
+                "idx": 2,
+                "w": 367,
+                "x": 975,
+                "y": 344
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 90,
+                "y": 80
+            }
+        },
+        "DirtEffect_0073.png": {
+            "frame": {
+                "h": 328,
+                "idx": 2,
+                "w": 471,
+                "x": 370,
+                "y": 1000
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 80
+            }
+        },
+        "DirtEffect_0074.png": {
+            "frame": {
+                "h": 328,
+                "idx": 2,
+                "w": 485,
+                "x": 842,
+                "y": 1026
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 80
+            }
+        },
+        "DirtEffect_0075.png": {
+            "frame": {
+                "h": 328,
+                "idx": 2,
+                "w": 499,
+                "x": 1328,
+                "y": 1026
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 80
+            }
+        },
+        "DirtEffect_0076.png": {
+            "frame": {
+                "h": 328,
+                "idx": 0,
+                "w": 478,
+                "x": 494,
+                "y": 1400
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 16,
+                "y": 80
+            }
+        },
+        "DirtEffect_0077.png": {
+            "frame": {
+                "h": 328,
+                "idx": 0,
+                "w": 488,
+                "x": 469,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 80
+            }
+        },
+        "DirtEffect_0078.png": {
+            "frame": {
+                "h": 363,
+                "idx": 0,
+                "w": 500,
+                "x": 958,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 44
+            }
+        },
+        "DirtEffect_0079.png": {
+            "frame": {
+                "h": 363,
+                "idx": 0,
+                "w": 467,
+                "x": 469,
+                "y": 329
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 14,
+                "y": 44
+            }
+        },
+        "DirtEffect_0080.png": {
+            "frame": {
+                "h": 363,
+                "idx": 0,
+                "w": 468,
+                "x": 0,
+                "y": 413
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 30,
+                "y": 44
+            }
+        },
+        "DirtEffect_0081.png": {
+            "frame": {
+                "h": 328,
+                "idx": 0,
+                "w": 441,
+                "x": 1459,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 46,
+                "y": 44
+            }
+        },
+        "DirtEffect_0082.png": {
+            "frame": {
+                "h": 328,
+                "idx": 0,
+                "w": 500,
+                "x": 1459,
+                "y": 329
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 43
+            }
+        },
+        "DirtEffect_0083.png": {
+            "frame": {
+                "h": 328,
+                "idx": 0,
+                "w": 449,
+                "x": 937,
+                "y": 364
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 2,
+                "y": 43
+            }
+        },
+        "DirtEffect_0084.png": {
+            "frame": {
+                "h": 328,
+                "idx": 0,
+                "w": 447,
+                "x": 1387,
+                "y": 658
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 18,
+                "y": 43
+            }
+        },
+        "DirtEffect_0085.png": {
+            "frame": {
+                "h": 412,
+                "idx": 0,
+                "w": 480,
+                "x": 469,
+                "y": 693
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 43
+            }
+        },
+        "DirtEffect_0086.png": {
+            "frame": {
+                "h": 412,
+                "idx": 0,
+                "w": 475,
+                "x": 950,
+                "y": 987
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 20,
+                "y": 43
+            }
+        },
+        "DirtEffect_0087.png": {
+            "frame": {
+                "h": 412,
+                "idx": 0,
+                "w": 500,
+                "x": 1426,
+                "y": 987
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 43
+            }
+        },
+        "DirtEffect_0088.png": {
+            "frame": {
+                "h": 412,
+                "idx": 0,
+                "w": 493,
+                "x": 0,
+                "y": 1106
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 7,
+                "y": 43
+            }
+        },
+        "DirtEffect_0089.png": {
+            "frame": {
+                "h": 412,
+                "idx": 0,
+                "w": 468,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 21,
+                "y": 43
+            }
+        },
+        "DirtEffect_0090.png": {
+            "frame": {
+                "h": 412,
+                "idx": 0,
+                "w": 500,
+                "x": 973,
+                "y": 1400
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 43
+            }
+        },
+        "DirtEffect_0091.png": {
+            "frame": {
+                "h": 412,
+                "idx": 0,
+                "w": 455,
+                "x": 0,
+                "y": 1519
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 43
+            }
+        },
+        "DirtEffect_0092.png": {
+            "frame": {
+                "h": 412,
+                "idx": 0,
+                "w": 462,
+                "x": 1474,
+                "y": 1400
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 11,
+                "y": 43
+            }
+        },
+        "DirtEffect_0093.png": {
+            "frame": {
+                "h": 412,
+                "idx": 1,
+                "w": 460,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 31,
+                "y": 43
+            }
+        },
+        "DirtEffect_0094.png": {
+            "frame": {
+                "h": 412,
+                "idx": 1,
+                "w": 453,
+                "x": 461,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 47,
+                "y": 43
+            }
+        },
+        "DirtEffect_0095.png": {
+            "frame": {
+                "h": 411,
+                "idx": 1,
+                "w": 479,
+                "x": 915,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 44
+            }
+        },
+        "DirtEffect_0096.png": {
+            "frame": {
+                "h": 411,
+                "idx": 1,
+                "w": 489,
+                "x": 1395,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 6,
+                "y": 44
+            }
+        },
+        "DirtEffect_0097.png": {
+            "frame": {
+                "h": 411,
+                "idx": 1,
+                "w": 500,
+                "x": 915,
+                "y": 412
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 44
+            }
+        },
+        "DirtEffect_0098.png": {
+            "frame": {
+                "h": 411,
+                "idx": 1,
+                "w": 500,
+                "x": 1416,
+                "y": 412
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 44
+            }
+        },
+        "DirtEffect_0099.png": {
+            "frame": {
+                "h": 411,
+                "idx": 1,
+                "w": 437,
+                "x": 0,
+                "y": 413
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 12,
+                "y": 44
+            }
+        },
+        "DirtEffect_0100.png": {
+            "frame": {
+                "h": 455,
+                "idx": 1,
+                "w": 464,
+                "x": 438,
+                "y": 413
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 1,
+                "y": 0
+            }
+        }
+    },
+    "meta": {
+        "image": "DirtEffect.png,DirtEffect1.png,DirtEffect2.png",
+        "prefix": "DirtEffect/"
+    }
+}
