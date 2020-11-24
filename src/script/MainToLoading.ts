@@ -11,11 +11,11 @@ export default class MainToLoading extends Laya.Script{
     public createDirtEffect() {
         this.dirtEffect = new Laya.Animation();
         this.dirtEffect.source = "comp/DirtEffect.atlas";
-        this.dirtEffect.scaleX = 2;
-        this.dirtEffect.scaleY = 1.7;
-        let posX: number = 160;
+        this.dirtEffect.scaleX = 3.4;
+        this.dirtEffect.scaleY = 2;
+        let posX: number = 20;
         let posY: number = -100;
-        this.dirtEffect.interval = 40;
+        this.dirtEffect.interval = 45;
         this.dirtEffect.pos(posX , posY);
         console.log(this.dirtEffect.pos);
         //濾鏡

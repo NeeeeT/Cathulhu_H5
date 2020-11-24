@@ -909,7 +909,7 @@ export class Character extends Laya.Script {
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
 
         bloodEffect.filters = [glowFilter, colorFilter];
-        bloodEffect.pos(enemy.x - 420, enemy.y - 450);
+        bloodEffect.pos(enemy.x - 420, enemy.y - 370);
         bloodEffect.source = "comp/NewBlood.atlas";
         bloodEffect.on(Laya.Event.COMPLETE, this, function () {
             bloodEffect.destroy();

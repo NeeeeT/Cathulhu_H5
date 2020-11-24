@@ -2750,7 +2750,7 @@
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             bloodEffect.filters = [glowFilter, colorFilter];
-            bloodEffect.pos(enemy.x - 420, enemy.y - 450);
+            bloodEffect.pos(enemy.x - 420, enemy.y - 370);
             bloodEffect.source = "comp/NewBlood.atlas";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
                 bloodEffect.destroy();
@@ -3653,11 +3653,11 @@
         createDirtEffect() {
             this.dirtEffect = new Laya.Animation();
             this.dirtEffect.source = "comp/DirtEffect.atlas";
-            this.dirtEffect.scaleX = 2;
-            this.dirtEffect.scaleY = 1.7;
-            let posX = 160;
+            this.dirtEffect.scaleX = 3.4;
+            this.dirtEffect.scaleY = 2;
+            let posX = 20;
             let posY = -100;
-            this.dirtEffect.interval = 40;
+            this.dirtEffect.interval = 45;
             this.dirtEffect.pos(posX, posY);
             console.log(this.dirtEffect.pos);
             let colorMat = [
