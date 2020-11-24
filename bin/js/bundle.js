@@ -3564,7 +3564,7 @@
             this.dirtEffect.source = "comp/DirtEffect.atlas";
             this.dirtEffect.scaleX = 2;
             this.dirtEffect.scaleY = 1.7;
-            let posX = 120;
+            let posX = 160;
             let posY = -100;
             this.dirtEffect.interval = 40;
             this.dirtEffect.pos(posX, posY);
