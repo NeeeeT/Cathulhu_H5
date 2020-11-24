@@ -100,6 +100,14 @@ export class Character extends Laya.Script {
 
     m_oathManager: OathManager;
 
+    //mobile UI
+    m_mobileLeftBtn: Laya.Sprite;
+    m_mobileRightBtn: Laya.Sprite;
+    m_mobileAtkBtn: Laya.Sprite;
+    m_mobileSprintBtn: Laya.Sprite;
+    m_mobileHumanSkillBtn: Laya.Sprite;
+    m_mobileCatSkillBtn: Laya.Sprite;
+
     spawn() {
         this.loadCharacterData();
         this.getAtkValue(this.m_atkLevel);
@@ -334,7 +342,7 @@ export class Character extends Laya.Script {
             if (Laya.stage.x >= -250) this.m_healthBar.pos(935 - Laya.stage.width / 2 + 155, 77.5);
             if (Laya.stage.x <= -2475) this.m_healthBar.pos(3155 - Laya.stage.width / 2 + 155, 77.5);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
-        }), 5);
+        }), 15);
     }
 
     private characterMove() {
@@ -1028,6 +1036,117 @@ export class Character extends Laya.Script {
     public clearAddDebuffTimer(): void{
         this.m_oathManager.clearAddDebuffTimer();
     }
+
+    public showMobileUI(player: Laya.Animation): void{
+
+        // let leftBtnPos: object = { "x": player.x - Laya.stage.width / 2 + 155, "y": 620 };
+        let rightBtnPos: object;
+
+        this.m_mobileLeftBtn = new Laya.Sprite();
+        this.m_mobileRightBtn = new Laya.Sprite();
+        this.m_mobileAtkBtn = new Laya.Sprite();
+        this.m_mobileSprintBtn = new Laya.Sprite();
+        this.m_mobileHumanSkillBtn = new Laya.Sprite();
+        this.m_mobileCatSkillBtn = new Laya.Sprite();
+
+        this.m_mobileLeftBtn.width = 100;
+        this.m_mobileLeftBtn.height = 79;
+        this.m_mobileRightBtn.width = 100;
+        this.m_mobileRightBtn.height = 79;
+        this.m_mobileAtkBtn.width = 100;
+        this.m_mobileAtkBtn.height = 100;
+        this.m_mobileLeftBtn.loadImage('UI/mobileLeftBtn.png')
+        this.m_mobileRightBtn.loadImage('UI/mobileRightBtn.png')
+        this.m_mobileAtkBtn.loadImage('UI/mobileAtkBtn.png')
+        Laya.stage.addChild(this.m_mobileLeftBtn);
+        Laya.stage.addChild(this.m_mobileRightBtn);
+        Laya.stage.addChild(this.m_mobileAtkBtn);
+
+        this.m_mobileLeftBtn.on(Laya.Event.CLICK, this, () => {
+            // console.log("案左鍵");
+            
+            this.m_playerVelocity["Vx"] += -1 * this.m_velocityMultiplier;
+            if (this.m_isFacingRight) {
+                this.m_playerVelocity["Vx"] = 0;
+                this.m_animation.skewY = 180;
+                this.m_isFacingRight = false;
+            }
+            this.applyMoveX();
+            if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
+        })
+
+
+
+        this.m_mobileRightBtn.on(Laya.Event.CLICK, this, () => {
+            // console.log("案右鍵");
+
+            this.m_playerVelocity["Vx"] += 1 * this.m_velocityMultiplier;
+            if (!this.m_isFacingRight) {
+                this.m_playerVelocity["Vx"] = 0;
+                this.m_animation.skewY = 0;
+                this.m_isFacingRight = true;
+            }
+            this.applyMoveX();
+            if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
+        })
+
+        this.m_mobileAtkBtn.on(Laya.Event.CLICK, this, () => {
+            if (!this.m_canAttack) return;
+
+            if (this.m_atkTimer) clearInterval(this.m_atkTimer);
+            // this.createAttackEffect(this.m_animation);
+            this.attackStepEventCheck();
+
+            if (!this.m_animationChanging) {
+                if (this.m_atkStep === 1) {
+                    // ,1,2,3,4, 逗號數為分母(圖數+1)
+                    this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 3);
+                    // console.log('ATTACK2');
+                }
+                else if (this.m_atkStep === 0) {
+                    this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 8);
+                    // console.log('ATTACK1');
+                }
+            }
+            this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
+            this.attackSimulation(this.m_atkStep);//另類攻擊判定
+
+            this.m_canAttack = false;
+
+            setTimeout(() => {
+                this.m_canAttack = true;
+            }, this.m_attackCdTime);
+        })
+
+        setInterval((() => {
+            // console.log(this.m_mobileLeftBtn, this.m_mobileRightBtn);
+
+            if (player.destroyed) {
+                this.m_mobileLeftBtn.destroy();
+                this.m_mobileRightBtn.destroy();
+                this.m_mobileAtkBtn.destroy();
+                this.m_mobileLeftBtn.destroyed = true;
+                this.m_mobileRightBtn.destroyed = true;
+                this.m_mobileAtkBtn.destroyed = true;
+                return;
+            }
+            if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
+                this.m_mobileLeftBtn.pos(player.x - Laya.stage.width / 2 + 100, 620);
+                this.m_mobileRightBtn.pos(player.x - Laya.stage.width / 2 + 100 + 125, 620);
+                this.m_mobileAtkBtn.pos(player.x + Laya.stage.width / 2 - 200, 620);
+            }
+            if (Laya.stage.x >= -250) {
+                this.m_mobileLeftBtn.pos(935 - Laya.stage.width / 2 + 100, 620);
+                this.m_mobileRightBtn.pos(935 - Laya.stage.width / 2 + 100 + 125, 620);
+                this.m_mobileAtkBtn.pos(935 + Laya.stage.width / 2 - 200, 620);
+            }
+            if (Laya.stage.x <= -2475) {
+                this.m_mobileLeftBtn.pos(3155 - Laya.stage.width / 2 + 100, 500);
+                this.m_mobileRightBtn.pos(3155 - Laya.stage.width / 2 + 100 + 125, 620);
+                this.m_mobileAtkBtn.pos(3155 + Laya.stage.width / 2 - 200, 620);
+            }
+        }), 15);
+    }
 }
 
 export default class CharacterInit extends Laya.Script {
@@ -1097,6 +1216,7 @@ export default class CharacterInit extends Laya.Script {
         Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
         player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
         player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);//角色UI狀態方法
+        player.showMobileUI(CharacterInit.playerEnt.m_animation);
     }
     private initSetting(player: Character): void {
 
@@ -1137,6 +1257,7 @@ export default class CharacterInit extends Laya.Script {
         player.m_oathManager = new OathManager();
         player.m_oathManager.initOathSystem();
         player.showHealth();
+
     }
     //9/13新增
     onUpdate() {
