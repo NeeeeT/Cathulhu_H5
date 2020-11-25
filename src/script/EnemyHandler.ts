@@ -283,11 +283,10 @@ export abstract class VirtualEnemy extends Laya.Script {
             if (this.m_animation.destroyed) {
                 this.m_healthBar.destroy();
                 this.m_healthBar.destroyed = true;
-                return;
-            }
-            if (this.m_healthBar.destroyed)
                 Laya.timer.clear(this, healthBarFunc);
                 return;
+            }
+            
             this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && this.m_hurtDelay <= 0) ? 0.02 : 0;
             this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) + 20, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
@@ -405,11 +404,6 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_rigidbody.linearVelocity.x = 0.0;
         }
 
-        // this.m_script.onTriggerEnter = (col: Laya.BoxCollider) =>{
-        //     if (col.tag == "Player") {
-        //         console.log("是玩家撞到我！");
-        //     }
-        // }
         if (Math.abs(this.m_moveVelocity["Vx"]) <= this.m_speed) {
             this.m_moveVelocity["Vx"] += (dir > 0) ? 0.03 : -0.03;
         } else {

@@ -1,0 +1,263 @@
+{
+    "frames": {
+        "Blood_0000.png": {
+            "frame": {
+                "h": 39,
+                "idx": 0,
+                "w": 37,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 224,
+                "y": 230
+            }
+        },
+        "Blood_0001.png": {
+            "frame": {
+                "h": 60,
+                "idx": 0,
+                "w": 59,
+                "x": 38,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 213,
+                "y": 221
+            }
+        },
+        "Blood_0002.png": {
+            "frame": {
+                "h": 81,
+                "idx": 0,
+                "w": 80,
+                "x": 98,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 203,
+                "y": 213
+            }
+        },
+        "Blood_0003.png": {
+            "frame": {
+                "h": 103,
+                "idx": 0,
+                "w": 102,
+                "x": 179,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 192,
+                "y": 208
+            }
+        },
+        "Blood_0004.png": {
+            "frame": {
+                "h": 125,
+                "idx": 0,
+                "w": 124,
+                "x": 282,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 181,
+                "y": 204
+            }
+        },
+        "Blood_0005.png": {
+            "frame": {
+                "h": 146,
+                "idx": 0,
+                "w": 145,
+                "x": 407,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 171,
+                "y": 203
+            }
+        },
+        "Blood_0006.png": {
+            "frame": {
+                "h": 168,
+                "idx": 0,
+                "w": 167,
+                "x": 553,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 160,
+                "y": 204
+            }
+        },
+        "Blood_0007.png": {
+            "frame": {
+                "h": 188,
+                "idx": 0,
+                "w": 189,
+                "x": 721,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 149,
+                "y": 208
+            }
+        },
+        "Blood_0008.png": {
+            "frame": {
+                "h": 210,
+                "idx": 0,
+                "w": 210,
+                "x": 0,
+                "y": 104
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 139,
+                "y": 213
+            }
+        },
+        "Blood_0009.png": {
+            "frame": {
+                "h": 232,
+                "idx": 0,
+                "w": 232,
+                "x": 211,
+                "y": 147
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 128,
+                "y": 221
+            }
+        },
+        "Blood_0010.png": {
+            "frame": {
+                "h": 253,
+                "idx": 0,
+                "w": 254,
+                "x": 444,
+                "y": 169
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 117,
+                "y": 231
+            }
+        },
+        "Blood_0011.png": {
+            "frame": {
+                "h": 243,
+                "idx": 0,
+                "w": 276,
+                "x": 699,
+                "y": 189
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 107,
+                "y": 243
+            }
+        },
+        "Blood_0012.png": {
+            "frame": {
+                "h": 217,
+                "idx": 0,
+                "w": 298,
+                "x": 0,
+                "y": 380
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 96,
+                "y": 257
+            }
+        },
+        "Blood_0013.png": {
+            "frame": {
+                "h": 227,
+                "idx": 0,
+                "w": 302,
+                "x": 299,
+                "y": 423
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 103,
+                "y": 273
+            }
+        },
+        "Blood_0014.png": {
+            "frame": {
+                "h": 208,
+                "idx": 0,
+                "w": 322,
+                "x": 602,
+                "y": 433
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 93,
+                "y": 292
+            }
+        }
+    },
+    "meta": {
+        "image": "Blood.png",
+        "prefix": "Blood/"
+    }
+}

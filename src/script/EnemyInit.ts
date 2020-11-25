@@ -231,20 +231,20 @@ export default class EnemyInit extends Laya.Script{
     }
     endTheBattle(): void{
         this.battleToggle = false;
-                //新手教學結束
-                Village.isNewbie = false;
-                EnemyInit.isWin = true;
-                //消除角色身上所有Debuff與Debuff計時器
-                CharacterInit.playerEnt.clearAddDebuffTimer();
-                CharacterInit.playerEnt.removeAllDebuff();
-                // this.unsetCharacter();
-                Laya.Tween.to(CharacterInit.playerEnt.m_animation, {alpha: 0.8}, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
-                    this.showEndRewardUI();
-                }), 0);
+        //新手教學結束
+        Village.isNewbie = false;
+        EnemyInit.isWin = true;
+        //消除角色身上所有Debuff與Debuff計時器
+        CharacterInit.playerEnt.clearAddDebuffTimer();
+        CharacterInit.playerEnt.removeAllDebuff();
+        // this.unsetCharacter();
+        Laya.Tween.to(CharacterInit.playerEnt.m_animation, {alpha: 0.8}, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
+            this.showEndRewardUI();
+        }), 0);
 
-                clearInterval(this.battleTimer);
-                this.battleTimer = null;
-                CharacterInit.playerEnt.m_rigidbody.linearVelocity = {x:0,y:0};
+        clearInterval(this.battleTimer);
+        this.battleTimer = null;
+        CharacterInit.playerEnt.m_rigidbody.linearVelocity = {x:0,y:0};
     }
     showEndSkill(): void{
         let player = CharacterInit.playerEnt;
@@ -426,12 +426,13 @@ export default class EnemyInit extends Laya.Script{
         Laya.stage.addChild(this.enemyInfo);
         Laya.stage.addChild(this.enemyLeftIcon);
 
-        this.roundDetectTimer = setInterval(()=>{
+        let roundDetectFunc = function () {
             if(!this.battleToggle || player.destroyed){
                 this.enemyInfo.text = "";
                 this.enemyInfo.destroy();
                 this.enemyLeftIcon.destroy();
-                clearInterval(this.roundDetectTimer);
+                // clearInterval(this.roundDetectTimer);
+                Laya.timer.clear(this, roundDetectFunc);
                 this.roundDetectTimer = null;
                 return;
             }
@@ -448,7 +449,31 @@ export default class EnemyInit extends Laya.Script{
             this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
             this.enemyInfo.text = (EnemyInit.enemyLeftCur === 0) ? '': 'x' + String(EnemyInit.enemyLeftCur);
             this.enemyLeftIcon.alpha = (EnemyInit.enemyLeftCur === 0) ? 0 : 1;
-        }, 5);
+        }
+        Laya.timer.frameLoop(1, this, roundDetectFunc);
+        // this.roundDetectTimer = setInterval(()=>{
+        //     if(!this.battleToggle || player.destroyed){
+        //         this.enemyInfo.text = "";
+        //         this.enemyInfo.destroy();
+        //         this.enemyLeftIcon.destroy();
+        //         clearInterval(this.roundDetectTimer);
+        //         this.roundDetectTimer = null;
+        //         return;
+        //     }
+        //     if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
+        //         this.enemyLeftIcon.pos(player.x - 50, 100);
+        //     }
+        //     if (Laya.stage.x >= -250) {
+        //         this.enemyLeftIcon.pos(935 - 50, 100);
+        //     }
+        //     if (Laya.stage.x <= -2475) {
+        //         this.enemyLeftIcon.pos(3155 - 50, 100);
+        //     }
+
+        //     this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
+        //     this.enemyInfo.text = (EnemyInit.enemyLeftCur === 0) ? '': 'x' + String(EnemyInit.enemyLeftCur);
+        //     this.enemyLeftIcon.alpha = (EnemyInit.enemyLeftCur === 0) ? 0 : 1;
+        // }, 5);
     }
     updateMissionData() {
         this.enemyLeft = EnemyInit.missionEnemyNum;

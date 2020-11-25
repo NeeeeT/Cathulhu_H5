@@ -180,6 +180,9 @@ export default class MissionManager extends Laya.Script {
         
         return MissionManager.missionDataPool;
     }
+    public clearCurrentMissionData(): void{
+        MissionManager.missionDataPool = [];
+    }
     public generateNewbieData(): any[]{
         let missionData: object = {
             id: 0,

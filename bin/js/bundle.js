@@ -117,6 +117,7 @@
                 this.reinforceUI = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
                     = this.reinforceHpCost = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
                         this.skipIcon = null;
+                this.missionManager.clearCurrentMissionData();
                 this.missionManager.generateMissionData(9);
                 this.missionManager.showMissionUI();
                 Laya.SoundManager.stopAll();
@@ -464,6 +465,9 @@
                 MissionManager.missionDataPool.push(missionData);
             }
             return MissionManager.missionDataPool;
+        }
+        clearCurrentMissionData() {
+            MissionManager.missionDataPool = [];
         }
         generateNewbieData() {
             let missionData = {
@@ -1412,12 +1416,12 @@
             this.enemyLeftIcon.height = 40;
             Laya.stage.addChild(this.enemyInfo);
             Laya.stage.addChild(this.enemyLeftIcon);
-            this.roundDetectTimer = setInterval(() => {
+            let roundDetectFunc = function () {
                 if (!this.battleToggle || player.destroyed) {
                     this.enemyInfo.text = "";
                     this.enemyInfo.destroy();
                     this.enemyLeftIcon.destroy();
-                    clearInterval(this.roundDetectTimer);
+                    Laya.timer.clear(this, roundDetectFunc);
                     this.roundDetectTimer = null;
                     return;
                 }
@@ -1433,7 +1437,8 @@
                 this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
                 this.enemyInfo.text = (EnemyInit.enemyLeftCur === 0) ? '' : 'x' + String(EnemyInit.enemyLeftCur);
                 this.enemyLeftIcon.alpha = (EnemyInit.enemyLeftCur === 0) ? 0 : 1;
-            }, 5);
+            };
+            Laya.timer.frameLoop(1, this, roundDetectFunc);
         }
         updateMissionData() {
             this.enemyLeft = EnemyInit.missionEnemyNum;
@@ -3274,11 +3279,9 @@
                 if (this.m_animation.destroyed) {
                     this.m_healthBar.destroy();
                     this.m_healthBar.destroyed = true;
+                    Laya.timer.clear(this, healthBarFunc);
                     return;
                 }
-                if (this.m_healthBar.destroyed)
-                    Laya.timer.clear(this, healthBarFunc);
-                return;
                 this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && this.m_hurtDelay <= 0) ? 0.02 : 0;
                 this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) + 20, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
                 this.m_healthBar.value = this.m_health / this.m_maxHealth;

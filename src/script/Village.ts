@@ -104,6 +104,7 @@ export default class Village extends Laya.Script{
             = this.reinforceHpCost = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
             this.skipIcon =  null;
 
+            this.missionManager.clearCurrentMissionData();
             this.missionManager.generateMissionData(9);
             this.missionManager.showMissionUI();
 
