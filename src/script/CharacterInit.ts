@@ -330,10 +330,11 @@ export class Character extends Laya.Script {
         // this.m_healthBar.alpha = 1;
         Laya.stage.addChild(this.m_healthBar);
 
-        setInterval((() => {
+        let healthBarFunc = function(){
             if (this.m_animation.destroyed) {
                 this.m_healthBar.destroy();
                 this.m_healthBar.destroyed = true;
+                Laya.timer.clear(this, healthBarFunc);
                 return;
             }
             if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
@@ -342,7 +343,22 @@ export class Character extends Laya.Script {
             if (Laya.stage.x >= -250) this.m_healthBar.pos(935 - Laya.stage.width / 2 + 155, 77.5);
             if (Laya.stage.x <= -2475) this.m_healthBar.pos(3155 - Laya.stage.width / 2 + 155, 77.5);
             this.m_healthBar.value = this.m_health / this.m_maxHealth;
-        }), 15);
+        }
+        Laya.timer.frameLoop(1, this, healthBarFunc);
+
+        // setInterval((() => {
+        //     if (this.m_animation.destroyed) {
+        //         this.m_healthBar.destroy();
+        //         this.m_healthBar.destroyed = true;
+        //         return;
+        //     }
+        //     if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
+        //         this.m_healthBar.pos(this.m_animation.x - Laya.stage.width / 2 + 155, 77.5);
+        //     }
+        //     if (Laya.stage.x >= -250) this.m_healthBar.pos(935 - Laya.stage.width / 2 + 155, 77.5);
+        //     if (Laya.stage.x <= -2475) this.m_healthBar.pos(3155 - Laya.stage.width / 2 + 155, 77.5);
+        //     this.m_healthBar.value = this.m_health / this.m_maxHealth;
+        // }), 15);
     }
 
     private characterMove() {
@@ -864,8 +880,10 @@ export class Character extends Laya.Script {
         let player_pivot_x: number = Laya.stage.width / 2;
         // let player_pivot_y: number = Laya.stage.height / 2;
 
-        setInterval(() => {
+        //以幀為主體的更新
+        let camTimerFunc = function(){
             if (this.m_animation.destroyed) {
+                Laya.timer.clear(this, camTimerFunc);
                 return;
             }
 
@@ -881,7 +899,27 @@ export class Character extends Laya.Script {
             }
             if (Laya.stage.x >= -250.0) Laya.stage.x = -250.0;
             if (Laya.stage.x <= -2475.0) Laya.stage.x = -2475.0;
-        }, 10);
+        }
+        Laya.timer.frameLoop(1, this, camTimerFunc);
+        //以時間為主體的更新
+        // setInterval(() => {
+        //     if (this.m_animation.destroyed) {
+        //         return;
+        //     }
+
+        //     if (this.m_cameraShakingTimer > 0) {
+        //         let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
+        //         Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+        //         Laya.stage.y = /*(player_pivot_y - this.m_animation.y + 150)*/0 + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+        //         this.m_cameraShakingTimer--;
+        //     } else {
+        //         Laya.stage.x = player_pivot_x - this.m_animation.x;
+        //         Laya.stage.y = 0
+        //         // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
+        //     }
+        //     if (Laya.stage.x >= -250.0) Laya.stage.x = -250.0;
+        //     if (Laya.stage.x <= -2475.0) Laya.stage.x = -2475.0;
+        // }, 10);
     }
     public setCameraShake(timer: number, multiplier: number) {
         this.m_cameraShakingMultiplyer = multiplier;
@@ -1111,9 +1149,8 @@ export class Character extends Laya.Script {
             }, this.m_attackCdTime);
         })
 
-        setInterval((() => {
-            // console.log(this.m_mobileLeftBtn, this.m_mobileRightBtn);
-
+        //以幀為主體的更新
+        let mobileUIFunc = function() {
             if (player.destroyed) {
                 this.m_mobileLeftBtn.destroy();
                 this.m_mobileRightBtn.destroy();
@@ -1121,6 +1158,7 @@ export class Character extends Laya.Script {
                 this.m_mobileLeftBtn.destroyed = true;
                 this.m_mobileRightBtn.destroyed = true;
                 this.m_mobileAtkBtn.destroyed = true;
+                Laya.timer.clear(this, mobileUIFunc);
                 return;
             }
             if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
@@ -1138,7 +1176,37 @@ export class Character extends Laya.Script {
                 this.m_mobileRightBtn.pos(3155 - Laya.stage.width / 2 + 100 + 125, 620);
                 this.m_mobileAtkBtn.pos(3155 + Laya.stage.width / 2 - 200, 620);
             }
-        }), 15);
+        }
+        Laya.timer.frameLoop(1, this, mobileUIFunc);
+        //以時間為主體的更新
+        // setInterval((() => {
+        //     // console.log(this.m_mobileLeftBtn, this.m_mobileRightBtn);
+
+        //     if (player.destroyed) {
+        //         this.m_mobileLeftBtn.destroy();
+        //         this.m_mobileRightBtn.destroy();
+        //         this.m_mobileAtkBtn.destroy();
+        //         this.m_mobileLeftBtn.destroyed = true;
+        //         this.m_mobileRightBtn.destroyed = true;
+        //         this.m_mobileAtkBtn.destroyed = true;
+        //         return;
+        //     }
+        //     if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
+        //         this.m_mobileLeftBtn.pos(player.x - Laya.stage.width / 2 + 100, 620);
+        //         this.m_mobileRightBtn.pos(player.x - Laya.stage.width / 2 + 100 + 125, 620);
+        //         this.m_mobileAtkBtn.pos(player.x + Laya.stage.width / 2 - 200, 620);
+        //     }
+        //     if (Laya.stage.x >= -250) {
+        //         this.m_mobileLeftBtn.pos(935 - Laya.stage.width / 2 + 100, 620);
+        //         this.m_mobileRightBtn.pos(935 - Laya.stage.width / 2 + 100 + 125, 620);
+        //         this.m_mobileAtkBtn.pos(935 + Laya.stage.width / 2 - 200, 620);
+        //     }
+        //     if (Laya.stage.x <= -2475) {
+        //         this.m_mobileLeftBtn.pos(3155 - Laya.stage.width / 2 + 100, 620);
+        //         this.m_mobileRightBtn.pos(3155 - Laya.stage.width / 2 + 100 + 125, 620);
+        //         this.m_mobileAtkBtn.pos(3155 + Laya.stage.width / 2 - 200, 620);
+        //     }
+        // }), 15);
     }
 }
 

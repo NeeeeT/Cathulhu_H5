@@ -105,10 +105,9 @@ export default class Turtorial extends Laya.Script{
         this.setHintStep(turtorialHintStep.tryMove);
         EnemyInit.enemyLeftCur = 0;
         this.currentHintUI.destroyed = false;
-
-        this.hintTimer = setInterval(()=>{
+        let hintTimerFunc = function () {
             if(player.destroyed || !Village.isNewbie){
-                clearInterval(this.hintTimer);
+                Laya.timer.clear(this, hintTimerFunc);
                 this.hintTimer = null;
                 if(!this.currentHintUI.destroyed)
                     this.currentHintUI.destroy();
@@ -123,7 +122,26 @@ export default class Turtorial extends Laya.Script{
             if (Laya.stage.x <= -2475) {
                 this.currentHintUI.pos(3155 - 150, 160);
             }
-        })
+        }
+        Laya.timer.frameLoop(1, this, hintTimerFunc);
+        // this.hintTimer = setInterval(()=>{
+        //     if(player.destroyed || !Village.isNewbie){
+        //         clearInterval(this.hintTimer);
+        //         this.hintTimer = null;
+        //         if(!this.currentHintUI.destroyed)
+        //             this.currentHintUI.destroy();
+        //         return;
+        //     }
+        //     if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
+        //         this.currentHintUI.pos(player.x - 150, 160);
+        //     }
+        //     if (Laya.stage.x >= -250) {
+        //         this.currentHintUI.pos(935 - 150, 160);
+        //     }
+        //     if (Laya.stage.x <= -2475) {
+        //         this.currentHintUI.pos(3155 - 150, 160);
+        //     }
+        // })
         Laya.stage.addChild(this.currentHintUI);
     }
     setHintStep(step: number):void{
