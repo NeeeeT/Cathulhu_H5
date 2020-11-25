@@ -1559,9 +1559,9 @@
             this.setHintStep(turtorialHintStep.tryMove);
             EnemyInit.enemyLeftCur = 0;
             this.currentHintUI.destroyed = false;
-            this.hintTimer = setInterval(() => {
+            let hintTimerFunc = function () {
                 if (player.destroyed || !Village.isNewbie) {
-                    clearInterval(this.hintTimer);
+                    Laya.timer.clear(this, hintTimerFunc);
                     this.hintTimer = null;
                     if (!this.currentHintUI.destroyed)
                         this.currentHintUI.destroy();
@@ -1576,7 +1576,8 @@
                 if (Laya.stage.x <= -2475) {
                     this.currentHintUI.pos(3155 - 150, 160);
                 }
-            });
+            };
+            Laya.timer.frameLoop(1, this, hintTimerFunc);
             Laya.stage.addChild(this.currentHintUI);
         }
         setHintStep(step) {
@@ -1862,10 +1863,10 @@
             this.oathBar_overCharge = new Laya.ProgressBar();
             this.oathBar_overCharge.skin = "UI/bp_150.png";
             this.oathBar_overCharge.visible = false;
-            let timer = setInterval((() => {
+            let oathBarFunc = function () {
                 if (CharacterInit.playerEnt.m_animation.destroyed) {
                     this.clearBloodyUI();
-                    clearInterval(timer);
+                    Laya.timer.clear(this, oathBarFunc);
                     return;
                 }
                 if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
@@ -1883,7 +1884,8 @@
                 if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
                     this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_soft;
                 this.oathBar_overCharge.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
-            }), 15);
+            };
+            Laya.timer.frameLoop(1, this, oathBarFunc);
             Laya.stage.addChild(this.oathBar);
             Laya.stage.addChild(this.oathBar_overCharge);
         }
@@ -1906,10 +1908,9 @@
             this.catSkillIconCd.color = this.humanSkillIconCd.color = this.sprintIconCd.color = '#fff';
             this.characterLogo.source = "UI/Box.png";
             this.sprintIcon.loadImage("UI/icon/sprint.png");
-            let timer = setInterval((() => {
+            let oathLogoFunc = function () {
                 if (CharacterInit.playerEnt.m_animation.destroyed) {
-                    clearInterval(timer);
-                    timer = null;
+                    Laya.timer.clear(this, oathLogoFunc);
                     return;
                 }
                 if (!CharacterInit.playerEnt.m_animation.destroyed && this.characterLogo != null) {
@@ -1938,7 +1939,8 @@
                     this.humanSkillIconCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "" : String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
                 }
                 this.sprintIconCd.text = CharacterInit.playerEnt.m_canSprint ? "" : String(CharacterInit.playerEnt.m_sprintCdCount);
-            }), 5);
+            };
+            Laya.timer.frameLoop(1, this, oathLogoFunc);
             Laya.stage.addChild(this.characterLogo);
             Laya.stage.addChild(this.catSkillIcon);
             Laya.stage.addChild(this.humanSkillIcon);
@@ -2389,10 +2391,11 @@
             this.m_healthBar = new Laya.ProgressBar();
             this.m_healthBar.skin = "UI/hp.png";
             Laya.stage.addChild(this.m_healthBar);
-            setInterval((() => {
+            let healthBarFunc = function () {
                 if (this.m_animation.destroyed) {
                     this.m_healthBar.destroy();
                     this.m_healthBar.destroyed = true;
+                    Laya.timer.clear(this, healthBarFunc);
                     return;
                 }
                 if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
@@ -2403,7 +2406,8 @@
                 if (Laya.stage.x <= -2475)
                     this.m_healthBar.pos(3155 - Laya.stage.width / 2 + 155, 77.5);
                 this.m_healthBar.value = this.m_health / this.m_maxHealth;
-            }), 15);
+            };
+            Laya.timer.frameLoop(1, this, healthBarFunc);
         }
         characterMove() {
             if (this.m_keyDownList[37]) {
@@ -2707,8 +2711,9 @@
             if (this.m_animation.destroyed)
                 return;
             let player_pivot_x = Laya.stage.width / 2;
-            setInterval(() => {
+            let camTimerFunc = function () {
                 if (this.m_animation.destroyed) {
+                    Laya.timer.clear(this, camTimerFunc);
                     return;
                 }
                 if (this.m_cameraShakingTimer > 0) {
@@ -2725,7 +2730,8 @@
                     Laya.stage.x = -250.0;
                 if (Laya.stage.x <= -2475.0)
                     Laya.stage.x = -2475.0;
-            }, 10);
+            };
+            Laya.timer.frameLoop(1, this, camTimerFunc);
         }
         setCameraShake(timer, multiplier) {
             this.m_cameraShakingMultiplyer = multiplier;
@@ -2930,7 +2936,7 @@
                     this.m_canAttack = true;
                 }, this.m_attackCdTime);
             });
-            setInterval((() => {
+            let mobileUIFunc = function () {
                 if (player.destroyed) {
                     this.m_mobileLeftBtn.destroy();
                     this.m_mobileRightBtn.destroy();
@@ -2938,6 +2944,7 @@
                     this.m_mobileLeftBtn.destroyed = true;
                     this.m_mobileRightBtn.destroyed = true;
                     this.m_mobileAtkBtn.destroyed = true;
+                    Laya.timer.clear(this, mobileUIFunc);
                     return;
                 }
                 if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
@@ -2955,7 +2962,8 @@
                     this.m_mobileRightBtn.pos(3155 - Laya.stage.width / 2 + 100 + 125, 620);
                     this.m_mobileAtkBtn.pos(3155 + Laya.stage.width / 2 - 200, 620);
                 }
-            }), 15);
+            };
+            Laya.timer.frameLoop(1, this, mobileUIFunc);
         }
     }
     class CharacterInit extends Laya.Script {
@@ -3264,18 +3272,20 @@
             this.m_healthBar.value = 1;
             this.m_healthBar.alpha = 1;
             Laya.stage.addChild(this.m_healthBar);
-            setInterval((() => {
-                if (this.m_healthBar.destroyed)
-                    return;
+            let healthBarFunc = function () {
                 if (this.m_animation.destroyed) {
                     this.m_healthBar.destroy();
                     this.m_healthBar.destroyed = true;
                     return;
                 }
+                if (this.m_healthBar.destroyed)
+                    Laya.timer.clear(this, healthBarFunc);
+                return;
                 this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && this.m_hurtDelay <= 0) ? 0.02 : 0;
                 this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) + 20, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
                 this.m_healthBar.value = this.m_health / this.m_maxHealth;
-            }), 10);
+            };
+            Laya.timer.frameLoop(1, this, healthBarFunc);
         }
         slashLightEffect(enemy) {
             let slashLightEffect = new Laya.Animation();
