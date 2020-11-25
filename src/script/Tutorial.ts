@@ -21,7 +21,7 @@ export default class Turtorial extends Laya.Script{
     stepChanging: boolean = false;
 
     currentHintUI: Laya.Sprite = new Laya.Sprite();
-    
+    bg: Laya.Sprite = new Laya.Sprite();
     // tryMoveLeft: Laya.Sprite = new Laya.Sprite();
     // tryMoveRight: Laya.Sprite = new Laya.Sprite();
 
@@ -29,6 +29,14 @@ export default class Turtorial extends Laya.Script{
 
     public static noOath: boolean = true;
 
+    onAwake(): void{
+        //load bg
+        // this.bg.width = 4098;
+        // this.bg.height = 768;
+        // this.bg.loadImage("Background(0912)/forest.png");
+        // this.bg.pos(0, 0);
+        // Laya.stage.addChild(this.bg);
+    }
     onStart(): void{
         this.resetTutorial();
     }
@@ -87,9 +95,8 @@ export default class Turtorial extends Laya.Script{
                 break;
         }
     }
-    resetTutorial(): void{
+    resetTutorial(): void{        
         let player = CharacterInit.playerEnt.m_animation;
-
         this.currentHintStep = turtorialHintStep.none;
         this.setHintStep(turtorialHintStep.tryMove);
         EnemyInit.enemyLeftCur = 0;
@@ -117,7 +124,7 @@ export default class Turtorial extends Laya.Script{
     }
     setHintStep(step: number):void{
         if(this.currentHintStep === turtorialHintStep.none){
-            this.currentHintUI.loadImage('ui/tutorial/1.png');
+            this.currentHintUI.loadImage('UI/tutorial/1.png');
             this.currentHintStep = step;
             return;
         }
@@ -137,7 +144,7 @@ export default class Turtorial extends Laya.Script{
         this.stepChanging = true;
         Laya.Tween.to(this.currentHintUI, {alpha: 0}, 1000, Laya.Ease.linearOut,
             Laya.Handler.create(this, ()=>{
-                this.currentHintUI.loadImage('ui/tutorial/'+step+'.png');
+                this.currentHintUI.loadImage('UI/tutorial/'+step+'.png');
                 Laya.Tween.to(this.currentHintUI, {alpha: 1}, 1500, Laya.Ease.linearIn, Laya.Handler.create(this, ()=>{
                     this.stepChanging = false;
                 }), 0);

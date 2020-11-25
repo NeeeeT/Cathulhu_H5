@@ -70,7 +70,7 @@ export class Blind extends DebuffProto{
     }
     constructor() {
         super();
-        console.log("執行 Blind Constructor");
+        // console.log("執行 Blind Constructor");
         
         this.blindSprite = new Laya.Sprite();
         this.blindBlackBg = new Laya.Sprite();
@@ -95,7 +95,7 @@ export class Blind extends DebuffProto{
     }
 
     public stopBlind() {
-        console.log("停止Blind");
+        // console.log("停止Blind");
         this.blindSprite.graphics.clear();
         this.blindBlackBg.graphics.clear();
         this.blindCircleMask.graphics.clear();
@@ -121,7 +121,7 @@ export class BodyCrumble extends DebuffProto{
     }
     constructor() {
         super();
-        console.log("執行 BodyCrumble Constructor");
+        // console.log("執行 BodyCrumble Constructor");
         this.originXMaxVel_basic = this.player.m_basic_xMaxVelocity;
         this.originXMaxVel_buff = this.player.m_buff_xMaxVelocity;
         this.originVM = this.player.m_velocityMultiplier;
@@ -140,7 +140,7 @@ export class BodyCrumble extends DebuffProto{
     }
 
     public stopBodyCrumble() {
-        console.log("停止BodyCrumble");
+        // console.log("停止BodyCrumble");
         
          this.player.m_basic_xMaxVelocity = this.originXMaxVel_basic;
          this.player.m_buff_xMaxVelocity = this.originXMaxVel_buff;
@@ -189,7 +189,7 @@ export class Decay extends DebuffProto{
     }
     constructor() {
         super();
-        console.log("執行 Decay Constructor");
+        // console.log("執行 Decay Constructor");
         this.checkKillingHandler = setInterval(() => {
             this.currentEnemyCount = EnemyHandler.getEnemiesCount();
             if (this.currentEnemyCount < this.previousEnemyCount) {
@@ -210,7 +210,7 @@ export class Decay extends DebuffProto{
     }
     
     public stopDecay() {
-        console.log("停止Decay");
+        // console.log("停止Decay");
         this.isDecaying = false;
         clearInterval(this.decayHandler);
         this.decayHandler = null;
@@ -264,7 +264,7 @@ export class Insane extends DebuffProto{
     }
     constructor() {
         super();
-        console.log("執行 Insane Constructor");
+        // console.log("執行 Insane Constructor");
  
         
     }
@@ -274,7 +274,7 @@ export class Insane extends DebuffProto{
     }
 
     public stopInsane() {
-        console.log("停止Insane");
+        // console.log("停止Insane");
     }
 }
 
@@ -286,7 +286,7 @@ export class Predator extends DebuffProto{
     }
     constructor() {
         super();
-        console.log("執行 Predator Constructor");
+        // console.log("執行 Predator Constructor");
  
         
     }
@@ -296,6 +296,6 @@ export class Predator extends DebuffProto{
     }
 
     public stopPredator() {
-        console.log("停止BodyPredator");
+        // console.log("停止BodyPredator");
     }
 }

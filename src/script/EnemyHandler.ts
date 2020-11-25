@@ -620,7 +620,7 @@ export default class EnemyHandler extends Laya.Script {
         this.enemyPool.push({ '_id': id, '_ent': enemy });
         this.updateEnemies();
 
-        console.log(this.enemyPool);
+        // console.log(this.enemyPool);
         
         return enemy;
     }

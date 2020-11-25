@@ -63,7 +63,7 @@ export default class OathManager extends Laya.Script {
         if (Turtorial.noOath) return;
         // if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
         //     this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
-        console.log("當前獻祭值量：",CharacterInit.playerEnt.m_bloodyPoint, "獻祭值條比例：",this.oathBar.value);
+        // console.log("當前獻祭值量：",CharacterInit.playerEnt.m_bloodyPoint, "獻祭值條比例：",this.oathBar.value);
     }
         
         
@@ -117,7 +117,7 @@ export default class OathManager extends Laya.Script {
 
         this.characterLogo.source = "UI/Box.png";
              
-        this.sprintIcon.loadImage("ui/icon/sprint.png");
+        this.sprintIcon.loadImage("UI/icon/sprint.png");
         let timer = setInterval((() => {
             
             if (CharacterInit.playerEnt.m_animation.destroyed) {
@@ -218,7 +218,7 @@ export default class OathManager extends Laya.Script {
             case 1 << 0:
                 this.playerDebuff |= DebuffType.blind;
                 if (this.blindProto === null) {
-                    console.log("add Blind");
+                    // console.log("add Blind");
                     
                     this.blindProto = new Blind();
                     this.blindProto.startBlind();
@@ -327,7 +327,7 @@ export default class OathManager extends Laya.Script {
                 
                 //overCharge計數達到上限，轉為overCharge狀態
                 if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_soft && this.overChargeCount >= 2) {
-                    console.log("轉態到overCharge");
+                    // console.log("轉態到overCharge");
                     this.overChargeCount = 0;
                     this.oathBar.skin = "UI/bp_150.png";
                     this.oathBar.sizeGrid = "0,200,0,50";
@@ -335,13 +335,13 @@ export default class OathManager extends Laya.Script {
                     this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
 
                     if (this.addDebuffTimer === null) {
-                        console.log("添加addDebuffTimer");
+                        // console.log("添加addDebuffTimer");
                         this.addDebuffTimer = setInterval(() => {
                             if (CharacterInit.playerEnt.m_animation.destroyed || EnemyInit.isWin) {
                                 this.clearAddDebuffTimer();
                                 return;
                             }    
-                            console.log("執行addDebuffTimer內函式");
+                            // console.log("執行addDebuffTimer內函式");
                             this.randomAddDebuff();
                         }, 5000);    
                     }
@@ -424,7 +424,7 @@ export default class OathManager extends Laya.Script {
         
         // if (this.playerDebuff >= 31) return;
         if (this.playerDebuff >= 7) return;
-        console.log("執行randomAddDebuff");
+        // console.log("執行randomAddDebuff");
         
         let type = Math.floor(Math.random() * 3);
         let isInside = false;
@@ -432,7 +432,7 @@ export default class OathManager extends Laya.Script {
             if ((this.playerDebuff & 1 << i) === 1 << type) isInside = true;
         }
         if (isInside) {
-            console.log("debuff重複，重新抽取");
+            // console.log("debuff重複，重新抽取");
             this.randomAddDebuff();
         }
         if (!isInside) {
@@ -448,7 +448,7 @@ export default class OathManager extends Laya.Script {
 
     public oathCastSkill(cost: number): void {
         //操作OathManager
-        console.log("扣除了技能消耗的獻祭值");
+        // console.log("扣除了技能消耗的獻祭值");
         this.currentBloodyPoint = this.currentBloodyPoint - cost;
     }
 }

@@ -7,6 +7,11 @@ export default class MainToLoading extends Laya.Script{
     onStart(): void
     {
         this.createDirtEffect();
+        //for mobile start
+        Laya.stage.on(Laya.Event.CLICK, this, () => {
+            this.dirtEffect.destroy();
+            Laya.Scene.open('Loading.scene', true);
+        })
     }
     public createDirtEffect() {
         this.dirtEffect = new Laya.Animation();
@@ -17,7 +22,7 @@ export default class MainToLoading extends Laya.Script{
         let posY: number = -100;
         this.dirtEffect.interval = 40;
         this.dirtEffect.pos(posX , posY);
-        console.log(this.dirtEffect.pos);
+        // console.log(this.dirtEffect.pos);
         //濾鏡
         let colorMat: Array<number> =
             [

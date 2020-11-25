@@ -24,7 +24,6 @@
                     "humanSkillLevel": Data.humanSkillLevel,
                     "battleRound": Data.battleRound,
                 };
-                console.log('成功讀取檔案!');
                 return;
             }
             else {
@@ -40,18 +39,15 @@
                     "battleRound": 0,
                 };
                 ExtraData.saveData();
-                console.log('創建了新的檔案');
                 return;
             }
         }
         static saveData() {
             let data = JSON.stringify(ExtraData.currentData);
             Laya.LocalStorage.setItem("gameData", data);
-            console.log('儲存資料完畢');
         }
         getJsonFromURL(url) {
             fetch(url).then(res => res.json()).then((out) => {
-                console.log("CHECK THIS JSON!", out);
             }).catch(err => {
                 throw err;
             });
@@ -130,7 +126,7 @@
         setReinfoceUI() {
             Laya.stage.x = Laya.stage.y = 0;
             this.reinforceUI = new Laya.Sprite();
-            this.reinforceUI.loadImage("ui/reinforce.png");
+            this.reinforceUI.loadImage("UI/reinforce.png");
             this.reinforceUI.width = 700;
             this.reinforceUI.height = 400;
             this.reinforceUI.pos(333, 184);
@@ -140,12 +136,12 @@
         setSkipIcon() {
             this.skipIcon = new Laya.Sprite();
             this.skipIcon.pos(this.reinforceUI.x + 281, this.reinforceUI.y + 353);
-            this.skipIcon.loadImage('ui/skip.png');
+            this.skipIcon.loadImage('UI/skip.png');
             this.skipIcon.on(Laya.Event.MOUSE_OVER, this, () => {
-                this.skipIcon.loadImage('ui/skip2.png');
+                this.skipIcon.loadImage('UI/skip2.png');
             });
             this.skipIcon.on(Laya.Event.MOUSE_OUT, this, () => {
-                this.skipIcon.loadImage('ui/skip.png');
+                this.skipIcon.loadImage('UI/skip.png');
             });
             this.skipIcon.on(Laya.Event.CLICK, this, () => {
                 this.clearReinforceUI();
@@ -230,7 +226,7 @@
         setReinforceAtkDmgCostIcon() {
             this.reinforceAtkDmgCostIcon = new Laya.Sprite();
             this.reinforceAtkDmgCostIcon.pos(330 + 465, 184 + 160);
-            this.reinforceAtkDmgCostIcon.loadImage('ui/arrP.png');
+            this.reinforceAtkDmgCostIcon.loadImage('UI/arrP.png');
             this.reinforceAtkDmgCostIcon.alpha = 0.75;
             this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OVER, this, () => {
                 this.reinforceAtkDmgCostIcon.alpha = 1;
@@ -254,7 +250,7 @@
         setReinforceHpCostIcon() {
             this.reinforceHpCostIcon = new Laya.Sprite();
             this.reinforceHpCostIcon.pos(330 + 465, 184 + 275);
-            this.reinforceHpCostIcon.loadImage('ui/arrR.png');
+            this.reinforceHpCostIcon.loadImage('UI/arrR.png');
             this.reinforceHpCostIcon.alpha = 0.75;
             Laya.stage.addChild(this.reinforceHpCostIcon);
             this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, () => {
@@ -467,7 +463,6 @@
                 };
                 MissionManager.missionDataPool.push(missionData);
             }
-            console.log(MissionManager.missionDataPool);
             return MissionManager.missionDataPool;
         }
         generateNewbieData() {
@@ -486,7 +481,6 @@
                 map: "forest",
             };
             MissionManager.missionDataPool.push(missionData);
-            console.log(MissionManager.missionDataPool);
             return MissionManager.missionDataPool;
         }
         sendMissionData(data) {
@@ -593,8 +587,8 @@
             this.m_cost = 50;
             this.m_id = 2;
             this.m_cd = 3;
-            this.m_iconA = "ui/icon/slamA.png";
-            this.m_iconB = "ui/icon/slamB.png";
+            this.m_iconA = "UI/icon/slamA.png";
+            this.m_iconB = "UI/icon/slamB.png";
             this.m_injuredEnemy = [];
         }
         cast(owner, position, oathSystemCheck) {
@@ -681,8 +675,8 @@
             this.m_cd = 5;
             this.m_lastTime = 2;
             this.m_radius = 100;
-            this.m_iconA = "ui/icon/blackholeA.png";
-            this.m_iconB = "ui/icon/blackholeB.png";
+            this.m_iconA = "UI/icon/blackholeA.png";
+            this.m_iconB = "UI/icon/blackholeB.png";
         }
         cast(owner, position, oathSystemCheck) {
             if (!this.m_canUse)
@@ -792,8 +786,8 @@
             this.m_cd = 15;
             this.m_lastTime = 2;
             this.m_radius = 100;
-            this.m_iconA = "ui/icon/blackholeA.png";
-            this.m_iconB = "ui/icon/blackholeB.png";
+            this.m_iconA = "UI/icon/blackholeA.png";
+            this.m_iconB = "UI/icon/blackholeB.png";
         }
         cast(owner, position, oathSystemCheck) {
             if (!this.m_canUse)
@@ -905,8 +899,8 @@
             this.m_cost = 30;
             this.m_id = 1;
             this.m_cd = 3;
-            this.m_iconA = "ui/icon/spikeA.png";
-            this.m_iconB = "ui/icon/spikeB.png";
+            this.m_iconA = "UI/icon/spikeA.png";
+            this.m_iconB = "UI/icon/spikeB.png";
             this.m_lastTime = 0.2;
             this.m_spikeVec = 55.0;
         }
@@ -958,7 +952,6 @@
             }, 200);
             setTimeout(() => {
                 this.m_canUse = true;
-                console.log("技能可使用");
             }, this.m_cd * 1000);
             this.updateCdTimer();
         }
@@ -983,8 +976,8 @@
             this.m_cost = 10;
             this.m_id = 2;
             this.m_cd = 3;
-            this.m_iconA = "ui/icon/beheadA.png";
-            this.m_iconB = "ui/icon/beheadB.png";
+            this.m_iconA = "UI/icon/beheadA.png";
+            this.m_iconB = "UI/icon/beheadB.png";
             this.m_preTime = 0.2;
         }
         cast(owner, position, oathSystemCheck) {
@@ -1156,7 +1149,6 @@
             EnemyInit.enemyLeftCur = this.enemyLeft;
             let player = CharacterInit.playerEnt.m_animation;
             let enemy = EnemyHandler.enemyPool;
-            console.log(enemy);
             EnemyInit.isWin = false;
             this.generateTimer = setInterval(() => {
                 if (player.destroyed) {
@@ -1268,7 +1260,7 @@
             this.endingSkillUI = new Laya.Sprite();
             this.endingSkillUI.width = 684;
             this.endingSkillUI.height = 576;
-            this.endingSkillUI.loadImage('ui/ending/chooseSkill.png');
+            this.endingSkillUI.loadImage('UI/ending/chooseSkill.png');
             this.endingSkillUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 650 : 2850) : (player.m_animation.x - 325), 30);
             this.endingSkillUI.alpha = 0.5;
             player.m_animation.pos(this.endingSkillUI.x + this.endingSkillUI.width / 2, player.m_animation.y);
@@ -1282,8 +1274,8 @@
             this.skillCat.height = this.skillHuman.height = 130;
             this.skillCat.pos(pos['x'] + 136, pos['y'] + 140);
             this.skillHuman.pos(pos['x'] + 418, pos['y'] + 140);
-            this.skillCat.loadImage('ui/ending/skillBox.png');
-            this.skillHuman.loadImage('ui/ending/skillBox.png');
+            this.skillCat.loadImage('UI/ending/skillBox.png');
+            this.skillHuman.loadImage('UI/ending/skillBox.png');
             this.r1 = Math.floor(Math.random() * 2);
             this.r2 = Math.floor(Math.random() * 2);
             this.skillCatIcon = new Laya.Sprite();
@@ -1302,8 +1294,8 @@
             this.skillCatInfo.height = this.skillHumanInfo.height = 110;
             this.skillCatInfo.pos(pos['x'] + 96, pos['y'] + 402);
             this.skillHumanInfo.pos(pos['x'] + 383, pos['y'] + 402);
-            this.skillCatInfo.loadImage("ui/ending/infoBox.png");
-            this.skillHumanInfo.loadImage("ui/ending/infoBox.png");
+            this.skillCatInfo.loadImage("UI/ending/infoBox.png");
+            this.skillHumanInfo.loadImage("UI/ending/infoBox.png");
             this.skillCatInfoText = new Laya.Text();
             this.skillHumanInfoText = new Laya.Text();
             this.catSkillName = new Laya.Text();
@@ -1327,8 +1319,8 @@
             this.rightArrow = new Laya.Sprite();
             this.leftArrow.pos(pos['x'] + 175, pos['y'] + 340);
             this.rightArrow.pos(pos['x'] + 457, pos['y'] + 340);
-            this.leftArrow.loadImage('ui/leftArr.png');
-            this.rightArrow.loadImage('ui/rightArr.png');
+            this.leftArrow.loadImage('UI/leftArr.png');
+            this.rightArrow.loadImage('UI/rightArr.png');
             this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
             this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
             Laya.stage.addChild(this.endingSkillUI);
@@ -1374,7 +1366,7 @@
             this.endingRewardUI = new Laya.Sprite();
             this.endingRewardUI.width = 342;
             this.endingRewardUI.height = 288;
-            this.endingRewardUI.loadImage('ui/ending/ending.png');
+            this.endingRewardUI.loadImage('UI/ending/ending.png');
             this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
             let pos = {
                 'x': this.endingRewardUI.x,
@@ -1397,8 +1389,8 @@
             this.rewardCrystalText.pos(pos['x'] + 168, pos['y'] + 104);
             this.rewardGold.pos(pos['x'] + 94, pos['y'] + 154);
             this.rewardGoldText.pos(pos['x'] + 168, pos['y'] + 161);
-            this.rewardCrystal.loadImage('ui/ending/crystal.png');
-            this.rewardGold.loadImage('ui/ending/gold.png');
+            this.rewardCrystal.loadImage('UI/ending/crystal.png');
+            this.rewardGold.loadImage('UI/ending/gold.png');
             Laya.stage.addChild(this.endingRewardUI);
             Laya.stage.addChild(this.rewardCrystal);
             Laya.stage.addChild(this.rewardGold);
@@ -1415,7 +1407,7 @@
             this.enemyInfo.stroke = 3;
             this.enemyInfo.font = "silver";
             this.enemyInfo.strokeColor = "#000";
-            this.enemyLeftIcon.loadImage('ui/skull.png');
+            this.enemyLeftIcon.loadImage('UI/skull.png');
             this.enemyLeftIcon.width = 30;
             this.enemyLeftIcon.height = 40;
             Laya.stage.addChild(this.enemyInfo);
@@ -1519,7 +1511,6 @@
             this.blindBlackBg = null;
             this.blindCircleMask = null;
             this.blindHandler = null;
-            console.log("執行 Blind Constructor");
             this.blindSprite = new Laya.Sprite();
             this.blindBlackBg = new Laya.Sprite();
             this.blindCircleMask = new Laya.Sprite();
@@ -1546,7 +1537,6 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopBlind() {
-            console.log("停止Blind");
             this.blindSprite.graphics.clear();
             this.blindBlackBg.graphics.clear();
             this.blindCircleMask.graphics.clear();
@@ -1565,7 +1555,6 @@
             this.newXMaxVel_basic = 0;
             this.originXMaxVel_buff = 0;
             this.newXMaxVel_buff = 0;
-            console.log("執行 BodyCrumble Constructor");
             this.originXMaxVel_basic = this.player.m_basic_xMaxVelocity;
             this.originXMaxVel_buff = this.player.m_buff_xMaxVelocity;
             this.originVM = this.player.m_velocityMultiplier;
@@ -1586,7 +1575,6 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopBodyCrumble() {
-            console.log("停止BodyCrumble");
             this.player.m_basic_xMaxVelocity = this.originXMaxVel_basic;
             this.player.m_buff_xMaxVelocity = this.originXMaxVel_buff;
             this.player.m_velocityMultiplier = this.originVM;
@@ -1606,7 +1594,6 @@
             this.previousEnemyCount = 0;
             this.decayHandler = null;
             this.checkKillingHandler = null;
-            console.log("執行 Decay Constructor");
             this.checkKillingHandler = setInterval(() => {
                 this.currentEnemyCount = EnemyHandler.getEnemiesCount();
                 if (this.currentEnemyCount < this.previousEnemyCount) {
@@ -1643,7 +1630,6 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopDecay() {
-            console.log("停止Decay");
             this.isDecaying = false;
             clearInterval(this.decayHandler);
             this.decayHandler = null;
@@ -1666,7 +1652,6 @@
         constructor() {
             super();
             this.debuffText = "對力量的渴望會讓你拋棄理性";
-            console.log("執行 Insane Constructor");
         }
         debuffUpdate() {
             super.debuffUpdate();
@@ -1675,14 +1660,12 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopInsane() {
-            console.log("停止Insane");
         }
     }
     class Predator extends DebuffProto {
         constructor() {
             super();
             this.debuffText = "它們循著氣息來了";
-            console.log("執行 Predator Constructor");
         }
         debuffUpdate() {
             super.debuffUpdate();
@@ -1691,7 +1674,6 @@
             this.debuffTextEffect(this.debuffText);
         }
         stopPredator() {
-            console.log("停止BodyPredator");
         }
     }
 
@@ -1713,7 +1695,10 @@
             this.moveRight = false;
             this.stepChanging = false;
             this.currentHintUI = new Laya.Sprite();
+            this.bg = new Laya.Sprite();
             this.hintTimer = null;
+        }
+        onAwake() {
         }
         onStart() {
             this.resetTutorial();
@@ -1802,7 +1787,7 @@
         }
         setHintStep(step) {
             if (this.currentHintStep === turtorialHintStep.none) {
-                this.currentHintUI.loadImage('ui/tutorial/1.png');
+                this.currentHintUI.loadImage('UI/tutorial/1.png');
                 this.currentHintStep = step;
                 return;
             }
@@ -1821,7 +1806,7 @@
             this.currentHintStep = step;
             this.stepChanging = true;
             Laya.Tween.to(this.currentHintUI, { alpha: 0 }, 1000, Laya.Ease.linearOut, Laya.Handler.create(this, () => {
-                this.currentHintUI.loadImage('ui/tutorial/' + step + '.png');
+                this.currentHintUI.loadImage('UI/tutorial/' + step + '.png');
                 Laya.Tween.to(this.currentHintUI, { alpha: 1 }, 1500, Laya.Ease.linearIn, Laya.Handler.create(this, () => {
                     this.stepChanging = false;
                 }), 0);
@@ -1860,7 +1845,6 @@
                 CharacterInit.playerEnt.m_bloodyPoint = 0;
             if (Turtorial.noOath)
                 return;
-            console.log("當前獻祭值量：", CharacterInit.playerEnt.m_bloodyPoint, "獻祭值條比例：", this.oathBar.value);
         }
         showBloodyPoint(player) {
             this.oathBar = new Laya.ProgressBar();
@@ -1901,7 +1885,7 @@
             this.catSkillIconCd.strokeColor = this.humanSkillIconCd.strokeColor = this.sprintIconCd.strokeColor = '#000';
             this.catSkillIconCd.color = this.humanSkillIconCd.color = this.sprintIconCd.color = '#fff';
             this.characterLogo.source = "UI/Box.png";
-            this.sprintIcon.loadImage("ui/icon/sprint.png");
+            this.sprintIcon.loadImage("UI/icon/sprint.png");
             let timer = setInterval((() => {
                 if (CharacterInit.playerEnt.m_animation.destroyed) {
                     clearInterval(timer);
@@ -2000,7 +1984,6 @@
                 case 1 << 0:
                     this.playerDebuff |= DebuffType.blind;
                     if (this.blindProto === null) {
-                        console.log("add Blind");
                         this.blindProto = new Blind();
                         this.blindProto.startBlind();
                     }
@@ -2097,20 +2080,17 @@
                     break;
                 case OathStatus.charge:
                     if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_soft && this.overChargeCount >= 2) {
-                        console.log("轉態到overCharge");
                         this.overChargeCount = 0;
                         this.oathBar.skin = "UI/bp_150.png";
                         this.oathBar.sizeGrid = "0,200,0,50";
                         CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_hard;
                         this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
                         if (this.addDebuffTimer === null) {
-                            console.log("添加addDebuffTimer");
                             this.addDebuffTimer = setInterval(() => {
                                 if (CharacterInit.playerEnt.m_animation.destroyed || EnemyInit.isWin) {
                                     this.clearAddDebuffTimer();
                                     return;
                                 }
-                                console.log("執行addDebuffTimer內函式");
                                 this.randomAddDebuff();
                             }, 5000);
                         }
@@ -2170,7 +2150,6 @@
         randomAddDebuff() {
             if (this.playerDebuff >= 7)
                 return;
-            console.log("執行randomAddDebuff");
             let type = Math.floor(Math.random() * 3);
             let isInside = false;
             for (let i = 0; i <= 2; i++) {
@@ -2178,7 +2157,6 @@
                     isInside = true;
             }
             if (isInside) {
-                console.log("debuff重複，重新抽取");
                 this.randomAddDebuff();
             }
             if (!isInside) {
@@ -2191,7 +2169,6 @@
             return true;
         }
         oathCastSkill(cost) {
-            console.log("扣除了技能消耗的獻祭值");
             this.currentBloodyPoint = this.currentBloodyPoint - cost;
         }
     }
@@ -2353,7 +2330,6 @@
                     return;
                 }
                 this.m_canJump = (Math.abs(this.m_animation.y + (this.m_animation.height / 2) - 590) < 10) ? true : false;
-                console.log(this.m_canJump);
             }, 1000);
         }
         hurtedEvent(time) {
@@ -2955,7 +2931,7 @@
                     this.m_mobileAtkBtn.pos(935 + Laya.stage.width / 2 - 200, 620);
                 }
                 if (Laya.stage.x <= -2475) {
-                    this.m_mobileLeftBtn.pos(3155 - Laya.stage.width / 2 + 100, 500);
+                    this.m_mobileLeftBtn.pos(3155 - Laya.stage.width / 2 + 100, 620);
                     this.m_mobileRightBtn.pos(3155 - Laya.stage.width / 2 + 100 + 125, 620);
                     this.m_mobileAtkBtn.pos(3155 + Laya.stage.width / 2 - 200, 620);
                 }
@@ -3525,7 +3501,6 @@
             enemy.spawn(player, id, point[randomPoint], enemyType);
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();
-            console.log(this.enemyPool);
             return enemy;
         }
         static decideEnemyType(enemyType) {
@@ -3582,7 +3557,7 @@
             this.resourceLoad = ["Audio/Bgm/BGM1.wav", "font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
                 "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
                 "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
-                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas", "ui/loading.png",
+                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas", "UI/loading.png",
             ];
         }
         onAwake() {
@@ -3606,9 +3581,10 @@
                 "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
                 "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas", "character/Sprint.atlas",
                 "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas", "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas",
-                "ui/arrP.png", "ui/arrR.png", "ui/skull.png", "ui/reinforce.png", "ui/skip.png", "ui/skip2.png", 'ui/ending/chooseSkill.png', 'ui/ending/skillBox.png', "ui/ending/infoBox.png", 'ui/leftArr.png', 'ui/rightArr.png',
-                'ui/ending/ending.png', 'ui/ending/gold.png', 'ui/ending/crystal.png',
-                'ui/tutorial/1.png', 'ui/tutorial/2.png', 'ui/tutorial/3.png', 'ui/tutorial/4.png', 'ui/tutorial/5.png', 'ui/tutorial/6.png', 'ui/tutorial/7.png'
+                "Background(0912)/forest.png",
+                "UI/arrP.png", "UI/arrR.png", "UI/skull.png", "UI/reinforce.png", "UI/skip.png", "UI/skip2.png", 'UI/ending/chooseSkill.png', 'UI/ending/skillBox.png', "UI/ending/infoBox.png", 'UI/leftArr.png', 'UI/rightArr.png',
+                'UI/ending/ending.png', 'UI/ending/gold.png', 'UI/ending/crystal.png',
+                'UI/tutorial/1.png', 'UI/tutorial/2.png', 'UI/tutorial/3.png', 'UI/tutorial/4.png', 'UI/tutorial/5.png', 'UI/tutorial/6.png', 'UI/tutorial/7.png'
             ];
         }
         onStart() {
@@ -3638,7 +3614,6 @@
             }
         }
         onChange(value) {
-            console.log(Math.floor(value * 100));
         }
     }
 
@@ -3649,6 +3624,10 @@
         }
         onStart() {
             this.createDirtEffect();
+            Laya.stage.on(Laya.Event.CLICK, this, () => {
+                this.dirtEffect.destroy();
+                Laya.Scene.open('Loading.scene', true);
+            });
         }
         createDirtEffect() {
             this.dirtEffect = new Laya.Animation();
@@ -3659,7 +3638,6 @@
             let posY = -100;
             this.dirtEffect.interval = 40;
             this.dirtEffect.pos(posX, posY);
-            console.log(this.dirtEffect.pos);
             let colorMat = [
                 1, 0, 0, 0, 500,
                 0, 1, 0, 0, 500,
@@ -3693,14 +3671,14 @@
     }
     GameConfig.width = 1366;
     GameConfig.height = 768;
-    GameConfig.scaleMode = "noscale";
+    GameConfig.scaleMode = "exactfit";
     GameConfig.screenMode = "horizontal";
     GameConfig.alignV = "middle";
     GameConfig.alignH = "center";
     GameConfig.startScene = "Main.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
-    GameConfig.stat = false;
+    GameConfig.stat = true;
     GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();

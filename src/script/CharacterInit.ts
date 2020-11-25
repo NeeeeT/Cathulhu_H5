@@ -273,7 +273,7 @@ export class Character extends Laya.Script {
                 return;
             }
             this.m_canJump = (Math.abs(this.m_animation.y + (this.m_animation.height / 2) - 590) < 10) ? true : false;
-            console.log(this.m_canJump);
+            // console.log(this.m_canJump);
         }, 1000);
     }
     private hurtedEvent(time: number) {
@@ -1141,7 +1141,7 @@ export class Character extends Laya.Script {
                 this.m_mobileAtkBtn.pos(935 + Laya.stage.width / 2 - 200, 620);
             }
             if (Laya.stage.x <= -2475) {
-                this.m_mobileLeftBtn.pos(3155 - Laya.stage.width / 2 + 100, 500);
+                this.m_mobileLeftBtn.pos(3155 - Laya.stage.width / 2 + 100, 620);
                 this.m_mobileRightBtn.pos(3155 - Laya.stage.width / 2 + 100 + 125, 620);
                 this.m_mobileAtkBtn.pos(3155 + Laya.stage.width / 2 - 200, 620);
             }

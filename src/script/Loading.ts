@@ -9,9 +9,10 @@ export default class Loading extends Laya.Script{
         "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
         "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas","character/Sprint.atlas",
         "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas", "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas",
-        "ui/arrP.png", "ui/arrR.png", "ui/skull.png", "ui/reinforce.png", "ui/skip.png", "ui/skip2.png", 'ui/ending/chooseSkill.png', 'ui/ending/skillBox.png', "ui/ending/infoBox.png", 'ui/leftArr.png', 'ui/rightArr.png',
-        'ui/ending/ending.png', 'ui/ending/gold.png', 'ui/ending/crystal.png',
-        'ui/tutorial/1.png', 'ui/tutorial/2.png', 'ui/tutorial/3.png', 'ui/tutorial/4.png', 'ui/tutorial/5.png', 'ui/tutorial/6.png', 'ui/tutorial/7.png'
+        "Background(0912)/forest.png",
+        "UI/arrP.png", "UI/arrR.png", "UI/skull.png", "UI/reinforce.png", "UI/skip.png", "UI/skip2.png", 'UI/ending/chooseSkill.png', 'UI/ending/skillBox.png', "UI/ending/infoBox.png", 'UI/leftArr.png', 'UI/rightArr.png',
+        'UI/ending/ending.png', 'UI/ending/gold.png', 'UI/ending/crystal.png',
+        'UI/tutorial/1.png', 'UI/tutorial/2.png', 'UI/tutorial/3.png', 'UI/tutorial/4.png', 'UI/tutorial/5.png', 'UI/tutorial/6.png', 'UI/tutorial/7.png'
     ];
 
     loadingProgress: Laya.ProgressBar;
@@ -43,6 +44,6 @@ export default class Loading extends Laya.Script{
         }
     }
     onChange(value: number): void{
-        console.log(Math.floor(value*100));
+        // console.log(Math.floor(value*100));
     }
 }

@@ -176,7 +176,7 @@ export default class MissionManager extends Laya.Script {
             }
             MissionManager.missionDataPool.push(missionData);
         }
-        console.log(MissionManager.missionDataPool);
+        // console.log(MissionManager.missionDataPool);
         
         return MissionManager.missionDataPool;
     }
@@ -196,7 +196,7 @@ export default class MissionManager extends Laya.Script {
             map: "forest",
         }
         MissionManager.missionDataPool.push(missionData);
-        console.log(MissionManager.missionDataPool);
+        // console.log(MissionManager.missionDataPool);
         return MissionManager.missionDataPool;
     }
     sendMissionData(data: object) {

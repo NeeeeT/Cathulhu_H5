@@ -114,7 +114,7 @@ export default class Village extends Laya.Script{
     setReinfoceUI(): void{
         Laya.stage.x = Laya.stage.y = 0;
         this.reinforceUI = new Laya.Sprite();
-        this.reinforceUI.loadImage("ui/reinforce.png");
+        this.reinforceUI.loadImage("UI/reinforce.png");
         this.reinforceUI.width = 700;
         this.reinforceUI.height = 400;
         this.reinforceUI.pos(333,184);//(1366 - 1066) / 2, (768 - 550) / 2
@@ -124,13 +124,13 @@ export default class Village extends Laya.Script{
     setSkipIcon(): void{
         this.skipIcon = new Laya.Sprite();
         this.skipIcon.pos(this.reinforceUI.x+281,this.reinforceUI.y+353);
-        this.skipIcon.loadImage('ui/skip.png');
+        this.skipIcon.loadImage('UI/skip.png');
 
         this.skipIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
-            this.skipIcon.loadImage('ui/skip2.png');
+            this.skipIcon.loadImage('UI/skip2.png');
         });
         this.skipIcon.on(Laya.Event.MOUSE_OUT, this, ()=>{
-            this.skipIcon.loadImage('ui/skip.png');
+            this.skipIcon.loadImage('UI/skip.png');
         })
         this.skipIcon.on(Laya.Event.CLICK, this, ()=>{
             this.clearReinforceUI();
@@ -215,7 +215,7 @@ export default class Village extends Laya.Script{
     setReinforceAtkDmgCostIcon(): void{
         this.reinforceAtkDmgCostIcon = new Laya.Sprite();
         this.reinforceAtkDmgCostIcon.pos(330+465, 184+160);
-        this.reinforceAtkDmgCostIcon.loadImage('ui/arrP.png');
+        this.reinforceAtkDmgCostIcon.loadImage('UI/arrP.png');
         this.reinforceAtkDmgCostIcon.alpha = 0.75;
 
         this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
@@ -241,7 +241,7 @@ export default class Village extends Laya.Script{
     setReinforceHpCostIcon(): void{
         this.reinforceHpCostIcon = new Laya.Sprite();
         this.reinforceHpCostIcon.pos(330+465, 184+275);
-        this.reinforceHpCostIcon.loadImage('ui/arrR.png');
+        this.reinforceHpCostIcon.loadImage('UI/arrR.png');
         this.reinforceHpCostIcon.alpha = 0.75;
         Laya.stage.addChild(this.reinforceHpCostIcon);
 

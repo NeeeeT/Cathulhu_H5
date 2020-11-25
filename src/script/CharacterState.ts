@@ -5,7 +5,7 @@ export class Context extends Laya.Script{
         this.m_State.handle(value);
     }
     public setState(theState:State):void{
-        console.log("Context.SetState: " + theState);
+        // console.log("Context.SetState: " + theState);
         this.m_State = theState;
     }
 }
@@ -28,7 +28,7 @@ export class CharacterIdleState extends State{
         this.m_Context = super.m_Context;
     }
     public handle(value:number):void{
-        console.log("CharacterIdleState.handle");
+        // console.log("CharacterIdleState.handle");
         if(value > 10){
             this.m_Context.setState(new CharacterMoveState(this.m_Context));
         }
@@ -45,7 +45,7 @@ constructor(context:Context){
         this.m_Context = super.m_Context;
     }
     public handle(value:number):void{
-        console.log("CharacterMoveState.handle");
+        // console.log("CharacterMoveState.handle");
         if(value > 20){
             this.m_Context.setState(new CharacterDashState(this.m_Context));
         }
@@ -61,10 +61,10 @@ export class CharacterDashState extends State{
         this.m_Context = super.m_Context;
     }
     public handle(value:number):void{
-        console.log("CharacterDashState.handle");
+        // console.log("CharacterDashState.handle");
         if(value > 20){
             // this.m_Context.setState(new CharacterMoveState());
-            console.log("end");
+            // console.log("end");
             
         }
     }

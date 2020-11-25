@@ -17,7 +17,7 @@ export class ExtraData extends Laya.Script{
                 "humanSkillLevel": Data.humanSkillLevel,
                 "battleRound":Data.battleRound,
             }
-            console.log('成功讀取檔案!');
+            // console.log('成功讀取檔案!');
             return;
         }
         else{
@@ -33,19 +33,19 @@ export class ExtraData extends Laya.Script{
                 "battleRound": 0,
             }
             ExtraData.saveData();
-            console.log('創建了新的檔案');
+            // console.log('創建了新的檔案');
             return;
         }
     }
     public static saveData(){
         let data = JSON.stringify(ExtraData.currentData);
         Laya.LocalStorage.setItem("gameData", data);
-        console.log('儲存資料完畢');
+        // console.log('儲存資料完畢');
     }
 
     getJsonFromURL(url: string){
         fetch(url).then(res => res.json()).then((out) =>{
-            console.log("CHECK THIS JSON!", out);
+            // console.log("CHECK THIS JSON!", out);
         }).catch(err =>{
             throw err
         });

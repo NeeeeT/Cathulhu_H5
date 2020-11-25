@@ -19,7 +19,7 @@ export default class Raycast extends Laya.Script{
         { x: startX / Laya.Physics.PIXEL_RATIO, y: startY / Laya.Physics.PIXEL_RATIO },
         { x: endX / Laya.Physics.PIXEL_RATIO, y: endY / Laya.Physics.PIXEL_RATIO });
 
-        console.log('射中物體數: ', hit);
+        // console.log('射中物體數: ', hit);
         // console.log(sprite_arr.sort((a, b) => a.x < b.x ? -1 : a.x > b.x ? 1 : 0));//待熟練此函數
         return {
             'Hit': hit,

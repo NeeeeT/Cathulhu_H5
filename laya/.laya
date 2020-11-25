@@ -1,6 +1,6 @@
 <project version="2.0">
-   <asynRes>img,temp,sound                                                                                                                              </asynRes>
-   <unDealRes>embed                                                                                                                              </unDealRes>
+   <asynRes>img,temp,sound                                                                                                                                 </asynRes>
+   <unDealRes>embed                                                                                                                                 </unDealRes>
    <resTypes>png,jpg   </resTypes>
    <resExportPath>bin/res/atlas   </resExportPath>
    <asynResExportPath>bin   </asynResExportPath>
@@ -15,7 +15,7 @@ var Dialog=laya.ui.Dialog;]]>   </codeImportsJS>
    <shareResPath/>
    <codeType>1   </codeType>
    <resCanCompress/>
-   <resPublishQuality>80                                                                                                                              </resPublishQuality>
+   <resPublishQuality>80                                                                                                                                 </resPublishQuality>
    <langPath/>
    <defaultFont/>
    <codeImportsTS><![CDATA[import View=Laya.View;
@@ -27,9 +27,9 @@ import Scene=Laya.Scene;]]>   </codeImportsTS>
    <picHeight>512   </picHeight>
    <power2>false   </power2>
    <trimempty>true   </trimempty>
-   <startScene/>
+   <startScene>Main.scene   </startScene>
    <engineType>2D   </engineType>
-   <scaleMode>noscale   </scaleMode>
+   <scaleMode>exactfit   </scaleMode>
    <screenMode>horizontal   </screenMode>
    <alignV>middle   </alignV>
    <alignH>center   </alignH>
@@ -45,7 +45,7 @@ import Scene=Laya.Scene;]]>   </codeImportsTS>
    <isRemoteProject>false   </isRemoteProject>
    <idePath/>
    <ver>2.0   </ver>
-   <stat>false   </stat>
+   <stat>true   </stat>
    <physicsDebug>false   </physicsDebug>
    <toJsonScene>true   </toJsonScene>
    <compressTexture>false   </compressTexture>

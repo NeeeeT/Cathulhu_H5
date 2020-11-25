@@ -11,8 +11,8 @@ export class Spike extends VirtualSkill {
     m_id = 1;
     m_cd = 3;
 
-    m_iconA = "ui/icon/spikeA.png";
-    m_iconB = "ui/icon/spikeB.png";
+    m_iconA = "UI/icon/spikeA.png";
+    m_iconB = "UI/icon/spikeB.png";
 
     /** 技能衝刺的持續時間 */
     m_lastTime: number = 0.2;
@@ -80,7 +80,7 @@ export class Spike extends VirtualSkill {
         }, 200);
         setTimeout(() => {
             this.m_canUse = true;
-            console.log("技能可使用");
+            // console.log("技能可使用");
             
         }, this.m_cd * 1000);
         this.updateCdTimer();
@@ -107,8 +107,8 @@ export class Behead extends VirtualSkill {
     m_id = 2;
     m_cd = 3;
 
-    m_iconA = "ui/icon/beheadA.png";
-    m_iconB = "ui/icon/beheadB.png";
+    m_iconA = "UI/icon/beheadA.png";
+    m_iconB = "UI/icon/beheadB.png";
 
     /** 技能的準備時間 */
     m_preTime: number = 0.2;
