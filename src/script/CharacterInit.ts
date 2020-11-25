@@ -420,14 +420,7 @@ export class Character extends Laya.Script {
             if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
         if (this.m_keyDownList[40]) {//Down
-            // this.m_humanSkill = new hSkill.Behead();
-            // this.m_catSkill = new cSkill.Slam();
-            // this.m_catSkill = new cSkill.BigExplosion();
-            // this.m_catSkill.cast(CharacterInit.playerEnt,
-            //     {
-            //         x: this.m_animation.x,
-            //         y: this.m_animation.y,
-            //     });
+            // new Village().showReinforceUI();
         }
         if (this.m_keyDownList[32]) {
             // let width_offset: number =

@@ -159,41 +159,41 @@
             }
             this.reinforceGold = new Laya.Text();
             this.reinforceGold.font = "silver";
-            this.reinforceGold.fontSize = 80;
+            this.reinforceGold.fontSize = 70;
             this.reinforceGold.color = "#FEFFF7";
             this.reinforceGold.stroke = 3;
             this.reinforceGold.strokeColor = "#000";
             this.reinforceGold.text = '$' + String(Village.gold);
-            this.reinforceGold.pos(333 + 550, 184 + 50);
+            this.reinforceGold.pos(333 + 520, 184 + 50);
             Laya.stage.addChild(this.reinforceGold);
         }
         setReinfoceAtkDmgLevel() {
             if (this.reinforceAtkDmgLevel) {
-                this.reinforceAtkDmgLevel.text = 'LV.' + String(Village.atkDmgLevel);
+                this.reinforceAtkDmgLevel.text = ': ' + String(Village.atkDmgLevel);
                 return;
             }
             this.reinforceAtkDmgLevel = new Laya.Text();
             this.reinforceAtkDmgLevel.font = "silver";
-            this.reinforceAtkDmgLevel.fontSize = 85;
+            this.reinforceAtkDmgLevel.fontSize = 70;
             this.reinforceAtkDmgLevel.color = "#FEFFF7";
             this.reinforceAtkDmgLevel.stroke = 3;
             this.reinforceAtkDmgLevel.strokeColor = "#000";
-            this.reinforceAtkDmgLevel.text = 'LV.' + String(Village.atkDmgLevel);
+            this.reinforceAtkDmgLevel.text = ': ' + String(Village.atkDmgLevel);
             this.reinforceAtkDmgLevel.pos(333 + 255, 184 + 160);
             Laya.stage.addChild(this.reinforceAtkDmgLevel);
         }
         setReinfoceHpLevel() {
             if (this.reinforceHpLevel) {
-                this.reinforceHpLevel.text = 'LV.' + String(Village.hpLevel);
+                this.reinforceHpLevel.text = ': ' + String(Village.hpLevel);
                 return;
             }
             this.reinforceHpLevel = new Laya.Text();
             this.reinforceHpLevel.font = "silver";
-            this.reinforceHpLevel.fontSize = 85;
+            this.reinforceHpLevel.fontSize = 70;
             this.reinforceHpLevel.color = "#FEFFF7";
             this.reinforceHpLevel.stroke = 3;
             this.reinforceHpLevel.strokeColor = "#000";
-            this.reinforceHpLevel.text = 'LV.' + String(Village.hpLevel);
+            this.reinforceHpLevel.text = ': ' + String(Village.hpLevel);
             this.reinforceHpLevel.pos(333 + 255, 184 + 275);
             Laya.stage.addChild(this.reinforceHpLevel);
         }
@@ -204,7 +204,7 @@
             }
             this.reinforceAtkDmgCost = new Laya.Text();
             this.reinforceAtkDmgCost.font = "silver";
-            this.reinforceAtkDmgCost.fontSize = 85;
+            this.reinforceAtkDmgCost.fontSize = 70;
             this.reinforceAtkDmgCost.color = "#fff";
             this.reinforceAtkDmgCost.stroke = 3;
             this.reinforceAtkDmgCost.strokeColor = "#000";
@@ -219,7 +219,7 @@
             }
             this.reinforceHpCost = new Laya.Text();
             this.reinforceHpCost.font = "silver";
-            this.reinforceHpCost.fontSize = 85;
+            this.reinforceHpCost.fontSize = 70;
             this.reinforceHpCost.color = "#fff";
             this.reinforceHpCost.stroke = 3;
             this.reinforceHpCost.strokeColor = "#000";
@@ -229,7 +229,7 @@
         }
         setReinforceAtkDmgCostIcon() {
             this.reinforceAtkDmgCostIcon = new Laya.Sprite();
-            this.reinforceAtkDmgCostIcon.pos(330 + 465, 184 + 160);
+            this.reinforceAtkDmgCostIcon.pos(330 + 465, 184 + 157);
             this.reinforceAtkDmgCostIcon.loadImage('ui/arrP.png');
             this.reinforceAtkDmgCostIcon.alpha = 0.75;
             this.reinforceAtkDmgCostIcon.on(Laya.Event.MOUSE_OVER, this, () => {
@@ -253,7 +253,7 @@
         }
         setReinforceHpCostIcon() {
             this.reinforceHpCostIcon = new Laya.Sprite();
-            this.reinforceHpCostIcon.pos(330 + 465, 184 + 275);
+            this.reinforceHpCostIcon.pos(330 + 465, 184 + 272);
             this.reinforceHpCostIcon.loadImage('ui/arrR.png');
             this.reinforceHpCostIcon.alpha = 0.75;
             Laya.stage.addChild(this.reinforceHpCostIcon);
@@ -2462,6 +2462,7 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
+                new Village().showReinforceUI();
             }
             if (this.m_keyDownList[32]) {
             }
