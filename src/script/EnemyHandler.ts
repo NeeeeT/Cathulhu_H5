@@ -208,10 +208,10 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.damageTextEffect(amount, critical);
         this.m_healthBar.alpha = 1;
         if (this.m_hurtDelayTimer) {
-            this.m_hurtDelay += 2.0;
+            this.m_hurtDelay += 0.5;
         }
         else {
-            this.m_hurtDelay = 2.0;
+            this.m_hurtDelay = 1.0;
             this.m_hurtDelayTimer = setInterval(() => {
                 if (this.m_hurtDelay <= 0) {
                     clearInterval(this.m_hurtDelayTimer);
@@ -227,6 +227,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             let facingRight:boolean = (CharacterInit.playerEnt.m_animation.x - this.m_animation.x) > 0.0 ? true : false;
             this.m_rigidbody.linearVelocity = {x: facingRight?-4.0:4.0, y:0.0};
         }
+        this.m_atkTimer = 120;
         this.enemyInjuredColor();
     }
     private damageTextEffect(amount: number, critical: boolean): void {
