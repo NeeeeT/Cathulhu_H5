@@ -1313,7 +1313,7 @@
             this.catSkillName.align = this.humanSkillName.align = 'center';
             this.skillCatInfoText.font = this.skillHumanInfoText.font = this.catSkillName.font = this.humanSkillName.font = 'silver';
             this.skillCatInfoText.color = this.skillHumanInfoText.color = this.catSkillName.color = this.humanSkillName.color = '#fdfdfd';
-            this.skillCatInfoText.fontSize = this.skillHumanInfoText.fontSize = this.catSkillName.fontSize = this.humanSkillName.fontSize = 38;
+            this.skillCatInfoText.fontSize = this.skillHumanInfoText.fontSize = this.catSkillName.fontSize = this.humanSkillName.fontSize = 32;
             this.skillCatInfoText.wordWrap = this.skillHumanInfoText.wordWrap = true;
             this.leftArrow = new Laya.Sprite();
             this.rightArrow = new Laya.Sprite();
@@ -3204,10 +3204,10 @@
             this.damageTextEffect(amount, critical);
             this.m_healthBar.alpha = 1;
             if (this.m_hurtDelayTimer) {
-                this.m_hurtDelay += 2.0;
+                this.m_hurtDelay += 0.5;
             }
             else {
-                this.m_hurtDelay = 2.0;
+                this.m_hurtDelay = 1.0;
                 this.m_hurtDelayTimer = setInterval(() => {
                     if (this.m_hurtDelay <= 0) {
                         clearInterval(this.m_hurtDelayTimer);
@@ -3223,6 +3223,7 @@
                 let facingRight = (CharacterInit.playerEnt.m_animation.x - this.m_animation.x) > 0.0 ? true : false;
                 this.m_rigidbody.linearVelocity = { x: facingRight ? -4.0 : 4.0, y: 0.0 };
             }
+            this.m_atkTimer = 120;
             this.enemyInjuredColor();
         }
         damageTextEffect(amount, critical) {
