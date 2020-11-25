@@ -889,21 +889,23 @@ export class Character extends Laya.Script {
     }
     private bloodSplitEffect(enemy: Laya.Animation) {
         let bloodEffect: Laya.Animation = new Laya.Animation();
-        bloodEffect.scaleX = 1.5;
-        bloodEffect.scaleY = 1.5;
+        bloodEffect.scaleX = 1.2;
+        bloodEffect.scaleY = 1.2;
+        bloodEffect.interval = 30;
+        bloodEffect.zOrder = 5;
         let colorMat: Array<number> =
             [
-                2, 0, 0, 0, -100, //R
-                0, 1, 0, 0, -100, //G
-                0, 0, 1, 0, -100, //B
+                2, 0, 0, 0, 300, //R
+                0, 1, 0, 0, 300, //G
+                0, 0, 1, 0, 300, //B
                 0, 0, 0, 1, 0, //A
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
 
         bloodEffect.filters = [glowFilter, colorFilter];
-        bloodEffect.pos(enemy.x - 420, enemy.y - 370);
-        bloodEffect.source = "comp/NewBlood.atlas";
+        bloodEffect.pos(enemy.x - 325, enemy.y - 310);
+        bloodEffect.source = "comp/Hurt.atlas";
         bloodEffect.on(Laya.Event.COMPLETE, this, function () {
             bloodEffect.destroy();
             bloodEffect.destroyed = true;
