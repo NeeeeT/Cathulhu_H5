@@ -28,6 +28,7 @@ export default class Turtorial extends Laya.Script{
     hintTimer = null;
 
     public static noOath: boolean = true;
+    public static safeDebuff: boolean = true;
 
     onAwake(): void{
         //load bg
@@ -71,6 +72,9 @@ export default class Turtorial extends Laya.Script{
                 break;
             case turtorialHintStep.trySkill:
                 if(EnemyInit.enemyLeftCur <= 0){
+                    CharacterInit.playerEnt.clearAddDebuffTimer();
+                    CharacterInit.playerEnt.removeAllDebuff();
+                    Turtorial.safeDebuff = false;
                     this.setHintStep(turtorialHintStep.seeInfoA);
                 }
                 break;

@@ -1,6 +1,7 @@
 import CharacterInit, { Character } from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import EnemyInit from "./EnemyInit";
+import Turtorial from "./Tutorial";
 
 export enum DebuffType{
     none = 0,
@@ -182,8 +183,11 @@ export class Decay extends DebuffProto{
         }    
         if (this.isDamaging && !EnemyInit.isWin) {
             // console.log("正在傷害玩家");
-            
-            this.player.setHealth(this.player.getHealth() - this.player.m_maxHealth * 0.1);
+            if (Turtorial.safeDebuff && this.player.getHealth() > this.player.m_maxHealth * 0.2) {
+                this.player.setHealth(this.player.getHealth() - this.player.m_maxHealth * 0.1);
+                return;
+            };
+            if(!Turtorial.safeDebuff) this.player.setHealth(this.player.getHealth() - this.player.m_maxHealth * 0.1);
         }
 
     }

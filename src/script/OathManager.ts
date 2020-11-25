@@ -20,6 +20,7 @@ export default class OathManager extends Laya.Script {
     
     public characterLogo: Laya.Animation;
     public oathBar: Laya.ProgressBar;
+    public oathBar_overCharge: Laya.ProgressBar;
 
     public catSkillIcon: Laya.Sprite;
     public humanSkillIcon: Laya.Sprite;
@@ -70,6 +71,9 @@ export default class OathManager extends Laya.Script {
     public showBloodyPoint(player: Laya.Animation) {
         this.oathBar = new Laya.ProgressBar();
         this.oathBar.skin = "UI/bp_100.png";
+        this.oathBar_overCharge = new Laya.ProgressBar();
+        this.oathBar_overCharge.skin = "UI/bp_150.png";
+        this.oathBar_overCharge.visible = false;
         let timer = setInterval((() => {
             if (CharacterInit.playerEnt.m_animation.destroyed) {
                 this.clearBloodyUI();
@@ -78,18 +82,27 @@ export default class OathManager extends Laya.Script {
             }
             if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
                 this.oathBar.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
+                this.oathBar_overCharge.pos(player.x - Laya.stage.width / 2 + 180, 107.5);
             }
-            if (Laya.stage.x >= -250) this.oathBar.pos(935 - Laya.stage.width / 2 + 180, 107.5);
-            if (Laya.stage.x <= -2475) this.oathBar.pos(3155 - Laya.stage.width / 2 + 180, 107.5);
+            if (Laya.stage.x >= -250) {
+                this.oathBar.pos(935 - Laya.stage.width / 2 + 180, 107.5);
+                this.oathBar_overCharge.pos(935 - Laya.stage.width / 2 + 180, 107.5);
+            }
+            if (Laya.stage.x <= -2475) {
+                this.oathBar.pos(3155 - Laya.stage.width / 2 + 180, 107.5);
+                this.oathBar_overCharge.pos(3155 - Laya.stage.width / 2 + 180, 107.5);
+            } 
             // console.log(CharacterInit.playerEnt.m_maxBloodyPoint);
             
             if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
-                this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
+                this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_soft;
+                this.oathBar_overCharge.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint_hard;
             // console.log(CharacterInit.playerEnt.m_bloodyPoint);
             
             
-        }), 5);
+        }), 15);
         Laya.stage.addChild(this.oathBar);
+        Laya.stage.addChild(this.oathBar_overCharge);                                                                                                                                                                                                                                                                             
     }
     //10/21新增
     public showBloodyLogo(player: Laya.Animation) {
@@ -163,6 +176,10 @@ export default class OathManager extends Laya.Script {
         if(this.oathBar != null){
             this.oathBar.destroy();
             this.oathBar = null;
+        }
+        if(this.oathBar_overCharge != null){
+            this.oathBar_overCharge.destroy();
+            this.oathBar_overCharge = null;
         }
         if(this.characterLogo != null){
             this.characterLogo.destroy();
@@ -314,12 +331,10 @@ export default class OathManager extends Laya.Script {
         switch (this.oathState) {
             case OathStatus.normal:
                 //目前普通狀態無特殊效果
-                if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
-                this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
+
                 //若達到上限則轉為charge狀態
                 if (this.oathChargeDetect()) {
                     this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
-                    CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
                     this.oathState = OathStatus.charge; 
                 }
                 break;
@@ -329,9 +344,11 @@ export default class OathManager extends Laya.Script {
                 if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_soft && this.overChargeCount >= 2) {
                     // console.log("轉態到overCharge");
                     this.overChargeCount = 0;
-                    this.oathBar.skin = "UI/bp_150.png";
-                    this.oathBar.sizeGrid = "0,200,0,50";
-                    CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_hard;
+
+                    //切換顯示獻祭條
+                    this.oathBar.visible = false;
+                    this.oathBar_overCharge.visible = true;
+
                     this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
 
                     if (this.addDebuffTimer === null) {
@@ -352,7 +369,7 @@ export default class OathManager extends Laya.Script {
                 //overCharge計數未達到上限，增加overCharge計數
                 if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_soft  && this.overChargeCount < 2) {
                     this.overChargeCount ++;
-                    this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint;
+                    this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
                     return;
                 }
                 //若BP低於上限則清空overCharge計數，並轉為normal
@@ -367,7 +384,7 @@ export default class OathManager extends Laya.Script {
                 if (EnemyInit.isWin) this.clearAddDebuffTimer();
                 //視當前BP值轉換狀態
                 if (this.currentBloodyPoint > CharacterInit.playerEnt.m_maxBloodyPoint_hard) {
-                    this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint;
+                    this.currentBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_hard;
                     return;
                 }
                 // if (this.currentBloodyPoint === CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
@@ -380,10 +397,11 @@ export default class OathManager extends Laya.Script {
                 //     return;
                 // } 
                 if (this.currentBloodyPoint < CharacterInit.playerEnt.m_maxBloodyPoint_soft) {
-                    this.oathBar.skin = "UI/bp_100.png";
-                    CharacterInit.playerEnt.m_maxBloodyPoint = CharacterInit.playerEnt.m_maxBloodyPoint_soft;
-                    if (!CharacterInit.playerEnt.m_animation.destroyed && this.oathBar != null)
-                        this.oathBar.value = CharacterInit.playerEnt.m_bloodyPoint / CharacterInit.playerEnt.m_maxBloodyPoint;
+                    
+                    //切換顯示獻祭條
+                    this.oathBar.visible = true;
+                    this.oathBar_overCharge.visible = false;
+
                     this.clearAddDebuffTimer();
                     this.removeAllDebuff();
                     this.oathState = OathStatus.normal;
