@@ -2744,19 +2744,21 @@
         }
         bloodSplitEffect(enemy) {
             let bloodEffect = new Laya.Animation();
-            bloodEffect.scaleX = 1.5;
-            bloodEffect.scaleY = 1.5;
+            bloodEffect.scaleX = 1.2;
+            bloodEffect.scaleY = 1.2;
+            bloodEffect.interval = 30;
+            bloodEffect.zOrder = 5;
             let colorMat = [
-                2, 0, 0, 0, -100,
-                0, 1, 0, 0, -100,
-                0, 0, 1, 0, -100,
+                2, 0, 0, 0, 300,
+                0, 1, 0, 0, 300,
+                0, 0, 1, 0, 300,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             bloodEffect.filters = [glowFilter, colorFilter];
-            bloodEffect.pos(enemy.x - 420, enemy.y - 370);
-            bloodEffect.source = "comp/NewBlood.atlas";
+            bloodEffect.pos(enemy.x - 325, enemy.y - 310);
+            bloodEffect.source = "comp/Hurt.atlas";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
                 bloodEffect.destroy();
                 bloodEffect.destroyed = true;
@@ -3292,8 +3294,8 @@
             let slashLightEffect = new Laya.Animation();
             let sourceArray = ["comp/NewSlahLight.atlas", "comp/NewSlashLight90.atlas", "comp/NewSlashLight-43.5.atlas"];
             let sourceNum = Math.floor(Math.random() * 3);
-            slashLightEffect.scaleX = 2;
-            slashLightEffect.scaleY = 2;
+            slashLightEffect.scaleX = 3;
+            slashLightEffect.scaleY = 2.6;
             slashLightEffect.interval = 15;
             let colorMat = [
                 1, 0, 0, 0, 500,
@@ -3304,7 +3306,7 @@
             let glowFilter = new Laya.GlowFilter("#ffffff", 40, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashLightEffect.filters = [glowFilter, colorFilter];
-            slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 500 : enemy.x - 500, enemy.y - 500 + 30);
+            slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 760 : enemy.x - 760, enemy.y - 640 + 30);
             slashLightEffect.source = sourceArray[sourceNum];
             slashLightEffect.alpha = 1;
             slashLightEffect.on(Laya.Event.COMPLETE, this, function () {

@@ -1,5 +1,5 @@
 D .
-R 336310CF .rec
+R 92FE7EA .rec
 R A6ACFA1E BigExplosion.atlas
 R 2905917E BigExplosion.png
 R AA63CC8E BlackExplosion.atlas
@@ -8,12 +8,11 @@ R D71DD9C4 BlackHole.atlas
 R 4B28DCC1 BlackHole.png
 R D0E5ADF0 Blood.atlas
 R 85AFA56A Blood.png
-R AE787599 Cat.png
-R 5298C6DC circle.png
-R 1EEF4B93 DirtEffect.atlas
-R 77F924D DirtEffect.png
-R 607B023E DirtEffect1.png
-R 7FD0CA9F DirtEffect2.png
+R 1386EC1B DirtEffect.atlas
+R F7E3D90B DirtEffect.png
+R 2BDB8C18 DirtEffect1.png
+R 5EECF7BD DirtEffect2.png
+R C61E6A15 DirtEffect3.png
 R A44A38E0 FireBall.atlas
 R 38E8D72C FireBall.png
 R A6AEB990 loading$bar.png
@@ -168,6 +167,13 @@ P 6DEC41FD FireBall_0007.png
 P 360B9260 FireBall_0008.png
 P 8FED28CE FireBall_0009.png
 P C0161A7F FireBall_0010.png
+D Hurt
+P 33341385 Hurt_0000.png
+P 238D464E Hurt_0001.png
+P 3AB8D8B5 Hurt_0002.png
+P A0465F55 Hurt_0003.png
+P 56677ECD Hurt_0004.png
+P 4C8FE15C Hurt_0005.png
 D Loading
 R 70D35F68 loading.png
 D NewBlood

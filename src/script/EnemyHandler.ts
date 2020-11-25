@@ -334,8 +334,8 @@ export abstract class VirtualEnemy extends Laya.Script {
         let slashLightEffect: Laya.Animation = new Laya.Animation();
         let sourceArray : Array<string> = ["comp/NewSlahLight.atlas","comp/NewSlashLight90.atlas","comp/NewSlashLight-43.5.atlas"];
         let sourceNum : number = Math.floor(Math.random() * 3);
-        slashLightEffect.scaleX = 2;
-        slashLightEffect.scaleY = 2;
+        slashLightEffect.scaleX = 3;
+        slashLightEffect.scaleY = 2.6;
         slashLightEffect.interval = 15;
         let colorMat: Array<number> =
             [
@@ -348,7 +348,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         slashLightEffect.filters = [glowFilter, colorFilter];
         //enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320,checkRotation ? enemy.y + 0.1 * rotation - 250 + 30 : enemy.y - 2.2 * rotation - 250 + 30
-        slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 500 : enemy.x - 500, enemy.y - 500 + 30);//y軸需再修正
+        slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 760 : enemy.x - 760, enemy.y - 640 + 30);//y軸需再修正
         slashLightEffect.source = sourceArray[sourceNum];
         slashLightEffect.alpha = 1;
         slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
