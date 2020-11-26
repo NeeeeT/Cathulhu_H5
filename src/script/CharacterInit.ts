@@ -77,7 +77,7 @@ export class Character extends Laya.Script {
     m_hurtTimer = null;
 
     m_slashTimer = null;
-    m_walkTimer = null;
+    // m_walkTimer = null;
 
     //強化等級
     m_hpLevel: number;
@@ -115,6 +115,7 @@ export class Character extends Laya.Script {
         this.m_state = CharacterStatus.idle;
 
         this.m_animation = new Laya.Animation();
+        // this.m_animation = Laya.Pool.getItemByClass("m_animation", Laya.Animation);
         this.m_animation.scaleX = 1;
         this.m_animation.scaleY = 1;
         this.m_animation.zOrder = 10;
@@ -285,7 +286,8 @@ export class Character extends Laya.Script {
         }, 1000 * time);
     }
     private damageTextEffect(amount: number, critical: boolean): void {
-        let damageText = new Laya.Text();
+        // let damageText = new Laya.Text();
+        let damageText: Laya.Text = Laya.Pool.getItemByClass("damageText", Laya.Text);
         let soundNum: number;
 
         damageText.pos((this.m_animation.x - this.m_animation.width / 2) + 80, (this.m_animation.y - this.m_animation.height) - 3);
@@ -313,7 +315,11 @@ export class Character extends Laya.Script {
         Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut,
-                    Laya.Handler.create(this, () => { damageText.destroy() }), 0);
+                    Laya.Handler.create(this, () => {
+                        // damageText.destroy()
+                        Laya.stage.removeChild(damageText);
+                        Laya.Pool.recover("damageText", damageText);
+                    }), 0);
             }), 0);
     }
     private listenKeyBoard(): void {
@@ -683,7 +689,8 @@ export class Character extends Laya.Script {
         return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
     }
     public createAttackEffect(player: Laya.Animation) {
-        let slashEffect: Laya.Animation = new Laya.Animation();
+        // let slashEffect: Laya.Animation = new Laya.Animation();
+        let slashEffect: Laya.Animation = Laya.Pool.getItemByClass("slashEffect", Laya.Animation);
         let posX: number;
         let posY: number;
         if (this.m_atkStep === 0) {
@@ -700,9 +707,11 @@ export class Character extends Laya.Script {
             posY = 850;
             slashEffect.source = "comp/NewSlash_2.atlas";
         }
-        slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+        slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
+        slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);        
 
-        let colorNum: number = Math.floor(Math.random() * 5) + 2;
+
+        //待優化區域
         //濾鏡
         let colorMat: Array<number> =
             [
@@ -713,42 +722,45 @@ export class Character extends Laya.Script {
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        // if (!OathManager.isCharging) {
+        
         slashEffect.filters = [colorFilter, glowFilter];
-        // } else {
-        // let colorMat_charge: Array<number> =
-        //     [
-        //     5, 0, 0, 0, -100, //R
-        //     5, 0, 0, 0, -100, //G
-        //     0, 0, 0, 0, -100, //B
-        //     0, 0, 0, 1, 0, //A
-        //     ];
-        // let colorFilter_charge: Laya.ColorFilter = new Laya.ColorFilter(colorMat_charge);
-        // let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#F7F706", 20, 0, 0);
-        // slashEffect.filters = [colorFilter_charge, glowFilter_charge];
-        // }
-        //濾鏡
-        // slashEffect.source =
-        // "comp/NewSlash/Slash_0030.png,comp/NewSlash/Slash_0031.png,comp/NewSlash/Slash_0032.png,comp/NewSlash/Slash_0033.png,comp/NewSlash/Slash_0034.png,comp/NewSlash/Slash_0035.png,comp/NewSlash/Slash_0036.png,comp/NewSlash/Slash_0037.png";
+        //待優化區域end
+
         slashEffect.on(Laya.Event.COMPLETE, this, function () {
-            slashEffect.destroy();
-            slashEffect.destroyed = true;
+            // slashEffect.destroy();
+            // slashEffect.destroyed = true;
+            Laya.stage.removeChild(slashEffect);
+            Laya.Pool.recover("slashEffect", slashEffect);
+            Laya.timer.clear(this, slashTimerFunc);
         });
         Laya.stage.addChild(slashEffect);
         slashEffect.play();
 
-        let m_slashTimer = setInterval(() => {
-            if (slashEffect.destroyed) {
-                clearInterval(m_slashTimer);
-                m_slashTimer = null;
-                return;
-            }
+        let slashTimerFunc = function() {
+            // if (slashEffect.destroyed) {
+            //     clearInterval(m_slashTimer);
+            //     m_slashTimer = null;
+            //     return;
+            // }
             slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
             slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
-        }, 10);
+        }
+
+        // let m_slashTimer = setInterval(() => {
+        //     if (slashEffect.destroyed) {
+        //         clearInterval(m_slashTimer);
+        //         m_slashTimer = null;
+        //         return;
+        //     }
+        //     slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
+        //     slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+        // }, 10);
     }
     public createWalkEffect(player: Laya.Animation) {
-        this.m_walkeffect = new Laya.Animation();
+        // this.m_walkeffect = new Laya.Animation();
+
+        this.m_walkeffect = Laya.Pool.getItemByClass("walkeffect", Laya.Animation);
+
         this.m_walkeffect.source = "comp/WalkEffects.atlas";
         let posX: number = 280;
         let posY: number = 270;
@@ -771,19 +783,39 @@ export class Character extends Laya.Script {
         Laya.stage.addChild(this.m_walkeffect);
         this.m_walkeffect.play();
 
-        this.m_walkTimer = setInterval(() => {
+        let walkTimerFunc = function () {
             if (this.m_animation.destroyed || EnemyInit.isWin){
-                this.m_walkeffect.destroy();
-                this.m_walkeffect.destroyed = true;
-            }
-            if (this.m_walkeffect.destroyed) {
-                clearInterval(this.m_walkTimer);
-                this.m_walkTimer = null;
+                // this.m_walkeffect.destroy();
+                // this.m_walkeffect.destroyed = true;
+                Laya.stage.removeChild(this.m_walkeffect);
+                Laya.Pool.recover("walkeffect", this.m_walkeffect);
+                Laya.timer.clear(this, walkTimerFunc);
                 return;
             }
+            // if (this.m_walkeffect.destroyed) {
+            //     clearInterval(this.m_walkTimer);
+            //     this.m_walkTimer = null;
+            //     return;
+            // }
             this.m_walkeffect.skewY = this.m_isFacingRight ? 0 : 180;
             this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
-        }, 10);
+        }
+        Laya.timer.frameLoop(1, this, walkTimerFunc);
+
+
+        // this.m_walkTimer = setInterval(() => {
+        //     if (this.m_animation.destroyed || EnemyInit.isWin){
+        //         this.m_walkeffect.destroy();
+        //         this.m_walkeffect.destroyed = true;
+        //     }
+        //     if (this.m_walkeffect.destroyed) {
+        //         clearInterval(this.m_walkTimer);
+        //         this.m_walkTimer = null;
+        //         return;
+        //     }
+        //     this.m_walkeffect.skewY = this.m_isFacingRight ? 0 : 180;
+        //     this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
+        // }, 10);
     }
     private setSkill(): void {
         this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
@@ -926,11 +958,14 @@ export class Character extends Laya.Script {
         this.m_cameraShakingTimer = timer;
     }
     private bloodSplitEffect(enemy: Laya.Animation) {
-        let bloodEffect: Laya.Animation = new Laya.Animation();
+        // let bloodEffect: Laya.Animation = new Laya.Animation();
+        let bloodEffect: Laya.Animation = Laya.Pool.getItemByClass("bloodEffect", Laya.Animation);
         bloodEffect.scaleX = 1.2;
         bloodEffect.scaleY = 1.2;
         bloodEffect.interval = 30;
         bloodEffect.zOrder = 5;
+
+        //待優化
         let colorMat: Array<number> =
             [
                 2, 0, 0, 0, 300, //R
@@ -940,23 +975,28 @@ export class Character extends Laya.Script {
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-
         bloodEffect.filters = [glowFilter, colorFilter];
+        //
+        
         bloodEffect.pos(enemy.x - 325, enemy.y - 310);
         bloodEffect.source = "comp/Hurt.atlas";
         bloodEffect.on(Laya.Event.COMPLETE, this, function () {
-            bloodEffect.destroy();
-            bloodEffect.destroyed = true;
+            // bloodEffect.destroy();
+            // bloodEffect.destroyed = true;
+            Laya.stage.removeChild(bloodEffect);
+            Laya.Pool.recover("bloodEffect", bloodEffect);
         });
         Laya.stage.addChild(bloodEffect);
         bloodEffect.play();
 }
     public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void {
         if (from === to || this.m_animationChanging) return;
-        if (!this.m_walkeffect.destroyed){
-            this.m_walkeffect.destroy();
-            this.m_walkeffect.destroyed = true;
-        }
+        // if (!this.m_walkeffect.destroyed){
+        //     this.m_walkeffect.destroy();
+        //     this.m_walkeffect.destroyed = true;
+        // }
+        Laya.stage.removeChild(this.m_walkeffect);
+        Laya.Pool.recover("walkeffect", this.m_walkeffect);
         this.m_state = to;
         // console.log('Player status from', from, 'convert to ', to);
         switch (this.m_state) {

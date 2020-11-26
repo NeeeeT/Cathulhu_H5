@@ -2213,7 +2213,6 @@
             this.m_hurted = false;
             this.m_hurtTimer = null;
             this.m_slashTimer = null;
-            this.m_walkTimer = null;
             this.m_cameraShakingTimer = 0;
             this.m_cameraShakingMultiplyer = 1;
             this.m_catSkill = null;
@@ -2365,7 +2364,7 @@
             }, 1000 * time);
         }
         damageTextEffect(amount, critical) {
-            let damageText = new Laya.Text();
+            let damageText = Laya.Pool.getItemByClass("damageText", Laya.Text);
             let soundNum;
             damageText.pos((this.m_animation.x - this.m_animation.width / 2) + 80, (this.m_animation.y - this.m_animation.height) - 3);
             damageText.bold = true;
@@ -2384,7 +2383,10 @@
             damageText.strokeColor = "#fff";
             Laya.stage.addChild(damageText);
             Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    Laya.stage.removeChild(damageText);
+                    Laya.Pool.recover("damageText", damageText);
+                }), 0);
             }), 0);
         }
         listenKeyBoard() {
@@ -2560,7 +2562,7 @@
             return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
         }
         createAttackEffect(player) {
-            let slashEffect = new Laya.Animation();
+            let slashEffect = Laya.Pool.getItemByClass("slashEffect", Laya.Animation);
             let posX;
             let posY;
             if (this.m_atkStep === 0) {
@@ -2577,8 +2579,8 @@
                 posY = 850;
                 slashEffect.source = "comp/NewSlash_2.atlas";
             }
+            slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
             slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
-            let colorNum = Math.floor(Math.random() * 5) + 2;
             let colorMat = [
                 1, 0, 0, 0, 500,
                 0, 1, 0, 0, 500,
@@ -2589,23 +2591,19 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashEffect.filters = [colorFilter, glowFilter];
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
-                slashEffect.destroy();
-                slashEffect.destroyed = true;
+                Laya.stage.removeChild(slashEffect);
+                Laya.Pool.recover("slashEffect", slashEffect);
+                Laya.timer.clear(this, slashTimerFunc);
             });
             Laya.stage.addChild(slashEffect);
             slashEffect.play();
-            let m_slashTimer = setInterval(() => {
-                if (slashEffect.destroyed) {
-                    clearInterval(m_slashTimer);
-                    m_slashTimer = null;
-                    return;
-                }
+            let slashTimerFunc = function () {
                 slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
                 slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
-            }, 10);
+            };
         }
         createWalkEffect(player) {
-            this.m_walkeffect = new Laya.Animation();
+            this.m_walkeffect = Laya.Pool.getItemByClass("walkeffect", Laya.Animation);
             this.m_walkeffect.source = "comp/WalkEffects.atlas";
             let posX = 280;
             let posY = 270;
@@ -2620,19 +2618,17 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             Laya.stage.addChild(this.m_walkeffect);
             this.m_walkeffect.play();
-            this.m_walkTimer = setInterval(() => {
+            let walkTimerFunc = function () {
                 if (this.m_animation.destroyed || EnemyInit.isWin) {
-                    this.m_walkeffect.destroy();
-                    this.m_walkeffect.destroyed = true;
-                }
-                if (this.m_walkeffect.destroyed) {
-                    clearInterval(this.m_walkTimer);
-                    this.m_walkTimer = null;
+                    Laya.stage.removeChild(this.m_walkeffect);
+                    Laya.Pool.recover("walkeffect", this.m_walkeffect);
+                    Laya.timer.clear(this, walkTimerFunc);
                     return;
                 }
                 this.m_walkeffect.skewY = this.m_isFacingRight ? 0 : 180;
                 this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
-            }, 10);
+            };
+            Laya.timer.frameLoop(1, this, walkTimerFunc);
         }
         setSkill() {
             this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
@@ -2743,7 +2739,7 @@
             this.m_cameraShakingTimer = timer;
         }
         bloodSplitEffect(enemy) {
-            let bloodEffect = new Laya.Animation();
+            let bloodEffect = Laya.Pool.getItemByClass("bloodEffect", Laya.Animation);
             bloodEffect.scaleX = 1.2;
             bloodEffect.scaleY = 1.2;
             bloodEffect.interval = 30;
@@ -2760,8 +2756,8 @@
             bloodEffect.pos(enemy.x - 325, enemy.y - 310);
             bloodEffect.source = "comp/Hurt.atlas";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
-                bloodEffect.destroy();
-                bloodEffect.destroyed = true;
+                Laya.stage.removeChild(bloodEffect);
+                Laya.Pool.recover("bloodEffect", bloodEffect);
             });
             Laya.stage.addChild(bloodEffect);
             bloodEffect.play();
@@ -2769,10 +2765,8 @@
         updateAnimation(from, to, onCallBack = null, force = false, rate = 100) {
             if (from === to || this.m_animationChanging)
                 return;
-            if (!this.m_walkeffect.destroyed) {
-                this.m_walkeffect.destroy();
-                this.m_walkeffect.destroyed = true;
-            }
+            Laya.stage.removeChild(this.m_walkeffect);
+            Laya.Pool.recover("walkeffect", this.m_walkeffect);
             this.m_state = to;
             switch (this.m_state) {
                 case CharacterStatus.attackOne:
