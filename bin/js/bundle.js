@@ -2880,6 +2880,9 @@
         }
         showMobileUI(player) {
             let rightBtnPos;
+            let stageHitArea = new Laya.HitArea();
+            stageHitArea.hit.drawRect(0, 0, 4098, 768, '#fff');
+            Laya.stage.hitArea = stageHitArea;
             this.m_mobileLeftBtn = new Laya.Sprite();
             this.m_mobileRightBtn = new Laya.Sprite();
             this.m_mobileAtkBtn = new Laya.Sprite();
@@ -2895,9 +2898,13 @@
             this.m_mobileLeftBtn.loadImage('UI/mobileLeftBtn.png');
             this.m_mobileRightBtn.loadImage('UI/mobileRightBtn.png');
             this.m_mobileAtkBtn.loadImage('UI/mobileAtkBtn.png');
+            this.m_mobileLeftBtn.autoSize = true;
+            this.m_mobileRightBtn.autoSize = true;
+            this.m_mobileAtkBtn.autoSize = true;
             Laya.stage.addChild(this.m_mobileLeftBtn);
             Laya.stage.addChild(this.m_mobileRightBtn);
             Laya.stage.addChild(this.m_mobileAtkBtn);
+            this.m_mobileLeftBtn.cacheAs = 'bitmap';
             this.m_mobileLeftBtn.on(Laya.Event.CLICK, this, () => {
                 this.m_playerVelocity["Vx"] += -1 * this.m_velocityMultiplier;
                 if (this.m_isFacingRight) {
@@ -2941,7 +2948,7 @@
                     this.m_canAttack = true;
                 }, this.m_attackCdTime);
             });
-            let mobileUIFunc = function () {
+            let mobileUIFunc = () => {
                 if (player.destroyed) {
                     this.m_mobileLeftBtn.destroy();
                     this.m_mobileRightBtn.destroy();

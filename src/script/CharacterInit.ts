@@ -108,6 +108,8 @@ export class Character extends Laya.Script {
     m_mobileHumanSkillBtn: Laya.Sprite;
     m_mobileCatSkillBtn: Laya.Sprite;
 
+    emptySprForMobile: Laya.Sprite;
+
     spawn() {
         this.loadCharacterData();
         this.getAtkValue(this.m_atkLevel);
@@ -1069,11 +1071,13 @@ export class Character extends Laya.Script {
     public clearAddDebuffTimer(): void{
         this.m_oathManager.clearAddDebuffTimer();
     }
-
     public showMobileUI(player: Laya.Animation): void{
 
         // let leftBtnPos: object = { "x": player.x - Laya.stage.width / 2 + 155, "y": 620 };
         let rightBtnPos: object;
+        let stageHitArea = new Laya.HitArea();
+        stageHitArea.hit.drawRect(0,0,4098,768, '#fff');
+        Laya.stage.hitArea = stageHitArea;
 
         this.m_mobileLeftBtn = new Laya.Sprite();
         this.m_mobileRightBtn = new Laya.Sprite();
@@ -1091,13 +1095,24 @@ export class Character extends Laya.Script {
         this.m_mobileLeftBtn.loadImage('UI/mobileLeftBtn.png')
         this.m_mobileRightBtn.loadImage('UI/mobileRightBtn.png')
         this.m_mobileAtkBtn.loadImage('UI/mobileAtkBtn.png')
+
+        this.m_mobileLeftBtn.autoSize = true;
+        this.m_mobileRightBtn.autoSize = true;
+        this.m_mobileAtkBtn.autoSize = true;
+
         Laya.stage.addChild(this.m_mobileLeftBtn);
         Laya.stage.addChild(this.m_mobileRightBtn);
         Laya.stage.addChild(this.m_mobileAtkBtn);
 
+        this.m_mobileLeftBtn.cacheAs = 'bitmap';
+
+        // this.m_mobileLeftBtnhitArea.hit.drawRect;
+
+        // this.m_mobileLeftBtnhitArea.hit.drawRect(player.x - Laya.stage.width / 2 + 100, 620, 100, 100, 'red');
+        // this.m_mobileLeftBtn.hitArea
+
         this.m_mobileLeftBtn.on(Laya.Event.CLICK, this, () => {
-            // console.log("案左鍵");
-            
+    
             this.m_playerVelocity["Vx"] += -1 * this.m_velocityMultiplier;
             if (this.m_isFacingRight) {
                 this.m_playerVelocity["Vx"] = 0;
@@ -1107,8 +1122,6 @@ export class Character extends Laya.Script {
             this.applyMoveX();
             if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         })
-
-
 
         this.m_mobileRightBtn.on(Laya.Event.CLICK, this, () => {
             // console.log("案右鍵");
@@ -1152,7 +1165,7 @@ export class Character extends Laya.Script {
         })
 
         //以幀為主體的更新
-        let mobileUIFunc = function() {
+        let mobileUIFunc = () => {
             if (player.destroyed) {
                 this.m_mobileLeftBtn.destroy();
                 this.m_mobileRightBtn.destroy();

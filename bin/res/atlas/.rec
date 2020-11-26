@@ -67,6 +67,8 @@ R DC0A49E3 4.red forest_grass.png
 R 43D88A94 5.red forest_ground.png
 R 818528A3 6.red forest_black.png
 S C27ABBF4 backgroundNewbie.png
+S FD0B5285 bgImg1.png
+S D25D8A61 bgImg2.png
 R 50C4E84B Died.png
 R 963E6A59 Loading.png
 R 5083A16C Red Forest(0912).png
