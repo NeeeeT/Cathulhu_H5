@@ -346,7 +346,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 40, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        slashLightEffect.filters = [glowFilter, colorFilter];
+        slashLightEffect.filters = [colorFilter];
         //enemy.x + 6 * rotation - 220 : enemy.x + 6 * rotation - 320,checkRotation ? enemy.y + 0.1 * rotation - 250 + 30 : enemy.y - 2.2 * rotation - 250 + 30
         slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 760 : enemy.x - 760, enemy.y - 640 + 30);//y軸需再修正
         slashLightEffect.source = sourceArray[sourceNum];
@@ -548,7 +548,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        this.m_animation.filters = [colorFilter, glowFilter];
+        this.m_animation.filters = [colorFilter];
         setTimeout(() => {
             if(!this.m_animation || this.m_animation.destroyed){
                 return;

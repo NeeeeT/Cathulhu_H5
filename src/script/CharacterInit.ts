@@ -716,7 +716,7 @@ export class Character extends Laya.Script {
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         // if (!OathManager.isCharging) {
-        slashEffect.filters = [colorFilter, glowFilter];
+        slashEffect.filters = [colorFilter];
         // } else {
         // let colorMat_charge: Array<number> =
         //     [
@@ -935,15 +935,15 @@ export class Character extends Laya.Script {
         bloodEffect.zOrder = 5;
         let colorMat: Array<number> =
             [
-                2, 0, 0, 0, 300, //R
-                0, 1, 0, 0, 300, //G
-                0, 0, 1, 0, 300, //B
+                2, 1, 1, 0, -100, //R
+                0, 1, 0, 0, -100, //G
+                0, 0, 1, 0, -100, //B
                 0, 0, 0, 1, 0, //A
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
 
-        bloodEffect.filters = [glowFilter, colorFilter];
+        bloodEffect.filters = [colorFilter];
         bloodEffect.pos(enemy.x - 325, enemy.y - 310);
         bloodEffect.source = "comp/Hurt.atlas";
         bloodEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -1350,8 +1350,8 @@ export default class CharacterInit extends Laya.Script {
             ];
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(oathColorMat);
         let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 10, 0, 0);
-        CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
-        CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
+        CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
+        CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
 
         //更新誓約所影響的數值變化
         CharacterInit.playerEnt.m_oathManager.oathUpdate();

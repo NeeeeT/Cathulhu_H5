@@ -622,7 +622,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            this.m_animation.filters = [glowFilter, colorFilter];
+            this.m_animation.filters = [colorFilter];
             this.m_animation.on(Laya.Event.COMPLETE, this, function () {
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
@@ -720,7 +720,7 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [glowFilter, colorFilter];
             let colorFilterex = new Laya.ColorFilter(colorMat);
-            explosion.filters = [glowFilter, colorFilter];
+            explosion.filters = [colorFilter];
             let count = 0;
             let timer = setInterval(() => {
                 if (count >= this.m_lastTime * 1000) {
@@ -937,7 +937,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            this.m_animation.filters = [glowFilter, colorFilter];
+            this.m_animation.filters = [colorFilter];
             this.m_animation.skewY = rightSide ? 0 : 180;
             owner.delayMove(this.m_lastTime);
             owner.m_rigidbody.linearVelocity = { x: rightSide ? this.m_spikeVec : -this.m_spikeVec };
@@ -1019,7 +1019,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#0065ff", 8, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            this.m_animation.filters = [glowFilter, colorFilter];
+            this.m_animation.filters = [colorFilter];
             this.m_animation.on(Laya.Event.COMPLETE, this, function () {
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
@@ -2587,7 +2587,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            slashEffect.filters = [colorFilter, glowFilter];
+            slashEffect.filters = [colorFilter];
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
                 slashEffect.destroy();
                 slashEffect.destroyed = true;
@@ -2749,14 +2749,14 @@
             bloodEffect.interval = 30;
             bloodEffect.zOrder = 5;
             let colorMat = [
-                2, 0, 0, 0, 300,
-                0, 1, 0, 0, 300,
-                0, 0, 1, 0, 300,
+                2, 1, 1, 0, -100,
+                0, 1, 0, 0, -100,
+                0, 0, 1, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            bloodEffect.filters = [glowFilter, colorFilter];
+            bloodEffect.filters = [colorFilter];
             bloodEffect.pos(enemy.x - 325, enemy.y - 310);
             bloodEffect.source = "comp/Hurt.atlas";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -3056,8 +3056,8 @@
             ];
             let colorFilter = new Laya.ColorFilter(oathColorMat);
             let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 10, 0, 0);
-            CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
-            CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [glowFilter_charge, colorFilter] : [];
+            CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
+            CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
             CharacterInit.playerEnt.m_oathManager.oathUpdate();
         }
     }
@@ -3312,7 +3312,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#ffffff", 40, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            slashLightEffect.filters = [glowFilter, colorFilter];
+            slashLightEffect.filters = [colorFilter];
             slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 760 : enemy.x - 760, enemy.y - 640 + 30);
             slashLightEffect.source = sourceArray[sourceNum];
             slashLightEffect.alpha = 1;
@@ -3472,7 +3472,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            this.m_animation.filters = [colorFilter, glowFilter];
+            this.m_animation.filters = [colorFilter];
             setTimeout(() => {
                 if (!this.m_animation || this.m_animation.destroyed) {
                     return;
@@ -3687,7 +3687,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            this.dirtEffect.filters = [colorFilter, glowFilter];
+            this.dirtEffect.filters = [colorFilter];
             this.dirtEffect.alpha = 0.5;
             Laya.stage.addChild(this.dirtEffect);
             this.dirtEffect.play();
