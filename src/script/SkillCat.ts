@@ -47,7 +47,7 @@ export class Slam extends VirtualSkill {
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#8400ff", 50, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        this.m_animation.filters = [glowFilter, colorFilter];
+        this.m_animation.filters = [colorFilter];
         this.m_animation.on(Laya.Event.COMPLETE, this, function () {
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
@@ -163,7 +163,7 @@ export class BlackHole extends VirtualSkill {
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         this.m_animation.filters = [glowFilter, colorFilter];
         let colorFilterex: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        explosion.filters = [glowFilter, colorFilter];
+        explosion.filters = [colorFilter];
 
         //Laya.stage.graphics.drawCircle(offsetX, offsetY, this.m_radius, 'black', 'white', 1);
         //Laya.stage.graphics.drawCircle(offsetX, offsetY, this.m_radius + 100, 'black', 'white', 1);

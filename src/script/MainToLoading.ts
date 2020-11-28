@@ -33,7 +33,7 @@ export default class MainToLoading extends Laya.Script{
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        this.dirtEffect.filters = [colorFilter, glowFilter];
+        this.dirtEffect.filters = [colorFilter];
         this.dirtEffect.alpha = 0.5;
         // this.dirtEffect.on(Laya.Event.COMPLETE, this, function () {
         //     this.dirtEffect.destroy();
