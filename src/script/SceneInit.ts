@@ -13,12 +13,12 @@ export default class SceneInit extends Laya.Script {
     }
     onAwake() {
         // Laya.Scene.open("Loading.scene");
-        Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, ()=>{
-            // Laya.Scene.open("First.scene");
-        }))
+        // Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, ()=>{
+            
+        // }))
 
         Laya.stage.bgColor = this.sceneBackgroundColor;
-        this.setSound(0.6, "Audio/Bgm/BGM01.wav", 0);
+        // this.setSound(0.6, "Audio/Bgm/BGM01.wav", 0);
     }
     private setSound(volume: number, url: string, loop: number): void {
         Laya.SoundManager.playSound(url, loop);

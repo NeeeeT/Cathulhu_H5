@@ -117,6 +117,7 @@
                 this.reinforceUI = this.reinforceGold = this.reinforceAtkDmgLevel = this.reinforceHpLevel = this.reinforceAtkDmgCost
                     = this.reinforceHpCost = this.reinforceHpCostIcon = this.reinforceAtkDmgCostIcon =
                         this.skipIcon = null;
+                this.missionManager.clearCurrentMissionData();
                 this.missionManager.generateMissionData(9);
                 this.missionManager.showMissionUI();
                 Laya.SoundManager.stopAll();
@@ -464,6 +465,9 @@
                 MissionManager.missionDataPool.push(missionData);
             }
             return MissionManager.missionDataPool;
+        }
+        clearCurrentMissionData() {
+            MissionManager.missionDataPool = [];
         }
         generateNewbieData() {
             let missionData = {
@@ -1412,12 +1416,12 @@
             this.enemyLeftIcon.height = 40;
             Laya.stage.addChild(this.enemyInfo);
             Laya.stage.addChild(this.enemyLeftIcon);
-            this.roundDetectTimer = setInterval(() => {
+            let roundDetectFunc = function () {
                 if (!this.battleToggle || player.destroyed) {
                     this.enemyInfo.text = "";
                     this.enemyInfo.destroy();
                     this.enemyLeftIcon.destroy();
-                    clearInterval(this.roundDetectTimer);
+                    Laya.timer.clear(this, roundDetectFunc);
                     this.roundDetectTimer = null;
                     return;
                 }
@@ -1433,7 +1437,8 @@
                 this.enemyInfo.pos(this.enemyLeftIcon.x + 44, this.enemyLeftIcon.y - 2);
                 this.enemyInfo.text = (EnemyInit.enemyLeftCur === 0) ? '' : 'x' + String(EnemyInit.enemyLeftCur);
                 this.enemyLeftIcon.alpha = (EnemyInit.enemyLeftCur === 0) ? 0 : 1;
-            }, 5);
+            };
+            Laya.timer.frameLoop(1, this, roundDetectFunc);
         }
         updateMissionData() {
             this.enemyLeft = EnemyInit.missionEnemyNum;
@@ -2208,7 +2213,6 @@
             this.m_hurted = false;
             this.m_hurtTimer = null;
             this.m_slashTimer = null;
-            this.m_walkTimer = null;
             this.m_cameraShakingTimer = 0;
             this.m_cameraShakingMultiplyer = 1;
             this.m_catSkill = null;
@@ -2360,7 +2364,7 @@
             }, 1000 * time);
         }
         damageTextEffect(amount, critical) {
-            let damageText = new Laya.Text();
+            let damageText = Laya.Pool.getItemByClass("damageText", Laya.Text);
             let soundNum;
             damageText.pos((this.m_animation.x - this.m_animation.width / 2) + 80, (this.m_animation.y - this.m_animation.height) - 3);
             damageText.bold = true;
@@ -2379,7 +2383,10 @@
             damageText.strokeColor = "#fff";
             Laya.stage.addChild(damageText);
             Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    Laya.stage.removeChild(damageText);
+                    Laya.Pool.recover("damageText", damageText);
+                }), 0);
             }), 0);
         }
         listenKeyBoard() {
@@ -2555,7 +2562,7 @@
             return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
         }
         createAttackEffect(player) {
-            let slashEffect = new Laya.Animation();
+            let slashEffect = Laya.Pool.getItemByClass("slashEffect", Laya.Animation);
             let posX;
             let posY;
             if (this.m_atkStep === 0) {
@@ -2572,8 +2579,8 @@
                 posY = 850;
                 slashEffect.source = "comp/NewSlash_2.atlas";
             }
+            slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
             slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
-            let colorNum = Math.floor(Math.random() * 5) + 2;
             let colorMat = [
                 1, 0, 0, 0, 500,
                 0, 1, 0, 0, 500,
@@ -2584,23 +2591,19 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashEffect.filters = [colorFilter, glowFilter];
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
-                slashEffect.destroy();
-                slashEffect.destroyed = true;
+                Laya.stage.removeChild(slashEffect);
+                Laya.Pool.recover("slashEffect", slashEffect);
+                Laya.timer.clear(this, slashTimerFunc);
             });
             Laya.stage.addChild(slashEffect);
             slashEffect.play();
-            let m_slashTimer = setInterval(() => {
-                if (slashEffect.destroyed) {
-                    clearInterval(m_slashTimer);
-                    m_slashTimer = null;
-                    return;
-                }
+            let slashTimerFunc = function () {
                 slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
                 slashEffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
-            }, 10);
+            };
         }
         createWalkEffect(player) {
-            this.m_walkeffect = new Laya.Animation();
+            this.m_walkeffect = Laya.Pool.getItemByClass("walkeffect", Laya.Animation);
             this.m_walkeffect.source = "comp/WalkEffects.atlas";
             let posX = 280;
             let posY = 270;
@@ -2615,19 +2618,17 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             Laya.stage.addChild(this.m_walkeffect);
             this.m_walkeffect.play();
-            this.m_walkTimer = setInterval(() => {
+            let walkTimerFunc = function () {
                 if (this.m_animation.destroyed || EnemyInit.isWin) {
-                    this.m_walkeffect.destroy();
-                    this.m_walkeffect.destroyed = true;
-                }
-                if (this.m_walkeffect.destroyed) {
-                    clearInterval(this.m_walkTimer);
-                    this.m_walkTimer = null;
+                    Laya.stage.removeChild(this.m_walkeffect);
+                    Laya.Pool.recover("walkeffect", this.m_walkeffect);
+                    Laya.timer.clear(this, walkTimerFunc);
                     return;
                 }
                 this.m_walkeffect.skewY = this.m_isFacingRight ? 0 : 180;
                 this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
-            }, 10);
+            };
+            Laya.timer.frameLoop(1, this, walkTimerFunc);
         }
         setSkill() {
             this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
@@ -2738,23 +2739,25 @@
             this.m_cameraShakingTimer = timer;
         }
         bloodSplitEffect(enemy) {
-            let bloodEffect = new Laya.Animation();
-            bloodEffect.scaleX = 1.5;
-            bloodEffect.scaleY = 1.5;
+            let bloodEffect = Laya.Pool.getItemByClass("bloodEffect", Laya.Animation);
+            bloodEffect.scaleX = 1.2;
+            bloodEffect.scaleY = 1.2;
+            bloodEffect.interval = 30;
+            bloodEffect.zOrder = 5;
             let colorMat = [
-                2, 0, 0, 0, -100,
-                0, 1, 0, 0, -100,
-                0, 0, 1, 0, -100,
+                2, 0, 0, 0, 300,
+                0, 1, 0, 0, 300,
+                0, 0, 1, 0, 300,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             bloodEffect.filters = [glowFilter, colorFilter];
-            bloodEffect.pos(enemy.x - 420, enemy.y - 370);
-            bloodEffect.source = "comp/NewBlood.atlas";
+            bloodEffect.pos(enemy.x - 325, enemy.y - 310);
+            bloodEffect.source = "comp/Hurt.atlas";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
-                bloodEffect.destroy();
-                bloodEffect.destroyed = true;
+                Laya.stage.removeChild(bloodEffect);
+                Laya.Pool.recover("bloodEffect", bloodEffect);
             });
             Laya.stage.addChild(bloodEffect);
             bloodEffect.play();
@@ -2762,10 +2765,8 @@
         updateAnimation(from, to, onCallBack = null, force = false, rate = 100) {
             if (from === to || this.m_animationChanging)
                 return;
-            if (!this.m_walkeffect.destroyed) {
-                this.m_walkeffect.destroy();
-                this.m_walkeffect.destroyed = true;
-            }
+            Laya.stage.removeChild(this.m_walkeffect);
+            Laya.Pool.recover("walkeffect", this.m_walkeffect);
             this.m_state = to;
             switch (this.m_state) {
                 case CharacterStatus.attackOne:
@@ -3274,11 +3275,9 @@
                 if (this.m_animation.destroyed) {
                     this.m_healthBar.destroy();
                     this.m_healthBar.destroyed = true;
+                    Laya.timer.clear(this, healthBarFunc);
                     return;
                 }
-                if (this.m_healthBar.destroyed)
-                    Laya.timer.clear(this, healthBarFunc);
-                return;
                 this.m_healthBar.alpha -= (this.m_healthBar.alpha > 0 && this.m_hurtDelay <= 0) ? 0.02 : 0;
                 this.m_healthBar.pos(this.m_animation.x - ((this.m_animation.width * this.m_animation.scaleX) / 2) + 20, (this.m_animation.y - (this.m_animation.height * this.m_animation.scaleY) / 2) - 20);
                 this.m_healthBar.value = this.m_health / this.m_maxHealth;
@@ -3289,8 +3288,8 @@
             let slashLightEffect = new Laya.Animation();
             let sourceArray = ["comp/NewSlahLight.atlas", "comp/NewSlashLight90.atlas", "comp/NewSlashLight-43.5.atlas"];
             let sourceNum = Math.floor(Math.random() * 3);
-            slashLightEffect.scaleX = 2;
-            slashLightEffect.scaleY = 2;
+            slashLightEffect.scaleX = 3;
+            slashLightEffect.scaleY = 2.6;
             slashLightEffect.interval = 15;
             let colorMat = [
                 1, 0, 0, 0, 500,
@@ -3301,7 +3300,7 @@
             let glowFilter = new Laya.GlowFilter("#ffffff", 40, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             slashLightEffect.filters = [glowFilter, colorFilter];
-            slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 500 : enemy.x - 500, enemy.y - 500 + 30);
+            slashLightEffect.pos(this.m_isFacingRight ? enemy.x - 760 : enemy.x - 760, enemy.y - 640 + 30);
             slashLightEffect.source = sourceArray[sourceNum];
             slashLightEffect.alpha = 1;
             slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -3590,10 +3589,7 @@
             ];
         }
         onAwake() {
-            Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
-            }));
             Laya.stage.bgColor = this.sceneBackgroundColor;
-            this.setSound(0.6, "Audio/Bgm/BGM01.wav", 0);
         }
         setSound(volume, url, loop) {
             Laya.SoundManager.playSound(url, loop);

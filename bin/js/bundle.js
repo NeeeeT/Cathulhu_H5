@@ -3589,10 +3589,7 @@
             ];
         }
         onAwake() {
-            Laya.loader.load(this.resourceLoad, Laya.Handler.create(this, () => {
-            }));
             Laya.stage.bgColor = this.sceneBackgroundColor;
-            this.setSound(0.6, "Audio/Bgm/BGM01.wav", 0);
         }
         setSound(volume, url, loop) {
             Laya.SoundManager.playSound(url, loop);
