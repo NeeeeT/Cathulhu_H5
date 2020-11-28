@@ -892,15 +892,18 @@ export class Character extends Laya.Script {
             if (this.m_cameraShakingTimer > 0) {
                 let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
                 Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
-                Laya.stage.y = /*(player_pivot_y - this.m_animation.y + 150)*/0 + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+                Laya.stage.y = Math.random() * this.m_cameraShakingMultiplyer * randomSign;
                 this.m_cameraShakingTimer--;
             } else {
                 Laya.stage.x = player_pivot_x - this.m_animation.x;
                 Laya.stage.y = 0
-                // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
             }
-            if (Laya.stage.x >= -250.0) Laya.stage.x = -250.0;
-            if (Laya.stage.x <= -2475.0) Laya.stage.x = -2475.0;
+            if (Laya.stage.x >= -250.0){
+                Laya.stage.x = -250.0;
+            }
+            if (Laya.stage.x <= -2475.0){
+                Laya.stage.x = -2475.0;
+            }
         }
         Laya.timer.frameLoop(1, this, camTimerFunc);
         //以時間為主體的更新

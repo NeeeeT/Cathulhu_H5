@@ -8,6 +8,10 @@ R 298B6D73 UI.atlas
 R B9FB5DCE UI.png
 R 839631A4 Village.atlas
 R 1246DC2 Village.png
+D Background
+S FD0B5285 nBg1.png
+S E55CD93F nBg2.png
+S 5B26B25F nBg3.png
 D Background(0912)
 R A78AA8E9 bg.png
 R 56537D3F loading.png
@@ -67,7 +71,6 @@ R DC0A49E3 4.red forest_grass.png
 R 43D88A94 5.red forest_ground.png
 R 818528A3 6.red forest_black.png
 S C27ABBF4 backgroundNewbie.png
-S FD0B5285 bgImg1.png
 S D25D8A61 bgImg2.png
 R 50C4E84B Died.png
 R 963E6A59 Loading.png
