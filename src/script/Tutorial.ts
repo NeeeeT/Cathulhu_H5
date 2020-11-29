@@ -208,6 +208,7 @@ export default class Turtorial extends Laya.Script{
         if(this.currentHintStep === turtorialHintStep.none){
             this.currentHintUI.loadImage('UI/tutorial/1.png');
             this.currentHintStep = step;
+            this.currentHintUI.zOrder = 999;
             return;
         }
         if(step === turtorialHintStep.tryAttack || step === turtorialHintStep.trySkill){

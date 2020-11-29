@@ -1705,6 +1705,7 @@
             if (this.currentHintStep === turtorialHintStep.none) {
                 this.currentHintUI.loadImage('UI/tutorial/1.png');
                 this.currentHintStep = step;
+                this.currentHintUI.zOrder = 999;
                 return;
             }
             if (step === turtorialHintStep.tryAttack || step === turtorialHintStep.trySkill) {
@@ -2842,17 +2843,19 @@
                 if (this.m_cameraShakingTimer > 0) {
                     let randomSign = (Math.floor(Math.random() * 2) == 1) ? 1 : -1;
                     Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
-                    Laya.stage.y = 0 + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
+                    Laya.stage.y = Math.random() * this.m_cameraShakingMultiplyer * randomSign;
                     this.m_cameraShakingTimer--;
                 }
                 else {
                     Laya.stage.x = player_pivot_x - this.m_animation.x;
                     Laya.stage.y = 0;
                 }
-                if (Laya.stage.x >= -250.0)
+                if (Laya.stage.x >= -250.0) {
                     Laya.stage.x = -250.0;
-                if (Laya.stage.x <= -2475.0)
+                }
+                if (Laya.stage.x <= -2475.0) {
                     Laya.stage.x = -2475.0;
+                }
             };
             Laya.timer.frameLoop(1, this, camTimerFunc);
         }
@@ -3916,6 +3919,46 @@
         }
     }
 
+    class NewbieBackground extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.bg2LastX = 0;
+        }
+        onStart() {
+            this.backgroundImageInit();
+            setInterval(() => {
+                Laya.Tween.to(this.bg2, {
+                    x: this.bg2LastX - 5,
+                }, 50, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    this.bg2LastX = this.bg2.x;
+                }));
+            }, 50);
+        }
+        backgroundImageInit() {
+            this.bg1 = new Laya.Sprite();
+            this.bg2 = new Laya.Sprite();
+            this.bg3 = new Laya.Sprite();
+            this.bg1.pos(0, 0);
+            this.bg2.pos(0, -50);
+            this.bg3.pos(0, -70);
+            this.bg1.loadImage('Background/nBg1.png');
+            this.bg2.loadImage('Background/nBg2.png');
+            this.bg3.loadImage('Background/nBg3.png');
+            Laya.stage.addChild(this.bg2);
+            Laya.stage.addChild(this.bg3);
+            Laya.stage.addChild(this.bg1);
+        }
+        backgroundImageHandler() {
+            let player = CharacterInit.playerEnt.m_animation;
+            Laya.Tween.to(this.bg2, {
+                x: player.x - 1024,
+            }, 50, Laya.Ease.linearInOut, null);
+            Laya.Tween.to(this.bg1, {
+                x: player.x - 1024,
+            }, 10, Laya.Ease.linearInOut, null);
+        }
+    }
+
     class GameConfig {
         constructor() {
         }
@@ -3930,6 +3973,7 @@
             reg("script/Village.ts", Village);
             reg("script/MainToLoading.ts", MainToLoading);
             reg("script/Tutorial.ts", Turtorial);
+            reg("script/NewbieBackground.ts", NewbieBackground);
         }
     }
     GameConfig.width = 1366;

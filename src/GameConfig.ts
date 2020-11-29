@@ -8,6 +8,7 @@ import Loading from "./script/Loading"
 import Village from "./script/Village"
 import MainToLoading from "./script/MainToLoading"
 import Tutorial from "./script/Tutorial"
+import NewbieBackground from "./script/NewbieBackground"
 /*
 * 游戏初始化配置;
 */
@@ -36,6 +37,7 @@ export default class GameConfig{
         reg("script/Village.ts",Village);
         reg("script/MainToLoading.ts",MainToLoading);
         reg("script/Tutorial.ts",Tutorial);
+        reg("script/NewbieBackground.ts",NewbieBackground);
     }
 }
 GameConfig.init();
