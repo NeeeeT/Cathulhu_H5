@@ -304,6 +304,14 @@
             this.setStoryInfoCard();
             this.setProgressBar();
             this.setAnyKeyIcon();
+            Laya.stage.on(Laya.Event.CLICK, this, () => {
+                if (!this.prepared)
+                    return;
+                this.storyInfo.destroy();
+                this.loadingProgress.destroy();
+                this.anyKeyIcon.destroy();
+                Laya.Scene.open(Loading2.nextSceneName);
+            });
             this.preparedTimer = setInterval(() => {
                 if (this.preparedSeconds <= 0) {
                     this.prepared = true;
@@ -1285,7 +1293,9 @@
                 this.timeLeftValue--;
             }, 1000);
             this.showBattleInfo();
-            this.mobileClick();
+            if (Laya.Browser.onMobile) {
+                this.mobileClick();
+            }
         }
         mobileClick() {
             CharacterInit.playerEnt.m_mobileAtkBtn.off(Laya.Event.CLICK, this, () => {
@@ -1709,7 +1719,9 @@
         }
         onStart() {
             this.resetTutorial();
-            this.mobileClick();
+            if (Laya.Browser.onMobile) {
+                this.mobileClick();
+            }
         }
         mobileClick() {
             Laya.stage.off(Laya.Event.MOUSE_DOWN, this, () => {
@@ -3546,7 +3558,9 @@
             Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
             player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
             player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);
-            player.showMobileUI(CharacterInit.playerEnt.m_animation);
+            if (Laya.Browser.onMobile) {
+                player.showMobileUI(CharacterInit.playerEnt.m_animation);
+            }
         }
         initSetting(player) {
             ExtraData.loadData();

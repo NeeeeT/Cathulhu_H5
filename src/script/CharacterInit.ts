@@ -1554,9 +1554,9 @@ export default class CharacterInit extends Laya.Script {
         Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
         player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
         player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);//角色UI狀態方法
-        // if (Laya.Browser.onMobile) {
+        if (Laya.Browser.onMobile) {
             player.showMobileUI(CharacterInit.playerEnt.m_animation);
-        // }
+        }
     }
     private initSetting(player: Character): void {
 

@@ -42,9 +42,9 @@ export default class Turtorial extends Laya.Script{
     onStart(): void{
         
         this.resetTutorial();
-        // if (Laya.Browser.onMobile) {
+        if (Laya.Browser.onMobile) {
             this.mobileClick();
-        // }
+        }
     }
     mobileClick(): void{
         //reset

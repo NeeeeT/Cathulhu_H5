@@ -27,6 +27,14 @@ export default class Loading2 extends Laya.Script{
         this.setStoryInfoCard();
         this.setProgressBar();
         this.setAnyKeyIcon();
+        Laya.stage.on(Laya.Event.CLICK, this, () => {
+            if(!this.prepared) return;
+            this.storyInfo.destroy();
+            this.loadingProgress.destroy();
+            this.anyKeyIcon.destroy();
+            Laya.Scene.open(Loading2.nextSceneName);
+        })
+
         this.preparedTimer = setInterval(()=>{
             if(this.preparedSeconds <= 0)
             {

@@ -187,9 +187,9 @@ export default class EnemyInit extends Laya.Script{
             this.timeLeftValue--;
         }, 1000);
         this.showBattleInfo();
-        // if (Laya.Browser.onMobile) {
+        if (Laya.Browser.onMobile) {
             this.mobileClick();
-        // }
+        }
     }
     mobileClick(): void{
 
