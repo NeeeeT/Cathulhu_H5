@@ -113,7 +113,8 @@ export default class EnemyInit extends Laya.Script{
     onAwake() {
         this.updateMissionData();
     }
-    onStart(){
+    onStart() {
+
         this.timeLeftValue = this.roundTimeLeft;
         EnemyInit.enemyLeftCur = this.enemyLeft;
 
@@ -184,6 +185,66 @@ export default class EnemyInit extends Laya.Script{
             this.timeLeftValue--;
         }, 1000);
         this.showBattleInfo();
+        if (Laya.Browser.onMobile) {
+            this.mobileClick();
+        }
+    }
+    mobileClick(): void{
+        CharacterInit.playerEnt.m_mobileAtkBtn.on(Laya.Event.CLICK, this, () => {
+            let player = CharacterInit.playerEnt
+            if(Village.reinforceToggle){
+                this.villageManager.clearReinforceUI();
+                // new MissionManager().showMissionUI();
+            }
+            if(this.endingRewardUI){
+                Laya.Tween.to(this.endingRewardUI, {alpha: 0.3}, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
+                    this.endingRewardUI.destroy();
+                    this.rewardCrystal.destroy();
+                    this.rewardGold.destroy();
+                    this.rewardCrystalText.destroy();
+                    this.rewardGoldText.destroy();
+                    this.showEndSkill();
+                }), 0);
+            };
+            if(this.endingSkillUI){
+                // if(e.keyCode === 32){
+                    if(player.m_isFacingRight){
+                        this.skillChoose(2);
+                    }
+                    else{
+                        this.skillChoose(1);
+                    }
+                // }
+                if(!this.endingSkillUI.destroyed){
+                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+                }
+            }
+        })
+        CharacterInit.playerEnt.m_mobileLeftBtn.on(Laya.Event.CLICK, this, () => {
+            if (this.endingSkillUI) {
+                let player = CharacterInit.playerEnt
+                if (!this.endingSkillUI.destroyed) {
+                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+                }
+            }
+        })
+        CharacterInit.playerEnt.m_mobileRightBtn.on(Laya.Event.CLICK, this, () => {
+            if(this.endingSkillUI){
+                let player = CharacterInit.playerEnt
+                if (!this.endingSkillUI.destroyed) {
+                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+                }
+            }
+        })
     }
     onKeyUp(e: Laya.Event){
         let player = CharacterInit.playerEnt
@@ -360,6 +421,7 @@ export default class EnemyInit extends Laya.Script{
             player.destroy();
             player.destroyed = true;
             // this.changeToVillage();
+            CharacterInit.playerEnt.m_mobileUIToggle = false;
             this.villageManager.showReinforceUI();
         }), 0);
     }
