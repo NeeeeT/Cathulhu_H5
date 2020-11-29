@@ -1,0 +1,110 @@
+{
+    "frames": {
+        "Hurt_0150.png": {
+            "frame": {
+                "h": 128,
+                "idx": 0,
+                "w": 125,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 205,
+                "y": 190
+            }
+        },
+        "Hurt_0151.png": {
+            "frame": {
+                "h": 174,
+                "idx": 0,
+                "w": 174,
+                "x": 0,
+                "y": 129
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 181,
+                "y": 166
+            }
+        },
+        "Hurt_0152.png": {
+            "frame": {
+                "h": 222,
+                "idx": 0,
+                "w": 224,
+                "x": 0,
+                "y": 304
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 156,
+                "y": 141
+            }
+        },
+        "Hurt_0153.png": {
+            "frame": {
+                "h": 268,
+                "idx": 0,
+                "w": 274,
+                "x": 175,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 131,
+                "y": 117
+            }
+        },
+        "Hurt_0154.png": {
+            "frame": {
+                "h": 316,
+                "idx": 0,
+                "w": 324,
+                "x": 225,
+                "y": 269
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 106,
+                "y": 92
+            }
+        },
+        "Hurt_0155.png": {
+            "frame": {
+                "h": 245,
+                "idx": 0,
+                "w": 252,
+                "x": 450,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 89,
+                "y": 185
+            }
+        }
+    },
+    "meta": {
+        "image": "Hurt.png",
+        "prefix": "Hurt/"
+    }
+}

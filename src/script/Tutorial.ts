@@ -41,11 +41,66 @@ export default class Turtorial extends Laya.Script{
     onStart(): void{
         
         this.resetTutorial();
-        if (Laya.Browser.onMobile) {
+        // if (Laya.Browser.onMobile) {
             this.mobileClick();
-        }
+        // }
     }
     mobileClick(): void{
+        //reset
+        Laya.stage.off(Laya.Event.MOUSE_DOWN, this, () => {
+            // let isClicked = true;
+            if(this.stepChanging) return;
+            let player = CharacterInit.playerEnt;
+            switch (this.currentHintStep) {
+                case turtorialHintStep.tryMove:
+                    if (player.m_mobileLeftBtnClicked) {                        
+                        this.moveLeft = true;
+                    }
+                    else if (player.m_mobileRightBtnClicked) {
+                        this.moveRight = true;
+                    }
+                    if (this.moveRight && this.moveLeft) {
+                        this.setHintStep(turtorialHintStep.trySprint);
+                    }
+                    break;
+                case turtorialHintStep.trySprint:
+                    // if(CharacterInit.playerEnt.m_canSprint){
+                    if (player.m_mobileSprintBtnClicked) {    
+                        this.setHintStep(turtorialHintStep.tryAttack);
+                    }
+                    break;
+                case turtorialHintStep.tryAttack:
+                    if(EnemyInit.enemyLeftCur <= 0){
+                        this.setHintStep(turtorialHintStep.trySkill);
+                        player.m_catSkill = player.getSkillTypeByExtraData('c', 1);
+                        player.m_humanSkill = player.getSkillTypeByExtraData('h', 1);
+                        Turtorial.noOath = false;
+                    }
+                    break;
+                case turtorialHintStep.trySkill:
+                    if(EnemyInit.enemyLeftCur <= 0){
+                        CharacterInit.playerEnt.clearAddDebuffTimer();
+                        CharacterInit.playerEnt.removeAllDebuff();
+                        Turtorial.safeDebuff = false;
+                        this.setHintStep(turtorialHintStep.seeInfoA);
+                    }
+                    break;
+                case turtorialHintStep.seeInfoA:
+                        this.setHintStep(turtorialHintStep.seeInfoB);
+                    break;
+                case turtorialHintStep.seeInfoB:
+                        this.setHintStep(turtorialHintStep.seeInfoC);
+                    break;
+                case turtorialHintStep.seeInfoC:
+                        EnemyInit.newbieDone = true;
+                        this.currentHintUI.destroy();
+                        this.currentHintUI.destroyed = true;
+                    break;
+                default:
+                    break;
+            }
+        })
+        //---------------------
         Laya.stage.on(Laya.Event.MOUSE_DOWN, this, () => {
             // let isClicked = true;
             if(this.stepChanging) return;

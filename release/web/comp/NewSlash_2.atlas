@@ -1,0 +1,76 @@
+{
+    "frames": {
+        "Slash_00.png": {
+            "frame": {
+                "h": 500,
+                "idx": 0,
+                "w": 500,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        "Slash_01.png": {
+            "frame": {
+                "h": 60,
+                "idx": 0,
+                "w": 79,
+                "x": 501,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 194,
+                "y": 254
+            }
+        },
+        "Slash_02.png": {
+            "frame": {
+                "h": 75,
+                "idx": 0,
+                "w": 65,
+                "x": 501,
+                "y": 61
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 223,
+                "y": 222
+            }
+        },
+        "Slash_03.png": {
+            "frame": {
+                "h": 68,
+                "idx": 0,
+                "w": 127,
+                "x": 501,
+                "y": 137
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 159,
+                "y": 220
+            }
+        }
+    },
+    "meta": {
+        "image": "NewSlash_2.png",
+        "prefix": "NewSlash_2/"
+    }
+}

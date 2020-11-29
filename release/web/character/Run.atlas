@@ -1,0 +1,76 @@
+{
+    "frames": {
+        "character_run_1.png": {
+            "frame": {
+                "h": 127,
+                "idx": 0,
+                "w": 96,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 128,
+                "w": 200
+            },
+            "spriteSourceSize": {
+                "x": 41,
+                "y": 1
+            }
+        },
+        "character_run_2.png": {
+            "frame": {
+                "h": 124,
+                "idx": 0,
+                "w": 98,
+                "x": 0,
+                "y": 128
+            },
+            "sourceSize": {
+                "h": 128,
+                "w": 200
+            },
+            "spriteSourceSize": {
+                "x": 39,
+                "y": 4
+            }
+        },
+        "character_run_3.png": {
+            "frame": {
+                "h": 127,
+                "idx": 0,
+                "w": 99,
+                "x": 97,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 128,
+                "w": 200
+            },
+            "spriteSourceSize": {
+                "x": 37,
+                "y": 1
+            }
+        },
+        "character_run_4.png": {
+            "frame": {
+                "h": 127,
+                "idx": 0,
+                "w": 95,
+                "x": 99,
+                "y": 128
+            },
+            "sourceSize": {
+                "h": 128,
+                "w": 200
+            },
+            "spriteSourceSize": {
+                "x": 41,
+                "y": 1
+            }
+        }
+    },
+    "meta": {
+        "image": "Run.png",
+        "prefix": "Run/"
+    }
+}

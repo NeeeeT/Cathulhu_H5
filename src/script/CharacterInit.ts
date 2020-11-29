@@ -114,7 +114,7 @@ export class Character extends Laya.Script {
     m_mobileAtkBtnClicked: boolean = false;
     m_mobileSprintBtnClicked: boolean = false;
 
-    public static stageClicked: boolean = false;
+    // public static stageClicked: boolean = false;
 
     emptySprForMobile: Laya.Sprite;
 
@@ -1180,6 +1180,23 @@ export class Character extends Laya.Script {
         Laya.stage.addChild(this.m_mobileHumanSkillBtn);
 
         //左走
+        //reset
+        this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; })
+        this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, () => {
+            this.m_mobileLeftBtnClicked = false;
+            if (this.m_canJump) {
+                this.m_playerVelocity["Vx"] = 0;
+            }
+            this.applyMoveX();
+        })
+        this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, () => {
+            this.m_mobileLeftBtnClicked = false;
+            if (this.m_canJump) {
+                this.m_playerVelocity["Vx"] = 0;
+            }
+            this.applyMoveX();
+        })
+        //------------------
         this.m_mobileLeftBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; })
         this.m_mobileLeftBtn.on(Laya.Event.MOUSE_UP, this, () => {
             this.m_mobileLeftBtnClicked = false;
@@ -1196,6 +1213,23 @@ export class Character extends Laya.Script {
             this.applyMoveX();
         })
         //右走
+        //reset
+        this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; })
+        this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, () => {
+            this.m_mobileRightBtnClicked = false;
+            if (this.m_canJump) {
+                this.m_playerVelocity["Vx"] = 0;
+            }
+            this.applyMoveX();
+        })
+        this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, () => {
+            this.m_mobileRightBtnClicked = false;
+            if (this.m_canJump) {
+                this.m_playerVelocity["Vx"] = 0;
+            }
+            this.applyMoveX();
+        })
+        //---------------
         this.m_mobileRightBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; })
         this.m_mobileRightBtn.on(Laya.Event.MOUSE_UP, this, () => {
             this.m_mobileRightBtnClicked = false;
@@ -1236,6 +1270,31 @@ export class Character extends Laya.Script {
         }
 
         //攻擊
+        //reset
+        this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, () => {
+            if (!this.m_canAttack) return;
+            if (this.m_atkTimer) clearInterval(this.m_atkTimer);
+            this.attackStepEventCheck();
+
+            if (!this.m_animationChanging) {
+                if (this.m_atkStep === 1) {
+                    // ,1,2,3,4, 逗號數為分母(圖數+1)
+                    this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 3);
+                }
+                else if (this.m_atkStep === 0) {
+                    this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 8);
+                }
+            }
+            this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
+            this.attackSimulation(this.m_atkStep);//另類攻擊判定
+
+            this.m_canAttack = false;
+
+            setTimeout(() => {
+                this.m_canAttack = true;
+            }, this.m_attackCdTime);
+        })
+        //-------------------
         this.m_mobileAtkBtn.on(Laya.Event.CLICK, this, () => {
             if (!this.m_canAttack) return;
             if (this.m_atkTimer) clearInterval(this.m_atkTimer);
@@ -1260,6 +1319,42 @@ export class Character extends Laya.Script {
             }, this.m_attackCdTime);
         })
         //衝刺
+        //reset
+        this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, () => {
+            this.m_mobileSprintBtnClicked = true;
+            if (!this.m_canSprint || EnemyInit.isWin) return;
+
+            this.delayMove(0.08);
+            this.hurtedEvent(1.5);
+            this.updateAnimation(this.m_state, CharacterStatus.sprint, null, false, 100);
+
+            this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 100.0 : -100.0, y: 0.0 };
+            this.m_rigidbody.mask = 2 | 16;
+            this.m_collider.refresh();
+            setTimeout(() => {
+                this.m_rigidbody.mask = 2 | 8 | 16;
+                this.m_collider.density = 300;
+                this.m_collider.refresh();
+                setTimeout(() => {
+                    this.m_collider.density = 1;
+                    this.m_collider.refresh();
+                }, 10);
+            }, 500)
+
+            this.m_canSprint = false;
+            setTimeout(() => {
+                this.m_canSprint = true;
+            },3000);
+            this.updateSprintCdTimer();
+
+            Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut,
+                Laya.Handler.create(this, () => {
+                    Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut,
+                        Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
+                }), 0);
+        })
+        this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; })
+        //--------------------
         this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, () => {
             this.m_mobileSprintBtnClicked = true;
             if (!this.m_canSprint || EnemyInit.isWin) return;
@@ -1295,6 +1390,16 @@ export class Character extends Laya.Script {
         })
         this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; })
         //貓技
+        //reset
+        this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, () => {
+            if (EnemyInit.isWin) return;
+            this.m_catSkill.cast(CharacterInit.playerEnt,
+                {
+                    x: this.m_animation.x,
+                    y: this.m_animation.y,
+                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
+        })
+        //------------------
         this.m_mobileCatSkillBtn.on(Laya.Event.CLICK, this, () => {
             if (EnemyInit.isWin) return;
             this.m_catSkill.cast(CharacterInit.playerEnt,
@@ -1304,6 +1409,16 @@ export class Character extends Laya.Script {
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
         })
         //人技
+        //reset
+        this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, () => {
+            if (EnemyInit.isWin) return;
+            this.m_humanSkill.cast(CharacterInit.playerEnt,
+                {
+                    x: this.m_animation.x,
+                    y: this.m_animation.y,
+                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
+        })
+        //-----------------
         this.m_mobileHumanSkillBtn.on(Laya.Event.CLICK, this, () => {
             if (EnemyInit.isWin) return;
             this.m_humanSkill.cast(CharacterInit.playerEnt,
@@ -1431,9 +1546,9 @@ export default class CharacterInit extends Laya.Script {
         Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
         player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
         player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);//角色UI狀態方法
-        if (Laya.Browser.onMobile) {
+        // if (Laya.Browser.onMobile) {
             player.showMobileUI(CharacterInit.playerEnt.m_animation);
-        }
+        // }
     }
     private initSetting(player: Character): void {
 

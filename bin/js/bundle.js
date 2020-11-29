@@ -1140,6 +1140,8 @@
             this.generateTimer = null;
             this.battleToggle = true;
             this.battleTimer = null;
+            this.endingRewardUIToggle = false;
+            this.endingSkillUIToggle = false;
             this.rewardGoldValue = 500;
             this.rewardCrystalValue = 100;
             this.villageManager = new Village();
@@ -1201,35 +1203,78 @@
                 this.timeLeftValue--;
             }, 1000);
             this.showBattleInfo();
-            if (Laya.Browser.onMobile) {
-                this.mobileClick();
-            }
+            this.mobileClick();
         }
         mobileClick() {
-            CharacterInit.playerEnt.m_mobileAtkBtn.on(Laya.Event.CLICK, this, () => {
+            CharacterInit.playerEnt.m_mobileAtkBtn.off(Laya.Event.CLICK, this, () => {
                 let player = CharacterInit.playerEnt;
                 if (Village.reinforceToggle) {
                     this.villageManager.clearReinforceUI();
                 }
-                if (this.endingRewardUI) {
+                if (this.endingRewardUIToggle) {
                     Laya.Tween.to(this.endingRewardUI, { alpha: 0.3 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                        this.endingRewardUI.destroy();
-                        this.rewardCrystal.destroy();
-                        this.rewardGold.destroy();
-                        this.rewardCrystalText.destroy();
-                        this.rewardGoldText.destroy();
-                        this.showEndSkill();
+                        this.clearEndRewardUI();
+                        this.showEndSkillUI();
                     }), 0);
                 }
                 ;
-                if (this.endingSkillUI) {
+                if (this.endingSkillUIToggle) {
                     if (player.m_isFacingRight) {
                         this.skillChoose(2);
                     }
                     else {
                         this.skillChoose(1);
                     }
+                    if (!this.endingSkillUIToggle) {
+                        this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                        this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                        this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                        this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+                    }
+                }
+            });
+            CharacterInit.playerEnt.m_mobileLeftBtn.off(Laya.Event.CLICK, this, () => {
+                if (this.endingSkillUI) {
+                    let player = CharacterInit.playerEnt;
                     if (!this.endingSkillUI.destroyed) {
+                        this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                        this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                        this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                        this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+                    }
+                }
+            });
+            CharacterInit.playerEnt.m_mobileRightBtn.off(Laya.Event.CLICK, this, () => {
+                if (this.endingSkillUI) {
+                    let player = CharacterInit.playerEnt;
+                    if (!this.endingSkillUI.destroyed) {
+                        this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                        this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                        this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                        this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+                    }
+                }
+            });
+            CharacterInit.playerEnt.m_mobileAtkBtn.on(Laya.Event.CLICK, this, () => {
+                let player = CharacterInit.playerEnt;
+                if (Village.reinforceToggle) {
+                    this.villageManager.clearReinforceUI();
+                }
+                if (this.endingRewardUIToggle) {
+                    Laya.Tween.to(this.endingRewardUI, { alpha: 0.3 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                        this.clearEndRewardUI();
+                        this.showEndSkillUI();
+                    }), 0);
+                }
+                ;
+                if (this.endingSkillUIToggle) {
+                    if (player.m_isFacingRight) {
+                        this.skillChoose(2);
+                    }
+                    else {
+                        this.skillChoose(1);
+                    }
+                    if (!this.endingSkillUIToggle) {
                         this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
                         this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
                         this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
@@ -1265,18 +1310,14 @@
             if (Village.reinforceToggle && e.keyCode === 32) {
                 this.villageManager.clearReinforceUI();
             }
-            if (this.endingRewardUI && e.keyCode === 32) {
+            if (this.endingRewardUIToggle && e.keyCode === 32) {
                 Laya.Tween.to(this.endingRewardUI, { alpha: 0.3 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                    this.endingRewardUI.destroy();
-                    this.rewardCrystal.destroy();
-                    this.rewardGold.destroy();
-                    this.rewardCrystalText.destroy();
-                    this.rewardGoldText.destroy();
-                    this.showEndSkill();
+                    this.clearEndRewardUI();
+                    this.showEndSkillUI();
                 }), 0);
             }
             ;
-            if (this.endingSkillUI) {
+            if (this.endingSkillUIToggle) {
                 if (e.keyCode === 32) {
                     if (player.m_isFacingRight) {
                         this.skillChoose(2);
@@ -1285,7 +1326,7 @@
                         this.skillChoose(1);
                     }
                 }
-                if (!this.endingSkillUI.destroyed) {
+                if (!this.endingSkillUIToggle) {
                     this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
                     this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
                     this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
@@ -1317,9 +1358,10 @@
             this.battleTimer = null;
             CharacterInit.playerEnt.m_rigidbody.linearVelocity = { x: 0, y: 0 };
         }
-        showEndSkill() {
+        showEndSkillUI() {
             let player = CharacterInit.playerEnt;
-            this.endingSkillUI = new Laya.Sprite();
+            this.endingSkillUIToggle = true;
+            this.endingSkillUI = Laya.Pool.getItemByClass("endingSkillUI", Laya.Sprite);
             this.endingSkillUI.width = 684;
             this.endingSkillUI.height = 576;
             this.endingSkillUI.loadImage('UI/ending/chooseSkill.png');
@@ -1330,8 +1372,8 @@
                 'x': this.endingSkillUI.x,
                 'y': this.endingSkillUI.y,
             };
-            this.skillCat = new Laya.Sprite();
-            this.skillHuman = new Laya.Sprite();
+            this.skillCat = Laya.Pool.getItemByClass("skillCat", Laya.Sprite);
+            this.skillHuman = Laya.Pool.getItemByClass("skillHuman", Laya.Sprite);
             this.skillCat.width = this.skillHuman.width = 130;
             this.skillCat.height = this.skillHuman.height = 130;
             this.skillCat.pos(pos['x'] + 136, pos['y'] + 140);
@@ -1340,8 +1382,8 @@
             this.skillHuman.loadImage('UI/ending/skillBox.png');
             this.r1 = Math.floor(Math.random() * 2);
             this.r2 = Math.floor(Math.random() * 2);
-            this.skillCatIcon = new Laya.Sprite();
-            this.skillHumanIcon = new Laya.Sprite();
+            this.skillCatIcon = Laya.Pool.getItemByClass("skillCatIcon", Laya.Sprite);
+            this.skillHumanIcon = Laya.Pool.getItemByClass("skillHumanIcon", Laya.Sprite);
             this.skillCatIcon.width = this.skillHumanIcon.width = 100;
             this.skillCatIcon.height = this.skillHumanIcon.height = 100;
             this.skillCatIcon.pos(this.skillCat.x + 15, this.skillCat.y + 15);
@@ -1350,18 +1392,18 @@
             this.skillHumanIcon.loadImage(SkillList.humanSkillList[this.r2].m_iconB);
             this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
             this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-            this.skillCatInfo = new Laya.Sprite();
-            this.skillHumanInfo = new Laya.Sprite();
+            this.skillCatInfo = Laya.Pool.getItemByClass("skillCatInfo", Laya.Sprite);
+            this.skillHumanInfo = Laya.Pool.getItemByClass("skillHumanInfo", Laya.Sprite);
             this.skillCatInfo.width = this.skillHumanInfo.width = 205;
             this.skillCatInfo.height = this.skillHumanInfo.height = 110;
             this.skillCatInfo.pos(pos['x'] + 96, pos['y'] + 402);
             this.skillHumanInfo.pos(pos['x'] + 383, pos['y'] + 402);
             this.skillCatInfo.loadImage("UI/ending/infoBox.png");
             this.skillHumanInfo.loadImage("UI/ending/infoBox.png");
-            this.skillCatInfoText = new Laya.Text();
-            this.skillHumanInfoText = new Laya.Text();
-            this.catSkillName = new Laya.Text();
-            this.humanSkillName = new Laya.Text();
+            this.skillCatInfoText = Laya.Pool.getItemByClass("skillCatInfoText", Laya.Text);
+            this.skillHumanInfoText = Laya.Pool.getItemByClass("skillHumanInfoText", Laya.Text);
+            this.catSkillName = Laya.Pool.getItemByClass("catSkillName", Laya.Text);
+            this.humanSkillName = Laya.Pool.getItemByClass("humanSkillName", Laya.Text);
             this.skillCatInfoText.width = this.skillHumanInfoText.width = this.catSkillName.width = this.humanSkillName.width = 167;
             this.skillCatInfoText.height = this.skillHumanInfoText.height = this.catSkillName.height = this.humanSkillName.height = 70;
             this.skillCatInfoText.pos(this.skillCatInfo.x + 20, this.skillCatInfo.y + 20);
@@ -1377,8 +1419,8 @@
             this.skillCatInfoText.color = this.skillHumanInfoText.color = this.catSkillName.color = this.humanSkillName.color = '#fdfdfd';
             this.skillCatInfoText.fontSize = this.skillHumanInfoText.fontSize = this.catSkillName.fontSize = this.humanSkillName.fontSize = 32;
             this.skillCatInfoText.wordWrap = this.skillHumanInfoText.wordWrap = true;
-            this.leftArrow = new Laya.Sprite();
-            this.rightArrow = new Laya.Sprite();
+            this.leftArrow = Laya.Pool.getItemByClass("leftArrow", Laya.Sprite);
+            this.rightArrow = Laya.Pool.getItemByClass("rightArrow", Laya.Sprite);
             this.leftArrow.pos(pos['x'] + 175, pos['y'] + 340);
             this.rightArrow.pos(pos['x'] + 457, pos['y'] + 340);
             this.leftArrow.loadImage('UI/leftArr.png');
@@ -1412,7 +1454,7 @@
                     break;
             }
             ExtraData.saveData();
-            this.clearUI();
+            this.clearEndSkillUI();
             this.unsetCharacter();
         }
         unsetCharacter() {
@@ -1426,7 +1468,8 @@
         }
         showEndRewardUI() {
             let player = CharacterInit.playerEnt.m_animation;
-            this.endingRewardUI = new Laya.Sprite();
+            this.endingRewardUIToggle = true;
+            this.endingRewardUI = Laya.Pool.getItemByClass("endingRewardUI", Laya.Sprite);
             this.endingRewardUI.width = 342;
             this.endingRewardUI.height = 288;
             this.endingRewardUI.loadImage('UI/ending/ending.png');
@@ -1435,10 +1478,10 @@
                 'x': this.endingRewardUI.x,
                 'y': this.endingRewardUI.y,
             };
-            this.rewardCrystal = new Laya.Sprite();
-            this.rewardGold = new Laya.Sprite();
-            this.rewardCrystalText = new Laya.Text();
-            this.rewardGoldText = new Laya.Text();
+            this.rewardCrystal = Laya.Pool.getItemByClass("rewardCrystal", Laya.Sprite);
+            this.rewardGold = Laya.Pool.getItemByClass("rewardGold", Laya.Sprite);
+            this.rewardCrystalText = Laya.Pool.getItemByClass("rewardCrystalText", Laya.Text);
+            this.rewardGoldText = Laya.Pool.getItemByClass("rewardGoldText", Laya.Text);
             this.rewardCrystal.width = this.rewardGold.width = 50;
             this.rewardCrystal.height = this.rewardGold.height = 50;
             this.rewardCrystalText.width = this.rewardGoldText.width = 135;
@@ -1460,6 +1503,19 @@
             Laya.stage.addChild(this.rewardCrystalText);
             Laya.stage.addChild(this.rewardGoldText);
             this.endingUpdateData();
+        }
+        clearEndRewardUI() {
+            this.endingRewardUIToggle = false;
+            Laya.stage.removeChild(this.endingRewardUI);
+            Laya.stage.removeChild(this.rewardCrystal);
+            Laya.stage.removeChild(this.rewardGold);
+            Laya.stage.removeChild(this.rewardCrystalText);
+            Laya.stage.removeChild(this.rewardGoldText);
+            Laya.Pool.recover("endingRewardUI", this.endingRewardUI);
+            Laya.Pool.recover("rewardCrystal", this.rewardCrystal);
+            Laya.Pool.recover("rewardGold", this.rewardGold);
+            Laya.Pool.recover("rewardCrystalText", this.rewardCrystalText);
+            Laya.Pool.recover("rewardGoldText", this.rewardGoldText);
         }
         showBattleInfo() {
             this.enemyLeftIcon = new Laya.Sprite();
@@ -1515,20 +1571,34 @@
             Laya.stage.x = Laya.stage.y = 0;
             Laya.SoundManager.stopAll();
         }
-        clearUI() {
-            this.endingSkillUI.destroy();
-            this.skillCat.destroy();
-            this.skillHuman.destroy();
-            this.skillCatIcon.destroy();
-            this.skillHumanIcon.destroy();
-            this.skillCatInfo.destroy();
-            this.skillHumanInfo.destroy();
-            this.skillCatInfoText.destroy();
-            this.skillHumanInfoText.destroy();
-            this.catSkillName.destroy();
-            this.humanSkillName.destroy();
-            this.leftArrow.destroy();
-            this.rightArrow.destroy();
+        clearEndSkillUI() {
+            this.endingSkillUIToggle = false;
+            Laya.stage.removeChild(this.endingSkillUI);
+            Laya.stage.removeChild(this.skillCat);
+            Laya.stage.removeChild(this.skillHuman);
+            Laya.stage.removeChild(this.skillCatIcon);
+            Laya.stage.removeChild(this.skillHumanIcon);
+            Laya.stage.removeChild(this.skillCatInfo);
+            Laya.stage.removeChild(this.skillHumanInfo);
+            Laya.stage.removeChild(this.skillCatInfoText);
+            Laya.stage.removeChild(this.skillHumanInfoText);
+            Laya.stage.removeChild(this.catSkillName);
+            Laya.stage.removeChild(this.humanSkillName);
+            Laya.stage.removeChild(this.leftArrow);
+            Laya.stage.removeChild(this.rightArrow);
+            Laya.Pool.recover("endingSkillUI", this.endingSkillUI);
+            Laya.Pool.recover("skillCat", this.skillCat);
+            Laya.Pool.recover("skillHuman", this.skillHuman);
+            Laya.Pool.recover("skillCatIcon", this.skillCatIcon);
+            Laya.Pool.recover("skillHumanIcon", this.skillHumanIcon);
+            Laya.Pool.recover("skillCatInfo", this.skillCatInfo);
+            Laya.Pool.recover("skillHumanInfo", this.skillHumanInfo);
+            Laya.Pool.recover("skillCatInfoText", this.skillCatInfoText);
+            Laya.Pool.recover("skillHumanInfoText", this.skillHumanInfoText);
+            Laya.Pool.recover("catSkillName", this.catSkillName);
+            Laya.Pool.recover("humanSkillName", this.humanSkillName);
+            Laya.Pool.recover("leftArrow", this.leftArrow);
+            Laya.Pool.recover("rightArrow", this.rightArrow);
         }
     }
 
@@ -1557,11 +1627,61 @@
         }
         onStart() {
             this.resetTutorial();
-            if (Laya.Browser.onMobile) {
-                this.mobileClick();
-            }
+            this.mobileClick();
         }
         mobileClick() {
+            Laya.stage.off(Laya.Event.MOUSE_DOWN, this, () => {
+                if (this.stepChanging)
+                    return;
+                let player = CharacterInit.playerEnt;
+                switch (this.currentHintStep) {
+                    case turtorialHintStep.tryMove:
+                        if (player.m_mobileLeftBtnClicked) {
+                            this.moveLeft = true;
+                        }
+                        else if (player.m_mobileRightBtnClicked) {
+                            this.moveRight = true;
+                        }
+                        if (this.moveRight && this.moveLeft) {
+                            this.setHintStep(turtorialHintStep.trySprint);
+                        }
+                        break;
+                    case turtorialHintStep.trySprint:
+                        if (player.m_mobileSprintBtnClicked) {
+                            this.setHintStep(turtorialHintStep.tryAttack);
+                        }
+                        break;
+                    case turtorialHintStep.tryAttack:
+                        if (EnemyInit.enemyLeftCur <= 0) {
+                            this.setHintStep(turtorialHintStep.trySkill);
+                            player.m_catSkill = player.getSkillTypeByExtraData('c', 1);
+                            player.m_humanSkill = player.getSkillTypeByExtraData('h', 1);
+                            Turtorial.noOath = false;
+                        }
+                        break;
+                    case turtorialHintStep.trySkill:
+                        if (EnemyInit.enemyLeftCur <= 0) {
+                            CharacterInit.playerEnt.clearAddDebuffTimer();
+                            CharacterInit.playerEnt.removeAllDebuff();
+                            Turtorial.safeDebuff = false;
+                            this.setHintStep(turtorialHintStep.seeInfoA);
+                        }
+                        break;
+                    case turtorialHintStep.seeInfoA:
+                        this.setHintStep(turtorialHintStep.seeInfoB);
+                        break;
+                    case turtorialHintStep.seeInfoB:
+                        this.setHintStep(turtorialHintStep.seeInfoC);
+                        break;
+                    case turtorialHintStep.seeInfoC:
+                        EnemyInit.newbieDone = true;
+                        this.currentHintUI.destroy();
+                        this.currentHintUI.destroyed = true;
+                        break;
+                    default:
+                        break;
+                }
+            });
             Laya.stage.on(Laya.Event.MOUSE_DOWN, this, () => {
                 if (this.stepChanging)
                     return;
@@ -3035,6 +3155,21 @@
             Laya.stage.addChild(this.m_mobileSprintBtn);
             Laya.stage.addChild(this.m_mobileCatSkillBtn);
             Laya.stage.addChild(this.m_mobileHumanSkillBtn);
+            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
+            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, () => {
+                this.m_mobileLeftBtnClicked = false;
+                if (this.m_canJump) {
+                    this.m_playerVelocity["Vx"] = 0;
+                }
+                this.applyMoveX();
+            });
+            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, () => {
+                this.m_mobileLeftBtnClicked = false;
+                if (this.m_canJump) {
+                    this.m_playerVelocity["Vx"] = 0;
+                }
+                this.applyMoveX();
+            });
             this.m_mobileLeftBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
             this.m_mobileLeftBtn.on(Laya.Event.MOUSE_UP, this, () => {
                 this.m_mobileLeftBtnClicked = false;
@@ -3045,6 +3180,21 @@
             });
             this.m_mobileLeftBtn.on(Laya.Event.MOUSE_OUT, this, () => {
                 this.m_mobileLeftBtnClicked = false;
+                if (this.m_canJump) {
+                    this.m_playerVelocity["Vx"] = 0;
+                }
+                this.applyMoveX();
+            });
+            this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; });
+            this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, () => {
+                this.m_mobileRightBtnClicked = false;
+                if (this.m_canJump) {
+                    this.m_playerVelocity["Vx"] = 0;
+                }
+                this.applyMoveX();
+            });
+            this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, () => {
+                this.m_mobileRightBtnClicked = false;
                 if (this.m_canJump) {
                     this.m_playerVelocity["Vx"] = 0;
                 }
@@ -3089,6 +3239,27 @@
                         this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
                 }
             };
+            this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, () => {
+                if (!this.m_canAttack)
+                    return;
+                if (this.m_atkTimer)
+                    clearInterval(this.m_atkTimer);
+                this.attackStepEventCheck();
+                if (!this.m_animationChanging) {
+                    if (this.m_atkStep === 1) {
+                        this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 3);
+                    }
+                    else if (this.m_atkStep === 0) {
+                        this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 8);
+                    }
+                }
+                this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
+                this.attackSimulation(this.m_atkStep);
+                this.m_canAttack = false;
+                setTimeout(() => {
+                    this.m_canAttack = true;
+                }, this.m_attackCdTime);
+            });
             this.m_mobileAtkBtn.on(Laya.Event.CLICK, this, () => {
                 if (!this.m_canAttack)
                     return;
@@ -3110,6 +3281,35 @@
                     this.m_canAttack = true;
                 }, this.m_attackCdTime);
             });
+            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, () => {
+                this.m_mobileSprintBtnClicked = true;
+                if (!this.m_canSprint || EnemyInit.isWin)
+                    return;
+                this.delayMove(0.08);
+                this.hurtedEvent(1.5);
+                this.updateAnimation(this.m_state, CharacterStatus.sprint, null, false, 100);
+                this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 100.0 : -100.0, y: 0.0 };
+                this.m_rigidbody.mask = 2 | 16;
+                this.m_collider.refresh();
+                setTimeout(() => {
+                    this.m_rigidbody.mask = 2 | 8 | 16;
+                    this.m_collider.density = 300;
+                    this.m_collider.refresh();
+                    setTimeout(() => {
+                        this.m_collider.density = 1;
+                        this.m_collider.refresh();
+                    }, 10);
+                }, 500);
+                this.m_canSprint = false;
+                setTimeout(() => {
+                    this.m_canSprint = true;
+                }, 3000);
+                this.updateSprintCdTimer();
+                Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
+                }), 0);
+            });
+            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
             this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, () => {
                 this.m_mobileSprintBtnClicked = true;
                 if (!this.m_canSprint || EnemyInit.isWin)
@@ -3139,10 +3339,26 @@
                 }), 0);
             });
             this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
+            this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, () => {
+                if (EnemyInit.isWin)
+                    return;
+                this.m_catSkill.cast(CharacterInit.playerEnt, {
+                    x: this.m_animation.x,
+                    y: this.m_animation.y,
+                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
+            });
             this.m_mobileCatSkillBtn.on(Laya.Event.CLICK, this, () => {
                 if (EnemyInit.isWin)
                     return;
                 this.m_catSkill.cast(CharacterInit.playerEnt, {
+                    x: this.m_animation.x,
+                    y: this.m_animation.y,
+                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
+            });
+            this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, () => {
+                if (EnemyInit.isWin)
+                    return;
+                this.m_humanSkill.cast(CharacterInit.playerEnt, {
                     x: this.m_animation.x,
                     y: this.m_animation.y,
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
@@ -3202,7 +3418,6 @@
             Laya.timer.frameLoop(1, this, mobileMoveFunc);
         }
     }
-    Character.stageClicked = false;
     class CharacterInit extends Laya.Script {
         constructor() {
             super();
@@ -3236,9 +3451,7 @@
             Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
             player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
             player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);
-            if (Laya.Browser.onMobile) {
-                player.showMobileUI(CharacterInit.playerEnt.m_animation);
-            }
+            player.showMobileUI(CharacterInit.playerEnt.m_animation);
         }
         initSetting(player) {
             ExtraData.loadData();
@@ -3951,10 +4164,10 @@
         backgroundImageHandler() {
             let player = CharacterInit.playerEnt.m_animation;
             Laya.Tween.to(this.bg2, {
-                x: player.x - 1024,
+                x: player.x - 500,
             }, 50, Laya.Ease.linearInOut, null);
             Laya.Tween.to(this.bg1, {
-                x: player.x - 1024,
+                x: player.x - 500,
             }, 10, Laya.Ease.linearInOut, null);
         }
     }
