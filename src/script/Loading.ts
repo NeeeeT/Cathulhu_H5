@@ -1,10 +1,10 @@
-import value from "*.glsl";
 import MissionManager from "./MissionManager";
 import Village from "./Village";
 
 export default class Loading extends Laya.Script{
     resourceLoad = [ 
-        "Audio/Bgm/BGM01.mp3", 'Audio/Attack/Attack0.wav', 'Audio/Attack/Attack1.wav', 'Audio/EnemyHurt/EnemyHurt0.wav', 'Audio/EnemyHurt/EnemyHurt1.wav',
+        "Audio/Bgm/BGM01.mp3", 'Audio/Attack/Attack0.wav', 'Audio/Attack/Attack1.wav', 'Audio/Misc/wind.wav', 'Audio/EnemyHurt/EnemyHurt0.wav', 'Audio/EnemyHurt/EnemyHurt1.wav',
+        "Audio/Misc/dash.wav", "Audio/Misc/cat.mp3",
         "font/silver.ttf",
         "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
         "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas","character/Sprint.atlas",

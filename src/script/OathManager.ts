@@ -5,6 +5,7 @@ import { DebuffType, Blind, BodyCrumble, Insane, Predator, Decay } from "./Debuf
 import EnemyInit from "./EnemyInit";
 import Turtorial from "./Tutorial";
 import ZOrderManager from "./ZOrderManager";
+import { ExtraData } from "./ExtraData";
 
 export default class OathManager extends Laya.Script {
 
@@ -31,6 +32,7 @@ export default class OathManager extends Laya.Script {
     public catSkillIconCd: Laya.Text;
     public humanSkillIconCd: Laya.Text;
     public sprintIconCd: Laya.Text;
+    public goldValue: Laya.Text;
     
     
     
@@ -147,24 +149,27 @@ export default class OathManager extends Laya.Script {
         this.catSkillIconCd = new Laya.Text();
         this.humanSkillIconCd = new Laya.Text();
         this.sprintIconCd = new Laya.Text();
+        this.goldValue = new Laya.Text();
 
         this.catSkillIcon.size(69, 69);
         this.humanSkillIcon.size(69, 69);
         this.sprintIcon.size(69, 69)
         this.catSkillIconCd.size(100, 100);
         this.goldImage.size(50, 50);
+        this.goldValue.size(100, 60);
 
-        this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = this.sprintIconCd.fontSize = 42;
-        this.catSkillIconCd.font = this.humanSkillIconCd.font = this.sprintIconCd.font = 'silver';
-        this.catSkillIconCd.stroke = this.humanSkillIconCd.stroke = this.sprintIconCd.stroke = 2;
-        this.catSkillIconCd.strokeColor = this.humanSkillIconCd.strokeColor = this.sprintIconCd.strokeColor = '#000';
-        this.catSkillIconCd.color = this.humanSkillIconCd.color = this.sprintIconCd.color = '#fff';
-
+        this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = this.sprintIconCd.fontSize = this.goldValue.fontSize = 42;
+        this.catSkillIconCd.font = this.humanSkillIconCd.font = this.sprintIconCd.font = this.goldValue.font = 'silver';
+        this.catSkillIconCd.stroke = this.humanSkillIconCd.stroke = this.sprintIconCd.stroke = this.goldValue.stroke = 2;
+        this.catSkillIconCd.strokeColor = this.humanSkillIconCd.strokeColor = this.sprintIconCd.strokeColor = this.goldValue.strokeColor = '#000';
+        this.catSkillIconCd.color = this.humanSkillIconCd.color = this.sprintIconCd.color = this.goldValue.color = '#fff';
 
         this.characterLogo.source = "UI/Box.png";
              
         this.sprintIcon.loadImage("UI/icon/sprint.png");
         this.goldImage.loadImage("UI/Gold.png");
+
+        this.goldValue.text = String(ExtraData.currentData['gold']);
         
         let oathLogoFunc = function() {
             if (CharacterInit.playerEnt.m_animation.destroyed) {
@@ -190,6 +195,7 @@ export default class OathManager extends Laya.Script {
                 this.humanSkillIconCd.pos(this.humanSkillIcon.x+29,this.humanSkillIcon.y+21);
                 this.sprintIconCd.pos(this.sprintIcon.x+29,this.sprintIcon.y+21);
                 this.goldImage.pos(pos['x']+205, pos['y']+110);
+                this.goldValue.pos(this.goldImage.x + 45, this.goldImage.y + 10);
                 this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1:0.3;
                 this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1:0.3;
                 this.sprintIcon.alpha = CharacterInit.playerEnt.m_canSprint ? 1:0.3;
@@ -238,6 +244,8 @@ export default class OathManager extends Laya.Script {
         Laya.stage.addChild(this.sprintIcon);
         Laya.stage.addChild(this.sprintIconCd);
         Laya.stage.addChild(this.goldImage);
+        Laya.stage.addChild(this.goldValue);
+
         this.characterLogo.play();
         
         ZOrderManager.setZOrder(this.characterLogo, 100)
@@ -248,6 +256,7 @@ export default class OathManager extends Laya.Script {
         ZOrderManager.setZOrder(this.sprintIcon, 101);
         ZOrderManager.setZOrder(this.sprintIconCd, 102);
         ZOrderManager.setZOrder(this.goldImage, 102);
+        ZOrderManager.setZOrder(this.goldValue, 102);
     }
     public clearBloodyUI() {
         if(this.oathBar != null){
@@ -289,6 +298,10 @@ export default class OathManager extends Laya.Script {
         if(this.goldImage != null){
             this.goldImage.destroy();
             this.goldImage = null;
+        }
+        if(this.goldValue != null){
+            this.goldValue.destroy();
+            this.goldValue = null;
         }
     }
     public oathChargeDetect(): boolean{

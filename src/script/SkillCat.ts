@@ -88,6 +88,7 @@ export class Slam extends VirtualSkill {
             Laya.stage.graphics.clear();
         }, this.m_cd * 1000);
         this.updateCdTimer();
+        this.setSound(0.6, 'Audio/Misc/cat.mp3', 1);
     }
     attackRangeCheck(owner: any, pos: object): void {
         let enemy = EnemyHandler.enemyPool;
@@ -213,6 +214,7 @@ export class BlackHole extends VirtualSkill {
         Laya.stage.addChild(this.m_animation);
         this.m_animation.play();
         this.updateCdTimer();
+        this.setSound(0.6, 'Audio/Misc/blackhole.wav', 1);
     }
     attractRangeCheck(owner: any, pos: object): void {
         let enemy = EnemyHandler.enemyPool;

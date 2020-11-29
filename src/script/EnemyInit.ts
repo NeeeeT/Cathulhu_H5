@@ -114,6 +114,9 @@ export default class EnemyInit extends Laya.Script{
     onAwake() {
         this.updateMissionData();
     }
+    onUpdate() {
+        // console.log(CharacterInit.playerEnt.m_isFacingRight);
+    }
     onStart() {
 
         this.timeLeftValue = this.roundTimeLeft;
@@ -199,7 +202,7 @@ export default class EnemyInit extends Laya.Script{
                 // new MissionManager().showMissionUI();
             }
             if (this.endingRewardUIToggle) {
-                Laya.Tween.to(this.endingRewardUI, { alpha: 0.3 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(this.endingRewardUI, { alpha: 0.0 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     // this.endingRewardUI.destroy();
                     // this.rewardCrystal.destroy();
                     // this.rewardGold.destroy();
@@ -287,25 +290,26 @@ export default class EnemyInit extends Laya.Script{
                     this.skillChoose(1);
                 }
             }
-            if(!this.endingSkillUIToggle){
-                this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-            }
+            // if(!this.endingSkillUIToggle){
+            this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+            this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+            this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+            this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+            // console.log(CharacterInit.playerEnt.m_isFacingRight);
+            // }
         }
     }
-    onKeyDown(e: Laya.Event){
-        if(this.endingSkillUI){
-            let player = CharacterInit.playerEnt;
-            if(!this.endingSkillUI.destroyed){
-                this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-            }
-        }
-    }
+    // onKeyDown(e: Laya.Event){
+    //     if(this.endingSkillUIToggle){
+    //         let player = CharacterInit.playerEnt;
+    //         this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+    //         this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+    //         this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+    //         this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+    //         console.log('ooo!');
+    //         console.log(CharacterInit.playerEnt.m_isFacingRight);
+    //     }
+    // }
     endTheBattle(): void{
         this.battleToggle = false;
         //新手教學結束
@@ -570,6 +574,7 @@ export default class EnemyInit extends Laya.Script{
         this.endingRewardUI = Laya.Pool.getItemByClass("endingRewardUI", Laya.Sprite);
         this.endingRewardUI.width = 342;
         this.endingRewardUI.height = 288;
+        this.endingRewardUI.alpha = 1;
         this.endingRewardUI.loadImage('UI/ending/ending.png');
         this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
         // this.endingRewardUI.pos(-683, 94);

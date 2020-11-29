@@ -1,5 +1,12 @@
 export default class MainToLoading extends Laya.Script{
     dirtEffect: Laya.Animation;
+    windBgm: string = 'Audio/Misc/wind.wav';
+    onAwake(): void{
+        Laya.loader.load(this.windBgm, Laya.Handler.create(this, ()=>{
+            Laya.SoundManager.playMusic(this.windBgm, 0);
+            Laya.SoundManager.setMusicVolume(0.8);
+        }));
+    }
     onKeyDown(): void{
         this.dirtEffect.destroy();
         Laya.Scene.open('Loading.scene', true);
@@ -12,6 +19,10 @@ export default class MainToLoading extends Laya.Script{
             this.dirtEffect.destroy();
             Laya.Scene.open('Loading.scene', true);
         })
+        // Laya.stage.frameOnce(90, this, ()=>{
+        //     Laya.SoundManager.playMusic('Audio/Misc/wind.wav', 0);
+        //     Laya.SoundManager.setMusicVolume(0.8);
+        // });
     }
     public createDirtEffect() {
         this.dirtEffect = new Laya.Animation();

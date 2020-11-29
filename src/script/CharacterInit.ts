@@ -10,7 +10,6 @@ import EnemyHandler, { Fast, Newbie, Normal, Shield } from "./EnemyHandler";
 
 import { ExtraData } from "./ExtraData";
 import EnemyInit from "./EnemyInit";
-import Village from "./Village";
 import Turtorial from "./Tutorial";
 import ZOrderManager from "./ZOrderManager";
 
@@ -120,6 +119,8 @@ export class Character extends Laya.Script {
     emptySprForMobile: Laya.Sprite;
 
     spawn() {
+        console.log('生成一次');
+
         this.loadCharacterData();
         this.getAtkValue(this.m_atkLevel);
 
@@ -430,7 +431,7 @@ export class Character extends Laya.Script {
             // setTimeout(() => {
             //     this.m_canSprint = true;
             // },3000);
-            let sprintDone = () =>{
+            let sprintDone = () => {
                 this.m_rigidbody.mask = 2 | 8 | 16;
                 this.m_collider.density = 300;
                 this.m_collider.refresh();
@@ -447,6 +448,7 @@ export class Character extends Laya.Script {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut,
                         Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
+            this.setSound(0.6, "Audio/Misc/dash.wav", 1);
         }
         //Up
         // if (this.m_keyDownList[38]) {

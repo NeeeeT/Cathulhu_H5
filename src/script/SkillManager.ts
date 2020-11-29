@@ -96,4 +96,8 @@ export abstract class VirtualSkill extends Laya.Script{
             this.m_cdCount = !this.m_canUse ? (this.m_cdCount - 1):0;
         }, 1000);
     }
+    setSound(volume: number, url: string, loop: number) {
+        Laya.SoundManager.playSound(url, loop);
+        Laya.SoundManager.setSoundVolume(volume, url);
+    }
 }
