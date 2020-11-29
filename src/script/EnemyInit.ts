@@ -190,123 +190,63 @@ export default class EnemyInit extends Laya.Script{
             this.mobileClick();
         }
     }
-    mobileClick(): void{
+    mobileClick(): void {
+
+        let mobileAtkBtnConfirmFunc = function () {
+            let player = CharacterInit.playerEnt
+            if (Village.reinforceToggle) {
+                this.villageManager.clearReinforceUI();
+                // new MissionManager().showMissionUI();
+            }
+            if (this.endingRewardUIToggle) {
+                Laya.Tween.to(this.endingRewardUI, { alpha: 0.3 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    // this.endingRewardUI.destroy();
+                    // this.rewardCrystal.destroy();
+                    // this.rewardGold.destroy();
+                    // this.rewardCrystalText.destroy();
+                    // this.rewardGoldText.destroy();
+                    this.clearEndRewardUI();
+                    this.showEndSkillUI();
+                }), 0);
+            };
+            if (this.endingSkillUIToggle) {
+                // if(e.keyCode === 32){
+                if (player.m_isFacingRight) {
+                    this.skillChoose(2);
+                }
+                else {
+                    this.skillChoose(1);
+                }
+                // }
+                if (!this.endingSkillUIToggle) {
+                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+                }
+            }
+        }
+
+        let mobileMoveBtnChooseFunc = function () {
+            if (this.endingSkillUI) {
+                let player = CharacterInit.playerEnt
+                if (!this.endingSkillUI.destroyed) {
+                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
+                }
+            }
+        }
 
         //reset
-        CharacterInit.playerEnt.m_mobileAtkBtn.off(Laya.Event.CLICK, this, () => {
-            let player = CharacterInit.playerEnt
-            if(Village.reinforceToggle){
-                this.villageManager.clearReinforceUI();
-                // new MissionManager().showMissionUI();
-            }
-            if(this.endingRewardUIToggle){
-                Laya.Tween.to(this.endingRewardUI, {alpha: 0.3}, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
-                    // this.endingRewardUI.destroy();
-                    // this.rewardCrystal.destroy();
-                    // this.rewardGold.destroy();
-                    // this.rewardCrystalText.destroy();
-                    // this.rewardGoldText.destroy();
-                    this.clearEndRewardUI();
-                    this.showEndSkillUI();
-                }), 0);
-            };
-            if(this.endingSkillUIToggle){
-                // if(e.keyCode === 32){
-                    if(player.m_isFacingRight){
-                        this.skillChoose(2);
-                    }
-                    else{
-                        this.skillChoose(1);
-                    }
-                // }
-                if(!this.endingSkillUIToggle){
-                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                }
-            }
-        })
-        CharacterInit.playerEnt.m_mobileLeftBtn.off(Laya.Event.CLICK, this, () => {
-            if (this.endingSkillUI) {
-                let player = CharacterInit.playerEnt
-                if (!this.endingSkillUI.destroyed) {
-                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                }
-            }
-        })
-        CharacterInit.playerEnt.m_mobileRightBtn.off(Laya.Event.CLICK, this, () => {
-            if(this.endingSkillUI){
-                let player = CharacterInit.playerEnt
-                if (!this.endingSkillUI.destroyed) {
-                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                }
-            }
-        })
+        CharacterInit.playerEnt.m_mobileAtkBtn.off(Laya.Event.CLICK, this, mobileAtkBtnConfirmFunc);
+        CharacterInit.playerEnt.m_mobileLeftBtn.off(Laya.Event.CLICK, this, mobileMoveBtnChooseFunc);
+        CharacterInit.playerEnt.m_mobileRightBtn.off(Laya.Event.CLICK, this, mobileMoveBtnChooseFunc);
         //-------------------------
-
-        CharacterInit.playerEnt.m_mobileAtkBtn.on(Laya.Event.CLICK, this, () => {
-            let player = CharacterInit.playerEnt
-            if(Village.reinforceToggle){
-                this.villageManager.clearReinforceUI();
-                // new MissionManager().showMissionUI();
-            }
-            if(this.endingRewardUIToggle){
-                Laya.Tween.to(this.endingRewardUI, {alpha: 0.3}, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
-                    // this.endingRewardUI.destroy();
-                    // this.rewardCrystal.destroy();
-                    // this.rewardGold.destroy();
-                    // this.rewardCrystalText.destroy();
-                    // this.rewardGoldText.destroy();
-                    this.clearEndRewardUI();
-                    this.showEndSkillUI();
-                }), 0);
-            };
-            if(this.endingSkillUIToggle){
-                // if(e.keyCode === 32){
-                    if(player.m_isFacingRight){
-                        this.skillChoose(2);
-                    }
-                    else{
-                        this.skillChoose(1);
-                    }
-                // }
-                if(!this.endingSkillUIToggle){
-                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                }
-            }
-        })
-        CharacterInit.playerEnt.m_mobileLeftBtn.on(Laya.Event.CLICK, this, () => {
-            if (this.endingSkillUI) {
-                let player = CharacterInit.playerEnt
-                if (!this.endingSkillUI.destroyed) {
-                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                }
-            }
-        })
-        CharacterInit.playerEnt.m_mobileRightBtn.on(Laya.Event.CLICK, this, () => {
-            if(this.endingSkillUI){
-                let player = CharacterInit.playerEnt
-                if (!this.endingSkillUI.destroyed) {
-                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                }
-            }
-        })
+        CharacterInit.playerEnt.m_mobileAtkBtn.on(Laya.Event.CLICK, this, mobileAtkBtnConfirmFunc);
+        CharacterInit.playerEnt.m_mobileLeftBtn.on(Laya.Event.CLICK, this, mobileMoveBtnChooseFunc);
+        CharacterInit.playerEnt.m_mobileRightBtn.on(Laya.Event.CLICK, this, mobileMoveBtnChooseFunc);
     }
     onKeyUp(e: Laya.Event){
         let player = CharacterInit.playerEnt
