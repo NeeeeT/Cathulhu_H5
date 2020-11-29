@@ -5,4 +5,5 @@
    <item name="Died.scene" props="" ifExport="Default" aName=""/>
    <item name="Town.scene" props="" ifExport="Default" aName=""/>
    <item name="Main.scene" props="" ifExport="Default" aName=""/>
+   <item name="Loading2.scene" props="" ifExport="Default" aName=""/>
 </page>

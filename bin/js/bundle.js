@@ -282,6 +282,76 @@
     Village.reinforceToggle = false;
     Village.isNewbie = true;
 
+    class Loading2 extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.preparedTimer = null;
+            this.storyInfoCard = [
+                '８時にヒースロー空港に到着する予定です。 申し訳ないけど長居できないんですよ。 あなたは大変上手にフランス語が話せる。私もあなたと同じくらい上手に話すことができればよいのに。',
+            ];
+        }
+        onKeyDown() {
+            if (!this.prepared)
+                return;
+            this.storyInfo.destroy();
+            this.loadingProgress.destroy();
+            this.anyKeyIcon.destroy();
+            Laya.Scene.open(Loading2.nextSceneName);
+        }
+        onStart() {
+            this.prepared = false;
+            this.preparedSeconds = 2.5;
+            this.setStoryInfoCard();
+            this.setProgressBar();
+            this.setAnyKeyIcon();
+            this.preparedTimer = setInterval(() => {
+                if (this.preparedSeconds <= 0) {
+                    this.prepared = true;
+                    this.anyKeyIcon.visible = true;
+                    clearInterval(this.preparedTimer);
+                    Laya.Tween.to(this.anyKeyIcon, {
+                        alpha: 1,
+                    }, 300, Laya.Ease.linearInOut);
+                    return;
+                }
+                this.preparedSeconds -= 0.5;
+                Laya.Tween.to(this.loadingProgress, {
+                    value: this.loadingProgress.value + 0.2,
+                }, 400, Laya.Ease.linearInOut);
+            }, 500);
+        }
+        setProgressBar() {
+            this.loadingProgress = new Laya.ProgressBar("comp/prog.png");
+            this.loadingProgress.size(700, 20);
+            this.loadingProgress.sizeGrid = "0,10,0,10";
+            this.loadingProgress.pos(338, 510);
+            this.loadingProgress.value = 0.0;
+            Laya.stage.addChild(this.loadingProgress);
+        }
+        setStoryInfoCard() {
+            let randomCard = Math.floor(Math.random() * this.storyInfoCard.length);
+            this.storyInfo = new Laya.Text();
+            this.storyInfo.text = this.storyInfoCard[randomCard];
+            this.storyInfo.color = "#fff";
+            this.storyInfo.stroke = 3;
+            this.storyInfo.strokeColor = "#000";
+            this.storyInfo.font = "silver";
+            this.storyInfo.fontSize = 38;
+            this.storyInfo.wordWrap = true;
+            this.storyInfo.size(837, 180);
+            this.storyInfo.pos(267, 230);
+            Laya.stage.addChild(this.storyInfo);
+        }
+        setAnyKeyIcon() {
+            this.anyKeyIcon = new Laya.Sprite();
+            this.anyKeyIcon.loadImage('ui/anykey.png');
+            this.anyKeyIcon.pos(587, 420);
+            this.anyKeyIcon.alpha = 0;
+            this.anyKeyIcon.visible = false;
+            Laya.stage.addChild(this.anyKeyIcon);
+        }
+    }
+
     class MissionManager extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -418,19 +488,21 @@
             confirmIcon.on(Laya.Event.CLICK, this, () => {
                 this.clearMissionUI();
                 this.sendMissionData(data);
-                Laya.Scene.load("Loading.scene");
                 if (Village.isNewbie) {
-                    Laya.Scene.open("Newbie.scene");
+                    Loading2.nextSceneName = 'Newbie.scene';
+                    Laya.Scene.open('Loading2.scene', true);
                 }
                 else {
                     let x = Math.round(Math.random());
                     if (x > 0.5) {
                         Laya.Scene.closeAll();
-                        Laya.Scene.open("First.scene");
+                        Loading2.nextSceneName = 'First.scene';
+                        Laya.Scene.open('Loading2.scene', true);
                     }
                     else {
                         Laya.Scene.closeAll();
-                        Laya.Scene.open("Town.scene");
+                        Loading2.nextSceneName = 'Town.scene';
+                        Laya.Scene.open('Loading2.scene', true);
                     }
                 }
             });
@@ -3850,7 +3922,7 @@
                 "Background(0912)/forest.png",
                 "UI/arrP.png", "UI/arrR.png", "UI/skull.png", "UI/reinforce.png", "UI/skip.png", "UI/skip2.png", 'UI/ending/chooseSkill.png', 'UI/ending/skillBox.png', "UI/ending/infoBox.png", 'UI/leftArr.png', 'UI/rightArr.png',
                 'UI/ending/ending.png', 'UI/ending/gold.png', 'UI/ending/crystal.png',
-                'UI/tutorial/1.png', 'UI/tutorial/2.png', 'UI/tutorial/3.png', 'UI/tutorial/4.png', 'UI/tutorial/5.png', 'UI/tutorial/6.png', 'UI/tutorial/7.png'
+                'UI/tutorial/1.png', 'UI/tutorial/2.png', 'UI/tutorial/3.png', 'UI/tutorial/4.png', 'UI/tutorial/5.png', 'UI/tutorial/6.png', 'UI/tutorial/7.png',
             ];
         }
         onStart() {
@@ -3864,7 +3936,6 @@
             this.loadingProgress.sizeGrid = "0,10,0,10";
             this.loadingProgress.pos(333, 487);
             this.loadingProgress.value = 0.5;
-            this.loadingProgress.changeHandler = new Laya.Handler(this, this.onChange);
             Laya.stage.addChild(this.loadingProgress);
         }
         onProgress(value) {
@@ -3878,8 +3949,6 @@
                 this.loadingProgress.destroy();
                 return;
             }
-        }
-        onChange(value) {
         }
     }
 
@@ -3934,6 +4003,11 @@
                 }));
             }, 50);
         }
+        onDestroy() {
+            this.bg1.destroy();
+            this.bg2.destroy();
+            this.bg3.destroy();
+        }
         backgroundImageInit() {
             this.bg1 = new Laya.Sprite();
             this.bg2 = new Laya.Sprite();
@@ -3951,10 +4025,10 @@
         backgroundImageHandler() {
             let player = CharacterInit.playerEnt.m_animation;
             Laya.Tween.to(this.bg2, {
-                x: player.x - 1024,
+                x: player.x - 500,
             }, 50, Laya.Ease.linearInOut, null);
             Laya.Tween.to(this.bg1, {
-                x: player.x - 1024,
+                x: player.x - 500,
             }, 10, Laya.Ease.linearInOut, null);
         }
     }
@@ -3971,6 +4045,7 @@
             reg("script/SkillList.ts", SkillList);
             reg("script/Loading.ts", Loading);
             reg("script/Village.ts", Village);
+            reg("script/Loading2.ts", Loading2);
             reg("script/MainToLoading.ts", MainToLoading);
             reg("script/Tutorial.ts", Turtorial);
             reg("script/NewbieBackground.ts", NewbieBackground);

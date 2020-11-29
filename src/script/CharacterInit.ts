@@ -1195,7 +1195,7 @@ export class Character extends Laya.Script {
             }
             this.applyMoveX();
         })
-        //右走
+        //右走()
         this.m_mobileRightBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; })
         this.m_mobileRightBtn.on(Laya.Event.MOUSE_UP, this, () => {
             this.m_mobileRightBtnClicked = false;
