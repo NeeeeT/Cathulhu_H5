@@ -65,7 +65,7 @@ export default class EnemyInit extends Laya.Script{
     enemyLeftIcon: Laya.Sprite;
     enemyInfo: Laya.Text;
     
-    public static enemyLeftCur: number;
+    public static enemyLeftCur: number = 0;
     public static newbieDone: boolean;
 
     endingRewardUIToggle: boolean = false;
@@ -107,7 +107,6 @@ export default class EnemyInit extends Laya.Script{
 
     villageManager: Village = new Village();
     missionManager: MissionManager = new MissionManager();
-
     
     constructor(){
         super();

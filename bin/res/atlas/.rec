@@ -43,6 +43,12 @@ P A2078EC0 progress$bar.png
 P 7BEC43FB progress.png
 D font
 R 1804CEBA silver.ttf
+D Town
+R A70F23E9 0.gray town_bgrd.png.png
+R A39F7AEE 1.gray town_bgrd.png.png
+R A3F9C1BD 2.gray town_bgrd.png.png
+R 625FCC43 3.gray town_bgrd.png.png
+R 49BDA85D 4.gray town_ground.png.png
 D UI
 R 9F7250B2 bg.png
 P 58A772C0 Box.png

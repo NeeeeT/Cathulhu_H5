@@ -1,4 +1,10 @@
+enum step{
+    first,
+    preScene1,
+    preScene2,
+}
 export default class Loading2 extends Laya.Script{
+    // public static isFirst: boolean;
     public static nextSceneName: string;
     prepared: boolean;
     preparedSeconds: number;

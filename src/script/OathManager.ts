@@ -26,6 +26,7 @@ export default class OathManager extends Laya.Script {
     public catSkillIcon: Laya.Sprite;
     public humanSkillIcon: Laya.Sprite;
     public sprintIcon: Laya.Sprite;
+    public goldImage: Laya.Sprite;
 
     public catSkillIconCd: Laya.Text;
     public humanSkillIconCd: Laya.Text;
@@ -141,15 +142,18 @@ export default class OathManager extends Laya.Script {
         this.catSkillIcon = new Laya.Sprite();
         this.humanSkillIcon = new Laya.Sprite();
         this.sprintIcon = new Laya.Sprite();
+        this.goldImage = new Laya.Sprite();
 
         this.catSkillIconCd = new Laya.Text();
         this.humanSkillIconCd = new Laya.Text();
         this.sprintIconCd = new Laya.Text();
 
-        this.catSkillIcon.width = this.catSkillIcon.height = 69;
-        this.humanSkillIcon.width = this.humanSkillIcon.height = 69;
-        this.sprintIcon.width = this.sprintIcon.height = 69;
-        this.catSkillIconCd.width = this.humanSkillIconCd.width = this.sprintIconCd.width = 100; 
+        this.catSkillIcon.size(69, 69);
+        this.humanSkillIcon.size(69, 69);
+        this.sprintIcon.size(69, 69)
+        this.catSkillIconCd.size(100, 100);
+        this.goldImage.size(50, 50);
+
         this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = this.sprintIconCd.fontSize = 42;
         this.catSkillIconCd.font = this.humanSkillIconCd.font = this.sprintIconCd.font = 'silver';
         this.catSkillIconCd.stroke = this.humanSkillIconCd.stroke = this.sprintIconCd.stroke = 2;
@@ -160,6 +164,7 @@ export default class OathManager extends Laya.Script {
         this.characterLogo.source = "UI/Box.png";
              
         this.sprintIcon.loadImage("UI/icon/sprint.png");
+        this.goldImage.loadImage("UI/Gold.png");
         
         let oathLogoFunc = function() {
             if (CharacterInit.playerEnt.m_animation.destroyed) {
@@ -184,6 +189,7 @@ export default class OathManager extends Laya.Script {
                 this.catSkillIconCd.pos(this.catSkillIcon.x+29,this.catSkillIcon.y+21);
                 this.humanSkillIconCd.pos(this.humanSkillIcon.x+29,this.humanSkillIcon.y+21);
                 this.sprintIconCd.pos(this.sprintIcon.x+29,this.sprintIcon.y+21);
+                this.goldImage.pos(pos['x']+205, pos['y']+110);
                 this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1:0.3;
                 this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1:0.3;
                 this.sprintIcon.alpha = CharacterInit.playerEnt.m_canSprint ? 1:0.3;
@@ -231,6 +237,7 @@ export default class OathManager extends Laya.Script {
         Laya.stage.addChild(this.humanSkillIconCd)
         Laya.stage.addChild(this.sprintIcon);
         Laya.stage.addChild(this.sprintIconCd);
+        Laya.stage.addChild(this.goldImage);
         this.characterLogo.play();
         
         ZOrderManager.setZOrder(this.characterLogo, 100)
@@ -240,6 +247,7 @@ export default class OathManager extends Laya.Script {
         ZOrderManager.setZOrder(this.humanSkillIconCd, 102);
         ZOrderManager.setZOrder(this.sprintIcon, 101);
         ZOrderManager.setZOrder(this.sprintIconCd, 102);
+        ZOrderManager.setZOrder(this.goldImage, 102);
     }
     public clearBloodyUI() {
         if(this.oathBar != null){
@@ -277,6 +285,10 @@ export default class OathManager extends Laya.Script {
         if(this.sprintIconCd != null){
             this.sprintIconCd.destroy();
             this.sprintIconCd = null;
+        }
+        if(this.goldImage != null){
+            this.goldImage.destroy();
+            this.goldImage = null;
         }
     }
     public oathChargeDetect(): boolean{

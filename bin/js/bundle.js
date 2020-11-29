@@ -282,6 +282,12 @@
     Village.reinforceToggle = false;
     Village.isNewbie = true;
 
+    var step;
+    (function (step) {
+        step[step["first"] = 0] = "first";
+        step[step["preScene1"] = 1] = "preScene1";
+        step[step["preScene2"] = 2] = "preScene2";
+    })(step || (step = {}));
     class Loading2 extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -1693,6 +1699,7 @@
             Laya.Pool.recover("rightArrow", this.rightArrow);
         }
     }
+    EnemyInit.enemyLeftCur = 0;
 
     var turtorialHintStep;
     (function (turtorialHintStep) {
@@ -2232,13 +2239,15 @@
             this.catSkillIcon = new Laya.Sprite();
             this.humanSkillIcon = new Laya.Sprite();
             this.sprintIcon = new Laya.Sprite();
+            this.goldImage = new Laya.Sprite();
             this.catSkillIconCd = new Laya.Text();
             this.humanSkillIconCd = new Laya.Text();
             this.sprintIconCd = new Laya.Text();
-            this.catSkillIcon.width = this.catSkillIcon.height = 69;
-            this.humanSkillIcon.width = this.humanSkillIcon.height = 69;
-            this.sprintIcon.width = this.sprintIcon.height = 69;
-            this.catSkillIconCd.width = this.humanSkillIconCd.width = this.sprintIconCd.width = 100;
+            this.catSkillIcon.size(69, 69);
+            this.humanSkillIcon.size(69, 69);
+            this.sprintIcon.size(69, 69);
+            this.catSkillIconCd.size(100, 100);
+            this.goldImage.size(50, 50);
             this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = this.sprintIconCd.fontSize = 42;
             this.catSkillIconCd.font = this.humanSkillIconCd.font = this.sprintIconCd.font = 'silver';
             this.catSkillIconCd.stroke = this.humanSkillIconCd.stroke = this.sprintIconCd.stroke = 2;
@@ -2246,6 +2255,7 @@
             this.catSkillIconCd.color = this.humanSkillIconCd.color = this.sprintIconCd.color = '#fff';
             this.characterLogo.source = "UI/Box.png";
             this.sprintIcon.loadImage("UI/icon/sprint.png");
+            this.goldImage.loadImage("UI/Gold.png");
             let oathLogoFunc = function () {
                 if (CharacterInit.playerEnt.m_animation.destroyed) {
                     Laya.timer.clear(this, oathLogoFunc);
@@ -2270,6 +2280,7 @@
                     this.catSkillIconCd.pos(this.catSkillIcon.x + 29, this.catSkillIcon.y + 21);
                     this.humanSkillIconCd.pos(this.humanSkillIcon.x + 29, this.humanSkillIcon.y + 21);
                     this.sprintIconCd.pos(this.sprintIcon.x + 29, this.sprintIcon.y + 21);
+                    this.goldImage.pos(pos['x'] + 205, pos['y'] + 110);
                     this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1 : 0.3;
                     this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1 : 0.3;
                     this.sprintIcon.alpha = CharacterInit.playerEnt.m_canSprint ? 1 : 0.3;
@@ -2286,6 +2297,7 @@
             Laya.stage.addChild(this.humanSkillIconCd);
             Laya.stage.addChild(this.sprintIcon);
             Laya.stage.addChild(this.sprintIconCd);
+            Laya.stage.addChild(this.goldImage);
             this.characterLogo.play();
             ZOrderManager.setZOrder(this.characterLogo, 100);
             ZOrderManager.setZOrder(this.catSkillIcon, 101);
@@ -2294,6 +2306,7 @@
             ZOrderManager.setZOrder(this.humanSkillIconCd, 102);
             ZOrderManager.setZOrder(this.sprintIcon, 101);
             ZOrderManager.setZOrder(this.sprintIconCd, 102);
+            ZOrderManager.setZOrder(this.goldImage, 102);
         }
         clearBloodyUI() {
             if (this.oathBar != null) {
@@ -2331,6 +2344,10 @@
             if (this.sprintIconCd != null) {
                 this.sprintIconCd.destroy();
                 this.sprintIconCd = null;
+            }
+            if (this.goldImage != null) {
+                this.goldImage.destroy();
+                this.goldImage = null;
             }
         }
         oathChargeDetect() {
@@ -2547,7 +2564,6 @@
             this.m_canJump = true;
             this.m_canAttack = true;
             this.m_canSprint = true;
-            this.m_sprintCdTimer = null;
             this.m_atkTimer = null;
             this.m_atkStep = 0;
             this.m_hurted = false;
@@ -2784,20 +2800,17 @@
                 this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 100.0 : -100.0, y: 0.0 };
                 this.m_rigidbody.mask = 2 | 16;
                 this.m_collider.refresh();
-                setTimeout(() => {
+                let sprintDone = () => {
                     this.m_rigidbody.mask = 2 | 8 | 16;
                     this.m_collider.density = 300;
                     this.m_collider.refresh();
-                    setTimeout(() => {
-                        this.m_collider.density = 1;
-                        this.m_collider.refresh();
-                    }, 10);
-                }, 500);
-                this.m_canSprint = false;
-                setTimeout(() => {
-                    this.m_canSprint = true;
-                }, 3000);
+                    this.m_collider.density = 1;
+                    this.m_collider.refresh();
+                };
                 this.updateSprintCdTimer();
+                Laya.stage.frameOnce(30, this, sprintDone);
+                Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
+                this.m_canSprint = false;
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
@@ -3160,15 +3173,15 @@
         }
         updateSprintCdTimer() {
             this.m_sprintCdCount = 3;
-            this.m_sprintCdTimer = setInterval(() => {
+            let sprintTimer = () => {
                 if (this.m_canSprint) {
-                    clearInterval(this.m_sprintCdTimer);
-                    this.m_sprintCdTimer = null;
                     this.m_sprintCdCount = 0;
+                    Laya.timer.clear(this, sprintTimer);
                     return;
                 }
                 this.m_sprintCdCount = !this.m_canSprint ? (this.m_sprintCdCount - 1) : 0;
-            }, 1000);
+            };
+            Laya.stage.frameLoop(60, this, sprintTimer);
         }
         getEnemyAttackDamage(tag) {
             let enemyInit = new EnemyInit();
@@ -3715,6 +3728,9 @@
             this.m_player = player;
             Laya.stage.addChild(this.m_animation);
             this.showHealth();
+            if (this.m_isElite) {
+                this.setEnemyEliteColor();
+            }
         }
         ;
         destroy() {
@@ -3794,7 +3810,8 @@
                 let facingRight = (CharacterInit.playerEnt.m_animation.x - this.m_animation.x) > 0.0 ? true : false;
                 this.m_rigidbody.linearVelocity = { x: facingRight ? -4.0 : 4.0, y: 0.0 };
             }
-            this.m_atkTimer = 120;
+            this.m_atkTimer = 60;
+            this.updateAnimation(this.m_state, EnemyStatus.idle);
             this.enemyInjuredColor();
         }
         damageTextEffect(amount, critical) {
@@ -4019,7 +4036,6 @@
                 0, 0, 0, 0, 10,
                 0, 0, 0, 1, 0,
             ];
-            let glowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [colorFilter];
             setTimeout(() => {
@@ -4029,6 +4045,25 @@
                 this.m_animation.alpha = 1;
                 this.m_animation.filters = null;
             }, 200);
+        }
+        setEnemyEliteColor() {
+            if (this.m_animation.destroyed || !this.m_animation)
+                return;
+            this.m_animation.alpha = 1;
+            let colorMat = [
+                0, 0, 1, 0, 10,
+                0, 1, 0, 0, 10,
+                0, 0, 0, 0, 10,
+                0, 0, 0, 1, 0,
+            ];
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            let timer = setInterval(() => {
+                if (!this.m_animation || this.m_animation.destroyed) {
+                    clearInterval(timer);
+                    return;
+                }
+                this.m_animation.filters = [colorFilter];
+            }, 100);
         }
     }
     class Normal extends VirtualEnemy {
@@ -4088,6 +4123,7 @@
                 { "x": 3935.0, "y": 450.0 }
             ];
             let randomPoint = Math.floor(Math.random() * point.length);
+            enemy.m_isElite = true;
             enemy.spawn(player, id, point[randomPoint], enemyType);
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();

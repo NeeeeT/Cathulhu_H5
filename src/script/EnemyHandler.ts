@@ -28,6 +28,8 @@ export abstract class VirtualEnemy extends Laya.Script {
     abstract m_name: string;
     abstract m_atkTag: string;
     m_animSheet: string;
+    
+    m_isElite: boolean;
 
     m_moveVelocity: object = { "Vx": 0, "Vy": 0 };
     m_rectangle: object = { "x0": 0, "x1": 0, "y0": 0, "y1": 0, "h": 0, "w": 0 };
@@ -150,6 +152,9 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         Laya.stage.addChild(this.m_animation);
         this.showHealth();
+        if(this.m_isElite){
+            this.setEnemyEliteColor();
+        }
     };
     destroy(): void {
         this.m_animation.destroy();
@@ -228,7 +233,9 @@ export abstract class VirtualEnemy extends Laya.Script {
             let facingRight:boolean = (CharacterInit.playerEnt.m_animation.x - this.m_animation.x) > 0.0 ? true : false;
             this.m_rigidbody.linearVelocity = {x: facingRight?-4.0:4.0, y:0.0};
         }
-        this.m_atkTimer = 120;
+        this.m_atkTimer = 60;
+        // this.delayMove(1.0);
+        this.updateAnimation(this.m_state, EnemyStatus.idle);
         this.enemyInjuredColor();
     }
     private damageTextEffect(amount: number, critical: boolean): void {
@@ -547,7 +554,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                 0, 0, 0, 0, 10, //B
                 0, 0, 0, 1, 0, //A
             ];
-        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ef1ff8", 3, 0, 0);
+        // let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ef1ff8", 1, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         this.m_animation.filters = [colorFilter];
         setTimeout(() => {
@@ -557,6 +564,27 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_animation.alpha = 1;
             this.m_animation.filters = null;
         }, 200);
+    }
+    public setEnemyEliteColor(): void
+    {
+        if (this.m_animation.destroyed || !this.m_animation) return;
+        this.m_animation.alpha = 1;
+        let colorMat: Array<number> =
+            [
+                0, 0, 1, 0, 10, //R
+                0, 1, 0, 0, 10, //G
+                0, 0, 0, 0, 10, //B
+                0, 0, 0, 1, 0, //A
+            ];
+        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+        // this.m_animation.filters = [colorFilter];
+        let timer = setInterval(() => {
+            if(!this.m_animation || this.m_animation.destroyed){
+                clearInterval(timer);
+                return;
+            }
+            this.m_animation.filters = [colorFilter];
+        }, 100);
     }
 }
 export class Normal extends VirtualEnemy {
@@ -626,6 +654,7 @@ export default class EnemyHandler extends Laya.Script {
             {"x": 3935.0, "y": 450.0}
         ];
         let randomPoint = Math.floor(Math.random() * point.length);
+        enemy.m_isElite = true;
         enemy.spawn(player, id, point[randomPoint], enemyType);
         
         this.enemyPool.push({ '_id': id, '_ent': enemy });

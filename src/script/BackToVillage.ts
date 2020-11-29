@@ -1,6 +1,5 @@
 import EnemyHandler from "./EnemyHandler";
 import MissionManager from "./MissionManager";
-import Village from "./Village";
 
 export default class BackToVillage extends Laya.Script{
     onKeyUp(e: Laya.Event):void{
@@ -9,8 +8,6 @@ export default class BackToVillage extends Laya.Script{
             Laya.SoundManager.stopAll();
             EnemyHandler.clearAllEnemy();
             
-            // Village.isNewbie = true;
-
             let missionManager = new MissionManager();
             missionManager.generateMissionData(9);
             missionManager.showMissionUI();
