@@ -6,6 +6,7 @@ import CharacterInit from "./script/CharacterInit"
 import SkillList from "./script/SkillList"
 import Loading from "./script/Loading"
 import Village from "./script/Village"
+import Loading2 from "./script/Loading2"
 import MainToLoading from "./script/MainToLoading"
 import Tutorial from "./script/Tutorial"
 import NewbieBackground from "./script/NewbieBackground"
@@ -35,6 +36,7 @@ export default class GameConfig{
         reg("script/SkillList.ts",SkillList);
         reg("script/Loading.ts",Loading);
         reg("script/Village.ts",Village);
+        reg("script/Loading2.ts",Loading2);
         reg("script/MainToLoading.ts",MainToLoading);
         reg("script/Tutorial.ts",Tutorial);
         reg("script/NewbieBackground.ts",NewbieBackground);

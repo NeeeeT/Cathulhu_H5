@@ -12,7 +12,8 @@ export default class Loading extends Laya.Script{
         "Background(0912)/forest.png",
         "UI/arrP.png", "UI/arrR.png", "UI/skull.png", "UI/reinforce.png", "UI/skip.png", "UI/skip2.png", 'UI/ending/chooseSkill.png', 'UI/ending/skillBox.png', "UI/ending/infoBox.png", 'UI/leftArr.png', 'UI/rightArr.png',
         'UI/ending/ending.png', 'UI/ending/gold.png', 'UI/ending/crystal.png',
-        'UI/tutorial/1.png', 'UI/tutorial/2.png', 'UI/tutorial/3.png', 'UI/tutorial/4.png', 'UI/tutorial/5.png', 'UI/tutorial/6.png', 'UI/tutorial/7.png'
+        'UI/tutorial/1.png', 'UI/tutorial/2.png', 'UI/tutorial/3.png', 'UI/tutorial/4.png', 'UI/tutorial/5.png', 'UI/tutorial/6.png', 'UI/tutorial/7.png',
+        //故事字卡尚需加入
     ];
 
     loadingProgress: Laya.ProgressBar;
@@ -28,7 +29,7 @@ export default class Loading extends Laya.Script{
         this.loadingProgress.sizeGrid = "0,10,0,10";
         this.loadingProgress.pos(333,487);
         this.loadingProgress.value = 0.5;
-        this.loadingProgress.changeHandler = new Laya.Handler(this, this.onChange);
+        // this.loadingProgress.changeHandler = new Laya.Handler(this, this.onChange);
         Laya.stage.addChild(this.loadingProgress);
     }
     onProgress(value: number): void{
@@ -42,8 +43,5 @@ export default class Loading extends Laya.Script{
             this.loadingProgress.destroy();
             return;
         }
-    }
-    onChange(value: number): void{
-        // console.log(Math.floor(value*100));
     }
 }

@@ -1,6 +1,7 @@
 import { ExtraData } from "./ExtraData";
 import EnemyInit from "./EnemyInit";
 import Village from "./Village";
+import Loading2 from "./Loading2";
 
 export default class MissionManager extends Laya.Script {
     //任務介面
@@ -132,18 +133,24 @@ export default class MissionManager extends Laya.Script {
             this.clearMissionUI();
             // console.log(data["enemyNum"]);
             this.sendMissionData(data);
-            Laya.Scene.load("Loading.scene");
+            // Laya.Scene.load
             if (Village.isNewbie) {
-                Laya.Scene.open("Newbie.scene");
+                // Laya.Scene.open("Newbie.scene");
+                Loading2.nextSceneName = 'Newbie.scene';
+                Laya.Scene.open('Loading2.scene', true);
                 // Village.isNewbie = false;
             } else {
                 let x = Math.round(Math.random());
                 if (x > 0.5) {
                     Laya.Scene.closeAll();
-                    Laya.Scene.open("First.scene");
+                    // Laya.Scene.open("First.scene");
+                    Loading2.nextSceneName = 'First.scene';
+                    Laya.Scene.open('Loading2.scene', true);
                 } else {
                     Laya.Scene.closeAll();
-                    Laya.Scene.open("Town.scene");
+                    // Laya.Scene.open("Town.scene");
+                    Loading2.nextSceneName = 'Town.scene';
+                    Laya.Scene.open('Loading2.scene', true);
                 }
             }
         })
