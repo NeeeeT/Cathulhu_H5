@@ -2,6 +2,7 @@ import CharacterInit, { Character } from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import EnemyInit from "./EnemyInit";
 import Village from "./Village";
+import ZOrderManager from "./ZOrderManager";
 
 enum turtorialHintStep{
     none,
@@ -263,7 +264,8 @@ export default class Turtorial extends Laya.Script{
         if(this.currentHintStep === turtorialHintStep.none){
             this.currentHintUI.loadImage('UI/tutorial/1.png');
             this.currentHintStep = step;
-            this.currentHintUI.zOrder = 999;
+            // this.currentHintUI.zOrder = 999;
+            ZOrderManager.setZOrder(this.currentHintUI, 999);
             return;
         }
         if(step === turtorialHintStep.tryAttack || step === turtorialHintStep.trySkill){

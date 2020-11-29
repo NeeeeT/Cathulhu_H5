@@ -1,5 +1,6 @@
 import CharacterInit from "./CharacterInit";
 import EnemyInit from "./EnemyInit";
+import ZOrderManager from "./ZOrderManager";
 
 // import CharacterInit, { Character } from "./CharacterInit";
 export enum EnemyStatus{
@@ -656,7 +657,8 @@ export default class EnemyHandler extends Laya.Script {
         let aliveEnemy = EnemyHandler.enemyPool.filter(data => data._ent.m_animation != null);
         for(let i = 0; i < aliveEnemy.length; i++){
             if(aliveEnemy[i]._ent.m_animation.destroyed) return;
-            aliveEnemy[i]._ent.m_animation.zOrder = -15;
+            // aliveEnemy[i]._ent.m_animation.zOrder = -15;
+            ZOrderManager.setZOrder(aliveEnemy[i]._ent.m_animation, -15);
             aliveEnemy[i]._ent.m_animation.destroy();
             aliveEnemy[i]._ent.m_animation.destroyed = true;
         }

@@ -2,6 +2,7 @@ import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler from "./EnemyHandler";
 import { VirtualSkill } from "./SkillManager";
+import ZOrderManager from "./ZOrderManager";
 
 export class Spike extends VirtualSkill {
     m_name = '突進斬';
@@ -136,7 +137,8 @@ export class Behead extends VirtualSkill {
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 30;
         this.m_animation.alpha = 0.8;
-        this.m_animation.zOrder = 5;
+        // this.m_animation.zOrder = 5;
+        ZOrderManager.setZOrder(this.m_animation, 5);
 
         this.castRoar(position);
 
@@ -223,7 +225,8 @@ export class Behead extends VirtualSkill {
         slash.autoPlay = true;
         slash.interval = 20;
         slash.alpha = 0.83;
-        slash.zOrder = 5;
+        // slash.zOrder = 5;
+        ZOrderManager.setZOrder(slash, 5);
         // owner.
         let colorMat: Array<number> =
         [

@@ -12,6 +12,7 @@ import { ExtraData } from "./ExtraData";
 import EnemyInit from "./EnemyInit";
 import Village from "./Village";
 import Turtorial from "./Tutorial";
+import ZOrderManager from "./ZOrderManager";
 
 
 export class Character extends Laya.Script {
@@ -128,7 +129,8 @@ export class Character extends Laya.Script {
         // this.m_animation = Laya.Pool.getItemByClass("m_animation", Laya.Animation);
         this.m_animation.scaleX = 1;
         this.m_animation.scaleY = 1;
-        this.m_animation.zOrder = 10;
+        // this.m_animation.zOrder = 10;
+        ZOrderManager.setZOrder(this.m_animation, 10);
 
         this.m_animation.name = "Player";
 
@@ -350,6 +352,7 @@ export class Character extends Laya.Script {
         // this.m_healthBar.value = 1;
         // this.m_healthBar.alpha = 1;
         Laya.stage.addChild(this.m_healthBar);
+        ZOrderManager.setZOrder(this.m_healthBar, 100);
 
         let healthBarFunc = function(){
             if (this.m_animation.destroyed) {
@@ -981,7 +984,8 @@ export class Character extends Laya.Script {
         bloodEffect.scaleX = 1.2;
         bloodEffect.scaleY = 1.2;
         bloodEffect.interval = 30;
-        bloodEffect.zOrder = 5;
+        // bloodEffect.zOrder = 5;
+        ZOrderManager.setZOrder(bloodEffect, 5);
 
         //待優化
         let colorMat: Array<number> =
@@ -1149,15 +1153,12 @@ export class Character extends Laya.Script {
         this.m_mobileHumanSkillBtn = Laya.Pool.getItemByClass("mobileHumanSkillBtn", Laya.Sprite);
         this.m_mobileCatSkillBtn = Laya.Pool.getItemByClass("mobileCatSkillBtn", Laya.Sprite);
 
-        this.m_mobileLeftBtn.width = 100;
-        this.m_mobileLeftBtn.height = 79;
-        this.m_mobileRightBtn.width = 100;
-        this.m_mobileRightBtn.height = 79;
-        this.m_mobileAtkBtn.width = 100;
-        this.m_mobileAtkBtn.height = 100;
-        this.m_mobileSprintBtn.width = this.m_mobileSprintBtn.height = 84;
-        this.m_mobileHumanSkillBtn.width = this.m_mobileHumanSkillBtn.height = 84;
-        this.m_mobileCatSkillBtn.width = this.m_mobileCatSkillBtn.height = 84;
+        this.m_mobileLeftBtn.size(100, 79);
+        this.m_mobileRightBtn.size(100, 79);
+        this.m_mobileAtkBtn.size(100, 100);
+        this.m_mobileSprintBtn.size(84, 84);
+        this.m_mobileHumanSkillBtn.size(84, 84);
+        this.m_mobileCatSkillBtn.size(84, 84);
         this.m_mobileLeftBtn.loadImage('UI/mobileLeftBtn.png');
         this.m_mobileRightBtn.loadImage('UI/mobileRightBtn.png');
         this.m_mobileAtkBtn.loadImage('UI/mobileAtkBtn.png');
@@ -1178,6 +1179,13 @@ export class Character extends Laya.Script {
         Laya.stage.addChild(this.m_mobileSprintBtn);
         Laya.stage.addChild(this.m_mobileCatSkillBtn);
         Laya.stage.addChild(this.m_mobileHumanSkillBtn);
+
+        ZOrderManager.setZOrder(this.m_mobileLeftBtn, 100);
+        ZOrderManager.setZOrder(this.m_mobileRightBtn, 100);
+        ZOrderManager.setZOrder(this.m_mobileAtkBtn, 100);
+        ZOrderManager.setZOrder(this.m_mobileSprintBtn, 100);
+        ZOrderManager.setZOrder(this.m_mobileCatSkillBtn, 100);
+        ZOrderManager.setZOrder(this.m_mobileHumanSkillBtn, 100);
 
         //左走
         //reset

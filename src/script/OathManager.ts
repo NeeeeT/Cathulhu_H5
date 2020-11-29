@@ -4,6 +4,7 @@ import { OathStatus } from "./OathStatus";
 import { DebuffType, Blind, BodyCrumble, Insane, Predator, Decay } from "./DebuffType";
 import EnemyInit from "./EnemyInit";
 import Turtorial from "./Tutorial";
+import ZOrderManager from "./ZOrderManager";
 
 export default class OathManager extends Laya.Script {
 
@@ -74,6 +75,8 @@ export default class OathManager extends Laya.Script {
         this.oathBar_overCharge = new Laya.ProgressBar();
         this.oathBar_overCharge.skin = "UI/bp_150.png";
         this.oathBar_overCharge.visible = false;
+        ZOrderManager.setZOrder(this.oathBar, 100);
+        ZOrderManager.setZOrder(this.oathBar_overCharge, 100);
 
         let oathBarFunc = function () {
             if (CharacterInit.playerEnt.m_animation.destroyed) {
@@ -230,6 +233,13 @@ export default class OathManager extends Laya.Script {
         Laya.stage.addChild(this.sprintIconCd);
         this.characterLogo.play();
         
+        ZOrderManager.setZOrder(this.characterLogo, 100)
+        ZOrderManager.setZOrder(this.catSkillIcon, 101);
+        ZOrderManager.setZOrder(this.catSkillIconCd, 102);
+        ZOrderManager.setZOrder(this.humanSkillIcon, 101);
+        ZOrderManager.setZOrder(this.humanSkillIconCd, 102);
+        ZOrderManager.setZOrder(this.sprintIcon, 101);
+        ZOrderManager.setZOrder(this.sprintIconCd, 102);
     }
     public clearBloodyUI() {
         if(this.oathBar != null){

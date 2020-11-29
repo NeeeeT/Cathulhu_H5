@@ -134,7 +134,7 @@ export class BlackHole extends VirtualSkill {
         this.m_animation.scaleY = 1;
         this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
         this.m_animation.alpha = 0.7;
-        //this.m_animation.zOrder = 5;
+
         //動畫位置需要再調整
 
         this.m_animation.source = "comp/BlackHole.atlas";
@@ -268,7 +268,7 @@ export class BigExplosion extends VirtualSkill {
         this.m_animation.scaleY = 0.3;
         this.m_animation.pos(rightSide ? position['x'] - 100 : position['x'] - 400, position['y'] - 300);
         this.m_animation.alpha = 0.7;
-        //this.m_animation.zOrder = 5;
+
 
         this.m_animation.source = "comp/FireBall.atlas";
         this.m_animation.autoPlay = true;

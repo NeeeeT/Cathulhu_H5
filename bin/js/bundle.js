@@ -967,6 +967,16 @@
         }
     }
 
+    class ZOrderManager extends Laya.Script {
+        constructor(parameters) {
+            super();
+        }
+        static setZOrder(target, z) {
+            target.zOrder = z;
+            Laya.stage.updateZOrder();
+        }
+    }
+
     class Spike extends VirtualSkill {
         constructor() {
             super(...arguments);
@@ -1077,7 +1087,7 @@
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 30;
             this.m_animation.alpha = 0.8;
-            this.m_animation.zOrder = 5;
+            ZOrderManager.setZOrder(this.m_animation, 5);
             this.castRoar(position);
             if (owner.m_moveDelayValue <= 0)
                 owner.delayMove(this.m_preTime);
@@ -1141,7 +1151,7 @@
             slash.autoPlay = true;
             slash.interval = 20;
             slash.alpha = 0.83;
-            slash.zOrder = 5;
+            ZOrderManager.setZOrder(slash, 5);
             let colorMat = [
                 3, 2, 2, 0, -250,
                 1, 4, 1, 0, -250,
@@ -1897,7 +1907,7 @@
             if (this.currentHintStep === turtorialHintStep.none) {
                 this.currentHintUI.loadImage('UI/tutorial/1.png');
                 this.currentHintStep = step;
-                this.currentHintUI.zOrder = 999;
+                ZOrderManager.setZOrder(this.currentHintUI, 999);
                 return;
             }
             if (step === turtorialHintStep.tryAttack || step === turtorialHintStep.trySkill) {
@@ -2177,6 +2187,8 @@
             this.oathBar_overCharge = new Laya.ProgressBar();
             this.oathBar_overCharge.skin = "UI/bp_150.png";
             this.oathBar_overCharge.visible = false;
+            ZOrderManager.setZOrder(this.oathBar, 100);
+            ZOrderManager.setZOrder(this.oathBar_overCharge, 100);
             let oathBarFunc = function () {
                 if (CharacterInit.playerEnt.m_animation.destroyed) {
                     this.clearBloodyUI();
@@ -2263,6 +2275,13 @@
             Laya.stage.addChild(this.sprintIcon);
             Laya.stage.addChild(this.sprintIconCd);
             this.characterLogo.play();
+            ZOrderManager.setZOrder(this.characterLogo, 100);
+            ZOrderManager.setZOrder(this.catSkillIcon, 101);
+            ZOrderManager.setZOrder(this.catSkillIconCd, 102);
+            ZOrderManager.setZOrder(this.humanSkillIcon, 101);
+            ZOrderManager.setZOrder(this.humanSkillIconCd, 102);
+            ZOrderManager.setZOrder(this.sprintIcon, 101);
+            ZOrderManager.setZOrder(this.sprintIconCd, 102);
         }
         clearBloodyUI() {
             if (this.oathBar != null) {
@@ -2539,7 +2558,7 @@
             this.m_animation = new Laya.Animation();
             this.m_animation.scaleX = 1;
             this.m_animation.scaleY = 1;
-            this.m_animation.zOrder = 10;
+            ZOrderManager.setZOrder(this.m_animation, 10);
             this.m_animation.name = "Player";
             this.m_animation.width = 200;
             this.m_animation.height = 128;
@@ -2713,6 +2732,7 @@
             this.m_healthBar = new Laya.ProgressBar();
             this.m_healthBar.skin = "UI/hp.png";
             Laya.stage.addChild(this.m_healthBar);
+            ZOrderManager.setZOrder(this.m_healthBar, 100);
             let healthBarFunc = function () {
                 if (this.m_animation.destroyed) {
                     this.m_healthBar.destroy();
@@ -3060,7 +3080,7 @@
             bloodEffect.scaleX = 1.2;
             bloodEffect.scaleY = 1.2;
             bloodEffect.interval = 30;
-            bloodEffect.zOrder = 5;
+            ZOrderManager.setZOrder(bloodEffect, 5);
             let colorMat = [
                 2, 1, 1, 0, -100,
                 0, 1, 0, 0, -100,
@@ -3200,15 +3220,12 @@
             this.m_mobileSprintBtn = Laya.Pool.getItemByClass("mobileSprintBtn", Laya.Sprite);
             this.m_mobileHumanSkillBtn = Laya.Pool.getItemByClass("mobileHumanSkillBtn", Laya.Sprite);
             this.m_mobileCatSkillBtn = Laya.Pool.getItemByClass("mobileCatSkillBtn", Laya.Sprite);
-            this.m_mobileLeftBtn.width = 100;
-            this.m_mobileLeftBtn.height = 79;
-            this.m_mobileRightBtn.width = 100;
-            this.m_mobileRightBtn.height = 79;
-            this.m_mobileAtkBtn.width = 100;
-            this.m_mobileAtkBtn.height = 100;
-            this.m_mobileSprintBtn.width = this.m_mobileSprintBtn.height = 84;
-            this.m_mobileHumanSkillBtn.width = this.m_mobileHumanSkillBtn.height = 84;
-            this.m_mobileCatSkillBtn.width = this.m_mobileCatSkillBtn.height = 84;
+            this.m_mobileLeftBtn.size(100, 79);
+            this.m_mobileRightBtn.size(100, 79);
+            this.m_mobileAtkBtn.size(100, 100);
+            this.m_mobileSprintBtn.size(84, 84);
+            this.m_mobileHumanSkillBtn.size(84, 84);
+            this.m_mobileCatSkillBtn.size(84, 84);
             this.m_mobileLeftBtn.loadImage('UI/mobileLeftBtn.png');
             this.m_mobileRightBtn.loadImage('UI/mobileRightBtn.png');
             this.m_mobileAtkBtn.loadImage('UI/mobileAtkBtn.png');
@@ -3227,6 +3244,12 @@
             Laya.stage.addChild(this.m_mobileSprintBtn);
             Laya.stage.addChild(this.m_mobileCatSkillBtn);
             Laya.stage.addChild(this.m_mobileHumanSkillBtn);
+            ZOrderManager.setZOrder(this.m_mobileLeftBtn, 100);
+            ZOrderManager.setZOrder(this.m_mobileRightBtn, 100);
+            ZOrderManager.setZOrder(this.m_mobileAtkBtn, 100);
+            ZOrderManager.setZOrder(this.m_mobileSprintBtn, 100);
+            ZOrderManager.setZOrder(this.m_mobileCatSkillBtn, 100);
+            ZOrderManager.setZOrder(this.m_mobileHumanSkillBtn, 100);
             this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
             this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, () => {
                 this.m_mobileLeftBtnClicked = false;
@@ -4080,7 +4103,7 @@
             for (let i = 0; i < aliveEnemy.length; i++) {
                 if (aliveEnemy[i]._ent.m_animation.destroyed)
                     return;
-                aliveEnemy[i]._ent.m_animation.zOrder = -15;
+                ZOrderManager.setZOrder(aliveEnemy[i]._ent.m_animation, -15);
                 aliveEnemy[i]._ent.m_animation.destroy();
                 aliveEnemy[i]._ent.m_animation.destroyed = true;
             }
