@@ -654,7 +654,7 @@ export default class EnemyHandler extends Laya.Script {
             {"x": 3935.0, "y": 450.0}
         ];
         let randomPoint = Math.floor(Math.random() * point.length);
-        enemy.m_isElite = true;
+        // enemy.m_isElite = true;
         enemy.spawn(player, id, point[randomPoint], enemyType);
         
         this.enemyPool.push({ '_id': id, '_ent': enemy });
