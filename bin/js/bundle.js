@@ -1304,7 +1304,7 @@
             }
         }
         mobileClick() {
-            CharacterInit.playerEnt.m_mobileAtkBtn.off(Laya.Event.CLICK, this, () => {
+            let mobileAtkBtnConfirmFunc = function () {
                 let player = CharacterInit.playerEnt;
                 if (Village.reinforceToggle) {
                     this.villageManager.clearReinforceUI();
@@ -1330,8 +1330,8 @@
                         this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
                     }
                 }
-            });
-            CharacterInit.playerEnt.m_mobileLeftBtn.off(Laya.Event.CLICK, this, () => {
+            };
+            let mobileMoveBtnChooseFunc = function () {
                 if (this.endingSkillUI) {
                     let player = CharacterInit.playerEnt;
                     if (!this.endingSkillUI.destroyed) {
@@ -1341,67 +1341,13 @@
                         this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
                     }
                 }
-            });
-            CharacterInit.playerEnt.m_mobileRightBtn.off(Laya.Event.CLICK, this, () => {
-                if (this.endingSkillUI) {
-                    let player = CharacterInit.playerEnt;
-                    if (!this.endingSkillUI.destroyed) {
-                        this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                        this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                        this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                        this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    }
-                }
-            });
-            CharacterInit.playerEnt.m_mobileAtkBtn.on(Laya.Event.CLICK, this, () => {
-                let player = CharacterInit.playerEnt;
-                if (Village.reinforceToggle) {
-                    this.villageManager.clearReinforceUI();
-                }
-                if (this.endingRewardUIToggle) {
-                    Laya.Tween.to(this.endingRewardUI, { alpha: 0.3 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                        this.clearEndRewardUI();
-                        this.showEndSkillUI();
-                    }), 0);
-                }
-                ;
-                if (this.endingSkillUIToggle) {
-                    if (player.m_isFacingRight) {
-                        this.skillChoose(2);
-                    }
-                    else {
-                        this.skillChoose(1);
-                    }
-                    if (!this.endingSkillUIToggle) {
-                        this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                        this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                        this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                        this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    }
-                }
-            });
-            CharacterInit.playerEnt.m_mobileLeftBtn.on(Laya.Event.CLICK, this, () => {
-                if (this.endingSkillUI) {
-                    let player = CharacterInit.playerEnt;
-                    if (!this.endingSkillUI.destroyed) {
-                        this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                        this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                        this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                        this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    }
-                }
-            });
-            CharacterInit.playerEnt.m_mobileRightBtn.on(Laya.Event.CLICK, this, () => {
-                if (this.endingSkillUI) {
-                    let player = CharacterInit.playerEnt;
-                    if (!this.endingSkillUI.destroyed) {
-                        this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                        this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                        this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                        this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    }
-                }
-            });
+            };
+            CharacterInit.playerEnt.m_mobileAtkBtn.off(Laya.Event.CLICK, this, mobileAtkBtnConfirmFunc);
+            CharacterInit.playerEnt.m_mobileLeftBtn.off(Laya.Event.CLICK, this, mobileMoveBtnChooseFunc);
+            CharacterInit.playerEnt.m_mobileRightBtn.off(Laya.Event.CLICK, this, mobileMoveBtnChooseFunc);
+            CharacterInit.playerEnt.m_mobileAtkBtn.on(Laya.Event.CLICK, this, mobileAtkBtnConfirmFunc);
+            CharacterInit.playerEnt.m_mobileLeftBtn.on(Laya.Event.CLICK, this, mobileMoveBtnChooseFunc);
+            CharacterInit.playerEnt.m_mobileRightBtn.on(Laya.Event.CLICK, this, mobileMoveBtnChooseFunc);
         }
         onKeyUp(e) {
             let player = CharacterInit.playerEnt;
@@ -1731,7 +1677,7 @@
             }
         }
         mobileClick() {
-            Laya.stage.off(Laya.Event.MOUSE_DOWN, this, () => {
+            let mobileTutorialFunc = function () {
                 if (this.stepChanging)
                     return;
                 let player = CharacterInit.playerEnt;
@@ -1782,59 +1728,9 @@
                     default:
                         break;
                 }
-            });
-            Laya.stage.on(Laya.Event.MOUSE_DOWN, this, () => {
-                if (this.stepChanging)
-                    return;
-                let player = CharacterInit.playerEnt;
-                switch (this.currentHintStep) {
-                    case turtorialHintStep.tryMove:
-                        if (player.m_mobileLeftBtnClicked) {
-                            this.moveLeft = true;
-                        }
-                        else if (player.m_mobileRightBtnClicked) {
-                            this.moveRight = true;
-                        }
-                        if (this.moveRight && this.moveLeft) {
-                            this.setHintStep(turtorialHintStep.trySprint);
-                        }
-                        break;
-                    case turtorialHintStep.trySprint:
-                        if (player.m_mobileSprintBtnClicked) {
-                            this.setHintStep(turtorialHintStep.tryAttack);
-                        }
-                        break;
-                    case turtorialHintStep.tryAttack:
-                        if (EnemyInit.enemyLeftCur <= 0) {
-                            this.setHintStep(turtorialHintStep.trySkill);
-                            player.m_catSkill = player.getSkillTypeByExtraData('c', 1);
-                            player.m_humanSkill = player.getSkillTypeByExtraData('h', 1);
-                            Turtorial.noOath = false;
-                        }
-                        break;
-                    case turtorialHintStep.trySkill:
-                        if (EnemyInit.enemyLeftCur <= 0) {
-                            CharacterInit.playerEnt.clearAddDebuffTimer();
-                            CharacterInit.playerEnt.removeAllDebuff();
-                            Turtorial.safeDebuff = false;
-                            this.setHintStep(turtorialHintStep.seeInfoA);
-                        }
-                        break;
-                    case turtorialHintStep.seeInfoA:
-                        this.setHintStep(turtorialHintStep.seeInfoB);
-                        break;
-                    case turtorialHintStep.seeInfoB:
-                        this.setHintStep(turtorialHintStep.seeInfoC);
-                        break;
-                    case turtorialHintStep.seeInfoC:
-                        EnemyInit.newbieDone = true;
-                        this.currentHintUI.destroy();
-                        this.currentHintUI.destroyed = true;
-                        break;
-                    default:
-                        break;
-                }
-            });
+            };
+            Laya.stage.off(Laya.Event.MOUSE_DOWN, this, mobileTutorialFunc);
+            Laya.stage.on(Laya.Event.MOUSE_DOWN, this, mobileTutorialFunc);
         }
         onKeyDown(e) {
             if (this.stepChanging)
@@ -2578,6 +2474,12 @@
             this.m_mobileRightBtnClicked = false;
             this.m_mobileAtkBtnClicked = false;
             this.m_mobileSprintBtnClicked = false;
+            this.mobileLeftBtnResetFunc = () => { };
+            this.mobileRightBtnResetFunc = () => { };
+            this.mobileAtkBtnFunc = () => { };
+            this.mobileSprintBtnFunc = () => { };
+            this.mobileCatSkillBtnFunc = () => { };
+            this.mobileHumanSkillBtnFunc = () => { };
         }
         spawn() {
             this.loadCharacterData();
@@ -2655,12 +2557,13 @@
             this.m_rigidbody.category = 4;
             this.m_rigidbody.mask = 2 | 8 | 16;
             Laya.stage.addChild(this.m_animation);
+            if (Laya.Browser.onMobile) {
+                this.showMobileUI(this.m_animation);
+            }
             this.cameraFollower();
             this.setSkill();
         }
         ;
-        onStart() {
-        }
         setHealth(amount) {
             this.m_health = amount;
             if (this.m_health <= 0) {
@@ -2668,6 +2571,7 @@
                     CharacterInit.playerEnt.clearAddDebuffTimer();
                     CharacterInit.playerEnt.removeAllDebuff();
                 }
+                this.resetMobileBtnEvent();
                 this.death();
             }
         }
@@ -3234,6 +3138,19 @@
         clearAddDebuffTimer() {
             this.m_oathManager.clearAddDebuffTimer();
         }
+        resetMobileBtnEvent() {
+            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
+            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
+            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
+            this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; });
+            this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
+            this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
+            this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
+            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
+            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
+            this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
+            this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
+        }
         showMobileUI(player) {
             this.m_mobileUIToggle = true;
             let stageHitArea = new Laya.HitArea();
@@ -3275,66 +3192,26 @@
             ZOrderManager.setZOrder(this.m_mobileSprintBtn, 100);
             ZOrderManager.setZOrder(this.m_mobileCatSkillBtn, 100);
             ZOrderManager.setZOrder(this.m_mobileHumanSkillBtn, 100);
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, () => {
+            this.mobileLeftBtnResetFunc = function () {
                 this.m_mobileLeftBtnClicked = false;
                 if (this.m_canJump) {
                     this.m_playerVelocity["Vx"] = 0;
                 }
                 this.applyMoveX();
-            });
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, () => {
-                this.m_mobileLeftBtnClicked = false;
+            };
+            this.mobileRightBtnResetFunc = function () {
+                this.m_mobileRightBtnClicked = false;
                 if (this.m_canJump) {
                     this.m_playerVelocity["Vx"] = 0;
                 }
                 this.applyMoveX();
-            });
+            };
             this.m_mobileLeftBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
-            this.m_mobileLeftBtn.on(Laya.Event.MOUSE_UP, this, () => {
-                this.m_mobileLeftBtnClicked = false;
-                if (this.m_canJump) {
-                    this.m_playerVelocity["Vx"] = 0;
-                }
-                this.applyMoveX();
-            });
-            this.m_mobileLeftBtn.on(Laya.Event.MOUSE_OUT, this, () => {
-                this.m_mobileLeftBtnClicked = false;
-                if (this.m_canJump) {
-                    this.m_playerVelocity["Vx"] = 0;
-                }
-                this.applyMoveX();
-            });
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; });
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, () => {
-                this.m_mobileRightBtnClicked = false;
-                if (this.m_canJump) {
-                    this.m_playerVelocity["Vx"] = 0;
-                }
-                this.applyMoveX();
-            });
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, () => {
-                this.m_mobileRightBtnClicked = false;
-                if (this.m_canJump) {
-                    this.m_playerVelocity["Vx"] = 0;
-                }
-                this.applyMoveX();
-            });
+            this.m_mobileLeftBtn.on(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
+            this.m_mobileLeftBtn.on(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
             this.m_mobileRightBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; });
-            this.m_mobileRightBtn.on(Laya.Event.MOUSE_UP, this, () => {
-                this.m_mobileRightBtnClicked = false;
-                if (this.m_canJump) {
-                    this.m_playerVelocity["Vx"] = 0;
-                }
-                this.applyMoveX();
-            });
-            this.m_mobileRightBtn.on(Laya.Event.MOUSE_OUT, this, () => {
-                this.m_mobileRightBtnClicked = false;
-                if (this.m_canJump) {
-                    this.m_playerVelocity["Vx"] = 0;
-                }
-                this.applyMoveX();
-            });
+            this.m_mobileRightBtn.on(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
+            this.m_mobileRightBtn.on(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
             let mobileMoveFunc = function () {
                 if (this.m_mobileLeftBtnClicked) {
                     this.m_playerVelocity["Vx"] += -1 * this.m_velocityMultiplier;
@@ -3359,7 +3236,7 @@
                         this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
                 }
             };
-            this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, () => {
+            this.mobileAtkBtnFunc = function () {
                 if (!this.m_canAttack)
                     return;
                 if (this.m_atkTimer)
@@ -3379,29 +3256,9 @@
                 setTimeout(() => {
                     this.m_canAttack = true;
                 }, this.m_attackCdTime);
-            });
-            this.m_mobileAtkBtn.on(Laya.Event.CLICK, this, () => {
-                if (!this.m_canAttack)
-                    return;
-                if (this.m_atkTimer)
-                    clearInterval(this.m_atkTimer);
-                this.attackStepEventCheck();
-                if (!this.m_animationChanging) {
-                    if (this.m_atkStep === 1) {
-                        this.updateAnimation(this.m_state, CharacterStatus.attackTwo, null, false, this.m_attackCdTime / 3);
-                    }
-                    else if (this.m_atkStep === 0) {
-                        this.updateAnimation(this.m_state, CharacterStatus.attackOne, null, false, this.m_attackCdTime / 8);
-                    }
-                }
-                this.m_atkStep = this.m_atkStep === 1 ? 0 : 1;
-                this.attackSimulation(this.m_atkStep);
-                this.m_canAttack = false;
-                setTimeout(() => {
-                    this.m_canAttack = true;
-                }, this.m_attackCdTime);
-            });
-            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, () => {
+            };
+            this.m_mobileAtkBtn.on(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
+            this.mobileSprintBtnFunc = function () {
                 this.m_mobileSprintBtnClicked = true;
                 if (!this.m_canSprint || EnemyInit.isWin)
                     return;
@@ -3411,86 +3268,41 @@
                 this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 100.0 : -100.0, y: 0.0 };
                 this.m_rigidbody.mask = 2 | 16;
                 this.m_collider.refresh();
-                setTimeout(() => {
+                let sprintDone = () => {
                     this.m_rigidbody.mask = 2 | 8 | 16;
                     this.m_collider.density = 300;
                     this.m_collider.refresh();
-                    setTimeout(() => {
-                        this.m_collider.density = 1;
-                        this.m_collider.refresh();
-                    }, 10);
-                }, 500);
-                this.m_canSprint = false;
-                setTimeout(() => {
-                    this.m_canSprint = true;
-                }, 3000);
-                this.updateSprintCdTimer();
-                Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                    Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
-                }), 0);
-            });
-            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
-            this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, () => {
-                this.m_mobileSprintBtnClicked = true;
-                if (!this.m_canSprint || EnemyInit.isWin)
-                    return;
-                this.delayMove(0.08);
-                this.hurtedEvent(1.5);
-                this.updateAnimation(this.m_state, CharacterStatus.sprint, null, false, 100);
-                this.m_rigidbody.linearVelocity = { x: this.m_isFacingRight ? 100.0 : -100.0, y: 0.0 };
-                this.m_rigidbody.mask = 2 | 16;
-                this.m_collider.refresh();
-                setTimeout(() => {
-                    this.m_rigidbody.mask = 2 | 8 | 16;
-                    this.m_collider.density = 300;
+                    this.m_collider.density = 1;
                     this.m_collider.refresh();
-                    setTimeout(() => {
-                        this.m_collider.density = 1;
-                        this.m_collider.refresh();
-                    }, 10);
-                }, 500);
-                this.m_canSprint = false;
-                setTimeout(() => {
-                    this.m_canSprint = true;
-                }, 3000);
+                };
                 this.updateSprintCdTimer();
+                Laya.stage.frameOnce(30, this, sprintDone);
+                Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
+                this.m_canSprint = false;
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
-            });
+            };
+            this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
             this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
-            this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, () => {
+            this.mobileCatSkillBtnFunc = function () {
                 if (EnemyInit.isWin)
                     return;
                 this.m_catSkill.cast(CharacterInit.playerEnt, {
                     x: this.m_animation.x,
                     y: this.m_animation.y,
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
-            });
-            this.m_mobileCatSkillBtn.on(Laya.Event.CLICK, this, () => {
-                if (EnemyInit.isWin)
-                    return;
-                this.m_catSkill.cast(CharacterInit.playerEnt, {
-                    x: this.m_animation.x,
-                    y: this.m_animation.y,
-                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
-            });
-            this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, () => {
+            };
+            this.m_mobileCatSkillBtn.on(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
+            this.mobileHumanSkillBtnFunc = function () {
                 if (EnemyInit.isWin)
                     return;
                 this.m_humanSkill.cast(CharacterInit.playerEnt, {
                     x: this.m_animation.x,
                     y: this.m_animation.y,
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
-            });
-            this.m_mobileHumanSkillBtn.on(Laya.Event.CLICK, this, () => {
-                if (EnemyInit.isWin)
-                    return;
-                this.m_humanSkill.cast(CharacterInit.playerEnt, {
-                    x: this.m_animation.x,
-                    y: this.m_animation.y,
-                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
-            });
+            };
+            this.m_mobileHumanSkillBtn.on(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
             let mobileUIFunc = () => {
                 if (!this.m_mobileUIToggle) {
                     Laya.stage.removeChild(this.m_mobileLeftBtn);
@@ -3571,9 +3383,6 @@
             Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
             player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
             player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);
-            if (Laya.Browser.onMobile) {
-                player.showMobileUI(CharacterInit.playerEnt.m_animation);
-            }
         }
         initSetting(player) {
             ExtraData.loadData();
@@ -4346,7 +4155,7 @@
     GameConfig.startScene = "Main.scene";
     GameConfig.sceneRoot = "";
     GameConfig.debug = false;
-    GameConfig.stat = true;
+    GameConfig.stat = false;
     GameConfig.physicsDebug = false;
     GameConfig.exportSceneToJson = true;
     GameConfig.init();
