@@ -66,7 +66,7 @@ export class Character extends Laya.Script {
     m_canAttack: boolean = true;
     m_canSprint: boolean = true;
     m_sprintCdCount: number;
-    // m_sprintCdTimer = null;
+    m_sprintCdTimer = null;
     m_animationChanging: boolean;
 
 
@@ -434,9 +434,6 @@ export class Character extends Laya.Script {
             //     }, 10);
             // }, 500)
 
-            // setTimeout(() => {
-            //     this.m_canSprint = true;
-            // },3000);
             let sprintDone = () => {
                 this.m_rigidbody.mask = 2 | 8 | 16;
                 this.m_collider.density = 300;
@@ -447,13 +444,16 @@ export class Character extends Laya.Script {
             };
             this.updateSprintCdTimer();
             Laya.stage.frameOnce(30, this, sprintDone);
-            Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
+            // Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
             this.m_canSprint = false;
             Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut,
                 Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut,
                         Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
+            setTimeout(() => {
+                this.m_canSprint = true;
+            },3000);
             this.setSound(0.6, "Audio/Misc/dash.wav", 1);
         }
         //Up
@@ -1086,15 +1086,19 @@ export class Character extends Laya.Script {
     }
     public updateSprintCdTimer(): void{
         this.m_sprintCdCount = 3;
-        let sprintTimer = () =>{
+        if(this.m_sprintCdTimer){
+            clearInterval(this.m_sprintCdTimer);
+        }
+        this.m_sprintCdTimer = setInterval(()=>{
             if(this.m_canSprint){
+                clearInterval(this.m_sprintCdTimer);
+                this.m_sprintCdTimer = null;
                 this.m_sprintCdCount = 0;
-                Laya.timer.clear(this, sprintTimer);
                 return;
             }
             this.m_sprintCdCount = !this.m_canSprint ? (this.m_sprintCdCount - 1):0;
-        }
-        Laya.stage.frameLoop(60, this, sprintTimer);
+        }, 1000);
+        // Laya.stage.frameLoop(60, this, sprintTimer);
         
         // this.m_sprintCdTimer = setInterval(()=>{
         //     if(this.m_canSprint){
@@ -1326,13 +1330,15 @@ export class Character extends Laya.Script {
             };
             this.updateSprintCdTimer();
             Laya.stage.frameOnce(30, this, sprintDone);
-            Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
+            // Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
+            setTimeout(()=>{ this.m_canSprint = true; }, 3000);
             this.m_canSprint = false;
             Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut,
                 Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut,
                         Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
+            this.setSound(0.6, "Audio/Misc/dash.wav", 1);
         }
 
         this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
