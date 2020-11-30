@@ -667,6 +667,10 @@
                 this.m_cdCount = !this.m_canUse ? (this.m_cdCount - 1) : 0;
             }, 1000);
         }
+        setSound(volume, url, loop) {
+            Laya.SoundManager.playSound(url, loop);
+            Laya.SoundManager.setSoundVolume(volume, url);
+        }
     }
 
     class Slam extends VirtualSkill {
@@ -743,6 +747,7 @@
                 Laya.stage.graphics.clear();
             }, this.m_cd * 1000);
             this.updateCdTimer();
+            this.setSound(0.6, 'Audio/Misc/cat.mp3', 1);
         }
         attackRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
@@ -844,6 +849,7 @@
             Laya.stage.addChild(this.m_animation);
             this.m_animation.play();
             this.updateCdTimer();
+            this.setSound(0.6, 'Audio/Misc/blackhole.wav', 1);
         }
         attractRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
@@ -1246,6 +1252,8 @@
         onAwake() {
             this.updateMissionData();
         }
+        onUpdate() {
+        }
         onStart() {
             this.timeLeftValue = this.roundTimeLeft;
             EnemyInit.enemyLeftCur = this.enemyLeft;
@@ -1310,7 +1318,7 @@
                     this.villageManager.clearReinforceUI();
                 }
                 if (this.endingRewardUIToggle) {
-                    Laya.Tween.to(this.endingRewardUI, { alpha: 0.3 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    Laya.Tween.to(this.endingRewardUI, { alpha: 0.0 }, 300, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                         this.clearEndRewardUI();
                         this.showEndSkillUI();
                     }), 0);
@@ -1370,23 +1378,10 @@
                         this.skillChoose(1);
                     }
                 }
-                if (!this.endingSkillUIToggle) {
-                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                }
-            }
-        }
-        onKeyDown(e) {
-            if (this.endingSkillUI) {
-                let player = CharacterInit.playerEnt;
-                if (!this.endingSkillUI.destroyed) {
-                    this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
-                    this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
-                    this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
-                }
+                this.skillHumanIcon.alpha = player.m_isFacingRight ? 1 : 0.2;
+                this.skillCatIcon.alpha = player.m_isFacingRight ? 0.2 : 1;
+                this.rightArrow.alpha = player.m_isFacingRight ? 1 : 0.2;
+                this.leftArrow.alpha = player.m_isFacingRight ? 0.2 : 1;
             }
         }
         endTheBattle() {
@@ -1499,6 +1494,7 @@
             }
             ExtraData.saveData();
             this.clearEndSkillUI();
+            CharacterInit.playerEnt.resetMobileBtnEvent();
             this.unsetCharacter();
         }
         unsetCharacter() {
@@ -1506,7 +1502,6 @@
             Laya.Tween.to(player, { alpha: 0.0 }, 2500, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 player.destroy();
                 player.destroyed = true;
-                CharacterInit.playerEnt.m_mobileUIToggle = false;
                 this.villageManager.showReinforceUI();
             }), 0);
         }
@@ -1516,6 +1511,7 @@
             this.endingRewardUI = Laya.Pool.getItemByClass("endingRewardUI", Laya.Sprite);
             this.endingRewardUI.width = 342;
             this.endingRewardUI.height = 288;
+            this.endingRewardUI.alpha = 1;
             this.endingRewardUI.loadImage('UI/ending/ending.png');
             this.endingRewardUI.pos((Laya.stage.x === -250 || Laya.stage.x === -2475) ? ((Laya.stage.x === -250) ? 810 : 3025) : (player.x - 150), 94);
             let pos = {
@@ -2139,19 +2135,22 @@
             this.catSkillIconCd = new Laya.Text();
             this.humanSkillIconCd = new Laya.Text();
             this.sprintIconCd = new Laya.Text();
+            this.goldValue = new Laya.Text();
             this.catSkillIcon.size(69, 69);
             this.humanSkillIcon.size(69, 69);
             this.sprintIcon.size(69, 69);
             this.catSkillIconCd.size(100, 100);
             this.goldImage.size(50, 50);
-            this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = this.sprintIconCd.fontSize = 42;
-            this.catSkillIconCd.font = this.humanSkillIconCd.font = this.sprintIconCd.font = 'silver';
-            this.catSkillIconCd.stroke = this.humanSkillIconCd.stroke = this.sprintIconCd.stroke = 2;
-            this.catSkillIconCd.strokeColor = this.humanSkillIconCd.strokeColor = this.sprintIconCd.strokeColor = '#000';
-            this.catSkillIconCd.color = this.humanSkillIconCd.color = this.sprintIconCd.color = '#fff';
+            this.goldValue.size(100, 60);
+            this.catSkillIconCd.fontSize = this.humanSkillIconCd.fontSize = this.sprintIconCd.fontSize = this.goldValue.fontSize = 42;
+            this.catSkillIconCd.font = this.humanSkillIconCd.font = this.sprintIconCd.font = this.goldValue.font = 'silver';
+            this.catSkillIconCd.stroke = this.humanSkillIconCd.stroke = this.sprintIconCd.stroke = this.goldValue.stroke = 2;
+            this.catSkillIconCd.strokeColor = this.humanSkillIconCd.strokeColor = this.sprintIconCd.strokeColor = this.goldValue.strokeColor = '#000';
+            this.catSkillIconCd.color = this.humanSkillIconCd.color = this.sprintIconCd.color = this.goldValue.color = '#fff';
             this.characterLogo.source = "UI/Box.png";
             this.sprintIcon.loadImage("UI/icon/sprint.png");
             this.goldImage.loadImage("UI/Gold.png");
+            this.goldValue.text = String(ExtraData.currentData['gold']);
             let oathLogoFunc = function () {
                 if (CharacterInit.playerEnt.m_animation.destroyed) {
                     Laya.timer.clear(this, oathLogoFunc);
@@ -2177,6 +2176,7 @@
                     this.humanSkillIconCd.pos(this.humanSkillIcon.x + 29, this.humanSkillIcon.y + 21);
                     this.sprintIconCd.pos(this.sprintIcon.x + 29, this.sprintIcon.y + 21);
                     this.goldImage.pos(pos['x'] + 205, pos['y'] + 110);
+                    this.goldValue.pos(this.goldImage.x + 45, this.goldImage.y + 10);
                     this.catSkillIcon.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1 : 0.3;
                     this.humanSkillIcon.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1 : 0.3;
                     this.sprintIcon.alpha = CharacterInit.playerEnt.m_canSprint ? 1 : 0.3;
@@ -2194,6 +2194,7 @@
             Laya.stage.addChild(this.sprintIcon);
             Laya.stage.addChild(this.sprintIconCd);
             Laya.stage.addChild(this.goldImage);
+            Laya.stage.addChild(this.goldValue);
             this.characterLogo.play();
             ZOrderManager.setZOrder(this.characterLogo, 100);
             ZOrderManager.setZOrder(this.catSkillIcon, 101);
@@ -2203,6 +2204,7 @@
             ZOrderManager.setZOrder(this.sprintIcon, 101);
             ZOrderManager.setZOrder(this.sprintIconCd, 102);
             ZOrderManager.setZOrder(this.goldImage, 102);
+            ZOrderManager.setZOrder(this.goldValue, 102);
         }
         clearBloodyUI() {
             if (this.oathBar != null) {
@@ -2244,6 +2246,10 @@
             if (this.goldImage != null) {
                 this.goldImage.destroy();
                 this.goldImage = null;
+            }
+            if (this.goldValue != null) {
+                this.goldValue.destroy();
+                this.goldValue = null;
             }
         }
         oathChargeDetect() {
@@ -2482,6 +2488,7 @@
             this.mobileHumanSkillBtnFunc = () => { };
         }
         spawn() {
+            console.log('生成一次');
             this.loadCharacterData();
             this.getAtkValue(this.m_atkLevel);
             this.m_state = CharacterStatus.idle;
@@ -2718,6 +2725,7 @@
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
+                this.setSound(0.6, "Audio/Misc/dash.wav", 1);
             }
             if (this.m_keyDownList[39]) {
                 this.m_playerVelocity["Vx"] += 1 * this.m_velocityMultiplier;
@@ -3150,6 +3158,7 @@
             this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
             this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
             this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
+            this.m_mobileUIToggle = false;
         }
         showMobileUI(player) {
             this.m_mobileUIToggle = true;
@@ -3932,7 +3941,6 @@
                 { "x": 3935.0, "y": 450.0 }
             ];
             let randomPoint = Math.floor(Math.random() * point.length);
-            enemy.m_isElite = true;
             enemy.spawn(player, id, point[randomPoint], enemyType);
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();
@@ -3973,6 +3981,16 @@
     EnemyHandler.enemyPool = [];
 
     class BackToVillage extends Laya.Script {
+        onStart() {
+            Laya.stage.on(Laya.Event.CLICK, this, () => {
+                Laya.stage.x = Laya.stage.y = 0;
+                Laya.SoundManager.stopAll();
+                EnemyHandler.clearAllEnemy();
+                let missionManager = new MissionManager();
+                missionManager.generateMissionData(9);
+                missionManager.showMissionUI();
+            });
+        }
         onKeyUp(e) {
             if (e.keyCode === 32) {
                 Laya.stage.x = Laya.stage.y = 0;
@@ -4009,8 +4027,10 @@
         constructor() {
             super(...arguments);
             this.resourceLoad = [
-                "Audio/Bgm/BGM01.mp3", 'Audio/Attack/Attack0.wav', 'Audio/Attack/Attack1.wav', 'Audio/EnemyHurt/EnemyHurt0.wav', 'Audio/EnemyHurt/EnemyHurt1.wav',
+                "Audio/Bgm/BGM01.mp3", 'Audio/Attack/Attack0.wav', 'Audio/Attack/Attack1.wav', 'Audio/Misc/wind.wav', 'Audio/EnemyHurt/EnemyHurt0.wav', 'Audio/EnemyHurt/EnemyHurt1.wav',
+                "Audio/Misc/dash.wav", "Audio/Misc/cat.mp3",
                 "font/silver.ttf",
+                "Background(0912)/loading2.png",
                 "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
                 "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas", "character/Sprint.atlas",
                 "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas", "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas",
@@ -4048,6 +4068,16 @@
     }
 
     class MainToLoading extends Laya.Script {
+        constructor() {
+            super(...arguments);
+            this.windBgm = 'Audio/Misc/wind.wav';
+        }
+        onAwake() {
+            Laya.loader.load(this.windBgm, Laya.Handler.create(this, () => {
+                Laya.SoundManager.playMusic(this.windBgm, 0);
+                Laya.SoundManager.setMusicVolume(0.8);
+            }));
+        }
         onKeyDown() {
             this.dirtEffect.destroy();
             Laya.Scene.open('Loading.scene', true);
@@ -4097,11 +4127,6 @@
                     this.bg2LastX = this.bg2.x;
                 }));
             }, 50);
-        }
-        onDestroy() {
-            this.bg1.destroy();
-            this.bg2.destroy();
-            this.bg3.destroy();
         }
         backgroundImageInit() {
             this.bg1 = new Laya.Sprite();

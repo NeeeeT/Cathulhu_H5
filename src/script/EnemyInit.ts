@@ -553,16 +553,15 @@ export default class EnemyInit extends Laya.Script{
         }
         ExtraData.saveData();
         this.clearEndSkillUI();
+        CharacterInit.playerEnt.resetMobileBtnEvent();
         this.unsetCharacter();
     }
     unsetCharacter(): void{
         let player = CharacterInit.playerEnt.m_animation;
         Laya.Tween.to(player, { alpha: 0.0 }, 2500, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-            CharacterInit.playerEnt.resetMobileBtnEvent();
             player.destroy();
             player.destroyed = true;
             // this.changeToVillage();
-            CharacterInit.playerEnt.m_mobileUIToggle = false;
             this.villageManager.showReinforceUI();
         }), 0);
     }
