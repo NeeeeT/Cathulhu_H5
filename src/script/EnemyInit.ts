@@ -557,7 +557,8 @@ export default class EnemyInit extends Laya.Script{
     }
     unsetCharacter(): void{
         let player = CharacterInit.playerEnt.m_animation;
-        Laya.Tween.to(player, {alpha: 0.0}, 2500, Laya.Ease.linearInOut, Laya.Handler.create(this, ()=>{
+        Laya.Tween.to(player, { alpha: 0.0 }, 2500, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+            CharacterInit.playerEnt.resetMobileBtnEvent();
             player.destroy();
             player.destroyed = true;
             // this.changeToVillage();

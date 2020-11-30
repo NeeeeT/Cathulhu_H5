@@ -21,11 +21,11 @@ export default class NewbieBackground extends Laya.Script{
             }))
         }, 50)
     }
-    onDestroy(): void{
-        this.bg1.destroy();
-        this.bg2.destroy();
-        this.bg3.destroy();
-    }
+    // onDestroy(): void{
+    //     this.bg1.destroy();
+    //     this.bg2.destroy();
+    //     this.bg3.destroy();
+    // }
     backgroundImageInit(): void{
         this.bg1 = new Laya.Sprite();
         this.bg2 = new Laya.Sprite();

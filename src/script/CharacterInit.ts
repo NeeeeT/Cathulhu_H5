@@ -114,7 +114,12 @@ export class Character extends Laya.Script {
     m_mobileAtkBtnClicked: boolean = false;
     m_mobileSprintBtnClicked: boolean = false;
 
-    // public static stageClicked: boolean = false;
+    mobileLeftBtnResetFunc = () => { };
+    mobileRightBtnResetFunc = () => { };
+    mobileAtkBtnFunc = () => { };
+    mobileSprintBtnFunc = () => { };
+    mobileCatSkillBtnFunc = () => { };
+    mobileHumanSkillBtnFunc = () => { };
 
     emptySprForMobile: Laya.Sprite;
 
@@ -220,15 +225,14 @@ export class Character extends Laya.Script {
         // this.m_oathManager.showBloodyLogo(this.m_animation);//角色UI狀態方法
         // this.showHealth();
 
+        if (Laya.Browser.onMobile) {
+            this.showMobileUI(this.m_animation);
+        }
+
         this.cameraFollower();
         this.setSkill();
         // this.checkJumpTimer();
     };
-    onStart(): void{
-        if (Laya.Browser.onMobile) {
-            this.showMobileUI(this.m_animation);
-        }
-    }
 
     public setHealth(amount: number): void {
         this.m_health = amount;
@@ -239,6 +243,8 @@ export class Character extends Laya.Script {
                 CharacterInit.playerEnt.clearAddDebuffTimer();
                 CharacterInit.playerEnt.removeAllDebuff();
             }
+
+            this.resetMobileBtnEvent();
 
             this.death();
         }
@@ -1151,6 +1157,22 @@ export class Character extends Laya.Script {
     public clearAddDebuffTimer(): void{
         this.m_oathManager.clearAddDebuffTimer();
     }
+
+    public resetMobileBtnEvent(): void{
+        //reset
+        this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
+        this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
+        this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
+        this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; })
+        this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
+        this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
+        this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
+        this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
+        this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
+        this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
+        this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
+    }
+
     public showMobileUI(player: Laya.Animation): void{
         this.m_mobileUIToggle = true;
         // let leftBtnPos: object = { "x": player.x - Laya.stage.width / 2 + 155, "y": 620 };
@@ -1207,14 +1229,14 @@ export class Character extends Laya.Script {
         ZOrderManager.setZOrder(this.m_mobileCatSkillBtn, 100);
         ZOrderManager.setZOrder(this.m_mobileHumanSkillBtn, 100);
 
-        let mobileLeftBtnResetFunc = function () {
+        this.mobileLeftBtnResetFunc = function () {
             this.m_mobileLeftBtnClicked = false;
             if (this.m_canJump) {
                 this.m_playerVelocity["Vx"] = 0;
             }
             this.applyMoveX();
         }
-        let mobileRightBtnResetFunc = function () {
+        this.mobileRightBtnResetFunc = function () {
             this.m_mobileRightBtnClicked = false;
             if (this.m_canJump) {
                 this.m_playerVelocity["Vx"] = 0;
@@ -1223,23 +1245,13 @@ export class Character extends Laya.Script {
         }
 
         //左走
-        //reset
-        this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
-        this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, mobileLeftBtnResetFunc);
-        this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, mobileLeftBtnResetFunc);
-        //------------------
         this.m_mobileLeftBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
-        this.m_mobileLeftBtn.on(Laya.Event.MOUSE_UP, this, mobileLeftBtnResetFunc);
-        this.m_mobileLeftBtn.on(Laya.Event.MOUSE_OUT, this, mobileLeftBtnResetFunc);
+        this.m_mobileLeftBtn.on(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
+        this.m_mobileLeftBtn.on(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
         //右走
-        //reset
-        this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; })
-        this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, mobileRightBtnResetFunc);
-        this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, mobileRightBtnResetFunc);
-        //---------------
         this.m_mobileRightBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; })
-        this.m_mobileRightBtn.on(Laya.Event.MOUSE_UP, this, mobileRightBtnResetFunc);
-        this.m_mobileRightBtn.on(Laya.Event.MOUSE_OUT, this, mobileRightBtnResetFunc);
+        this.m_mobileRightBtn.on(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
+        this.m_mobileRightBtn.on(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
         //移動更新
         let mobileMoveFunc = function () {
             if (this.m_mobileLeftBtnClicked) {
@@ -1265,7 +1277,7 @@ export class Character extends Laya.Script {
         }
 
         //攻擊
-        let mobileAtkBtnFunc = function () {
+        this.mobileAtkBtnFunc = function () {
             if (!this.m_canAttack) return;
             if (this.m_atkTimer) clearInterval(this.m_atkTimer);
             this.attackStepEventCheck();
@@ -1289,13 +1301,10 @@ export class Character extends Laya.Script {
             }, this.m_attackCdTime);
         }
 
-        //reset
-        this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, mobileAtkBtnFunc);
-        //-------------------
-        this.m_mobileAtkBtn.on(Laya.Event.CLICK, this, mobileAtkBtnFunc);
+        this.m_mobileAtkBtn.on(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
 
         //衝刺
-        let mobileSprintBtnFunc = function () {
+        this.mobileSprintBtnFunc = function () {
             this.m_mobileSprintBtnClicked = true;
             if (!this.m_canSprint || EnemyInit.isWin) return;
 
@@ -1325,14 +1334,11 @@ export class Character extends Laya.Script {
                         Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
         }
-        //reset
-        this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, mobileSprintBtnFunc);
-        this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
-        //--------------------
-        this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, mobileSprintBtnFunc);
+
+        this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
         this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
         //貓技
-        let mobileCatSkillBtnFunc = function () {
+        this.mobileCatSkillBtnFunc = function () {
             if (EnemyInit.isWin) return;
             this.m_catSkill.cast(CharacterInit.playerEnt,
                 {
@@ -1340,13 +1346,11 @@ export class Character extends Laya.Script {
                     y: this.m_animation.y,
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
         }
-        //reset
-        this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, mobileCatSkillBtnFunc);
-        //------------------
-        this.m_mobileCatSkillBtn.on(Laya.Event.CLICK, this, mobileCatSkillBtnFunc);
+
+        this.m_mobileCatSkillBtn.on(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
         
         //人技
-        let mobileHumanSkillBtnFunc = function () {
+        this.mobileHumanSkillBtnFunc = function () {
             if (EnemyInit.isWin) return;
             this.m_humanSkill.cast(CharacterInit.playerEnt,
                 {
@@ -1354,10 +1358,8 @@ export class Character extends Laya.Script {
                     y: this.m_animation.y,
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
         }
-        //reset
-        this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, mobileHumanSkillBtnFunc);
-        //-----------------
-        this.m_mobileHumanSkillBtn.on(Laya.Event.CLICK, this, mobileHumanSkillBtnFunc);
+
+        this.m_mobileHumanSkillBtn.on(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
         //以幀為主體的更新
         let mobileUIFunc = () => {
             if (!this.m_mobileUIToggle) {
