@@ -491,15 +491,8 @@
             let confirmIcon = new Laya.Button();
             confirmIcon.width = 100;
             confirmIcon.height = 50;
-            confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
             confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
-            confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
-                confirmIcon.loadImage("UI/chioce_mission_button_Dark.png");
-            });
-            confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
-                confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
-            });
-            confirmIcon.on(Laya.Event.CLICK, this, () => {
+            let confirmFunc = () => {
                 this.clearMissionUI();
                 this.sendMissionData(data);
                 if (Village.isNewbie) {
@@ -519,7 +512,29 @@
                         Laya.Scene.open('Loading2.scene', true);
                     }
                 }
+            };
+            switch (col) {
+                case 0:
+                    confirmIcon.loadImage("UI/Zbtn.png");
+                    break;
+                case 1:
+                    confirmIcon.loadImage("UI/Xbtn.png");
+                    break;
+                case 2:
+                    confirmIcon.loadImage("UI/Cbtn.png");
+                    break;
+                default:
+                    break;
+            }
+            confirmIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, confirmFunc);
+            confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
+            confirmIcon.on(Laya.Event.KEY_DOWN, this, (e) => {
+                if (e.keyCode === 90 || e.keyCode === 88 || e.keyCode === 67) {
+                    console.log(data);
+                    confirmFunc();
+                }
             });
+            Laya.stage.focus = confirmIcon;
             this.confirmIcons.push(confirmIcon);
         }
         generateMissionData(total) {
@@ -581,6 +596,7 @@
     }
     MissionManager.missionRound = 0;
     MissionManager.missionDataPool = [];
+    MissionManager.hasSetBtn = false;
 
     var CharacterStatus;
     (function (CharacterStatus) {
@@ -2466,6 +2482,7 @@
             this.m_canJump = true;
             this.m_canAttack = true;
             this.m_canSprint = true;
+            this.m_sprintCdTimer = null;
             this.m_atkTimer = null;
             this.m_atkStep = 0;
             this.m_hurted = false;
@@ -2720,11 +2737,13 @@
                 };
                 this.updateSprintCdTimer();
                 Laya.stage.frameOnce(30, this, sprintDone);
-                Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
                 this.m_canSprint = false;
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
+                setTimeout(() => {
+                    this.m_canSprint = true;
+                }, 3000);
                 this.setSound(0.6, "Audio/Misc/dash.wav", 1);
             }
             if (this.m_keyDownList[39]) {
@@ -2739,6 +2758,7 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
+                new Village().showReinforceUI();
             }
             if (this.m_keyDownList[32]) {
             }
@@ -3085,15 +3105,18 @@
         }
         updateSprintCdTimer() {
             this.m_sprintCdCount = 3;
-            let sprintTimer = () => {
+            if (this.m_sprintCdTimer) {
+                clearInterval(this.m_sprintCdTimer);
+            }
+            this.m_sprintCdTimer = setInterval(() => {
                 if (this.m_canSprint) {
+                    clearInterval(this.m_sprintCdTimer);
+                    this.m_sprintCdTimer = null;
                     this.m_sprintCdCount = 0;
-                    Laya.timer.clear(this, sprintTimer);
                     return;
                 }
                 this.m_sprintCdCount = !this.m_canSprint ? (this.m_sprintCdCount - 1) : 0;
-            };
-            Laya.stage.frameLoop(60, this, sprintTimer);
+            }, 1000);
         }
         getEnemyAttackDamage(tag) {
             let enemyInit = new EnemyInit();
@@ -3147,18 +3170,20 @@
             this.m_oathManager.clearAddDebuffTimer();
         }
         resetMobileBtnEvent() {
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; });
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
-            this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
-            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
-            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
-            this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
-            this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
-            this.m_mobileUIToggle = false;
+            if (Laya.Browser.onMobile) {
+                this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
+                this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
+                this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
+                this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; });
+                this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
+                this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
+                this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
+                this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
+                this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
+                this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
+                this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
+                this.m_mobileUIToggle = false;
+            }
         }
         showMobileUI(player) {
             this.m_mobileUIToggle = true;
@@ -3286,11 +3311,12 @@
                 };
                 this.updateSprintCdTimer();
                 Laya.stage.frameOnce(30, this, sprintDone);
-                Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
+                setTimeout(() => { this.m_canSprint = true; }, 3000);
                 this.m_canSprint = false;
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
+                this.setSound(0.6, "Audio/Misc/dash.wav", 1);
             };
             this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
             this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
