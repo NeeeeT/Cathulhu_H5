@@ -10,6 +10,7 @@ export default class MissionManager extends Laya.Script {
     // public static playerMissionData: object = {"round": 0, };
     public static missionRound = 0;
     public static missionDataPool: any = [];
+    public static hasSetBtn: boolean = false;
 
     missionNum: number = 3;
 
@@ -21,8 +22,10 @@ export default class MissionManager extends Laya.Script {
     moneyNums: Laya.Text[] = [];
     confirmIcons: Laya.Button[] = [];
 
+
+    // currentBtn: number = 1;
+
     onStart() {
-        // this.generateMissionData(9);
     }
     public firstEnter(): void{
         MissionManager.missionDataPool = []
@@ -121,19 +124,12 @@ export default class MissionManager extends Laya.Script {
         
         confirmIcon.width = 100;
         confirmIcon.height = 50;
-        confirmIcon.loadImage("UI/chioce_mission_button_Bright.png")
+        // confirmIcon.loadImage("UI/chioce_mission_button_Bright.png")
         confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
-        confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
-            confirmIcon.loadImage("UI/chioce_mission_button_Dark.png");
-        })
-        confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
-            confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
-        })
-        confirmIcon.on(Laya.Event.CLICK, this, () => {
+
+        let confirmFunc = () =>{
             this.clearMissionUI();
-            // console.log(data["enemyNum"]);
             this.sendMissionData(data);
-            // Laya.Scene.load
             if (Village.isNewbie) {
                 // Laya.Scene.open("Newbie.scene");
                 Loading2.nextSceneName = 'Newbie_temp.scene';
@@ -153,7 +149,36 @@ export default class MissionManager extends Laya.Script {
                     Laya.Scene.open('Loading2.scene', true);
                 }
             }
-        })
+        }
+        switch (col) {
+            case 0:
+                confirmIcon.loadImage("UI/Zbtn.png")
+                break;
+            case 1:
+                confirmIcon.loadImage("UI/Xbtn.png")
+                break;
+            case 2:
+                confirmIcon.loadImage("UI/Cbtn.png")
+                break;
+            default:
+                break;
+        }
+        // confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
+        //     confirmIcon.loadImage("UI/chioce_mission_button_Dark.png");
+        // })
+        // confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
+        //     confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
+        // })
+        confirmIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, confirmFunc);
+
+        confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
+        confirmIcon.on(Laya.Event.KEY_DOWN, this, (e: Laya.Event)=>{
+            if(e.keyCode === 90 || e.keyCode === 88 || e.keyCode === 67){
+                console.log(data);
+                confirmFunc();
+            }
+        });
+        Laya.stage.focus = confirmIcon;
         this.confirmIcons.push(confirmIcon);
     }
     public generateMissionData(total: number): any[] {

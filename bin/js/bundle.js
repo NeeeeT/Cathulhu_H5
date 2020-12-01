@@ -507,15 +507,8 @@
             let confirmIcon = new Laya.Button();
             confirmIcon.width = 100;
             confirmIcon.height = 50;
-            confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
             confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
-            confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
-                confirmIcon.loadImage("UI/chioce_mission_button_Dark.png");
-            });
-            confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
-                confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
-            });
-            confirmIcon.on(Laya.Event.CLICK, this, () => {
+            let confirmFunc = () => {
                 this.clearMissionUI();
                 this.sendMissionData(data);
                 if (Village.isNewbie) {
@@ -535,7 +528,29 @@
                         Laya.Scene.open('Loading2.scene', true);
                     }
                 }
+            };
+            switch (col) {
+                case 0:
+                    confirmIcon.loadImage("UI/Zbtn.png");
+                    break;
+                case 1:
+                    confirmIcon.loadImage("UI/Xbtn.png");
+                    break;
+                case 2:
+                    confirmIcon.loadImage("UI/Cbtn.png");
+                    break;
+                default:
+                    break;
+            }
+            confirmIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, confirmFunc);
+            confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
+            confirmIcon.on(Laya.Event.KEY_DOWN, this, (e) => {
+                if (e.keyCode === 90 || e.keyCode === 88 || e.keyCode === 67) {
+                    console.log(data);
+                    confirmFunc();
+                }
             });
+            Laya.stage.focus = confirmIcon;
             this.confirmIcons.push(confirmIcon);
         }
         generateMissionData(total) {
@@ -597,6 +612,7 @@
     }
     MissionManager.missionRound = 0;
     MissionManager.missionDataPool = [];
+    MissionManager.hasSetBtn = false;
 
     var CharacterStatus;
     (function (CharacterStatus) {
@@ -2748,6 +2764,7 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
+                new Village().showReinforceUI();
             }
             if (this.m_keyDownList[32]) {
             }
