@@ -2,7 +2,7 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":3,
+    "selecteID":5,
     "searchKey":"Scene",
     "props":{"width":4098,"sceneColor":"#000000","height":768},
     "nodeParent":-1,
@@ -54,7 +54,8 @@
             "hasChild":false,
             "compId":5,
             "child":[
-                ]
+                ],
+            "$HIDDEN":false
         },
         {
             "x":15,

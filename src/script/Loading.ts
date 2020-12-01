@@ -2,18 +2,106 @@ import MissionManager from "./MissionManager";
 import Village from "./Village";
 
 export default class Loading extends Laya.Script{
-    resourceLoad = [ 
-        "Audio/Bgm/BGM01.mp3", 'Audio/Attack/Attack0.wav', 'Audio/Attack/Attack1.wav', 'Audio/Misc/wind.wav', 'Audio/EnemyHurt/EnemyHurt0.wav', 'Audio/EnemyHurt/EnemyHurt1.wav',
-        "Audio/Misc/dash.wav", "Audio/Misc/cat.mp3",
+    resourceLoad = [
+        //Audio
+        'Audio/Attack/Attack0.wav',
+        'Audio/Attack/Attack1.wav',
+        "Audio/Bgm/BGM01.mp3",
+        'Audio/EnemyHurt/EnemyHurt0.wav',
+        'Audio/EnemyHurt/EnemyHurt1.wav',
+        'Audio/Misc/wind.wav',
+        "Audio/Misc/dash.wav",
+        "Audio/Misc/cat.mp3",
+        "Audio/Misc/blackhole.wav",
+        //Font
         "font/silver.ttf",
+        //Background
         "Background(0912)/loading2.png",
-        "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
-        "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas","character/Sprint.atlas",
-        "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas", "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas",
         "Background(0912)/forest.png",
-        "UI/arrP.png", "UI/arrR.png", "UI/skull.png", "UI/reinforce.png", "UI/skip.png", "UI/skip2.png", 'UI/ending/chooseSkill.png', 'UI/ending/skillBox.png', "UI/ending/infoBox.png", 'UI/leftArr.png', 'UI/rightArr.png',
-        'UI/ending/ending.png', 'UI/ending/gold.png', 'UI/ending/crystal.png',
-        'UI/tutorial/1.png', 'UI/tutorial/2.png', 'UI/tutorial/3.png', 'UI/tutorial/4.png', 'UI/tutorial/5.png', 'UI/tutorial/6.png', 'UI/tutorial/7.png',
+        //Character
+        "character/Idle.atlas",
+        "character/Attack1.atlas",
+        "character/Attack2.atlas",
+        "character/Erosion.atlas",
+        "character/Run.atlas",
+        "character/Slam.atlas",
+        "character/Sprint.atlas",
+        "comp/WalkEffects.atlas",
+        "comp/Hurt.atlas",
+        //Skill
+        "comp/BlackHole.atlas",
+        "UI/icon/blackholeA.png",
+        "UI/icon/blackholeB.png",
+        "comp/BlackExplosion.atlas",
+        "UI/icon/blackholeA.png",
+        "UI/icon/blackholeB.png",
+        "comp/NewBlood.atlas",
+        "comp/Slam.atlas",
+        "UI/icon/slamA.png",
+        "UI/icon/slamB.png",
+        "comp/Target.atlas",
+        "comp/TargetSlash.atlas",
+        "UI/icon/beheadA.png",
+        "UI/icon/beheadB.png",
+        "comp/Spike.atlas",
+        "UI/icon/spikeA.png",
+        "UI/icon/spikeB.png",
+        "comp/NewSlash_1.atlas",
+        "comp/NewSlash_2.atlas",
+        "comp/SlashLight.atlas",
+        "comp/FireBall.atlas",
+        //Enemy
+        "normalEnemy/Attack.atlas",
+        "normalEnemy/Idle.atlas",
+        "normalEnemy/Walk.atlas",
+        "comp/NewSlahLight.atlas",
+        "comp/NewSlashLight90.atlas",
+        "comp/NewSlashLight-43.5.atlas",
+        //UI
+        'UI/mobileLeftBtn.png',
+        'UI/mobileRightBtn.png',
+        'UI/mobileAtkBtn.png',
+        'UI/mobileSprintBtn.png',
+        'UI/mobileHumanSkillBtn.png',
+        'UI/mobileCatSkillBtn.png',
+        "UI/reinforce.png",
+        "UI/hp.png",
+        "comp/progress.png",
+        "comp/prog.png",
+        "UI/arrP.png",
+        "UI/arrR.png",
+        "UI/reinforce.png",
+        "UI/skip.png",
+        "UI/skip2.png",
+        'UI/ending/chooseSkill.png',
+        'UI/ending/skillBox.png',
+        "UI/ending/infoBox.png",
+        'UI/leftArr.png',
+        'UI/rightArr.png',
+        'UI/ending/ending.png',
+        'UI/ending/gold.png',
+        'UI/ending/crystal.png',
+        //Oath
+        "UI/bp_100.png",
+        "UI/bp_150.png",
+        "UI/Box.png",
+        "UI/icon/sprint.png",
+        "UI/Gold.png",
+
+        //Mission
+        "UI/chioce_mission.png",
+        "UI/skull.png",
+        "UI/star.png",
+        "UI/chioce_mission_button_Bright.png",
+        "UI/chioce_mission_button_Dark.png",
+        //Tutorial
+        'UI/tutorial/1.png',
+        'UI/tutorial/2.png',
+        'UI/tutorial/3.png',
+        'UI/tutorial/4.png',
+        'UI/tutorial/5.png',
+        'UI/tutorial/6.png',
+        'UI/tutorial/7.png',
     ];
 
     loadingProgress: Laya.ProgressBar;
@@ -38,7 +126,7 @@ export default class Loading extends Laya.Script{
             this.loadingProgress.value = 1;
             new MissionManager().firstEnter();
             if(Village.isNewbie){
-                Laya.Scene.open("Newbie.scene");
+                Laya.Scene.open("Newbie_temp.scene");
             }
             this.loadingProgress.destroy();
             return;

@@ -282,6 +282,16 @@
     Village.reinforceToggle = false;
     Village.isNewbie = true;
 
+    class ZOrderManager extends Laya.Script {
+        constructor(parameters) {
+            super();
+        }
+        static setZOrder(target, z) {
+            target.zOrder = z;
+            Laya.stage.updateZOrder();
+        }
+    }
+
     var step;
     (function (step) {
         step[step["first"] = 0] = "first";
@@ -293,7 +303,10 @@
             super(...arguments);
             this.preparedTimer = null;
             this.storyInfoCard = [
-                '８時にヒースロー空港に到着する予定です。 申し訳ないけど長居できないんですよ。 あなたは大変上手にフランス語が話せる。私もあなたと同じくらい上手に話すことができればよいのに。',
+                '貓咪邪神：真身未明，形象為一隻黑色、手腳「著白襪」、有著藍色瞳孔的胖貓。據其所言，原本只是無意識的天地游靈留宿於貓的身上，但藉由薩德里地區人們的負面情緒及腐敗的血肉漸漸污染靈魂而成為邪神。無名的他希望藉由「載體」發揮他的力量，積極獲取力量的來源，成為邪神之王。',
+                '主角：白色短髮微微遮住左眼，瞳孔棕色，長相清秀的一名小男孩。相較與一般人，右手只剩下一小部分，且遮住的左眼完全失明。孤兒，從小由一名年長的薩滿婆婆扶養長大，平時沉默寡言。雖然身體患有缺陷，但在狩獵時十分擅長利用陷阱以及環境，在村中也被視為戰力的一員。',
+                '舊勢力為純樸的社會，信奉自然神祇，學習魔法知識以運用自然之力，因各人悟性不同，能施展的魔法因人而異，普通人僅能使用讓生活更加便利的小型魔法，但具天賦者將可施展毀滅性的大型魔法，因此人民普遍期待具備強大力量的英雄來領導。',
+                '新勢力發展科技，運用機械的力量，完成過往需依靠自然之力才能辦到的事，因此在文化上深植「人定勝天」的意識，視舊勢力對神祇的信仰為迷信，試圖透過殖民制度實行教育，對大陸上的舊勢力發動大規模攻勢，先進的武裝優勢使軍隊勢如破竹，巨幅擴張的行動讓資源供應需求暴增，新勢力更加強化榨取自然資源的力道，連帶導致自然神祇的力量被削弱。',
             ];
         }
         onKeyDown() {
@@ -340,6 +353,7 @@
             this.loadingProgress.sizeGrid = "0,10,0,10";
             this.loadingProgress.pos(338, 510);
             this.loadingProgress.value = 0.0;
+            ZOrderManager.setZOrder(this.loadingProgress, 101);
             Laya.stage.addChild(this.loadingProgress);
         }
         setStoryInfoCard() {
@@ -354,12 +368,14 @@
             this.storyInfo.wordWrap = true;
             this.storyInfo.size(837, 180);
             this.storyInfo.pos(267, 230);
+            ZOrderManager.setZOrder(this.storyInfo, 101);
             Laya.stage.addChild(this.storyInfo);
         }
         setAnyKeyIcon() {
             this.anyKeyIcon = new Laya.Sprite();
             this.anyKeyIcon.loadImage('ui/anykey.png');
             this.anyKeyIcon.pos(587, 420);
+            ZOrderManager.setZOrder(this.anyKeyIcon, 102);
             this.anyKeyIcon.alpha = 0;
             this.anyKeyIcon.visible = false;
             Laya.stage.addChild(this.anyKeyIcon);
@@ -503,7 +519,7 @@
                 this.clearMissionUI();
                 this.sendMissionData(data);
                 if (Village.isNewbie) {
-                    Loading2.nextSceneName = 'Newbie.scene';
+                    Loading2.nextSceneName = 'Newbie_temp.scene';
                     Laya.Scene.open('Loading2.scene', true);
                 }
                 else {
@@ -984,16 +1000,6 @@
             this.m_cd = 0;
             this.m_iconA = "";
             this.m_iconB = "";
-        }
-    }
-
-    class ZOrderManager extends Laya.Script {
-        constructor(parameters) {
-            super();
-        }
-        static setZOrder(target, z) {
-            target.zOrder = z;
-            Laya.stage.updateZOrder();
         }
     }
 
@@ -2466,6 +2472,7 @@
             this.m_canJump = true;
             this.m_canAttack = true;
             this.m_canSprint = true;
+            this.m_sprintCdTimer = null;
             this.m_atkTimer = null;
             this.m_atkStep = 0;
             this.m_hurted = false;
@@ -2720,11 +2727,13 @@
                 };
                 this.updateSprintCdTimer();
                 Laya.stage.frameOnce(30, this, sprintDone);
-                Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
                 this.m_canSprint = false;
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
+                setTimeout(() => {
+                    this.m_canSprint = true;
+                }, 3000);
                 this.setSound(0.6, "Audio/Misc/dash.wav", 1);
             }
             if (this.m_keyDownList[39]) {
@@ -3085,15 +3094,18 @@
         }
         updateSprintCdTimer() {
             this.m_sprintCdCount = 3;
-            let sprintTimer = () => {
+            if (this.m_sprintCdTimer) {
+                clearInterval(this.m_sprintCdTimer);
+            }
+            this.m_sprintCdTimer = setInterval(() => {
                 if (this.m_canSprint) {
+                    clearInterval(this.m_sprintCdTimer);
+                    this.m_sprintCdTimer = null;
                     this.m_sprintCdCount = 0;
-                    Laya.timer.clear(this, sprintTimer);
                     return;
                 }
                 this.m_sprintCdCount = !this.m_canSprint ? (this.m_sprintCdCount - 1) : 0;
-            };
-            Laya.stage.frameLoop(60, this, sprintTimer);
+            }, 1000);
         }
         getEnemyAttackDamage(tag) {
             let enemyInit = new EnemyInit();
@@ -3147,18 +3159,20 @@
             this.m_oathManager.clearAddDebuffTimer();
         }
         resetMobileBtnEvent() {
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; });
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
-            this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
-            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
-            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
-            this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
-            this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
-            this.m_mobileUIToggle = false;
+            if (Laya.Browser.onMobile) {
+                this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
+                this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
+                this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
+                this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; });
+                this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
+                this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
+                this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
+                this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
+                this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
+                this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
+                this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
+                this.m_mobileUIToggle = false;
+            }
         }
         showMobileUI(player) {
             this.m_mobileUIToggle = true;
@@ -3286,11 +3300,12 @@
                 };
                 this.updateSprintCdTimer();
                 Laya.stage.frameOnce(30, this, sprintDone);
-                Laya.stage.frameOnce(180, this, () => { this.m_canSprint = true; });
+                setTimeout(() => { this.m_canSprint = true; }, 3000);
                 this.m_canSprint = false;
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
                 }), 0);
+                this.setSound(0.6, "Audio/Misc/dash.wav", 1);
             };
             this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
             this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
@@ -4007,11 +4022,6 @@
         constructor() {
             super();
             this.sceneBackgroundColor = '#4a4a4a';
-            this.resourceLoad = ["Audio/Bgm/BGM01.mp3", "Audio/Attack/Attack0.wav", "Audio/Attack/Attack1.wav", "font/silver.ttf", "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
-                "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas",
-                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas",
-                "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas", "UI/loading.png",
-            ];
         }
         onAwake() {
             Laya.stage.bgColor = this.sceneBackgroundColor;
@@ -4027,17 +4037,94 @@
         constructor() {
             super(...arguments);
             this.resourceLoad = [
-                "Audio/Bgm/BGM01.mp3", 'Audio/Attack/Attack0.wav', 'Audio/Attack/Attack1.wav', 'Audio/Misc/wind.wav', 'Audio/EnemyHurt/EnemyHurt0.wav', 'Audio/EnemyHurt/EnemyHurt1.wav',
-                "Audio/Misc/dash.wav", "Audio/Misc/cat.mp3",
+                'Audio/Attack/Attack0.wav',
+                'Audio/Attack/Attack1.wav',
+                "Audio/Bgm/BGM01.mp3",
+                'Audio/EnemyHurt/EnemyHurt0.wav',
+                'Audio/EnemyHurt/EnemyHurt1.wav',
+                'Audio/Misc/wind.wav',
+                "Audio/Misc/dash.wav",
+                "Audio/Misc/cat.mp3",
+                "Audio/Misc/blackhole.wav",
                 "font/silver.ttf",
                 "Background(0912)/loading2.png",
-                "normalEnemy/Attack.atlas", "normalEnemy/Idle.atlas", "normalEnemy/Walk.atlas",
-                "character/Idle.atlas", "character/Attack1.atlas", "character/Attack2.atlas", "character/Run.atlas", "character/Slam.atlas", "character/Sprint.atlas",
-                "comp/BlackHole.atlas", "comp/BlackExplosion.atlas", "comp/NewBlood.atlas", "comp/Slam.atlas", "comp/Target.atlas", "comp/NewSlash_1.atlas", "comp/NewSlash_2.atlas", "comp/SlashLight.atlas",
                 "Background(0912)/forest.png",
-                "UI/arrP.png", "UI/arrR.png", "UI/skull.png", "UI/reinforce.png", "UI/skip.png", "UI/skip2.png", 'UI/ending/chooseSkill.png', 'UI/ending/skillBox.png', "UI/ending/infoBox.png", 'UI/leftArr.png', 'UI/rightArr.png',
-                'UI/ending/ending.png', 'UI/ending/gold.png', 'UI/ending/crystal.png',
-                'UI/tutorial/1.png', 'UI/tutorial/2.png', 'UI/tutorial/3.png', 'UI/tutorial/4.png', 'UI/tutorial/5.png', 'UI/tutorial/6.png', 'UI/tutorial/7.png',
+                "character/Idle.atlas",
+                "character/Attack1.atlas",
+                "character/Attack2.atlas",
+                "character/Erosion.atlas",
+                "character/Run.atlas",
+                "character/Slam.atlas",
+                "character/Sprint.atlas",
+                "comp/WalkEffects.atlas",
+                "comp/Hurt.atlas",
+                "comp/BlackHole.atlas",
+                "UI/icon/blackholeA.png",
+                "UI/icon/blackholeB.png",
+                "comp/BlackExplosion.atlas",
+                "UI/icon/blackholeA.png",
+                "UI/icon/blackholeB.png",
+                "comp/NewBlood.atlas",
+                "comp/Slam.atlas",
+                "UI/icon/slamA.png",
+                "UI/icon/slamB.png",
+                "comp/Target.atlas",
+                "comp/TargetSlash.atlas",
+                "UI/icon/beheadA.png",
+                "UI/icon/beheadB.png",
+                "comp/Spike.atlas",
+                "UI/icon/spikeA.png",
+                "UI/icon/spikeB.png",
+                "comp/NewSlash_1.atlas",
+                "comp/NewSlash_2.atlas",
+                "comp/SlashLight.atlas",
+                "comp/FireBall.atlas",
+                "normalEnemy/Attack.atlas",
+                "normalEnemy/Idle.atlas",
+                "normalEnemy/Walk.atlas",
+                "comp/NewSlahLight.atlas",
+                "comp/NewSlashLight90.atlas",
+                "comp/NewSlashLight-43.5.atlas",
+                'UI/mobileLeftBtn.png',
+                'UI/mobileRightBtn.png',
+                'UI/mobileAtkBtn.png',
+                'UI/mobileSprintBtn.png',
+                'UI/mobileHumanSkillBtn.png',
+                'UI/mobileCatSkillBtn.png',
+                "UI/reinforce.png",
+                "UI/hp.png",
+                "comp/progress.png",
+                "comp/prog.png",
+                "UI/arrP.png",
+                "UI/arrR.png",
+                "UI/reinforce.png",
+                "UI/skip.png",
+                "UI/skip2.png",
+                'UI/ending/chooseSkill.png',
+                'UI/ending/skillBox.png',
+                "UI/ending/infoBox.png",
+                'UI/leftArr.png',
+                'UI/rightArr.png',
+                'UI/ending/ending.png',
+                'UI/ending/gold.png',
+                'UI/ending/crystal.png',
+                "UI/bp_100.png",
+                "UI/bp_150.png",
+                "UI/Box.png",
+                "UI/icon/sprint.png",
+                "UI/Gold.png",
+                "UI/chioce_mission.png",
+                "UI/skull.png",
+                "UI/star.png",
+                "UI/chioce_mission_button_Bright.png",
+                "UI/chioce_mission_button_Dark.png",
+                'UI/tutorial/1.png',
+                'UI/tutorial/2.png',
+                'UI/tutorial/3.png',
+                'UI/tutorial/4.png',
+                'UI/tutorial/5.png',
+                'UI/tutorial/6.png',
+                'UI/tutorial/7.png',
             ];
         }
         onStart() {
@@ -4059,7 +4146,7 @@
                 this.loadingProgress.value = 1;
                 new MissionManager().firstEnter();
                 if (Village.isNewbie) {
-                    Laya.Scene.open("Newbie.scene");
+                    Laya.Scene.open("Newbie_temp.scene");
                 }
                 this.loadingProgress.destroy();
                 return;
@@ -4108,6 +4195,7 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.dirtEffect.filters = [colorFilter];
             this.dirtEffect.alpha = 0.5;
+            ZOrderManager.setZOrder(this.dirtEffect, 100);
             Laya.stage.addChild(this.dirtEffect);
             this.dirtEffect.play();
         }

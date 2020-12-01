@@ -136,7 +136,7 @@ export default class MissionManager extends Laya.Script {
             // Laya.Scene.load
             if (Village.isNewbie) {
                 // Laya.Scene.open("Newbie.scene");
-                Loading2.nextSceneName = 'Newbie.scene';
+                Loading2.nextSceneName = 'Newbie_temp.scene';
                 Laya.Scene.open('Loading2.scene', true);
                 // Village.isNewbie = false;
             } else {

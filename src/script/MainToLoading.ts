@@ -1,3 +1,5 @@
+import ZOrderManager from "./ZOrderManager";
+
 export default class MainToLoading extends Laya.Script{
     dirtEffect: Laya.Animation;
     windBgm: string = 'Audio/Misc/wind.wav';
@@ -50,6 +52,7 @@ export default class MainToLoading extends Laya.Script{
         //     this.dirtEffect.destroy();
         //     this.dirtEffect.destroyed = true;
         // });
+        ZOrderManager.setZOrder(this.dirtEffect, 100);
         Laya.stage.addChild(this.dirtEffect);
         this.dirtEffect.play();
     }

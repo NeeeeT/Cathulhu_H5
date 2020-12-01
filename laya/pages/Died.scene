@@ -35,7 +35,7 @@
             "x":15,
             "type":"Sprite",
             "searchKey":"Sprite",
-            "props":{"y":0,"x":0,"texture":"Background(0912)/Red Forest/Died.png"},
+            "props":{"zOrder":5,"y":0,"x":0,"texture":"Background(0912)/Red Forest/Died.png"},
             "nodeParent":2,
             "label":"Sprite",
             "isDirectory":false,

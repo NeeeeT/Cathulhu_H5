@@ -2,7 +2,7 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":225,
+    "selecteID":6,
     "searchKey":"Scene",
     "props":{"x":0,"width":4098,"skewY":0,"skewX":0,"sceneColor":"gray","pivotX":0,"height":768,"autoDestroyAtClosed":true},
     "nodeParent":-1,
@@ -114,7 +114,7 @@
             "x":15,
             "type":"Sprite",
             "searchKey":"Sprite,Background",
-            "props":{"y":0,"x":1,"visible":true,"texture":"Background(0912)/Red Forest/Red Forest(x3)(0912).png","rotation":0,"name":"Background"},
+            "props":{"zOrder":5,"y":0,"x":1,"visible":true,"texture":"Background(0912)/Red Forest/Red Forest(x3)(0912).png","rotation":0,"name":"Background"},
             "nodeParent":2,
             "label":"Background",
             "isOpen":false,
@@ -123,7 +123,8 @@
             "hasChild":false,
             "compId":225,
             "child":[
-                ]
+                ],
+            "$HIDDEN":false
         },
         {
             "x":15,
