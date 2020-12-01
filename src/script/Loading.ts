@@ -1,5 +1,6 @@
 import MissionManager from "./MissionManager";
 import Village from "./Village";
+import ZOrderManager from "./ZOrderManager";
 
 export default class Loading extends Laya.Script{
     resourceLoad = [
@@ -18,6 +19,9 @@ export default class Loading extends Laya.Script{
         //Background
         "Background(0912)/loading2.png",
         "Background(0912)/forest.png",
+        "Background(0912)/Red Forest/Red Forest(x3)(0912).png",
+        "Background(0912)/gray town(x3)(0911).png",
+        "Background(0912)/Loading2.png",
         //Character
         "character/Idle.atlas",
         "character/Attack1.atlas",
@@ -64,6 +68,7 @@ export default class Loading extends Laya.Script{
         'UI/mobileSprintBtn.png',
         'UI/mobileHumanSkillBtn.png',
         'UI/mobileCatSkillBtn.png',
+        'UI.png',
         "UI/reinforce.png",
         "UI/hp.png",
         "comp/progress.png",
@@ -81,6 +86,7 @@ export default class Loading extends Laya.Script{
         'UI/ending/ending.png',
         'UI/ending/gold.png',
         'UI/ending/crystal.png',
+        'UI/anykey.png',
         //Oath
         "UI/bp_100.png",
         "UI/bp_150.png",
@@ -119,6 +125,7 @@ export default class Loading extends Laya.Script{
         this.loadingProgress.value = 0.5;
         // this.loadingProgress.changeHandler = new Laya.Handler(this, this.onChange);
         Laya.stage.addChild(this.loadingProgress);
+        ZOrderManager.setZOrder(this.loadingProgress, 101);
     }
     onProgress(value: number): void{
         this.loadingProgress.value = value;
@@ -126,7 +133,7 @@ export default class Loading extends Laya.Script{
             this.loadingProgress.value = 1;
             new MissionManager().firstEnter();
             if(Village.isNewbie){
-                Laya.Scene.open("Newbie_temp.scene");
+                Laya.Scene.open("Newbie_temp1.scene");
             }
             this.loadingProgress.destroy();
             return;

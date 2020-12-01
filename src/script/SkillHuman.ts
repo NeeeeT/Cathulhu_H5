@@ -74,6 +74,7 @@ export class Spike extends VirtualSkill {
             });
 
         Laya.stage.addChild(this.m_animation);
+        ZOrderManager.setZOrder(this.m_animation, 60);
 
         setTimeout(() => {
             this.m_animation.destroy();
@@ -165,6 +166,7 @@ export class Behead extends VirtualSkill {
 
 
         Laya.stage.addChild(this.m_animation);
+        ZOrderManager.setZOrder(this.m_animation, 60);
         // this.m_animation.play();
 
         setTimeout(() => {
@@ -242,7 +244,8 @@ export class Behead extends VirtualSkill {
             slash.destroy();
             slash.destroyed = true;
         });
-    Laya.stage.addChild(slash);
+        Laya.stage.addChild(slash);
+        ZOrderManager.setZOrder(slash, 60);
     }
 }
 export class None extends VirtualSkill{

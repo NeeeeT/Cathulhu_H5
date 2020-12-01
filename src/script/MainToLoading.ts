@@ -52,8 +52,8 @@ export default class MainToLoading extends Laya.Script{
         //     this.dirtEffect.destroy();
         //     this.dirtEffect.destroyed = true;
         // });
-        ZOrderManager.setZOrder(this.dirtEffect, 100);
         Laya.stage.addChild(this.dirtEffect);
+        ZOrderManager.setZOrder(this.dirtEffect, 100);
         this.dirtEffect.play();
     }
 }

@@ -2,11 +2,11 @@
     "x":0,
     "type":"Scene",
     "selectedBox":2,
-    "selecteID":5,
+    "selecteID":27,
     "searchKey":"Scene",
     "props":{"width":4098,"sceneColor":"#000000","height":768},
     "nodeParent":-1,
-    "maxID":27,
+    "maxID":28,
     "label":"Scene",
     "isOpen":true,
     "isDirectory":true,
@@ -14,49 +14,6 @@
     "hasChild":true,
     "compId":2,
     "child":[
-        {
-            "x":15,
-            "type":"Sprite",
-            "searchKey":"Sprite",
-            "props":{"zOrder":5,"y":374,"x":2049,"width":1366,"texture":"Background(0912)/town.png","pivotY":373,"pivotX":683,"height":768},
-            "nodeParent":2,
-            "label":"Sprite",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":3,
-            "child":[
-                ]
-        },
-        {
-            "x":15,
-            "type":"Sprite",
-            "searchKey":"Sprite",
-            "props":{"zOrder":5,"y":374,"x":683,"width":1366,"texture":"Background(0912)/town.png","pivotY":373,"pivotX":683,"height":768},
-            "nodeParent":2,
-            "label":"Sprite",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":4,
-            "child":[
-                ]
-        },
-        {
-            "x":15,
-            "type":"Sprite",
-            "searchKey":"Sprite",
-            "props":{"zOrder":5,"y":374,"x":3415,"width":1366,"texture":"Background(0912)/town.png","pivotY":373,"pivotX":683,"height":768},
-            "nodeParent":2,
-            "label":"Sprite",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":5,
-            "child":[
-                ],
-            "$HIDDEN":false
-        },
         {
             "x":15,
             "type":"Script",
@@ -360,6 +317,20 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":26,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Sprite",
+            "searchKey":"Sprite,Background",
+            "props":{"texture":"Background(0912)/gray town(x3)(0911).png","name":"Background"},
+            "nodeParent":2,
+            "label":"Background",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":27,
             "child":[
                 ]
         }],

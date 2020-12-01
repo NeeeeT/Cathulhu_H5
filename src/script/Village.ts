@@ -1,5 +1,6 @@
 import { ExtraData } from "./ExtraData";
 import MissionManager from "./MissionManager";
+import ZOrderManager from "./ZOrderManager";
 
 export default class Village extends Laya.Script{
 
@@ -121,6 +122,7 @@ export default class Village extends Laya.Script{
         this.reinforceUI.pos(333,184);//(1366 - 1066) / 2, (768 - 550) / 2
         this.reinforceUI.alpha = 1;
         Laya.stage.addChild(this.reinforceUI);
+        ZOrderManager.setZOrder(this.reinforceUI, 100);
     }
     setSkipIcon(): void{
         this.skipIcon = new Laya.Sprite();
@@ -137,6 +139,7 @@ export default class Village extends Laya.Script{
             this.clearReinforceUI();
         })
         Laya.stage.addChild(this.skipIcon);
+        ZOrderManager.setZOrder(this.skipIcon, 103);
     }
     setReinfoceGoldValue(): void{
         if(this.reinforceGold){
@@ -152,6 +155,7 @@ export default class Village extends Laya.Script{
         this.reinforceGold.text = '$'+String(Village.gold);
         this.reinforceGold.pos(333+520, 184+50);
         Laya.stage.addChild(this.reinforceGold);
+        ZOrderManager.setZOrder(this.reinforceGold, 101);
     }
     setReinfoceAtkDmgLevel(): void{
         if(this.reinforceAtkDmgLevel){
@@ -167,6 +171,7 @@ export default class Village extends Laya.Script{
         this.reinforceAtkDmgLevel.text = ': ' + String(Village.atkDmgLevel);
         this.reinforceAtkDmgLevel.pos(333+255, 184+160);
         Laya.stage.addChild(this.reinforceAtkDmgLevel);
+        ZOrderManager.setZOrder(this.reinforceAtkDmgLevel, 101);
     }
     setReinfoceHpLevel(): void{
         if(this.reinforceHpLevel){
@@ -182,6 +187,7 @@ export default class Village extends Laya.Script{
         this.reinforceHpLevel.text = ': ' + String(Village.hpLevel);
         this.reinforceHpLevel.pos(333+255, 184+275);
         Laya.stage.addChild(this.reinforceHpLevel);
+        ZOrderManager.setZOrder(this.reinforceHpLevel, 101);
     }
     setReinfoceAtkDmgCost(): void{
         if(this.reinforceAtkDmgCost){
@@ -197,6 +203,7 @@ export default class Village extends Laya.Script{
         this.reinforceAtkDmgCost.text = '$' + String(Village.atkDmgLevel*100);
         this.reinforceAtkDmgCost.pos(333+550, 184+160);
         Laya.stage.addChild(this.reinforceAtkDmgCost);
+        ZOrderManager.setZOrder(this.reinforceAtkDmgCost, 101);
     }
     setReinfoceHpCost(): void{
         if(this.reinforceHpCost){
@@ -212,6 +219,7 @@ export default class Village extends Laya.Script{
         this.reinforceHpCost.text = '$' + String(Village.hpLevel*100);
         this.reinforceHpCost.pos(333+550, 184+275);
         Laya.stage.addChild(this.reinforceHpCost);
+        ZOrderManager.setZOrder(this.reinforceHpCost, 101);
     }
     setReinforceAtkDmgCostIcon(): void{
         this.reinforceAtkDmgCostIcon = new Laya.Sprite();
@@ -238,6 +246,7 @@ export default class Village extends Laya.Script{
         })
 
         Laya.stage.addChild(this.reinforceAtkDmgCostIcon);
+        ZOrderManager.setZOrder(this.reinforceAtkDmgCostIcon, 101);
     }
     setReinforceHpCostIcon(): void{
         this.reinforceHpCostIcon = new Laya.Sprite();
@@ -245,7 +254,7 @@ export default class Village extends Laya.Script{
         this.reinforceHpCostIcon.loadImage('UI/arrR.png');
         this.reinforceHpCostIcon.alpha = 0.75;
         Laya.stage.addChild(this.reinforceHpCostIcon);
-
+        ZOrderManager.setZOrder(this.reinforceHpCostIcon, 101);
         this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
             this.reinforceHpCostIcon.alpha = 1.0;
         });

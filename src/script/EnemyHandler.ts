@@ -151,6 +151,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_player = player;
 
         Laya.stage.addChild(this.m_animation);
+        ZOrderManager.setZOrder(this.m_animation, 15);
         this.showHealth();
         if(this.m_isElite){
             this.setEnemyEliteColor();
@@ -271,6 +272,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         damageText.strokeColor = "#000";
 
         Laya.stage.addChild(damageText);
+        ZOrderManager.setZOrder(damageText, 80);
 
         Laya.Tween.to(damageText, { alpha: 0.4, fontSize: damageText.fontSize + 50, y: damageText.y + 80, }, 650, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
@@ -286,6 +288,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         this.m_healthBar.value = 1;
         this.m_healthBar.alpha = 1;
         Laya.stage.addChild(this.m_healthBar);
+        ZOrderManager.setZOrder(this.m_healthBar, 100);
 
         let healthBarFunc = function (){
             if (this.m_animation.destroyed) {
@@ -364,6 +367,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             slashLightEffect.destroyed = true;
         });
         Laya.stage.addChild(slashLightEffect);
+        ZOrderManager.setZOrder(slashLightEffect, 60);
         slashLightEffect.play();
     }
     private setSound(volume: number, url: string, loop: number) {
@@ -470,6 +474,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         // this.m_atkTimer = 100;
         setTimeout(() => {
             Laya.stage.addChild(atkCircle);
+            ZOrderManager.setZOrder(atkCircle, 0);
             atkBoxCollider.tag = this.m_atkTag;
             this.m_atkTimer = 100;
         }, 500);

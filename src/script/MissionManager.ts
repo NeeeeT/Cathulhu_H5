@@ -2,6 +2,8 @@ import { ExtraData } from "./ExtraData";
 import EnemyInit from "./EnemyInit";
 import Village from "./Village";
 import Loading2 from "./Loading2";
+import ZOrderManager from "./ZOrderManager";
+import SceneInit from "./SceneInit";
 
 export default class MissionManager extends Laya.Script {
     //任務介面
@@ -40,6 +42,7 @@ export default class MissionManager extends Laya.Script {
         this.missionUI.pos(171, 96);//(1366 - 1024) / 2, (768 - 576) / 2
         this.missionUI.alpha = 1;
         Laya.stage.addChild(this.missionUI);
+        ZOrderManager.setZOrder(this.missionUI, 100);
         if (Village.isNewbie) {
             // this.setEliteIcon(0, MissionManager.missionDataPool[0]["eliteNum"]);
             // this.setDifficultyIcon(0, MissionManager.missionDataPool[0]["difficulty"]);
@@ -59,11 +62,26 @@ export default class MissionManager extends Laya.Script {
                 this.setConfirmIcon(i, MissionManager.missionDataPool[i]);
             }
             
-            for (let i = 0; i < this.eliteIcons.length; i++) { Laya.stage.addChild(this.eliteIcons[i]); }
-            for (let i = 0; i < this.difficultyIcons.length; i++) { Laya.stage.addChild(this.difficultyIcons[i]); }
-            for (let i = 0; i < this.crystalNums.length; i++) { Laya.stage.addChild(this.crystalNums[i]); }
-            for (let i = 0; i < this.moneyNums.length; i++) { Laya.stage.addChild(this.moneyNums[i]); }
-            for (let i = 0; i < this.confirmIcons.length; i++) { Laya.stage.addChild(this.confirmIcons[i]); }
+            for (let i = 0; i < this.eliteIcons.length; i++) { 
+                Laya.stage.addChild(this.eliteIcons[i]);
+                ZOrderManager.setZOrder(this.eliteIcons[i], 101);
+             }
+            for (let i = 0; i < this.difficultyIcons.length; i++) { 
+                Laya.stage.addChild(this.difficultyIcons[i]);
+                ZOrderManager.setZOrder(this.difficultyIcons[i], 101);
+             }
+            for (let i = 0; i < this.crystalNums.length; i++) { 
+                Laya.stage.addChild(this.crystalNums[i]);
+                ZOrderManager.setZOrder(this.crystalNums[i], 101);
+             }
+            for (let i = 0; i < this.moneyNums.length; i++) { 
+                Laya.stage.addChild(this.moneyNums[i]);
+                ZOrderManager.setZOrder(this.moneyNums[i], 101);
+             }
+            for (let i = 0; i < this.confirmIcons.length; i++) { 
+                Laya.stage.addChild(this.confirmIcons[i]);
+                ZOrderManager.setZOrder(this.confirmIcons[i], 101);
+             }
         }
         // Laya.stage.addChildren(this.eliteIcons);
         // Laya.stage.addChildren(this.difficultyIcons);
@@ -141,11 +159,13 @@ export default class MissionManager extends Laya.Script {
                     Laya.Scene.closeAll();
                     // Laya.Scene.open("First.scene");
                     Loading2.nextSceneName = 'First.scene';
+                    // SceneInit.setBattleMap("RedForest");
                     Laya.Scene.open('Loading2.scene', true);
                 } else {
                     Laya.Scene.closeAll();
                     // Laya.Scene.open("Town.scene");
                     Loading2.nextSceneName = 'Town.scene';
+                    // SceneInit.setBattleMap("Town");
                     Laya.Scene.open('Loading2.scene', true);
                 }
             }
@@ -202,7 +222,8 @@ export default class MissionManager extends Laya.Script {
                 eliteNum: Math.round(Math.random()),
                 eliteHpMultiplier: 1.5,
                 eliteAtkMultiplier: 1.5,
-                crystal: Math.round(100 + 100 * (1 + this.missionDifficultyArr[i] / 100)),
+                // crystal: Math.round(100 + 100 * (1 + this.missionDifficultyArr[i] / 100)),
+                crystal: 0,
                 money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
                 map: "forest",
             }

@@ -1,3 +1,5 @@
+import ZOrderManager from "./ZOrderManager";
+
 export abstract class VirtualSkill extends Laya.Script{
     /** 技能名稱 */
     abstract m_name: string;
@@ -54,6 +56,7 @@ export abstract class VirtualSkill extends Laya.Script{
         roarText.stroke = 3
 
         Laya.stage.addChild(roarText);
+        ZOrderManager.setZOrder(roarText, 80);
 
         Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {

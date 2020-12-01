@@ -2,6 +2,7 @@ import CharacterInit, { Character } from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import EnemyInit from "./EnemyInit";
 import Turtorial from "./Tutorial";
+import ZOrderManager from "./ZOrderManager";
 
 export enum DebuffType{
     none = 0,
@@ -44,6 +45,7 @@ export abstract class DebuffProto extends Laya.Script {
         //soundNum = critical ? 0 : 1;
         //this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
+        ZOrderManager.setZOrder(damageText, 80);
 
         Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
@@ -84,6 +86,10 @@ export class Blind extends DebuffProto{
         this.blindSprite.addChild(this.blindBlackBg);
         this.blindCircleMask.blendMode = "destination-out";
         this.blindSprite.addChild(this.blindCircleMask);
+
+        ZOrderManager.setZOrder(this.blindSprite, 70);
+        ZOrderManager.setZOrder(this.blindBlackBg, 70);
+        ZOrderManager.setZOrder(this.blindCircleMask, 70);
 
         this.blindHandler = setInterval(() => {
             this.debuffUpdate();

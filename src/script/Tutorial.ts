@@ -209,13 +209,13 @@ export default class Turtorial extends Laya.Script{
         //     }
         // })
         Laya.stage.addChild(this.currentHintUI);
+        ZOrderManager.setZOrder(this.currentHintUI, 999);
     }
     setHintStep(step: number):void{
         if(this.currentHintStep === turtorialHintStep.none){
             this.currentHintUI.loadImage('UI/tutorial/1.png');
             this.currentHintStep = step;
             // this.currentHintUI.zOrder = 999;
-            ZOrderManager.setZOrder(this.currentHintUI, 999);
             return;
         }
         if(step === turtorialHintStep.tryAttack || step === turtorialHintStep.trySkill){

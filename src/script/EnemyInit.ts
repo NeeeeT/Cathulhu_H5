@@ -4,6 +4,7 @@ import { ExtraData } from "./ExtraData";
 import MissionManager from "./MissionManager";
 import SkillList from "./SkillList";
 import Village from "./Village";
+import ZOrderManager from "./ZOrderManager";
 
 export default class EnemyInit extends Laya.Script{
 
@@ -441,6 +442,20 @@ export default class EnemyInit extends Laya.Script{
         Laya.stage.addChild(this.leftArrow);
         Laya.stage.addChild(this.rightArrow);
 
+        ZOrderManager.setZOrder(this.endingSkillUI, 100);
+        ZOrderManager.setZOrder(this.skillCat, 101);
+        ZOrderManager.setZOrder(this.skillHuman, 101);
+        ZOrderManager.setZOrder(this.skillCatIcon, 103);
+        ZOrderManager.setZOrder(this.skillHumanIcon, 103);
+        ZOrderManager.setZOrder(this.skillCatInfo, 103);
+        ZOrderManager.setZOrder(this.skillHumanInfo, 103);
+        ZOrderManager.setZOrder(this.skillCatInfoText, 104);
+        ZOrderManager.setZOrder(this.skillHumanInfoText, 104);
+        ZOrderManager.setZOrder(this.catSkillName, 103);
+        ZOrderManager.setZOrder(this.humanSkillName, 103);
+        ZOrderManager.setZOrder(this.leftArrow, 103);
+        ZOrderManager.setZOrder(this.rightArrow, 103);
+
         Laya.Tween.to(this.endingSkillUI, {alpha: 1.0}, 500, Laya.Ease.linearInOut, null, 0);
     }
 
@@ -617,6 +632,12 @@ export default class EnemyInit extends Laya.Script{
         Laya.stage.addChild(this.rewardCrystalText);
         Laya.stage.addChild(this.rewardGoldText);
         
+        ZOrderManager.setZOrder(this.endingRewardUI, 100);
+        ZOrderManager.setZOrder(this.rewardCrystal, 101);
+        ZOrderManager.setZOrder(this.rewardGold, 101);
+        ZOrderManager.setZOrder(this.rewardCrystalText, 102);
+        ZOrderManager.setZOrder(this.rewardGoldText, 102);
+
         this.endingUpdateData();
     }
 
@@ -658,6 +679,9 @@ export default class EnemyInit extends Laya.Script{
 
         Laya.stage.addChild(this.enemyInfo);
         Laya.stage.addChild(this.enemyLeftIcon);
+
+        ZOrderManager.setZOrder(this.enemyInfo, 105);
+        ZOrderManager.setZOrder(this.enemyLeftIcon, 105);
 
         let roundDetectFunc = function () {
             if(!this.battleToggle || player.destroyed){

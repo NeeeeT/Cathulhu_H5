@@ -134,7 +134,9 @@ export default class OathManager extends Laya.Script {
         //     // console.log(CharacterInit.playerEnt.m_bloodyPoint);
         // }), 15);
         Laya.stage.addChild(this.oathBar);
-        Laya.stage.addChild(this.oathBar_overCharge);                                                                                                                                                                                                                                                                             
+        Laya.stage.addChild(this.oathBar_overCharge);
+        ZOrderManager.setZOrder(this.oathBar, 100);
+        ZOrderManager.setZOrder(this.oathBar_overCharge, 100);
     }
     //10/21新增
     public showBloodyLogo(player: Laya.Animation) {

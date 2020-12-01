@@ -218,6 +218,7 @@ export class Character extends Laya.Script {
         this.m_rigidbody.mask = 2 | 8 | 16;
 
         Laya.stage.addChild(this.m_animation);
+        ZOrderManager.setZOrder(this.m_animation, 20);
 
         // this.m_oathManager = new OathManager();
         // this.m_oathManager.initOathSystem();
@@ -335,7 +336,7 @@ export class Character extends Laya.Script {
         // soundNum = critical ? 0 : 1;
         // this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
-
+        ZOrderManager.setZOrder(damageText, 80);
         Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut,
@@ -767,6 +768,7 @@ export class Character extends Laya.Script {
             Laya.timer.clear(this, slashTimerFunc);
         });
         Laya.stage.addChild(slashEffect);
+        ZOrderManager.setZOrder(slashEffect, 60);
         slashEffect.play();
 
         let slashTimerFunc = function() {
@@ -814,6 +816,7 @@ export class Character extends Laya.Script {
         //     this.m_walkeffect.destroyed = true;
         // });
         Laya.stage.addChild(this.m_walkeffect);
+        ZOrderManager.setZOrder(this.m_walkeffect, 60);
         this.m_walkeffect.play();
 
         let walkTimerFunc = function () {
@@ -1024,6 +1027,7 @@ export class Character extends Laya.Script {
             Laya.Pool.recover("bloodEffect", bloodEffect);
         });
         Laya.stage.addChild(bloodEffect);
+        ZOrderManager.setZOrder(bloodEffect, 60);
         bloodEffect.play();
 }
     public updateAnimation(from: CharacterStatus, to: CharacterStatus, onCallBack: () => void = null, force: boolean = false, rate: number = 100): void {
@@ -1485,6 +1489,7 @@ export default class CharacterInit extends Laya.Script {
         player.spawn();
         CharacterInit.playerEnt = player;
         Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
+        ZOrderManager.setZOrder(CharacterInit.playerEnt.m_animation, 20);
         player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
         player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);//角色UI狀態方法
 

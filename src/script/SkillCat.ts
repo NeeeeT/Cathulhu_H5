@@ -2,6 +2,7 @@ import CharacterInit from "./CharacterInit";
 import { CharacterStatus } from "./CharacterStatus";
 import EnemyHandler, { VirtualEnemy } from "./EnemyHandler"
 import { VirtualSkill } from "./SkillManager";
+import ZOrderManager from "./ZOrderManager";
 
 export class Slam extends VirtualSkill {
     m_name = '猛擊';
@@ -53,6 +54,7 @@ export class Slam extends VirtualSkill {
             this.m_animation.destroyed = true;
         });
         Laya.stage.addChild(this.m_animation);
+        ZOrderManager.setZOrder(this.m_animation, 60);
         setTimeout(() => {
             this.m_animation.play();
             let timer = setInterval(() => {
@@ -179,6 +181,7 @@ export class BlackHole extends VirtualSkill {
         let timer = setInterval(() => {
             if (count >= this.m_lastTime * 1000) {
                 Laya.stage.addChild(explosion);
+                ZOrderManager.setZOrder(explosion, 60);
                 explosion.play();
                 owner.setCameraShake(100, 12);
                 setTimeout(() => {
@@ -212,6 +215,7 @@ export class BlackHole extends VirtualSkill {
             this.m_canUse = true;
         }, this.m_cd * 1000);
         Laya.stage.addChild(this.m_animation);
+        ZOrderManager.setZOrder(this.m_animation, 60);
         this.m_animation.play();
         this.updateCdTimer();
         this.setSound(0.6, 'Audio/Misc/blackhole.wav', 1);
@@ -314,6 +318,7 @@ export class BigExplosion extends VirtualSkill {
         let timer = setInterval(() => {
             if (count >= this.m_lastTime * 1000) {
                 Laya.stage.addChild(explosion);
+                ZOrderManager.setZOrder(explosion, 60);
                 explosion.play();
                 owner.setCameraShake(100, 12);
                 setTimeout(() => {
@@ -347,6 +352,7 @@ export class BigExplosion extends VirtualSkill {
             this.m_canUse = true;
         }, this.m_cd * 1000);
         Laya.stage.addChild(this.m_animation);
+        ZOrderManager.setZOrder(this.m_animation, 60);
         this.m_animation.play();
         this.updateCdTimer();
     }

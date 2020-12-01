@@ -15,6 +15,7 @@ export default class Loading2 extends Laya.Script{
     storyInfo: Laya.Text;
     loadingProgress: Laya.ProgressBar;
     anyKeyIcon: Laya.Sprite;
+    // loadingBg: Laya.Sprite;
 
     storyInfoCard: string[] = [
         '曾經有這麼一片森林－－它作物叢生，萬物繁榮，是人們賴以維生的『生命之林』。但如今，那裡只剩下會奪走生命的機械。',
@@ -36,11 +37,21 @@ export default class Loading2 extends Laya.Script{
         this.storyInfo.destroy();
         this.loadingProgress.destroy();
         this.anyKeyIcon.destroy();
+        // Laya.stage.removeChild(this.loadingBg);
+        // Laya.Pool.recover("loadingBg", this.loadingBg);
         Laya.Scene.open(Loading2.nextSceneName);
     }
     onStart(): void{
         this.prepared = false;
         this.preparedSeconds = 2.5;
+        
+        // this.loadingBg = Laya.Pool.getItemByClass("loadingBg", Laya.Sprite);
+        // this.loadingBg.size(1366, 768);
+        // this.loadingBg.pos(2732, 0);
+        // this.loadingBg.loadImage("Background(0912)/Loading2.png");
+        // Laya.stage.addChild(this.loadingBg);
+        // ZOrderManager.setZOrder(this.loadingBg, 6);
+        
         this.setStoryInfoCard();
         this.setProgressBar();
         this.setAnyKeyIcon();
@@ -49,6 +60,8 @@ export default class Loading2 extends Laya.Script{
             this.storyInfo.destroy();
             this.loadingProgress.destroy();
             this.anyKeyIcon.destroy();
+            // Laya.stage.removeChild(this.loadingBg);
+            // Laya.Pool.recover("loadingBg", this.loadingBg);
             Laya.Scene.open(Loading2.nextSceneName);
         })
 
@@ -75,8 +88,8 @@ export default class Loading2 extends Laya.Script{
         this.loadingProgress.sizeGrid = "0,10,0,10";
         this.loadingProgress.pos(338,510);
         this.loadingProgress.value = 0.0;
-        ZOrderManager.setZOrder(this.loadingProgress, 101);
         Laya.stage.addChild(this.loadingProgress);
+        ZOrderManager.setZOrder(this.loadingProgress, 101);
     }
     setStoryInfoCard(): void{
         let randomCard: number = Math.floor(Math.random() * this.storyInfoCard.length);
@@ -90,16 +103,16 @@ export default class Loading2 extends Laya.Script{
         this.storyInfo.wordWrap = true;
         this.storyInfo.size(837,180);
         this.storyInfo.pos(267, 230);
-        ZOrderManager.setZOrder(this.storyInfo, 101);
         Laya.stage.addChild(this.storyInfo);
+        ZOrderManager.setZOrder(this.storyInfo, 101);
     }
     setAnyKeyIcon(): void{
         this.anyKeyIcon = new Laya.Sprite();
-        this.anyKeyIcon.loadImage('ui/anykey.png');
+        this.anyKeyIcon.loadImage('UI/anykey.png');
         this.anyKeyIcon.pos(587, 420);
-        ZOrderManager.setZOrder(this.anyKeyIcon, 102);
         this.anyKeyIcon.alpha = 0;
         this.anyKeyIcon.visible = false;
         Laya.stage.addChild(this.anyKeyIcon);
+        ZOrderManager.setZOrder(this.anyKeyIcon, 102);
     }
 }

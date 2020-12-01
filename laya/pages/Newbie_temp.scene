@@ -123,7 +123,8 @@
             "hasChild":false,
             "compId":225,
             "child":[
-                ]
+                ],
+            "$HIDDEN":false
         },
         {
             "x":15,

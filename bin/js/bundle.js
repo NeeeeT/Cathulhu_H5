@@ -54,6 +54,16 @@
         }
     }
 
+    class ZOrderManager extends Laya.Script {
+        constructor(parameters) {
+            super();
+        }
+        static setZOrder(target, z) {
+            target.zOrder = z;
+            Laya.stage.updateZOrder();
+        }
+    }
+
     class Village extends Laya.Script {
         constructor() {
             super(...arguments);
@@ -133,6 +143,7 @@
             this.reinforceUI.pos(333, 184);
             this.reinforceUI.alpha = 1;
             Laya.stage.addChild(this.reinforceUI);
+            ZOrderManager.setZOrder(this.reinforceUI, 100);
         }
         setSkipIcon() {
             this.skipIcon = new Laya.Sprite();
@@ -148,6 +159,7 @@
                 this.clearReinforceUI();
             });
             Laya.stage.addChild(this.skipIcon);
+            ZOrderManager.setZOrder(this.skipIcon, 103);
         }
         setReinfoceGoldValue() {
             if (this.reinforceGold) {
@@ -163,6 +175,7 @@
             this.reinforceGold.text = '$' + String(Village.gold);
             this.reinforceGold.pos(333 + 520, 184 + 50);
             Laya.stage.addChild(this.reinforceGold);
+            ZOrderManager.setZOrder(this.reinforceGold, 101);
         }
         setReinfoceAtkDmgLevel() {
             if (this.reinforceAtkDmgLevel) {
@@ -178,6 +191,7 @@
             this.reinforceAtkDmgLevel.text = ': ' + String(Village.atkDmgLevel);
             this.reinforceAtkDmgLevel.pos(333 + 255, 184 + 160);
             Laya.stage.addChild(this.reinforceAtkDmgLevel);
+            ZOrderManager.setZOrder(this.reinforceAtkDmgLevel, 101);
         }
         setReinfoceHpLevel() {
             if (this.reinforceHpLevel) {
@@ -193,6 +207,7 @@
             this.reinforceHpLevel.text = ': ' + String(Village.hpLevel);
             this.reinforceHpLevel.pos(333 + 255, 184 + 275);
             Laya.stage.addChild(this.reinforceHpLevel);
+            ZOrderManager.setZOrder(this.reinforceHpLevel, 101);
         }
         setReinfoceAtkDmgCost() {
             if (this.reinforceAtkDmgCost) {
@@ -208,6 +223,7 @@
             this.reinforceAtkDmgCost.text = '$' + String(Village.atkDmgLevel * 100);
             this.reinforceAtkDmgCost.pos(333 + 550, 184 + 160);
             Laya.stage.addChild(this.reinforceAtkDmgCost);
+            ZOrderManager.setZOrder(this.reinforceAtkDmgCost, 101);
         }
         setReinfoceHpCost() {
             if (this.reinforceHpCost) {
@@ -223,6 +239,7 @@
             this.reinforceHpCost.text = '$' + String(Village.hpLevel * 100);
             this.reinforceHpCost.pos(333 + 550, 184 + 275);
             Laya.stage.addChild(this.reinforceHpCost);
+            ZOrderManager.setZOrder(this.reinforceHpCost, 101);
         }
         setReinforceAtkDmgCostIcon() {
             this.reinforceAtkDmgCostIcon = new Laya.Sprite();
@@ -247,6 +264,7 @@
                 Village.saveData();
             });
             Laya.stage.addChild(this.reinforceAtkDmgCostIcon);
+            ZOrderManager.setZOrder(this.reinforceAtkDmgCostIcon, 101);
         }
         setReinforceHpCostIcon() {
             this.reinforceHpCostIcon = new Laya.Sprite();
@@ -254,6 +272,7 @@
             this.reinforceHpCostIcon.loadImage('UI/arrR.png');
             this.reinforceHpCostIcon.alpha = 0.75;
             Laya.stage.addChild(this.reinforceHpCostIcon);
+            ZOrderManager.setZOrder(this.reinforceHpCostIcon, 101);
             this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, () => {
                 this.reinforceHpCostIcon.alpha = 1.0;
             });
@@ -282,16 +301,6 @@
     Village.reinforceToggle = false;
     Village.isNewbie = true;
 
-    class ZOrderManager extends Laya.Script {
-        constructor(parameters) {
-            super();
-        }
-        static setZOrder(target, z) {
-            target.zOrder = z;
-            Laya.stage.updateZOrder();
-        }
-    }
-
     var step;
     (function (step) {
         step[step["first"] = 0] = "first";
@@ -303,10 +312,16 @@
             super(...arguments);
             this.preparedTimer = null;
             this.storyInfoCard = [
-                '貓咪邪神：真身未明，形象為一隻黑色、手腳「著白襪」、有著藍色瞳孔的胖貓。據其所言，原本只是無意識的天地游靈留宿於貓的身上，但藉由薩德里地區人們的負面情緒及腐敗的血肉漸漸污染靈魂而成為邪神。無名的他希望藉由「載體」發揮他的力量，積極獲取力量的來源，成為邪神之王。',
-                '主角：白色短髮微微遮住左眼，瞳孔棕色，長相清秀的一名小男孩。相較與一般人，右手只剩下一小部分，且遮住的左眼完全失明。孤兒，從小由一名年長的薩滿婆婆扶養長大，平時沉默寡言。雖然身體患有缺陷，但在狩獵時十分擅長利用陷阱以及環境，在村中也被視為戰力的一員。',
-                '舊勢力為純樸的社會，信奉自然神祇，學習魔法知識以運用自然之力，因各人悟性不同，能施展的魔法因人而異，普通人僅能使用讓生活更加便利的小型魔法，但具天賦者將可施展毀滅性的大型魔法，因此人民普遍期待具備強大力量的英雄來領導。',
-                '新勢力發展科技，運用機械的力量，完成過往需依靠自然之力才能辦到的事，因此在文化上深植「人定勝天」的意識，視舊勢力對神祇的信仰為迷信，試圖透過殖民制度實行教育，對大陸上的舊勢力發動大規模攻勢，先進的武裝優勢使軍隊勢如破竹，巨幅擴張的行動讓資源供應需求暴增，新勢力更加強化榨取自然資源的力道，連帶導致自然神祇的力量被削弱。',
+                '曾經有這麼一片森林－－它作物叢生，萬物繁榮，是人們賴以維生的『生命之林』。但如今，那裡只剩下會奪走生命的機械。',
+                '其實貓貓邪神沒有必要是一隻貓，祂能以邪神之力變換成狗、人類、甚至是巨大的怪物……只不過祂習慣了，和祂平時追趕老鼠的行為一樣。',
+                '人類最後的堡壘是一座城鎮，要是失去它，人們就無處可去了。',
+                '機械士兵看起來相同，卻又不盡相同。就像每一個血肉生命，都有彼此的不同差異。',
+                '獻祭值越多，貓貓邪神就會越興奮－－不過這對你的凡人之軀不一定是好事。',
+                '珍惜你的劍，你已經沒有認識的朋友會鍛造武器了。',
+                '有些時候比起戰鬥所受的傷，貓貓邪神坐在你頭上所造成的頸部損傷更加讓你痛苦不堪。但你別無他法，你絕不能開口提及祂的體重。',
+                '『你應該要造一個神殿，祀奉貓貓邪神，供奉祂一些活祭品之類的喵。』',
+                '『要是你膽敢對貓貓邪神的體重有意見，貓貓邪神會把你的頭扯下來喵。』',
+                '『在戰鬥的時候你的動作應該要小一點，以免不小心把貓貓邪神甩下頭喵。』',
             ];
         }
         onKeyDown() {
@@ -353,8 +368,8 @@
             this.loadingProgress.sizeGrid = "0,10,0,10";
             this.loadingProgress.pos(338, 510);
             this.loadingProgress.value = 0.0;
-            ZOrderManager.setZOrder(this.loadingProgress, 101);
             Laya.stage.addChild(this.loadingProgress);
+            ZOrderManager.setZOrder(this.loadingProgress, 101);
         }
         setStoryInfoCard() {
             let randomCard = Math.floor(Math.random() * this.storyInfoCard.length);
@@ -368,17 +383,17 @@
             this.storyInfo.wordWrap = true;
             this.storyInfo.size(837, 180);
             this.storyInfo.pos(267, 230);
-            ZOrderManager.setZOrder(this.storyInfo, 101);
             Laya.stage.addChild(this.storyInfo);
+            ZOrderManager.setZOrder(this.storyInfo, 101);
         }
         setAnyKeyIcon() {
             this.anyKeyIcon = new Laya.Sprite();
-            this.anyKeyIcon.loadImage('ui/anykey.png');
+            this.anyKeyIcon.loadImage('UI/anykey.png');
             this.anyKeyIcon.pos(587, 420);
-            ZOrderManager.setZOrder(this.anyKeyIcon, 102);
             this.anyKeyIcon.alpha = 0;
             this.anyKeyIcon.visible = false;
             Laya.stage.addChild(this.anyKeyIcon);
+            ZOrderManager.setZOrder(this.anyKeyIcon, 102);
         }
     }
 
@@ -410,6 +425,7 @@
             this.missionUI.pos(171, 96);
             this.missionUI.alpha = 1;
             Laya.stage.addChild(this.missionUI);
+            ZOrderManager.setZOrder(this.missionUI, 100);
             if (Village.isNewbie) {
             }
             else {
@@ -421,18 +437,23 @@
                 }
                 for (let i = 0; i < this.eliteIcons.length; i++) {
                     Laya.stage.addChild(this.eliteIcons[i]);
+                    ZOrderManager.setZOrder(this.eliteIcons[i], 101);
                 }
                 for (let i = 0; i < this.difficultyIcons.length; i++) {
                     Laya.stage.addChild(this.difficultyIcons[i]);
+                    ZOrderManager.setZOrder(this.difficultyIcons[i], 101);
                 }
                 for (let i = 0; i < this.crystalNums.length; i++) {
                     Laya.stage.addChild(this.crystalNums[i]);
+                    ZOrderManager.setZOrder(this.crystalNums[i], 101);
                 }
                 for (let i = 0; i < this.moneyNums.length; i++) {
                     Laya.stage.addChild(this.moneyNums[i]);
+                    ZOrderManager.setZOrder(this.moneyNums[i], 101);
                 }
                 for (let i = 0; i < this.confirmIcons.length; i++) {
                     Laya.stage.addChild(this.confirmIcons[i]);
+                    ZOrderManager.setZOrder(this.confirmIcons[i], 101);
                 }
             }
         }
@@ -657,6 +678,7 @@
             roarText.strokeColor = "#fff";
             roarText.stroke = 3;
             Laya.stage.addChild(roarText);
+            ZOrderManager.setZOrder(roarText, 80);
             Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 18, y: roarText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { roarText.destroy(); }), 0);
             }), 0);
@@ -750,6 +772,7 @@
                 this.m_animation.destroyed = true;
             });
             Laya.stage.addChild(this.m_animation);
+            ZOrderManager.setZOrder(this.m_animation, 60);
             setTimeout(() => {
                 this.m_animation.play();
                 let timer = setInterval(() => {
@@ -848,6 +871,7 @@
             let timer = setInterval(() => {
                 if (count >= this.m_lastTime * 1000) {
                     Laya.stage.addChild(explosion);
+                    ZOrderManager.setZOrder(explosion, 60);
                     explosion.play();
                     owner.setCameraShake(100, 12);
                     setTimeout(() => {
@@ -879,6 +903,7 @@
                 this.m_canUse = true;
             }, this.m_cd * 1000);
             Laya.stage.addChild(this.m_animation);
+            ZOrderManager.setZOrder(this.m_animation, 60);
             this.m_animation.play();
             this.updateCdTimer();
             this.setSound(0.6, 'Audio/Misc/blackhole.wav', 1);
@@ -959,6 +984,7 @@
             let timer = setInterval(() => {
                 if (count >= this.m_lastTime * 1000) {
                     Laya.stage.addChild(explosion);
+                    ZOrderManager.setZOrder(explosion, 60);
                     explosion.play();
                     owner.setCameraShake(100, 12);
                     setTimeout(() => {
@@ -990,6 +1016,7 @@
                 this.m_canUse = true;
             }, this.m_cd * 1000);
             Laya.stage.addChild(this.m_animation);
+            ZOrderManager.setZOrder(this.m_animation, 60);
             this.m_animation.play();
             this.updateCdTimer();
         }
@@ -1074,6 +1101,7 @@
                 "y1": offsetY + this.m_animation.height,
             });
             Laya.stage.addChild(this.m_animation);
+            ZOrderManager.setZOrder(this.m_animation, 60);
             setTimeout(() => {
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
@@ -1149,6 +1177,7 @@
                 this.m_animation.destroyed = true;
             });
             Laya.stage.addChild(this.m_animation);
+            ZOrderManager.setZOrder(this.m_animation, 60);
             setTimeout(() => {
                 owner.m_rigidbody.linearVelocity = { x: 0.0, y: 10.0 };
                 this.attackRangeCheck(owner, {
@@ -1208,6 +1237,7 @@
                 slash.destroyed = true;
             });
             Laya.stage.addChild(slash);
+            ZOrderManager.setZOrder(slash, 60);
         }
     }
     class None$1 extends VirtualSkill {
@@ -1501,6 +1531,19 @@
             Laya.stage.addChild(this.humanSkillName);
             Laya.stage.addChild(this.leftArrow);
             Laya.stage.addChild(this.rightArrow);
+            ZOrderManager.setZOrder(this.endingSkillUI, 100);
+            ZOrderManager.setZOrder(this.skillCat, 101);
+            ZOrderManager.setZOrder(this.skillHuman, 101);
+            ZOrderManager.setZOrder(this.skillCatIcon, 103);
+            ZOrderManager.setZOrder(this.skillHumanIcon, 103);
+            ZOrderManager.setZOrder(this.skillCatInfo, 103);
+            ZOrderManager.setZOrder(this.skillHumanInfo, 103);
+            ZOrderManager.setZOrder(this.skillCatInfoText, 104);
+            ZOrderManager.setZOrder(this.skillHumanInfoText, 104);
+            ZOrderManager.setZOrder(this.catSkillName, 103);
+            ZOrderManager.setZOrder(this.humanSkillName, 103);
+            ZOrderManager.setZOrder(this.leftArrow, 103);
+            ZOrderManager.setZOrder(this.rightArrow, 103);
             Laya.Tween.to(this.endingSkillUI, { alpha: 1.0 }, 500, Laya.Ease.linearInOut, null, 0);
         }
         skillChoose(type) {
@@ -1564,6 +1607,11 @@
             Laya.stage.addChild(this.rewardGold);
             Laya.stage.addChild(this.rewardCrystalText);
             Laya.stage.addChild(this.rewardGoldText);
+            ZOrderManager.setZOrder(this.endingRewardUI, 100);
+            ZOrderManager.setZOrder(this.rewardCrystal, 101);
+            ZOrderManager.setZOrder(this.rewardGold, 101);
+            ZOrderManager.setZOrder(this.rewardCrystalText, 102);
+            ZOrderManager.setZOrder(this.rewardGoldText, 102);
             this.endingUpdateData();
         }
         clearEndRewardUI() {
@@ -1593,6 +1641,8 @@
             this.enemyLeftIcon.height = 40;
             Laya.stage.addChild(this.enemyInfo);
             Laya.stage.addChild(this.enemyLeftIcon);
+            ZOrderManager.setZOrder(this.enemyInfo, 105);
+            ZOrderManager.setZOrder(this.enemyLeftIcon, 105);
             let roundDetectFunc = function () {
                 if (!this.battleToggle || player.destroyed) {
                     this.enemyInfo.text = "";
@@ -1835,12 +1885,12 @@
             };
             Laya.timer.frameLoop(1, this, hintTimerFunc);
             Laya.stage.addChild(this.currentHintUI);
+            ZOrderManager.setZOrder(this.currentHintUI, 999);
         }
         setHintStep(step) {
             if (this.currentHintStep === turtorialHintStep.none) {
                 this.currentHintUI.loadImage('UI/tutorial/1.png');
                 this.currentHintStep = step;
-                ZOrderManager.setZOrder(this.currentHintUI, 999);
                 return;
             }
             if (step === turtorialHintStep.tryAttack || step === turtorialHintStep.trySkill) {
@@ -1898,6 +1948,7 @@
             damageText.stroke = 5;
             damageText.strokeColor = "#000";
             Laya.stage.addChild(damageText);
+            ZOrderManager.setZOrder(damageText, 80);
             Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
             }), 0);
@@ -1921,6 +1972,9 @@
             this.blindSprite.addChild(this.blindBlackBg);
             this.blindCircleMask.blendMode = "destination-out";
             this.blindSprite.addChild(this.blindCircleMask);
+            ZOrderManager.setZOrder(this.blindSprite, 70);
+            ZOrderManager.setZOrder(this.blindBlackBg, 70);
+            ZOrderManager.setZOrder(this.blindCircleMask, 70);
             this.blindHandler = setInterval(() => {
                 this.debuffUpdate();
             }, 10);
@@ -2147,6 +2201,8 @@
             Laya.timer.frameLoop(1, this, oathBarFunc);
             Laya.stage.addChild(this.oathBar);
             Laya.stage.addChild(this.oathBar_overCharge);
+            ZOrderManager.setZOrder(this.oathBar, 100);
+            ZOrderManager.setZOrder(this.oathBar_overCharge, 100);
         }
         showBloodyLogo(player) {
             this.characterLogo = new Laya.Animation();
@@ -2587,6 +2643,7 @@
             this.m_rigidbody.category = 4;
             this.m_rigidbody.mask = 2 | 8 | 16;
             Laya.stage.addChild(this.m_animation);
+            ZOrderManager.setZOrder(this.m_animation, 20);
             if (Laya.Browser.onMobile) {
                 this.showMobileUI(this.m_animation);
             }
@@ -2678,6 +2735,7 @@
             damageText.stroke = 3;
             damageText.strokeColor = "#fff";
             Laya.stage.addChild(damageText);
+            ZOrderManager.setZOrder(damageText, 80);
             Laya.Tween.to(damageText, { alpha: 0.55, fontSize: damageText.fontSize + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.stage.removeChild(damageText);
@@ -2764,7 +2822,6 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                new Village().showReinforceUI();
             }
             if (this.m_keyDownList[32]) {
             }
@@ -2894,6 +2951,7 @@
                 Laya.timer.clear(this, slashTimerFunc);
             });
             Laya.stage.addChild(slashEffect);
+            ZOrderManager.setZOrder(slashEffect, 60);
             slashEffect.play();
             let slashTimerFunc = function () {
                 slashEffect.skewY = this.m_isFacingRight ? 0 : 180;
@@ -2915,6 +2973,7 @@
             let glowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
             Laya.stage.addChild(this.m_walkeffect);
+            ZOrderManager.setZOrder(this.m_walkeffect, 60);
             this.m_walkeffect.play();
             let walkTimerFunc = function () {
                 if (this.m_animation.destroyed || EnemyInit.isWin) {
@@ -3060,6 +3119,7 @@
                 Laya.Pool.recover("bloodEffect", bloodEffect);
             });
             Laya.stage.addChild(bloodEffect);
+            ZOrderManager.setZOrder(bloodEffect, 60);
             bloodEffect.play();
         }
         updateAnimation(from, to, onCallBack = null, force = false, rate = 100) {
@@ -3422,6 +3482,7 @@
             player.spawn();
             CharacterInit.playerEnt = player;
             Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
+            ZOrderManager.setZOrder(CharacterInit.playerEnt.m_animation, 20);
             player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
             player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);
         }
@@ -3577,6 +3638,7 @@
             this.m_rigidbody.allowRotation = false;
             this.m_player = player;
             Laya.stage.addChild(this.m_animation);
+            ZOrderManager.setZOrder(this.m_animation, 15);
             this.showHealth();
             if (this.m_isElite) {
                 this.setEnemyEliteColor();
@@ -3688,6 +3750,7 @@
             damageText.stroke = 3;
             damageText.strokeColor = "#000";
             Laya.stage.addChild(damageText);
+            ZOrderManager.setZOrder(damageText, 80);
             Laya.Tween.to(damageText, { alpha: 0.4, fontSize: damageText.fontSize + 50, y: damageText.y + 80, }, 650, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 130 }, 650, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
             }), 0);
@@ -3700,6 +3763,7 @@
             this.m_healthBar.value = 1;
             this.m_healthBar.alpha = 1;
             Laya.stage.addChild(this.m_healthBar);
+            ZOrderManager.setZOrder(this.m_healthBar, 100);
             let healthBarFunc = function () {
                 if (this.m_animation.destroyed) {
                     this.m_healthBar.destroy();
@@ -3737,6 +3801,7 @@
                 slashLightEffect.destroyed = true;
             });
             Laya.stage.addChild(slashLightEffect);
+            ZOrderManager.setZOrder(slashLightEffect, 60);
             slashLightEffect.play();
         }
         setSound(volume, url, loop) {
@@ -3814,6 +3879,7 @@
             this.updateAnimation(EnemyStatus.idle, EnemyStatus.attack);
             setTimeout(() => {
                 Laya.stage.addChild(atkCircle);
+                ZOrderManager.setZOrder(atkCircle, 0);
                 atkBoxCollider.tag = this.m_atkTag;
                 this.m_atkTimer = 100;
             }, 500);
@@ -4043,6 +4109,8 @@
         onAwake() {
             Laya.stage.bgColor = this.sceneBackgroundColor;
             this.setMusic(0.6, "Audio/Bgm/BGM01.mp3", 0);
+            let bg = this.owner.scene.getChildByName('Background');
+            ZOrderManager.setZOrder(bg, 5);
         }
         setMusic(volume, url, loop) {
             Laya.SoundManager.playMusic(url, loop);
@@ -4066,6 +4134,9 @@
                 "font/silver.ttf",
                 "Background(0912)/loading2.png",
                 "Background(0912)/forest.png",
+                "Background(0912)/Red Forest/Red Forest(x3)(0912).png",
+                "Background(0912)/gray town(x3)(0911).png",
+                "Background(0912)/Loading2.png",
                 "character/Idle.atlas",
                 "character/Attack1.atlas",
                 "character/Attack2.atlas",
@@ -4156,6 +4227,7 @@
             this.loadingProgress.pos(333, 487);
             this.loadingProgress.value = 0.5;
             Laya.stage.addChild(this.loadingProgress);
+            ZOrderManager.setZOrder(this.loadingProgress, 101);
         }
         onProgress(value) {
             this.loadingProgress.value = value;
@@ -4163,7 +4235,7 @@
                 this.loadingProgress.value = 1;
                 new MissionManager().firstEnter();
                 if (Village.isNewbie) {
-                    Laya.Scene.open("Newbie_temp.scene");
+                    Laya.Scene.open("Newbie_temp1.scene");
                 }
                 this.loadingProgress.destroy();
                 return;
@@ -4212,8 +4284,8 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.dirtEffect.filters = [colorFilter];
             this.dirtEffect.alpha = 0.5;
-            ZOrderManager.setZOrder(this.dirtEffect, 100);
             Laya.stage.addChild(this.dirtEffect);
+            ZOrderManager.setZOrder(this.dirtEffect, 100);
             this.dirtEffect.play();
         }
     }
