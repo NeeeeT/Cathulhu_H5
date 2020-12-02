@@ -12,6 +12,7 @@ import { ExtraData } from "./ExtraData";
 import EnemyInit from "./EnemyInit";
 import Turtorial from "./Tutorial";
 import ZOrderManager from "./ZOrderManager";
+import Village from "./Village";
 
 
 export class Character extends Laya.Script {
@@ -478,7 +479,7 @@ export class Character extends Laya.Script {
             if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
         if (this.m_keyDownList[40]) {//Down
-            // new Village().showReinforceUI();
+            new Village().showReinforceUI();
         }
         if (this.m_keyDownList[32]) {
             // let width_offset: number =
