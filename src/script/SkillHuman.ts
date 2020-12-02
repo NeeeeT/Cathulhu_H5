@@ -77,6 +77,7 @@ export class Spike extends VirtualSkill {
         ZOrderManager.setZOrder(this.m_animation, 60);
 
         setTimeout(() => {
+            Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
         }, 200);
@@ -160,6 +161,7 @@ export class Behead extends VirtualSkill {
     let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
     this.m_animation.filters = [colorFilter];
         this.m_animation.on(Laya.Event.COMPLETE, this, function () {
+            Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
         });
@@ -240,7 +242,8 @@ export class Behead extends VirtualSkill {
     let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#0065ff", 8, 0, 0);
     let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
     slash.filters = [glowFilter, colorFilter];
-         slash.on(Laya.Event.COMPLETE, this, function () {
+        slash.on(Laya.Event.COMPLETE, this, function () {
+            Laya.stage.removeChild(slash);
             slash.destroy();
             slash.destroyed = true;
         });

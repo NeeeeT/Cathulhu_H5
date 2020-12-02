@@ -34,6 +34,10 @@ export default class Loading2 extends Laya.Script{
     onKeyDown(): void{
         if(!this.prepared) return;
 
+        Laya.stage.removeChild(this.storyInfo);
+        Laya.stage.removeChild(this.loadingProgress);
+        Laya.stage.removeChild(this.anyKeyIcon);
+
         this.storyInfo.destroy();
         this.loadingProgress.destroy();
         this.anyKeyIcon.destroy();
@@ -56,7 +60,11 @@ export default class Loading2 extends Laya.Script{
         this.setProgressBar();
         this.setAnyKeyIcon();
         Laya.stage.on(Laya.Event.CLICK, this, () => {
-            if(!this.prepared) return;
+            if (!this.prepared) return;
+            Laya.stage.removeChild(this.storyInfo);
+            Laya.stage.removeChild(this.loadingProgress);
+            Laya.stage.removeChild(this.anyKeyIcon);
+            
             this.storyInfo.destroy();
             this.loadingProgress.destroy();
             this.anyKeyIcon.destroy();

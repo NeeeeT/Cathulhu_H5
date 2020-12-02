@@ -574,6 +574,7 @@ export default class EnemyInit extends Laya.Script{
     unsetCharacter(): void{
         let player = CharacterInit.playerEnt.m_animation;
         Laya.Tween.to(player, { alpha: 0.0 }, 2500, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+            Laya.stage.removeChild(player);
             player.destroy();
             player.destroyed = true;
             // this.changeToVillage();
@@ -686,6 +687,8 @@ export default class EnemyInit extends Laya.Script{
         let roundDetectFunc = function () {
             if(!this.battleToggle || player.destroyed){
                 this.enemyInfo.text = "";
+                Laya.stage.removeChild(this.enemyInfo);
+                Laya.stage.removeChild(this.enemyLeftIcon);
                 this.enemyInfo.destroy();
                 this.enemyLeftIcon.destroy();
                 // clearInterval(this.roundDetectTimer);

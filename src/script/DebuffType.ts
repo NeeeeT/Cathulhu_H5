@@ -50,7 +50,10 @@ export abstract class DebuffProto extends Laya.Script {
         Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
                 Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut,
-                    Laya.Handler.create(this, () => { damageText.destroy() }), 0);
+                    Laya.Handler.create(this, () => {
+                        Laya.stage.removeChild(damageText);
+                        damageText.destroy()
+                    }), 0);
             }), 0);
     }
 }

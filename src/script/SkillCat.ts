@@ -50,6 +50,7 @@ export class Slam extends VirtualSkill {
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         this.m_animation.filters = [colorFilter];
         this.m_animation.on(Laya.Event.COMPLETE, this, function () {
+            Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
         });
@@ -185,6 +186,7 @@ export class BlackHole extends VirtualSkill {
                 explosion.play();
                 owner.setCameraShake(100, 12);
                 setTimeout(() => {
+                    Laya.stage.removeChild(explosion);
                     explosion.destroy();
                 }, 300);
                 this.attackRangeCheck(owner, {
@@ -209,6 +211,7 @@ export class BlackHole extends VirtualSkill {
 
         setTimeout(() => {
             //Laya.stage.graphics.clear();
+            Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
         }, this.m_lastTime * 1000);
         setTimeout(() => {
@@ -322,6 +325,7 @@ export class BigExplosion extends VirtualSkill {
                 explosion.play();
                 owner.setCameraShake(100, 12);
                 setTimeout(() => {
+                    Laya.stage.removeChild(explosion);
                     explosion.destroy();
                 }, 300);
                 this.attackRangeCheck(owner, {
@@ -346,6 +350,7 @@ export class BigExplosion extends VirtualSkill {
 
         setTimeout(() => {
             //Laya.stage.graphics.clear();
+            Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
         }, this.m_lastTime * 1000);
         setTimeout(() => {

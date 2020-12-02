@@ -158,6 +158,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
     };
     destroy(): void {
+        Laya.stage.removeChild(this.m_animation);
         this.m_animation.destroy();
         this.m_animation.destroyed = true;
     };
@@ -292,6 +293,7 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         let healthBarFunc = function (){
             if (this.m_animation.destroyed) {
+                Laya.stage.removeChild(this.m_healthBar);
                 this.m_healthBar.destroy();
                 this.m_healthBar.destroyed = true;
                 Laya.timer.clear(this, healthBarFunc);
@@ -363,6 +365,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         slashLightEffect.source = sourceArray[sourceNum];
         slashLightEffect.alpha = 1;
         slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
+            Laya.stage.removeChild(slashLightEffect);
             slashLightEffect.destroy();
             slashLightEffect.destroyed = true;
         });
@@ -479,6 +482,7 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_atkTimer = 100;
         }, 500);
         setTimeout(() => {
+            Laya.stage.removeChild(atkCircle);
             atkCircle.destroy();
             atkCircle.destroyed = true;
         }, 600);
@@ -693,6 +697,7 @@ export default class EnemyHandler extends Laya.Script {
             if(aliveEnemy[i]._ent.m_animation.destroyed) return;
             // aliveEnemy[i]._ent.m_animation.zOrder = -15;
             ZOrderManager.setZOrder(aliveEnemy[i]._ent.m_animation, -15);
+            Laya.stage.removeChild(aliveEnemy[i]._ent.m_animation);
             aliveEnemy[i]._ent.m_animation.destroy();
             aliveEnemy[i]._ent.m_animation.destroyed = true;
         }

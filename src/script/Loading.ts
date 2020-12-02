@@ -17,10 +17,9 @@ export default class Loading extends Laya.Script{
         //Font
         "font/silver.ttf",
         //Background
-        "Background(0912)/loading2.png",
-        "Background(0912)/forest.png",
-        "Background(0912)/Red Forest/Red Forest(x3)(0912).png",
-        "Background(0912)/gray town(x3)(0911).png",
+        // "Background(0912)/forest.png",
+        "Background(0912)/Red Forest/Red Forest(0912).png",
+        "Background(0912)/gray town(1126).png",
         "Background(0912)/Loading2.png",
         //Character
         "character/Idle.atlas",
@@ -69,6 +68,9 @@ export default class Loading extends Laya.Script{
         'UI/mobileHumanSkillBtn.png',
         'UI/mobileCatSkillBtn.png',
         'UI.png',
+        "UI/Zbtn.png",
+        "UI/Xbtn.png",
+        "UI/Cbtn.png",
         "UI/reinforce.png",
         "UI/hp.png",
         "comp/progress.png",
@@ -135,6 +137,7 @@ export default class Loading extends Laya.Script{
             if(Village.isNewbie){
                 Laya.Scene.open("Newbie_temp1.scene");
             }
+            Laya.stage.removeChild(this.loadingProgress);
             this.loadingProgress.destroy();
             return;
         }

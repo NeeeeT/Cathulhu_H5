@@ -254,6 +254,7 @@ export class Character extends Laya.Script {
     };
     public death() {
         Laya.Tween.to(this.m_animation, { alpha: 0.0 }, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+            Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
             Laya.Scene.open("Died.scene");
@@ -364,6 +365,7 @@ export class Character extends Laya.Script {
 
         let healthBarFunc = function(){
             if (this.m_animation.destroyed) {
+                Laya.stage.removeChild(this.m_healthBar);
                 this.m_healthBar.destroy();
                 this.m_healthBar.destroyed = true;
                 Laya.timer.clear(this, healthBarFunc);

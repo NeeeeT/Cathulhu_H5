@@ -6,8 +6,8 @@ export default class SceneInit extends Laya.Script {
     /** @prop {name:sceneBackgroundColor,tips:"戰鬥場景的背景顏色",type:string,default:"#4a4a4a"}*/
     sceneBackgroundColor: string = '#4a4a4a';
 
-    public static battleMapName: string;
-    backgroundMap: Laya.Sprite;
+    // public static battleMapName: string;
+    // backgroundMap: Laya.Sprite;
 
     constructor() {
         super();
@@ -20,8 +20,8 @@ export default class SceneInit extends Laya.Script {
 
         Laya.stage.bgColor = this.sceneBackgroundColor;
         this.setMusic(0.6, "Audio/Bgm/BGM01.mp3", 0);
-        let bg: Laya.Sprite = this.owner.scene.getChildByName('Background') as Laya.Sprite;
-        ZOrderManager.setZOrder(bg, 5);
+        // let bg: Laya.Sprite = this.owner.scene.getChildByName('Background') as Laya.Sprite;
+        // ZOrderManager.setZOrder(bg, 5);
         
         // this.backgroundMap = Laya.Pool.getItemByClass("backgroundMap", Laya.Sprite);
         // this.backgroundMap.size(4098, 768);

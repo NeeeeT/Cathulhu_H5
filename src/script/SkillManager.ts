@@ -61,7 +61,10 @@ export abstract class VirtualSkill extends Laya.Script{
         Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 450, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
                 Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 18, y: roarText.y - 50 }, 450, Laya.Ease.linearInOut,
-                Laya.Handler.create(this, ()=> { roarText.destroy() }), 0);
+                    Laya.Handler.create(this, () => {
+                        Laya.stage.removeChild(roarText);
+                        roarText.destroy()
+                    }), 0);
             }), 0);
     }
     /** 兩個矩形碰撞檢測 r1、r2分別傳入object類型{x0, x1, y0, y1}*/

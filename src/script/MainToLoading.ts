@@ -10,6 +10,7 @@ export default class MainToLoading extends Laya.Script{
         }));
     }
     onKeyDown(): void{
+        Laya.stage.removeChild(this.dirtEffect);
         this.dirtEffect.destroy();
         Laya.Scene.open('Loading.scene', true);
     }
@@ -18,6 +19,7 @@ export default class MainToLoading extends Laya.Script{
         this.createDirtEffect();
         //for mobile start
         Laya.stage.on(Laya.Event.CLICK, this, () => {
+            Laya.stage.removeChild(this.dirtEffect);
             this.dirtEffect.destroy();
             Laya.Scene.open('Loading.scene', true);
         })

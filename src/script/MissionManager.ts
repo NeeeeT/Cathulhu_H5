@@ -24,7 +24,6 @@ export default class MissionManager extends Laya.Script {
     moneyNums: Laya.Text[] = [];
     confirmIcons: Laya.Button[] = [];
 
-
     // currentBtn: number = 1;
 
     onStart() {
@@ -90,14 +89,40 @@ export default class MissionManager extends Laya.Script {
         // Laya.stage.addChildren(this.confirmIcons);
     }
 
-    clearMissionUI(): void{
-        for (let i = 0; i < this.eliteIcons.length; i++) { this.eliteIcons[i].destroy(); this.eliteIcons[i] = null;}
-        for (let i = 0; i < this.difficultyIcons.length; i++) { this.difficultyIcons[i].destroy(); this.difficultyIcons[i] = null;}
-        for (let i = 0; i < this.crystalNums.length; i++) { this.crystalNums[i].destroy(); this.crystalNums[i] = null;}
-        for (let i = 0; i < this.moneyNums.length; i++) { this.moneyNums[i].destroy(); this.moneyNums[i] = null;}
-        for (let i = 0; i < this.confirmIcons.length; i++) { this.confirmIcons[i].destroy(); this.confirmIcons[i] = null;}
+    public clearMissionUI(): void{
+        for (let i = 0; i < this.eliteIcons.length; i++) {
+            Laya.stage.removeChild(this.eliteIcons[i]);
+            this.eliteIcons[i].destroy();
+            this.eliteIcons[i] = null;
+        }
+        for (let i = 0; i < this.difficultyIcons.length; i++) {
+            Laya.stage.removeChild(this.difficultyIcons[i]);
+            this.difficultyIcons[i].destroy();
+            this.difficultyIcons[i] = null;
+        }
+        for (let i = 0; i < this.crystalNums.length; i++) {
+            Laya.stage.removeChild(this.crystalNums[i]);
+            this.crystalNums[i].destroy();
+            this.crystalNums[i] = null;
+        }
+        for (let i = 0; i < this.moneyNums.length; i++) {
+            Laya.stage.removeChild(this.moneyNums[i]);
+            this.moneyNums[i].destroy();
+            this.moneyNums[i] = null;
+        }
+        for (let i = 0; i < this.confirmIcons.length; i++) {
+            Laya.stage.removeChild(this.confirmIcons[i]);
+            this.confirmIcons[i].destroy();
+            this.confirmIcons[i] = null;
+        }
+        Laya.stage.removeChild(this.missionUI);
         this.missionUI.destroy();
         this.missionUI = null;
+    }
+    sendMissionData(data: object) {
+        EnemyInit.missionEnemyNum = data["enemyNum"];
+        EnemyInit.missionRewardCrystalValue = data["crystal"];
+        EnemyInit.missionRewardGoldValue = data["money"];
     }
 
     setEliteIcon(col: number, eliteNum: number): void{
@@ -145,9 +170,10 @@ export default class MissionManager extends Laya.Script {
         // confirmIcon.loadImage("UI/chioce_mission_button_Bright.png")
         confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
 
-        let confirmFunc = () =>{
-            this.clearMissionUI();
-            this.sendMissionData(data);
+        
+
+
+        let switchSceneFunc = () => {
             if (Village.isNewbie) {
                 // Laya.Scene.open("Newbie.scene");
                 Loading2.nextSceneName = 'Newbie_temp.scene';
@@ -170,6 +196,11 @@ export default class MissionManager extends Laya.Script {
                 }
             }
         }
+        let confirmFunc = () =>  {
+            this.clearMissionUI();
+            this.sendMissionData(data);
+            switchSceneFunc();
+        }
         switch (col) {
             case 0:
                 confirmIcon.loadImage("UI/Zbtn.png")
@@ -183,18 +214,18 @@ export default class MissionManager extends Laya.Script {
             default:
                 break;
         }
-        // confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
-        //     confirmIcon.loadImage("UI/chioce_mission_button_Dark.png");
-        // })
-        // confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
-        //     confirmIcon.loadImage("UI/chioce_mission_button_Bright.png");
-        // })
+        confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
+            confirmIcon.alpha = 0.5;
+        })
+        confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
+            confirmIcon.alpha = 1;
+        })
         confirmIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, confirmFunc);
 
         confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
         confirmIcon.on(Laya.Event.KEY_DOWN, this, (e: Laya.Event)=>{
             if(e.keyCode === 90 || e.keyCode === 88 || e.keyCode === 67){
-                console.log(data);
+                // console.log(data);
                 confirmFunc();
             }
         });
@@ -255,9 +286,5 @@ export default class MissionManager extends Laya.Script {
         // console.log(MissionManager.missionDataPool);
         return MissionManager.missionDataPool;
     }
-    sendMissionData(data: object) {
-        EnemyInit.missionEnemyNum = data["enemyNum"];
-        EnemyInit.missionRewardCrystalValue = data["crystal"];
-        EnemyInit.missionRewardGoldValue = data["money"];
-    }
+
 }

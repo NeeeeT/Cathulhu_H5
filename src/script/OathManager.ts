@@ -261,47 +261,58 @@ export default class OathManager extends Laya.Script {
         ZOrderManager.setZOrder(this.goldValue, 102);
     }
     public clearBloodyUI() {
-        if(this.oathBar != null){
+        if (this.oathBar != null) {
+            Laya.stage.removeChild(this.oathBar);
             this.oathBar.destroy();
             this.oathBar = null;
         }
         if(this.oathBar_overCharge != null){
+            Laya.stage.removeChild(this.oathBar_overCharge);
             this.oathBar_overCharge.destroy();
             this.oathBar_overCharge = null;
         }
         if(this.characterLogo != null){
+            Laya.stage.removeChild(this.characterLogo);
             this.characterLogo.destroy();
             this.characterLogo = null;
         }
         if(this.catSkillIcon != null){
+            Laya.stage.removeChild(this.catSkillIcon);
             this.catSkillIcon.destroy();
             this.catSkillIcon = null;
         }
         if(this.humanSkillIcon != null){
+            Laya.stage.removeChild(this.humanSkillIcon);
             this.humanSkillIcon.destroy();
             this.humanSkillIcon = null;
         }
         if(this.catSkillIconCd != null){
+            Laya.stage.removeChild(this.catSkillIconCd);
             this.catSkillIconCd.destroy();
             this.catSkillIconCd = null;
         }
         if(this.humanSkillIconCd != null){
+            Laya.stage.removeChild(this.humanSkillIconCd);
             this.humanSkillIconCd.destroy();
             this.humanSkillIconCd = null;
         }
         if(this.sprintIcon != null){
+            Laya.stage.removeChild(this.sprintIcon);
             this.sprintIcon.destroy();
             this.sprintIcon = null;
         }
         if(this.sprintIconCd != null){
+            Laya.stage.removeChild(this.sprintIconCd);
             this.sprintIconCd.destroy();
             this.sprintIconCd = null;
         }
         if(this.goldImage != null){
+            Laya.stage.removeChild(this.goldImage);
             this.goldImage.destroy();
             this.goldImage = null;
         }
         if(this.goldValue != null){
+            Laya.stage.removeChild(this.goldValue);
             this.goldValue.destroy();
             this.goldValue = null;
         }

@@ -481,6 +481,11 @@
             this.missionUI.destroy();
             this.missionUI = null;
         }
+        sendMissionData(data) {
+            EnemyInit.missionEnemyNum = data["enemyNum"];
+            EnemyInit.missionRewardCrystalValue = data["crystal"];
+            EnemyInit.missionRewardGoldValue = data["money"];
+        }
         setEliteIcon(col, eliteNum) {
             let eliteIcon = new Laya.Sprite();
             if (eliteNum > 0)
@@ -529,9 +534,7 @@
             confirmIcon.width = 100;
             confirmIcon.height = 50;
             confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
-            let confirmFunc = () => {
-                this.clearMissionUI();
-                this.sendMissionData(data);
+            let switchSceneFunc = () => {
                 if (Village.isNewbie) {
                     Loading2.nextSceneName = 'Newbie_temp.scene';
                     Laya.Scene.open('Loading2.scene', true);
@@ -550,6 +553,11 @@
                     }
                 }
             };
+            let confirmFunc = () => {
+                this.clearMissionUI();
+                this.sendMissionData(data);
+                switchSceneFunc();
+            };
             switch (col) {
                 case 0:
                     confirmIcon.loadImage("UI/Zbtn.png");
@@ -563,11 +571,16 @@
                 default:
                     break;
             }
+            confirmIcon.on(Laya.Event.MOUSE_MOVE, this, () => {
+                confirmIcon.alpha = 0.5;
+            });
+            confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
+                confirmIcon.alpha = 1;
+            });
             confirmIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, confirmFunc);
             confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
             confirmIcon.on(Laya.Event.KEY_DOWN, this, (e) => {
                 if (e.keyCode === 90 || e.keyCode === 88 || e.keyCode === 67) {
-                    console.log(data);
                     confirmFunc();
                 }
             });
@@ -596,7 +609,7 @@
                     eliteNum: Math.round(Math.random()),
                     eliteHpMultiplier: 1.5,
                     eliteAtkMultiplier: 1.5,
-                    crystal: Math.round(100 + 100 * (1 + this.missionDifficultyArr[i] / 100)),
+                    crystal: 0,
                     money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
                     map: "forest",
                 };
@@ -624,11 +637,6 @@
             };
             MissionManager.missionDataPool.push(missionData);
             return MissionManager.missionDataPool;
-        }
-        sendMissionData(data) {
-            EnemyInit.missionEnemyNum = data["enemyNum"];
-            EnemyInit.missionRewardCrystalValue = data["crystal"];
-            EnemyInit.missionRewardGoldValue = data["money"];
         }
     }
     MissionManager.missionRound = 0;
@@ -4109,8 +4117,6 @@
         onAwake() {
             Laya.stage.bgColor = this.sceneBackgroundColor;
             this.setMusic(0.6, "Audio/Bgm/BGM01.mp3", 0);
-            let bg = this.owner.scene.getChildByName('Background');
-            ZOrderManager.setZOrder(bg, 5);
         }
         setMusic(volume, url, loop) {
             Laya.SoundManager.playMusic(url, loop);
@@ -4132,10 +4138,8 @@
                 "Audio/Misc/cat.mp3",
                 "Audio/Misc/blackhole.wav",
                 "font/silver.ttf",
-                "Background(0912)/loading2.png",
-                "Background(0912)/forest.png",
-                "Background(0912)/Red Forest/Red Forest(x3)(0912).png",
-                "Background(0912)/gray town(x3)(0911).png",
+                "Background(0912)/Red Forest/Red Forest(0912).png",
+                "Background(0912)/gray town(1126).png",
                 "Background(0912)/Loading2.png",
                 "character/Idle.atlas",
                 "character/Attack1.atlas",
@@ -4179,6 +4183,10 @@
                 'UI/mobileSprintBtn.png',
                 'UI/mobileHumanSkillBtn.png',
                 'UI/mobileCatSkillBtn.png',
+                'UI.png',
+                "UI/Zbtn.png",
+                "UI/Xbtn.png",
+                "UI/Cbtn.png",
                 "UI/reinforce.png",
                 "UI/hp.png",
                 "comp/progress.png",
@@ -4196,6 +4204,7 @@
                 'UI/ending/ending.png',
                 'UI/ending/gold.png',
                 'UI/ending/crystal.png',
+                'UI/anykey.png',
                 "UI/bp_100.png",
                 "UI/bp_150.png",
                 "UI/Box.png",

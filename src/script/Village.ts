@@ -90,7 +90,17 @@ export default class Village extends Laya.Script{
         Village.reinforceToggle = true;
     }
     clearReinforceUI(): void{
-        if(Village.reinforceToggle){
+        if (Village.reinforceToggle) {
+            Laya.stage.removeChild(this.reinforceUI);
+            Laya.stage.removeChild(this.reinforceGold);
+            Laya.stage.removeChild(this.reinforceAtkDmgLevel);
+            Laya.stage.removeChild(this.reinforceHpLevel);
+            Laya.stage.removeChild(this.reinforceAtkDmgCost);
+            Laya.stage.removeChild(this.reinforceHpCost);
+            Laya.stage.removeChild(this.reinforceAtkDmgCostIcon);
+            Laya.stage.removeChild(this.reinforceHpCostIcon);
+            Laya.stage.removeChild(this.skipIcon);
+
             this.reinforceUI.destroy();
             this.reinforceGold.destroy();
             this.reinforceAtkDmgLevel.destroy();

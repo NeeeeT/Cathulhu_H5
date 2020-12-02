@@ -93,6 +93,7 @@ export default class Turtorial extends Laya.Script{
                     break;
                 case turtorialHintStep.seeInfoC:
                         EnemyInit.newbieDone = true;
+                        Laya.stage.removeChild(this.currentHintUI);
                         this.currentHintUI.destroy();
                         this.currentHintUI.destroyed = true;
                     break;
@@ -157,6 +158,7 @@ export default class Turtorial extends Laya.Script{
             case turtorialHintStep.seeInfoC:
                 if(e.keyCode === 32){
                     EnemyInit.newbieDone = true;
+                    Laya.stage.removeChild(this.currentHintUI);
                     this.currentHintUI.destroy();
                     this.currentHintUI.destroyed = true;
                 }
@@ -175,7 +177,8 @@ export default class Turtorial extends Laya.Script{
             if(player.destroyed || !Village.isNewbie){
                 Laya.timer.clear(this, hintTimerFunc);
                 this.hintTimer = null;
-                if(!this.currentHintUI.destroyed)
+                if (!this.currentHintUI.destroyed)
+                    Laya.stage.removeChild(this.currentHintUI);
                     this.currentHintUI.destroy();
                 return;
             }
