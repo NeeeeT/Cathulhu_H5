@@ -220,12 +220,12 @@ export default class MissionManager extends Laya.Script {
         confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
             confirmIcon.alpha = 1;
         })
-        confirmIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, confirmFunc);
+        confirmIcon.off(Laya.Event.CLICK, this, confirmFunc);
+        confirmIcon.off(Laya.Event.CLICK, this, confirmFunc);
 
         confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
         confirmIcon.on(Laya.Event.KEY_DOWN, this, (e: Laya.Event)=>{
             if(e.keyCode === 90 || e.keyCode === 88 || e.keyCode === 67){
-                // console.log(data);
                 confirmFunc();
             }
         });
@@ -234,9 +234,9 @@ export default class MissionManager extends Laya.Script {
     }
     public generateMissionData(total: number): any[] {
         for (let i = 0; i < total; i++) {
-            if (i < total / 3) this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 35);
-            if (i >= total / 3 && i < total * 2 / 3) this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 20);
-            if(i>= total * 2 / 3)this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 5);
+            if (i < total / 3) this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 105);//+35
+            if (i >= total / 3 && i < total * 2 / 3) this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 55);//+20
+            if(i >= total * 2 / 3) this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 5);
         }
         this.missionDifficultyArr.sort();
         this.missionDifficultyArr.reverse();
@@ -255,7 +255,7 @@ export default class MissionManager extends Laya.Script {
                 eliteAtkMultiplier: 1.5,
                 // crystal: Math.round(100 + 100 * (1 + this.missionDifficultyArr[i] / 100)),
                 crystal: 0,
-                money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
+                money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 90)),//origin -> / 100
                 map: "forest",
             }
             MissionManager.missionDataPool.push(missionData);

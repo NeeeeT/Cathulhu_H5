@@ -263,7 +263,8 @@ export default class Village extends Laya.Script{
 
         ZOrderManager.setZOrder(this.reinforceHpCostIcon, 101);
 
-        this.reinforceHpCostIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, this.addHpLevel);
+        this.reinforceHpCostIcon.off(Laya.Event.CLICK, this, this.addHpLevel);
+        this.reinforceHpCostIcon.off(Laya.Event.KEY_DOWN, this, this.addHpLevel);
         
         this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, ()=>{
             this.reinforceHpCostIcon.alpha = 1.0;
@@ -277,7 +278,7 @@ export default class Village extends Laya.Script{
             if(e.keyCode === 90){
                 this.addAtkLevel();
             }
-            if(e.keyCode === 90){
+            else if(e.keyCode === 88){
                 this.addHpLevel();
             }
         })
