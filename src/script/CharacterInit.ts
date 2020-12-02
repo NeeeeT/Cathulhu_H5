@@ -125,7 +125,7 @@ export class Character extends Laya.Script {
     emptySprForMobile: Laya.Sprite;
 
     spawn() {
-        // console.log('生成一次');
+        console.log('角色生成一次');
 
         this.loadCharacterData();
         this.getAtkValue(this.m_atkLevel);
@@ -258,6 +258,7 @@ export class Character extends Laya.Script {
             Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
+            CharacterInit.generated = false;
             Laya.Scene.open("Died.scene");
             Laya.stage.x = Laya.stage.y = 0;
             Laya.SoundManager.stopAll();
@@ -1519,19 +1520,22 @@ export default class CharacterInit extends Laya.Script {
 
 
     public static playerEnt: Character;
-
+    public static generated: boolean = false;
+    player: Character;
     constructor() {
         super();
     }
     onAwake() {
-        let player: Character = new Character();
-        this.initSetting(player);
-        player.spawn();
-        CharacterInit.playerEnt = player;
+        if (this.player != undefined || CharacterInit.generated) return;
+        CharacterInit.generated = true
+        this.player = new Character();
+        this.initSetting(this.player);
+        this.player.spawn();
+        CharacterInit.playerEnt = this.player;
         Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
         ZOrderManager.setZOrder(CharacterInit.playerEnt.m_animation, 20);
-        player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
-        player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);//角色UI狀態方法
+        this.player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
+        this.player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);//角色UI狀態方法
 
     }
     private initSetting(player: Character): void {

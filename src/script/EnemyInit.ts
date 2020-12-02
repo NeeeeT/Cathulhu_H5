@@ -577,6 +577,7 @@ export default class EnemyInit extends Laya.Script{
             Laya.stage.removeChild(player);
             player.destroy();
             player.destroyed = true;
+            CharacterInit.generated = false;
             // this.changeToVillage();
             this.villageManager.showReinforceUI();
         }), 0);

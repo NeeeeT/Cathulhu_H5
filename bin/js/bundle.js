@@ -1623,6 +1623,7 @@
                 Laya.stage.removeChild(player);
                 player.destroy();
                 player.destroyed = true;
+                CharacterInit.generated = false;
                 this.villageManager.showReinforceUI();
             }), 0);
         }
@@ -2653,7 +2654,7 @@
             this.mobileHumanSkillBtnFunc = () => { };
         }
         spawn() {
-            console.log('生成一次');
+            console.log('角色生成一次');
             this.loadCharacterData();
             this.getAtkValue(this.m_atkLevel);
             this.m_state = CharacterStatus.idle;
@@ -2757,6 +2758,7 @@
                 Laya.stage.removeChild(this.m_animation);
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
+                CharacterInit.generated = false;
                 Laya.Scene.open("Died.scene");
                 Laya.stage.x = Laya.stage.y = 0;
                 Laya.SoundManager.stopAll();
@@ -3603,14 +3605,17 @@
             this.bigExplosionDmgMultiplier = 1;
         }
         onAwake() {
-            let player = new Character();
-            this.initSetting(player);
-            player.spawn();
-            CharacterInit.playerEnt = player;
+            if (this.player != undefined || CharacterInit.generated)
+                return;
+            CharacterInit.generated = true;
+            this.player = new Character();
+            this.initSetting(this.player);
+            this.player.spawn();
+            CharacterInit.playerEnt = this.player;
             Laya.stage.addChild(CharacterInit.playerEnt.m_animation);
             ZOrderManager.setZOrder(CharacterInit.playerEnt.m_animation, 20);
-            player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
-            player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);
+            this.player.m_oathManager.showBloodyPoint(CharacterInit.playerEnt.m_animation);
+            this.player.m_oathManager.showBloodyLogo(CharacterInit.playerEnt.m_animation);
         }
         initSetting(player) {
             ExtraData.loadData();
@@ -3662,6 +3667,7 @@
             CharacterInit.playerEnt.m_oathManager.oathUpdate();
         }
     }
+    CharacterInit.generated = false;
 
     var EnemyStatus;
     (function (EnemyStatus) {
