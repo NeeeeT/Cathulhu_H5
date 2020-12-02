@@ -595,7 +595,7 @@ export class Character extends Laya.Script {
                 {
                     x: this.m_animation.x,
                     y: this.m_animation.y,
-                }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
+                }, this.m_oathManager.oathCastSkillCheck(this.m_catSkill.m_cost));
         }
     }
     /*private createAttackCircle(player: Laya.Animation) {
@@ -1170,18 +1170,45 @@ export class Character extends Laya.Script {
     public resetMobileBtnEvent(): void{
         if (Laya.Browser.onMobile) {
             //reset
-            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
+            this.m_mobileLeftBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; this.m_mobileLeftBtn.alpha = 0.5;});
             this.m_mobileLeftBtn.off(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
             this.m_mobileLeftBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
-            this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; })
+            this.m_mobileRightBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; this.m_mobileRightBtn.alpha = 0.5;})
             this.m_mobileRightBtn.off(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
             this.m_mobileRightBtn.off(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
-            this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
+        this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
+        this.m_mobileAtkBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileAtkBtn.alpha = 0.5; });
+        this.m_mobileAtkBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileAtkBtn.alpha = 1; });
+        
             this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
-            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
-            this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
-            this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
+            this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; this.m_mobileSprintBtn.alpha = 1; });
+        this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
+        this.m_mobileCatSkillBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileCatSkillBtn.alpha = 0.5;});
+        this.m_mobileCatSkillBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileCatSkillBtn.alpha = 1;});
+        this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
+        this.m_mobileHumanSkillBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileHumanSkillBtn.alpha = 0.5;});
+        this.m_mobileHumanSkillBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileHumanSkillBtn.alpha = 1;});
             this.m_mobileUIToggle = false;
+        }
+    }
+
+    public updateMobileSkillBtnUI(): void{
+        console.log("更新手機板技能UI");
+        console.log("角色的：",this.m_humanSkill.m_id,"currentData的：",ExtraData.currentData['humanSkill']);
+        console.log("角色的：",this.m_catSkill.m_id,"currentData的：",ExtraData.currentData['catSkill']);
+        if (ExtraData.currentData['humanSkill'] === 0) {
+            this.m_mobileHumanSkillBtn.loadImage('UI/mobile/mobileEmpty.png');
+        } else if (ExtraData.currentData['humanSkill'] === 1) {
+            this.m_mobileHumanSkillBtn.loadImage('UI/mobile/mobileSpike.png');
+        } else if (ExtraData.currentData['humanSkill'] === 2) {
+            this.m_mobileHumanSkillBtn.loadImage('UI/mobile/mobileBehead.png');
+        }
+        if (ExtraData.currentData['catSkill'] === 0) {
+            this.m_mobileCatSkillBtn.loadImage('UI/mobile/mobileEmpty.png');
+        } else if (ExtraData.currentData['catSkill'] === 1) {
+            this.m_mobileCatSkillBtn.loadImage('UI/mobile/mobileSlam.png');
+        } else if (ExtraData.currentData['catSkill'] === 2) {
+            this.m_mobileCatSkillBtn.loadImage('UI/mobile/mobileBlackhole.png');
         }
     }
 
@@ -1207,18 +1234,18 @@ export class Character extends Laya.Script {
         this.m_mobileHumanSkillBtn = Laya.Pool.getItemByClass("mobileHumanSkillBtn", Laya.Sprite);
         this.m_mobileCatSkillBtn = Laya.Pool.getItemByClass("mobileCatSkillBtn", Laya.Sprite);
 
-        this.m_mobileLeftBtn.size(100, 79);
-        this.m_mobileRightBtn.size(100, 79);
-        this.m_mobileAtkBtn.size(100, 100);
-        this.m_mobileSprintBtn.size(84, 84);
-        this.m_mobileHumanSkillBtn.size(84, 84);
-        this.m_mobileCatSkillBtn.size(84, 84);
-        this.m_mobileLeftBtn.loadImage('UI/mobileLeftBtn.png');
-        this.m_mobileRightBtn.loadImage('UI/mobileRightBtn.png');
-        this.m_mobileAtkBtn.loadImage('UI/mobileAtkBtn.png');
-        this.m_mobileSprintBtn.loadImage('UI/mobileSprintBtn.png');
-        this.m_mobileHumanSkillBtn.loadImage('UI/mobileHumanSkillBtn.png');
-        this.m_mobileCatSkillBtn.loadImage('UI/mobileCatSkillBtn.png');
+        this.m_mobileLeftBtn.size(150, 119);
+        this.m_mobileRightBtn.size(150, 119);
+        this.m_mobileAtkBtn.size(135, 135);
+        this.m_mobileSprintBtn.size(110, 110);
+        this.m_mobileHumanSkillBtn.size(110, 110);
+        this.m_mobileCatSkillBtn.size(110, 110);
+        this.m_mobileLeftBtn.loadImage('UI/mobile/mobileLeftBtn.png');
+        this.m_mobileRightBtn.loadImage('UI/mobile/mobileRightBtn.png');
+        this.m_mobileAtkBtn.loadImage('UI/mobile/mobileAtkBtn.png');
+        this.m_mobileSprintBtn.loadImage('UI/mobile/mobileSprintBtn.png');
+
+        this.updateMobileSkillBtnUI();
 
         this.m_mobileLeftBtn.autoSize = true;
         this.m_mobileRightBtn.autoSize = true;
@@ -1243,6 +1270,7 @@ export class Character extends Laya.Script {
 
         this.mobileLeftBtnResetFunc = function () {
             this.m_mobileLeftBtnClicked = false;
+            this.m_mobileLeftBtn.alpha = 1;
             if (this.m_canJump) {
                 this.m_playerVelocity["Vx"] = 0;
             }
@@ -1250,6 +1278,7 @@ export class Character extends Laya.Script {
         }
         this.mobileRightBtnResetFunc = function () {
             this.m_mobileRightBtnClicked = false;
+            this.m_mobileRightBtn.alpha = 1;
             if (this.m_canJump) {
                 this.m_playerVelocity["Vx"] = 0;
             }
@@ -1257,11 +1286,11 @@ export class Character extends Laya.Script {
         }
 
         //左走
-        this.m_mobileLeftBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; });
+        this.m_mobileLeftBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; this.m_mobileLeftBtn.alpha = 0.5;});
         this.m_mobileLeftBtn.on(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
         this.m_mobileLeftBtn.on(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
         //右走
-        this.m_mobileRightBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; })
+        this.m_mobileRightBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; this.m_mobileRightBtn.alpha = 0.5;})
         this.m_mobileRightBtn.on(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
         this.m_mobileRightBtn.on(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
         //移動更新
@@ -1314,10 +1343,13 @@ export class Character extends Laya.Script {
         }
 
         this.m_mobileAtkBtn.on(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
+        this.m_mobileAtkBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileAtkBtn.alpha = 0.5; });
+        this.m_mobileAtkBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileAtkBtn.alpha = 1; });
 
         //衝刺
         this.mobileSprintBtnFunc = function () {
             this.m_mobileSprintBtnClicked = true;
+            this.m_mobileSprintBtn.alpha = 0.5;
             if (!this.m_canSprint || EnemyInit.isWin) return;
 
             this.delayMove(0.08);
@@ -1350,7 +1382,7 @@ export class Character extends Laya.Script {
         }
 
         this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
-        this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
+        this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; this.m_mobileSprintBtn.alpha = 1;});
         //貓技
         this.mobileCatSkillBtnFunc = function () {
             if (EnemyInit.isWin) return;
@@ -1362,6 +1394,8 @@ export class Character extends Laya.Script {
         }
 
         this.m_mobileCatSkillBtn.on(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
+        this.m_mobileCatSkillBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileCatSkillBtn.alpha = 0.5;});
+        this.m_mobileCatSkillBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileCatSkillBtn.alpha = 1;});
         
         //人技
         this.mobileHumanSkillBtnFunc = function () {
@@ -1374,6 +1408,8 @@ export class Character extends Laya.Script {
         }
 
         this.m_mobileHumanSkillBtn.on(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
+        this.m_mobileHumanSkillBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileHumanSkillBtn.alpha = 0.5;});
+        this.m_mobileHumanSkillBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileHumanSkillBtn.alpha = 1;});
         //以幀為主體的更新
         let mobileUIFunc = () => {
             if (!this.m_mobileUIToggle) {
@@ -1397,24 +1433,24 @@ export class Character extends Laya.Script {
                 return;
             }
             if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
-                this.m_mobileLeftBtn.pos(player.x - Laya.stage.width / 2 + 100, 620);
-                this.m_mobileRightBtn.pos(player.x - Laya.stage.width / 2 + 100 + 125, 620);
+                this.m_mobileLeftBtn.pos(player.x - Laya.stage.width / 2 + 50, 620);
+                this.m_mobileRightBtn.pos(player.x - Laya.stage.width / 2 + 50 + 165, 620);
                 this.m_mobileAtkBtn.pos(player.x + Laya.stage.width / 2 - 200, 620);
                 this.m_mobileSprintBtn.pos(player.x + Laya.stage.width / 2 - 350, 630);
                 this.m_mobileCatSkillBtn.pos(player.x + Laya.stage.width / 2 - 290, 530);
                 this.m_mobileHumanSkillBtn.pos(player.x + Laya.stage.width / 2 - 200, 460);
             }
             if (Laya.stage.x >= -250) {
-                this.m_mobileLeftBtn.pos(935 - Laya.stage.width / 2 + 100, 620);
-                this.m_mobileRightBtn.pos(935 - Laya.stage.width / 2 + 100 + 125, 620);
+                this.m_mobileLeftBtn.pos(935 - Laya.stage.width / 2 + 50, 620);
+                this.m_mobileRightBtn.pos(935 - Laya.stage.width / 2 + 50 + 165, 620);
                 this.m_mobileAtkBtn.pos(935 + Laya.stage.width / 2 - 200, 620);
                 this.m_mobileSprintBtn.pos(935 + Laya.stage.width / 2 - 350, 630);
                 this.m_mobileCatSkillBtn.pos(935 + Laya.stage.width / 2 - 290, 530);
                 this.m_mobileHumanSkillBtn.pos(935 + Laya.stage.width / 2 - 200, 460);
             }
             if (Laya.stage.x <= -2475) {
-                this.m_mobileLeftBtn.pos(3155 - Laya.stage.width / 2 + 100, 620);
-                this.m_mobileRightBtn.pos(3155 - Laya.stage.width / 2 + 100 + 125, 620);
+                this.m_mobileLeftBtn.pos(3155 - Laya.stage.width / 2 + 50, 620);
+                this.m_mobileRightBtn.pos(3155 - Laya.stage.width / 2 + 50 + 165, 620);
                 this.m_mobileAtkBtn.pos(3155 + Laya.stage.width / 2 - 200, 620);
                 this.m_mobileSprintBtn.pos(3155 + Laya.stage.width / 2 - 350, 630);
                 this.m_mobileCatSkillBtn.pos(3155 + Laya.stage.width / 2 - 290, 530);
@@ -1423,6 +1459,7 @@ export class Character extends Laya.Script {
         }
         Laya.timer.frameLoop(1, this, mobileUIFunc);
         Laya.timer.frameLoop(1, this, mobileMoveFunc);
+        
     }
 }
 
@@ -1535,7 +1572,8 @@ export default class CharacterInit extends Laya.Script {
         player.m_oathManager = new OathManager();
         player.m_oathManager.initOathSystem();
         player.showHealth();
-
+        player.m_catSkill = player.getSkillTypeByExtraData('c', 0);
+        player.m_humanSkill = player.getSkillTypeByExtraData('h', 0);
     }
     //9/13新增
     onUpdate() {

@@ -256,7 +256,7 @@ export class None extends VirtualSkill{
     m_info = '無';
     m_damage = 0;
     m_cost = 0;
-    m_id = -1;
+    m_id = 0;
     m_cd = 0;
 
     m_iconA = "";

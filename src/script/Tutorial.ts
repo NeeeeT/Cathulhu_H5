@@ -1,6 +1,7 @@
 import CharacterInit, { Character } from "./CharacterInit";
 import EnemyHandler from "./EnemyHandler";
 import EnemyInit from "./EnemyInit";
+import { ExtraData } from "./ExtraData";
 import Village from "./Village";
 import ZOrderManager from "./ZOrderManager";
 
@@ -74,6 +75,13 @@ export default class Turtorial extends Laya.Script{
                         this.setHintStep(turtorialHintStep.trySkill);
                         player.m_catSkill = player.getSkillTypeByExtraData('c', 1);
                         player.m_humanSkill = player.getSkillTypeByExtraData('h', 1);
+                        let data = ExtraData.currentData;
+                        data['humanSkill'] = 1;
+                        data['catSkill'] = 1;
+                        ExtraData.saveData();
+                        if (Laya.Browser.onMobile) {
+                            player.updateMobileSkillBtnUI();
+                        }
                         Turtorial.noOath = false;
                     }
                     break;
@@ -134,6 +142,10 @@ export default class Turtorial extends Laya.Script{
                     this.setHintStep(turtorialHintStep.trySkill);
                     player.m_catSkill = player.getSkillTypeByExtraData('c', 1);
                     player.m_humanSkill = player.getSkillTypeByExtraData('h', 1);
+                    let data = ExtraData.currentData;
+                    data['humanSkill'] = 1;
+                    data['catSkill'] = 1;
+                    ExtraData.saveData();
                     Turtorial.noOath = false;
                 }
                 break;
