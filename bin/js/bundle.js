@@ -115,6 +115,15 @@
         }
         clearReinforceUI() {
             if (Village.reinforceToggle) {
+                Laya.stage.removeChild(this.reinforceUI);
+                Laya.stage.removeChild(this.reinforceGold);
+                Laya.stage.removeChild(this.reinforceAtkDmgLevel);
+                Laya.stage.removeChild(this.reinforceHpLevel);
+                Laya.stage.removeChild(this.reinforceAtkDmgCost);
+                Laya.stage.removeChild(this.reinforceHpCost);
+                Laya.stage.removeChild(this.reinforceAtkDmgCostIcon);
+                Laya.stage.removeChild(this.reinforceHpCostIcon);
+                Laya.stage.removeChild(this.skipIcon);
                 this.reinforceUI.destroy();
                 this.reinforceGold.destroy();
                 this.reinforceAtkDmgLevel.destroy();
@@ -327,6 +336,9 @@
         onKeyDown() {
             if (!this.prepared)
                 return;
+            Laya.stage.removeChild(this.storyInfo);
+            Laya.stage.removeChild(this.loadingProgress);
+            Laya.stage.removeChild(this.anyKeyIcon);
             this.storyInfo.destroy();
             this.loadingProgress.destroy();
             this.anyKeyIcon.destroy();
@@ -341,6 +353,9 @@
             Laya.stage.on(Laya.Event.CLICK, this, () => {
                 if (!this.prepared)
                     return;
+                Laya.stage.removeChild(this.storyInfo);
+                Laya.stage.removeChild(this.loadingProgress);
+                Laya.stage.removeChild(this.anyKeyIcon);
                 this.storyInfo.destroy();
                 this.loadingProgress.destroy();
                 this.anyKeyIcon.destroy();
@@ -459,25 +474,31 @@
         }
         clearMissionUI() {
             for (let i = 0; i < this.eliteIcons.length; i++) {
+                Laya.stage.removeChild(this.eliteIcons[i]);
                 this.eliteIcons[i].destroy();
                 this.eliteIcons[i] = null;
             }
             for (let i = 0; i < this.difficultyIcons.length; i++) {
+                Laya.stage.removeChild(this.difficultyIcons[i]);
                 this.difficultyIcons[i].destroy();
                 this.difficultyIcons[i] = null;
             }
             for (let i = 0; i < this.crystalNums.length; i++) {
+                Laya.stage.removeChild(this.crystalNums[i]);
                 this.crystalNums[i].destroy();
                 this.crystalNums[i] = null;
             }
             for (let i = 0; i < this.moneyNums.length; i++) {
+                Laya.stage.removeChild(this.moneyNums[i]);
                 this.moneyNums[i].destroy();
                 this.moneyNums[i] = null;
             }
             for (let i = 0; i < this.confirmIcons.length; i++) {
+                Laya.stage.removeChild(this.confirmIcons[i]);
                 this.confirmIcons[i].destroy();
                 this.confirmIcons[i] = null;
             }
+            Laya.stage.removeChild(this.missionUI);
             this.missionUI.destroy();
             this.missionUI = null;
         }
@@ -688,7 +709,10 @@
             Laya.stage.addChild(roarText);
             ZOrderManager.setZOrder(roarText, 80);
             Laya.Tween.to(roarText, { alpha: 0.55, fontSize: roarText.fontSize + 30, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 18, y: roarText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { roarText.destroy(); }), 0);
+                Laya.Tween.to(roarText, { alpha: 0, fontSize: roarText.fontSize - 18, y: roarText.y - 50 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    Laya.stage.removeChild(roarText);
+                    roarText.destroy();
+                }), 0);
             }), 0);
         }
         rectIntersect(r1, r2) {
@@ -776,6 +800,7 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [colorFilter];
             this.m_animation.on(Laya.Event.COMPLETE, this, function () {
+                Laya.stage.removeChild(this.m_animation);
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
             });
@@ -883,6 +908,7 @@
                     explosion.play();
                     owner.setCameraShake(100, 12);
                     setTimeout(() => {
+                        Laya.stage.removeChild(explosion);
                         explosion.destroy();
                     }, 300);
                     this.attackRangeCheck(owner, {
@@ -905,6 +931,7 @@
                 count += 100;
             }, 100);
             setTimeout(() => {
+                Laya.stage.removeChild(this.m_animation);
                 this.m_animation.destroy();
             }, this.m_lastTime * 1000);
             setTimeout(() => {
@@ -996,6 +1023,7 @@
                     explosion.play();
                     owner.setCameraShake(100, 12);
                     setTimeout(() => {
+                        Laya.stage.removeChild(explosion);
                         explosion.destroy();
                     }, 300);
                     this.attackRangeCheck(owner, {
@@ -1018,6 +1046,7 @@
                 count += 100;
             }, 100);
             setTimeout(() => {
+                Laya.stage.removeChild(this.m_animation);
                 this.m_animation.destroy();
             }, this.m_lastTime * 1000);
             setTimeout(() => {
@@ -1111,6 +1140,7 @@
             Laya.stage.addChild(this.m_animation);
             ZOrderManager.setZOrder(this.m_animation, 60);
             setTimeout(() => {
+                Laya.stage.removeChild(this.m_animation);
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
             }, 200);
@@ -1181,6 +1211,7 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             this.m_animation.filters = [colorFilter];
             this.m_animation.on(Laya.Event.COMPLETE, this, function () {
+                Laya.stage.removeChild(this.m_animation);
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
             });
@@ -1241,6 +1272,7 @@
             let colorFilter = new Laya.ColorFilter(colorMat);
             slash.filters = [glowFilter, colorFilter];
             slash.on(Laya.Event.COMPLETE, this, function () {
+                Laya.stage.removeChild(slash);
                 slash.destroy();
                 slash.destroyed = true;
             });
@@ -1573,6 +1605,7 @@
         unsetCharacter() {
             let player = CharacterInit.playerEnt.m_animation;
             Laya.Tween.to(player, { alpha: 0.0 }, 2500, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.stage.removeChild(player);
                 player.destroy();
                 player.destroyed = true;
                 this.villageManager.showReinforceUI();
@@ -1654,6 +1687,8 @@
             let roundDetectFunc = function () {
                 if (!this.battleToggle || player.destroyed) {
                     this.enemyInfo.text = "";
+                    Laya.stage.removeChild(this.enemyInfo);
+                    Laya.stage.removeChild(this.enemyLeftIcon);
                     this.enemyInfo.destroy();
                     this.enemyLeftIcon.destroy();
                     Laya.timer.clear(this, roundDetectFunc);
@@ -1798,6 +1833,7 @@
                         break;
                     case turtorialHintStep.seeInfoC:
                         EnemyInit.newbieDone = true;
+                        Laya.stage.removeChild(this.currentHintUI);
                         this.currentHintUI.destroy();
                         this.currentHintUI.destroyed = true;
                         break;
@@ -1859,6 +1895,7 @@
                 case turtorialHintStep.seeInfoC:
                     if (e.keyCode === 32) {
                         EnemyInit.newbieDone = true;
+                        Laya.stage.removeChild(this.currentHintUI);
                         this.currentHintUI.destroy();
                         this.currentHintUI.destroyed = true;
                     }
@@ -1878,7 +1915,8 @@
                     Laya.timer.clear(this, hintTimerFunc);
                     this.hintTimer = null;
                     if (!this.currentHintUI.destroyed)
-                        this.currentHintUI.destroy();
+                        Laya.stage.removeChild(this.currentHintUI);
+                    this.currentHintUI.destroy();
                     return;
                 }
                 if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
@@ -1958,7 +1996,10 @@
             Laya.stage.addChild(damageText);
             ZOrderManager.setZOrder(damageText, 80);
             Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { damageText.destroy(); }), 0);
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                    Laya.stage.removeChild(damageText);
+                    damageText.destroy();
+                }), 0);
             }), 0);
         }
     }
@@ -2294,46 +2335,57 @@
         }
         clearBloodyUI() {
             if (this.oathBar != null) {
+                Laya.stage.removeChild(this.oathBar);
                 this.oathBar.destroy();
                 this.oathBar = null;
             }
             if (this.oathBar_overCharge != null) {
+                Laya.stage.removeChild(this.oathBar_overCharge);
                 this.oathBar_overCharge.destroy();
                 this.oathBar_overCharge = null;
             }
             if (this.characterLogo != null) {
+                Laya.stage.removeChild(this.characterLogo);
                 this.characterLogo.destroy();
                 this.characterLogo = null;
             }
             if (this.catSkillIcon != null) {
+                Laya.stage.removeChild(this.catSkillIcon);
                 this.catSkillIcon.destroy();
                 this.catSkillIcon = null;
             }
             if (this.humanSkillIcon != null) {
+                Laya.stage.removeChild(this.humanSkillIcon);
                 this.humanSkillIcon.destroy();
                 this.humanSkillIcon = null;
             }
             if (this.catSkillIconCd != null) {
+                Laya.stage.removeChild(this.catSkillIconCd);
                 this.catSkillIconCd.destroy();
                 this.catSkillIconCd = null;
             }
             if (this.humanSkillIconCd != null) {
+                Laya.stage.removeChild(this.humanSkillIconCd);
                 this.humanSkillIconCd.destroy();
                 this.humanSkillIconCd = null;
             }
             if (this.sprintIcon != null) {
+                Laya.stage.removeChild(this.sprintIcon);
                 this.sprintIcon.destroy();
                 this.sprintIcon = null;
             }
             if (this.sprintIconCd != null) {
+                Laya.stage.removeChild(this.sprintIconCd);
                 this.sprintIconCd.destroy();
                 this.sprintIconCd = null;
             }
             if (this.goldImage != null) {
+                Laya.stage.removeChild(this.goldImage);
                 this.goldImage.destroy();
                 this.goldImage = null;
             }
             if (this.goldValue != null) {
+                Laya.stage.removeChild(this.goldValue);
                 this.goldValue.destroy();
                 this.goldValue = null;
             }
@@ -2676,6 +2728,7 @@
         ;
         death() {
             Laya.Tween.to(this.m_animation, { alpha: 0.0 }, 100, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.stage.removeChild(this.m_animation);
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
                 Laya.Scene.open("Died.scene");
@@ -2763,6 +2816,7 @@
             ZOrderManager.setZOrder(this.m_healthBar, 100);
             let healthBarFunc = function () {
                 if (this.m_animation.destroyed) {
+                    Laya.stage.removeChild(this.m_healthBar);
                     this.m_healthBar.destroy();
                     this.m_healthBar.destroyed = true;
                     Laya.timer.clear(this, healthBarFunc);
@@ -3654,6 +3708,7 @@
         }
         ;
         destroy() {
+            Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
         }
@@ -3774,6 +3829,7 @@
             ZOrderManager.setZOrder(this.m_healthBar, 100);
             let healthBarFunc = function () {
                 if (this.m_animation.destroyed) {
+                    Laya.stage.removeChild(this.m_healthBar);
                     this.m_healthBar.destroy();
                     this.m_healthBar.destroyed = true;
                     Laya.timer.clear(this, healthBarFunc);
@@ -3805,6 +3861,7 @@
             slashLightEffect.source = sourceArray[sourceNum];
             slashLightEffect.alpha = 1;
             slashLightEffect.on(Laya.Event.COMPLETE, this, function () {
+                Laya.stage.removeChild(slashLightEffect);
                 slashLightEffect.destroy();
                 slashLightEffect.destroyed = true;
             });
@@ -3892,6 +3949,7 @@
                 this.m_atkTimer = 100;
             }, 500);
             setTimeout(() => {
+                Laya.stage.removeChild(atkCircle);
                 atkCircle.destroy();
                 atkCircle.destroyed = true;
             }, 600);
@@ -4077,6 +4135,7 @@
                 if (aliveEnemy[i]._ent.m_animation.destroyed)
                     return;
                 ZOrderManager.setZOrder(aliveEnemy[i]._ent.m_animation, -15);
+                Laya.stage.removeChild(aliveEnemy[i]._ent.m_animation);
                 aliveEnemy[i]._ent.m_animation.destroy();
                 aliveEnemy[i]._ent.m_animation.destroyed = true;
             }
@@ -4246,6 +4305,7 @@
                 if (Village.isNewbie) {
                     Laya.Scene.open("Newbie_temp1.scene");
                 }
+                Laya.stage.removeChild(this.loadingProgress);
                 this.loadingProgress.destroy();
                 return;
             }
@@ -4264,12 +4324,14 @@
             }));
         }
         onKeyDown() {
+            Laya.stage.removeChild(this.dirtEffect);
             this.dirtEffect.destroy();
             Laya.Scene.open('Loading.scene', true);
         }
         onStart() {
             this.createDirtEffect();
             Laya.stage.on(Laya.Event.CLICK, this, () => {
+                Laya.stage.removeChild(this.dirtEffect);
                 this.dirtEffect.destroy();
                 Laya.Scene.open('Loading.scene', true);
             });
