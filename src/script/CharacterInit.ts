@@ -13,6 +13,7 @@ import EnemyInit from "./EnemyInit";
 import Turtorial from "./Tutorial";
 import ZOrderManager from "./ZOrderManager";
 import Village from "./Village";
+import SceneDestroyer from "./SceneDestroyer";
 
 
 export class Character extends Laya.Script {
@@ -262,6 +263,7 @@ export class Character extends Laya.Script {
             this.m_animation.destroy();
             this.m_animation.destroyed = true;
             CharacterInit.generated = false;
+            SceneDestroyer.wake();
             Laya.Scene.open("Died.scene");
             Laya.stage.x = Laya.stage.y = 0;
             Laya.SoundManager.stopAll();

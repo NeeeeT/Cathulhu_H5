@@ -1,3 +1,4 @@
+import SceneDestroyer from "./SceneDestroyer";
 import ZOrderManager from "./ZOrderManager";
 
 enum step{
@@ -43,6 +44,7 @@ export default class Loading2 extends Laya.Script{
         this.anyKeyIcon.destroy();
         // Laya.stage.removeChild(this.loadingBg);
         // Laya.Pool.recover("loadingBg", this.loadingBg);
+        SceneDestroyer.wake();
         Laya.Scene.open(Loading2.nextSceneName);
     }
     onStart(): void{
@@ -70,6 +72,7 @@ export default class Loading2 extends Laya.Script{
             this.anyKeyIcon.destroy();
             // Laya.stage.removeChild(this.loadingBg);
             // Laya.Pool.recover("loadingBg", this.loadingBg);
+            SceneDestroyer.wake();
             Laya.Scene.open(Loading2.nextSceneName);
         })
 

@@ -174,25 +174,23 @@ export default class MissionManager extends Laya.Script {
 
 
         let switchSceneFunc = () => {
+            console.log('任務執行一次');
+            
             if (Village.isNewbie) {
-                // Laya.Scene.open("Newbie.scene");
                 Loading2.nextSceneName = 'Newbie_temp.scene';
                 Laya.Scene.open('Loading2.scene', true);
                 // Village.isNewbie = false;
             } else {
                 let x = Math.round(Math.random());
                 if (x > 0.5) {
-                    Laya.Scene.closeAll();
-                    // Laya.Scene.open("First.scene");
+                    Laya.Scene.destroy;
                     Loading2.nextSceneName = 'First.scene';
                     // SceneInit.setBattleMap("RedForest");
-                    Laya.Scene.open('Loading2.scene', true);
+                    Laya.Scene.open('Loading2.scene');
                 } else {
-                    Laya.Scene.closeAll();
-                    // Laya.Scene.open("Town.scene");
                     Loading2.nextSceneName = 'Town.scene';
                     // SceneInit.setBattleMap("Town");
-                    Laya.Scene.open('Loading2.scene', true);
+                    Laya.Scene.open('Loading2.scene');
                 }
             }
         }
@@ -221,7 +219,7 @@ export default class MissionManager extends Laya.Script {
             confirmIcon.alpha = 1;
         })
         confirmIcon.off(Laya.Event.CLICK, this, confirmFunc);
-        confirmIcon.off(Laya.Event.CLICK, this, confirmFunc);
+        confirmIcon.off(Laya.Event.KEY_DOWN, this, confirmFunc);
 
         confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
         confirmIcon.on(Laya.Event.KEY_DOWN, this, (e: Laya.Event)=>{
@@ -286,5 +284,4 @@ export default class MissionManager extends Laya.Script {
         // console.log(MissionManager.missionDataPool);
         return MissionManager.missionDataPool;
     }
-
 }

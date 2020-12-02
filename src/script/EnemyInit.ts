@@ -331,6 +331,8 @@ export default class EnemyInit extends Laya.Script{
 
     //新的
     showEndSkillUI(): void{
+        if(this.endingSkillUIToggle) return;
+
         let player = CharacterInit.playerEnt;
 
         this.endingSkillUIToggle = true;
@@ -745,7 +747,7 @@ export default class EnemyInit extends Laya.Script{
         let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
         // ExtraData.currentData['crystal'] = data.crystal + this.rewardCrystalValue;
         // ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
-        ExtraData.currentData['gold'] = data.gold + this.rewardCrystalValue;
+        ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
 
 
         ExtraData.saveData();
