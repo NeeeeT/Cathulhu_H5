@@ -275,7 +275,8 @@
             this.reinforceHpCostIcon.alpha = 0.75;
             Laya.stage.addChild(this.reinforceHpCostIcon);
             ZOrderManager.setZOrder(this.reinforceHpCostIcon, 101);
-            this.reinforceHpCostIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, this.addHpLevel);
+            this.reinforceHpCostIcon.off(Laya.Event.CLICK, this, this.addHpLevel);
+            this.reinforceHpCostIcon.off(Laya.Event.KEY_DOWN, this, this.addHpLevel);
             this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, () => {
                 this.reinforceHpCostIcon.alpha = 1.0;
             });
@@ -287,7 +288,7 @@
                 if (e.keyCode === 90) {
                     this.addAtkLevel();
                 }
-                if (e.keyCode === 90) {
+                else if (e.keyCode === 88) {
                     this.addHpLevel();
                 }
             });
@@ -406,10 +407,10 @@
             this.storyInfo = new Laya.Text();
             this.storyInfo.text = this.storyInfoCard[randomCard];
             this.storyInfo.color = "#fff";
-            this.storyInfo.stroke = 3;
+            this.storyInfo.stroke = 4;
             this.storyInfo.strokeColor = "#000";
             this.storyInfo.font = "silver";
-            this.storyInfo.fontSize = 38;
+            this.storyInfo.fontSize = 40;
             this.storyInfo.wordWrap = true;
             this.storyInfo.size(837, 180);
             this.storyInfo.pos(267, 230);
@@ -613,7 +614,8 @@
             confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
                 confirmIcon.alpha = 1;
             });
-            confirmIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, confirmFunc);
+            confirmIcon.off(Laya.Event.CLICK, this, confirmFunc);
+            confirmIcon.off(Laya.Event.CLICK, this, confirmFunc);
             confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
             confirmIcon.on(Laya.Event.KEY_DOWN, this, (e) => {
                 if (e.keyCode === 90 || e.keyCode === 88 || e.keyCode === 67) {
@@ -626,9 +628,9 @@
         generateMissionData(total) {
             for (let i = 0; i < total; i++) {
                 if (i < total / 3)
-                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 35);
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 105);
                 if (i >= total / 3 && i < total * 2 / 3)
-                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 20);
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 55);
                 if (i >= total * 2 / 3)
                     this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 5);
             }
@@ -646,7 +648,7 @@
                     eliteHpMultiplier: 1.5,
                     eliteAtkMultiplier: 1.5,
                     crystal: 0,
-                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
+                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 90)),
                     map: "forest",
                 };
                 MissionManager.missionDataPool.push(missionData);
@@ -1224,7 +1226,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#0065ff", 8, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            this.m_animation.filters = [colorFilter];
+            this.m_animation.filters = [colorFilter, glowFilter];
             this.m_animation.on(Laya.Event.COMPLETE, this, function () {
                 Laya.stage.removeChild(this.m_animation);
                 this.m_animation.destroy();
@@ -1249,7 +1251,7 @@
         attackRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
             let targetEnemy = Math.floor(Math.random() * enemy.length);
-            if (enemy.length === 0 || (enemy[targetEnemy]._ent.m_animation.x <= 258 || enemy[targetEnemy]._ent.m_animation.x > 3849)) {
+            if (enemy.length === 0 || (enemy[targetEnemy]._ent.m_animation.x <= 300 || enemy[targetEnemy]._ent.m_animation.x > 3800)) {
                 return;
             }
             owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? -50 : 50);
@@ -2912,7 +2914,6 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                new Village().showReinforceUI();
             }
             if (this.m_keyDownList[32]) {
             }
@@ -3337,14 +3338,11 @@
                 this.m_mobileAtkBtn.off(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
                 this.m_mobileAtkBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileAtkBtn.alpha = 0.5; });
                 this.m_mobileAtkBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileAtkBtn.alpha = 1; });
+                this.m_mobileAtkBtn.on(Laya.Event.MOUSE_OUT, this, () => { this.m_mobileAtkBtn.alpha = 1; });
                 this.m_mobileSprintBtn.off(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
-                this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; this.m_mobileSprintBtn.alpha = 1; });
+                this.m_mobileSprintBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; });
                 this.m_mobileCatSkillBtn.off(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
-                this.m_mobileCatSkillBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileCatSkillBtn.alpha = 0.5; });
-                this.m_mobileCatSkillBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileCatSkillBtn.alpha = 1; });
                 this.m_mobileHumanSkillBtn.off(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
-                this.m_mobileHumanSkillBtn.off(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileHumanSkillBtn.alpha = 0.5; });
-                this.m_mobileHumanSkillBtn.off(Laya.Event.MOUSE_UP, this, () => { this.m_mobileHumanSkillBtn.alpha = 1; });
                 this.m_mobileUIToggle = false;
             }
         }
@@ -3382,6 +3380,9 @@
             this.m_mobileSprintBtn = Laya.Pool.getItemByClass("mobileSprintBtn", Laya.Sprite);
             this.m_mobileHumanSkillBtn = Laya.Pool.getItemByClass("mobileHumanSkillBtn", Laya.Sprite);
             this.m_mobileCatSkillBtn = Laya.Pool.getItemByClass("mobileCatSkillBtn", Laya.Sprite);
+            this.m_mobileSprintCd = Laya.Pool.getItemByClass("mobileSprintCd", Laya.Text);
+            this.m_mobileCatSkillCd = Laya.Pool.getItemByClass("mobileCatSkillCd", Laya.Text);
+            this.m_mobileHumanSkillCd = Laya.Pool.getItemByClass("mobileHumanSkillCd", Laya.Text);
             this.m_mobileLeftBtn.size(150, 119);
             this.m_mobileRightBtn.size(150, 119);
             this.m_mobileAtkBtn.size(135, 135);
@@ -3393,6 +3394,11 @@
             this.m_mobileAtkBtn.loadImage('UI/mobile/mobileAtkBtn.png');
             this.m_mobileSprintBtn.loadImage('UI/mobile/mobileSprintBtn.png');
             this.updateMobileSkillBtnUI();
+            this.m_mobileSprintCd.fontSize = this.m_mobileCatSkillCd.fontSize = this.m_mobileHumanSkillCd.fontSize = 100;
+            this.m_mobileSprintCd.font = this.m_mobileCatSkillCd.font = this.m_mobileHumanSkillCd.font = "silver";
+            this.m_mobileSprintCd.stroke = this.m_mobileCatSkillCd.stroke = this.m_mobileHumanSkillCd.stroke = 2;
+            this.m_mobileSprintCd.strokeColor = this.m_mobileCatSkillCd.strokeColor = this.m_mobileHumanSkillCd.strokeColor = '#000';
+            this.m_mobileSprintCd.color = this.m_mobileCatSkillCd.color = this.m_mobileHumanSkillCd.color = '#fff';
             this.m_mobileLeftBtn.autoSize = true;
             this.m_mobileRightBtn.autoSize = true;
             this.m_mobileAtkBtn.autoSize = true;
@@ -3405,12 +3411,18 @@
             Laya.stage.addChild(this.m_mobileSprintBtn);
             Laya.stage.addChild(this.m_mobileCatSkillBtn);
             Laya.stage.addChild(this.m_mobileHumanSkillBtn);
+            Laya.stage.addChild(this.m_mobileSprintCd);
+            Laya.stage.addChild(this.m_mobileCatSkillCd);
+            Laya.stage.addChild(this.m_mobileHumanSkillCd);
             ZOrderManager.setZOrder(this.m_mobileLeftBtn, 100);
             ZOrderManager.setZOrder(this.m_mobileRightBtn, 100);
             ZOrderManager.setZOrder(this.m_mobileAtkBtn, 100);
             ZOrderManager.setZOrder(this.m_mobileSprintBtn, 100);
             ZOrderManager.setZOrder(this.m_mobileCatSkillBtn, 100);
             ZOrderManager.setZOrder(this.m_mobileHumanSkillBtn, 100);
+            ZOrderManager.setZOrder(this.m_mobileSprintCd, 103);
+            ZOrderManager.setZOrder(this.m_mobileCatSkillCd, 103);
+            ZOrderManager.setZOrder(this.m_mobileHumanSkillCd, 103);
             this.mobileLeftBtnResetFunc = function () {
                 this.m_mobileLeftBtnClicked = false;
                 this.m_mobileLeftBtn.alpha = 1;
@@ -3427,10 +3439,16 @@
                 }
                 this.applyMoveX();
             };
-            this.m_mobileLeftBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileLeftBtnClicked = true; this.m_mobileLeftBtn.alpha = 0.5; });
+            this.m_mobileLeftBtn.on(Laya.Event.MOUSE_DOWN, this, () => {
+                this.m_mobileLeftBtnClicked = true;
+                this.m_mobileLeftBtn.alpha = 0.5;
+            });
             this.m_mobileLeftBtn.on(Laya.Event.MOUSE_UP, this, this.mobileLeftBtnResetFunc);
             this.m_mobileLeftBtn.on(Laya.Event.MOUSE_OUT, this, this.mobileLeftBtnResetFunc);
-            this.m_mobileRightBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileRightBtnClicked = true; this.m_mobileRightBtn.alpha = 0.5; });
+            this.m_mobileRightBtn.on(Laya.Event.MOUSE_DOWN, this, () => {
+                this.m_mobileRightBtnClicked = true;
+                this.m_mobileRightBtn.alpha = 0.5;
+            });
             this.m_mobileRightBtn.on(Laya.Event.MOUSE_UP, this, this.mobileRightBtnResetFunc);
             this.m_mobileRightBtn.on(Laya.Event.MOUSE_OUT, this, this.mobileRightBtnResetFunc);
             let mobileMoveFunc = function () {
@@ -3479,11 +3497,17 @@
                 }, this.m_attackCdTime);
             };
             this.m_mobileAtkBtn.on(Laya.Event.CLICK, this, this.mobileAtkBtnFunc);
-            this.m_mobileAtkBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileAtkBtn.alpha = 0.5; });
-            this.m_mobileAtkBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileAtkBtn.alpha = 1; });
+            this.m_mobileAtkBtn.on(Laya.Event.MOUSE_DOWN, this, () => {
+                this.m_mobileAtkBtn.alpha = 0.5;
+            });
+            this.m_mobileAtkBtn.on(Laya.Event.MOUSE_UP, this, () => {
+                this.m_mobileAtkBtn.alpha = 1;
+            });
+            this.m_mobileAtkBtn.on(Laya.Event.MOUSE_OUT, this, () => {
+                this.m_mobileAtkBtn.alpha = 1;
+            });
             this.mobileSprintBtnFunc = function () {
                 this.m_mobileSprintBtnClicked = true;
-                this.m_mobileSprintBtn.alpha = 0.5;
                 if (!this.m_canSprint || EnemyInit.isWin)
                     return;
                 this.delayMove(0.08);
@@ -3504,12 +3528,16 @@
                 setTimeout(() => { this.m_canSprint = true; }, 3000);
                 this.m_canSprint = false;
                 Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 10, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                    Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => { this.m_animation.alpha = 1; }), 0);
+                    Laya.Tween.to(this.m_animation, { alpha: 0.35 }, 150, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                        this.m_animation.alpha = 1;
+                    }), 0);
                 }), 0);
                 this.setSound(0.6, "Audio/Misc/dash.wav", 1);
             };
             this.m_mobileSprintBtn.on(Laya.Event.MOUSE_DOWN, this, this.mobileSprintBtnFunc);
-            this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileSprintBtnClicked = false; this.m_mobileSprintBtn.alpha = 1; });
+            this.m_mobileSprintBtn.on(Laya.Event.MOUSE_UP, this, () => {
+                this.m_mobileSprintBtnClicked = false;
+            });
             this.mobileCatSkillBtnFunc = function () {
                 if (EnemyInit.isWin)
                     return;
@@ -3519,8 +3547,6 @@
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
             };
             this.m_mobileCatSkillBtn.on(Laya.Event.CLICK, this, this.mobileCatSkillBtnFunc);
-            this.m_mobileCatSkillBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileCatSkillBtn.alpha = 0.5; });
-            this.m_mobileCatSkillBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileCatSkillBtn.alpha = 1; });
             this.mobileHumanSkillBtnFunc = function () {
                 if (EnemyInit.isWin)
                     return;
@@ -3530,8 +3556,6 @@
                 }, this.m_oathManager.oathCastSkillCheck(this.m_humanSkill.m_cost));
             };
             this.m_mobileHumanSkillBtn.on(Laya.Event.CLICK, this, this.mobileHumanSkillBtnFunc);
-            this.m_mobileHumanSkillBtn.on(Laya.Event.MOUSE_DOWN, this, () => { this.m_mobileHumanSkillBtn.alpha = 0.5; });
-            this.m_mobileHumanSkillBtn.on(Laya.Event.MOUSE_UP, this, () => { this.m_mobileHumanSkillBtn.alpha = 1; });
             let mobileUIFunc = () => {
                 if (!this.m_mobileUIToggle) {
                     Laya.stage.removeChild(this.m_mobileLeftBtn);
@@ -3540,16 +3564,28 @@
                     Laya.stage.removeChild(this.m_mobileSprintBtn);
                     Laya.stage.removeChild(this.m_mobileHumanSkillBtn);
                     Laya.stage.removeChild(this.m_mobileCatSkillBtn);
+                    Laya.stage.removeChild(this.m_mobileSprintCd);
+                    Laya.stage.removeChild(this.m_mobileCatSkillCd);
+                    Laya.stage.removeChild(this.m_mobileHumanSkillCd);
                     Laya.Pool.recover("mobileLeftBtn", this.m_mobileLeftBtn);
                     Laya.Pool.recover("mobileRightBtn", this.m_mobileRightBtn);
                     Laya.Pool.recover("mobileAtkBtn", this.m_mobileAtkBtn);
                     Laya.Pool.recover("mobileSprintBtn", this.m_mobileSprintBtn);
                     Laya.Pool.recover("mobileHumanSkillBtn", this.m_mobileHumanSkillBtn);
                     Laya.Pool.recover("mobileCatSkillBtn", this.m_mobileCatSkillBtn);
+                    Laya.Pool.recover("mobileSprintCd", this.m_mobileSprintCd);
+                    Laya.Pool.recover("mobileCatSkillCd", this.m_mobileCatSkillCd);
+                    Laya.Pool.recover("mobileHumanSkillCd", this.m_mobileHumanSkillCd);
                     Laya.timer.clear(this, mobileUIFunc);
                     Laya.timer.clear(this, mobileMoveFunc);
                     return;
                 }
+                this.m_mobileSprintBtn.alpha = CharacterInit.playerEnt.m_canSprint ? 1 : 0.5;
+                this.m_mobileHumanSkillBtn.alpha = CharacterInit.playerEnt.m_humanSkill.m_canUse ? 1 : 0.5;
+                this.m_mobileCatSkillBtn.alpha = CharacterInit.playerEnt.m_catSkill.m_canUse ? 1 : 0.5;
+                this.m_mobileSprintCd.text = CharacterInit.playerEnt.m_canSprint ? "" : String(CharacterInit.playerEnt.m_sprintCdCount);
+                this.m_mobileCatSkillCd.text = CharacterInit.playerEnt.m_catSkill.m_canUse ? "" : String(CharacterInit.playerEnt.m_catSkill.m_cdCount);
+                this.m_mobileHumanSkillCd.text = CharacterInit.playerEnt.m_humanSkill.m_canUse ? "" : String(CharacterInit.playerEnt.m_humanSkill.m_cdCount);
                 if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
                     this.m_mobileLeftBtn.pos(player.x - Laya.stage.width / 2 + 50, 620);
                     this.m_mobileRightBtn.pos(player.x - Laya.stage.width / 2 + 50 + 165, 620);
@@ -3557,6 +3593,9 @@
                     this.m_mobileSprintBtn.pos(player.x + Laya.stage.width / 2 - 350, 630);
                     this.m_mobileCatSkillBtn.pos(player.x + Laya.stage.width / 2 - 290, 530);
                     this.m_mobileHumanSkillBtn.pos(player.x + Laya.stage.width / 2 - 200, 460);
+                    this.m_mobileSprintCd.pos(player.x + Laya.stage.width / 2 - 350 + 40, 630 + 20);
+                    this.m_mobileCatSkillCd.pos(player.x + Laya.stage.width / 2 - 290 + 40, 530 + 20);
+                    this.m_mobileHumanSkillCd.pos(player.x + Laya.stage.width / 2 - 200 + 40, 460 + 20);
                 }
                 if (Laya.stage.x >= -250) {
                     this.m_mobileLeftBtn.pos(935 - Laya.stage.width / 2 + 50, 620);
@@ -3565,6 +3604,9 @@
                     this.m_mobileSprintBtn.pos(935 + Laya.stage.width / 2 - 350, 630);
                     this.m_mobileCatSkillBtn.pos(935 + Laya.stage.width / 2 - 290, 530);
                     this.m_mobileHumanSkillBtn.pos(935 + Laya.stage.width / 2 - 200, 460);
+                    this.m_mobileSprintCd.pos(935 + Laya.stage.width / 2 - 350 + 40, 630 + 20);
+                    this.m_mobileCatSkillCd.pos(935 + Laya.stage.width / 2 - 290 + 40, 530 + 20);
+                    this.m_mobileHumanSkillCd.pos(935 + Laya.stage.width / 2 - 200 + 40, 460 + 20);
                 }
                 if (Laya.stage.x <= -2475) {
                     this.m_mobileLeftBtn.pos(3155 - Laya.stage.width / 2 + 50, 620);
@@ -3573,6 +3615,9 @@
                     this.m_mobileSprintBtn.pos(3155 + Laya.stage.width / 2 - 350, 630);
                     this.m_mobileCatSkillBtn.pos(3155 + Laya.stage.width / 2 - 290, 530);
                     this.m_mobileHumanSkillBtn.pos(3155 + Laya.stage.width / 2 - 200, 460);
+                    this.m_mobileSprintCd.pos(3155 + Laya.stage.width / 2 - 350 + 40, 630 + 20);
+                    this.m_mobileCatSkillCd.pos(3155 + Laya.stage.width / 2 - 290 + 40, 530 + 20);
+                    this.m_mobileHumanSkillCd.pos(3155 + Laya.stage.width / 2 - 200 + 40, 460 + 20);
                 }
             };
             Laya.timer.frameLoop(1, this, mobileUIFunc);
@@ -3662,8 +3707,8 @@
             ];
             let colorFilter = new Laya.ColorFilter(oathColorMat);
             let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 10, 0, 0);
-            CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
-            CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
+            CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter, glowFilter_charge] : [];
+            CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter, glowFilter_charge] : [];
             CharacterInit.playerEnt.m_oathManager.oathUpdate();
         }
     }
