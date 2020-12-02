@@ -12,7 +12,9 @@ export default class MainToLoading extends Laya.Script{
         this.mainToLoadFunc = () => {
             Laya.stage.removeChild(this.dirtEffect);
             this.dirtEffect.destroy();
-            Laya.Scene.open('Loading.scene', true);
+            Laya.Scene.open('Loading.scene', true, 0, Laya.Handler.create(this, ()=>{
+                Laya.Scene.destroy("Main.scene");
+            }));
         }
         
     }

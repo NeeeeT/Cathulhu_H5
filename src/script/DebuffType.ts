@@ -29,17 +29,17 @@ export abstract class DebuffProto extends Laya.Script {
         let damageText = new Laya.Text();
 
         // damageText.pos(this.m_animation.x - this.m_animation.width/2 - 20, this.m_animation.y - this.m_animation.height - 100);
-        damageText.pos(this.player.m_animation.x, this.player.m_animation.y);
-        damageText.bold = true;
-        damageText.align = "center";
+        damageText.pos(this.player.m_animation.x - 270, this.player.m_animation.y - 290);
+        // damageText.bold = true;
+        damageText.align = "left";
         damageText.alpha = 1;
 
-        damageText.fontSize = 20;
-        damageText.color = "red";
+        damageText.fontSize = 35;
+        damageText.color = "#FF49ED";
 
         damageText.text = text;
         damageText.font = "silver";
-        damageText.stroke = 5;
+        damageText.stroke = 4;
         damageText.strokeColor = "#000";
 
         //soundNum = critical ? 0 : 1;
@@ -47,9 +47,9 @@ export abstract class DebuffProto extends Laya.Script {
         Laya.stage.addChild(damageText);
         ZOrderManager.setZOrder(damageText, 80);
 
-        Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut,
+        Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 40, }, 1000, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut,
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 20, }, 1000, Laya.Ease.linearInOut,
                     Laya.Handler.create(this, () => {
                         Laya.stage.removeChild(damageText);
                         damageText.destroy()

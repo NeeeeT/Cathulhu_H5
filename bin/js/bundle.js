@@ -275,7 +275,8 @@
             this.reinforceHpCostIcon.alpha = 0.75;
             Laya.stage.addChild(this.reinforceHpCostIcon);
             ZOrderManager.setZOrder(this.reinforceHpCostIcon, 101);
-            this.reinforceHpCostIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, this.addHpLevel);
+            this.reinforceHpCostIcon.off(Laya.Event.CLICK, this, this.addHpLevel);
+            this.reinforceHpCostIcon.off(Laya.Event.KEY_DOWN, this, this.addHpLevel);
             this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, () => {
                 this.reinforceHpCostIcon.alpha = 1.0;
             });
@@ -287,7 +288,7 @@
                 if (e.keyCode === 90) {
                     this.addAtkLevel();
                 }
-                if (e.keyCode === 90) {
+                else if (e.keyCode === 88) {
                     this.addHpLevel();
                 }
             });
@@ -325,6 +326,15 @@
     Village.reinforceToggle = false;
     Village.isNewbie = true;
 
+    class SceneDestroyer extends Laya.Script {
+    }
+    SceneDestroyer.wake = () => {
+        let allScene = Laya.Scene.unDestroyedScenes;
+        allScene.forEach((e) => {
+            Laya.Scene.destroy(e.url);
+        });
+    };
+
     var step;
     (function (step) {
         step[step["first"] = 0] = "first";
@@ -357,6 +367,7 @@
             this.storyInfo.destroy();
             this.loadingProgress.destroy();
             this.anyKeyIcon.destroy();
+            SceneDestroyer.wake();
             Laya.Scene.open(Loading2.nextSceneName);
         }
         onStart() {
@@ -374,6 +385,7 @@
                 this.storyInfo.destroy();
                 this.loadingProgress.destroy();
                 this.anyKeyIcon.destroy();
+                SceneDestroyer.wake();
                 Laya.Scene.open(Loading2.nextSceneName);
             });
             this.preparedTimer = setInterval(() => {
@@ -406,10 +418,10 @@
             this.storyInfo = new Laya.Text();
             this.storyInfo.text = this.storyInfoCard[randomCard];
             this.storyInfo.color = "#fff";
-            this.storyInfo.stroke = 3;
+            this.storyInfo.stroke = 4;
             this.storyInfo.strokeColor = "#000";
             this.storyInfo.font = "silver";
-            this.storyInfo.fontSize = 38;
+            this.storyInfo.fontSize = 40;
             this.storyInfo.wordWrap = true;
             this.storyInfo.size(837, 180);
             this.storyInfo.pos(267, 230);
@@ -571,6 +583,7 @@
             confirmIcon.height = 50;
             confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
             let switchSceneFunc = () => {
+                console.log('任務執行一次');
                 if (Village.isNewbie) {
                     Loading2.nextSceneName = 'Newbie_temp.scene';
                     Laya.Scene.open('Loading2.scene', true);
@@ -578,14 +591,13 @@
                 else {
                     let x = Math.round(Math.random());
                     if (x > 0.5) {
-                        Laya.Scene.closeAll();
+                        Laya.Scene.destroy;
                         Loading2.nextSceneName = 'First.scene';
-                        Laya.Scene.open('Loading2.scene', true);
+                        Laya.Scene.open('Loading2.scene');
                     }
                     else {
-                        Laya.Scene.closeAll();
                         Loading2.nextSceneName = 'Town.scene';
-                        Laya.Scene.open('Loading2.scene', true);
+                        Laya.Scene.open('Loading2.scene');
                     }
                 }
             };
@@ -613,7 +625,8 @@
             confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
                 confirmIcon.alpha = 1;
             });
-            confirmIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, confirmFunc);
+            confirmIcon.off(Laya.Event.CLICK, this, confirmFunc);
+            confirmIcon.off(Laya.Event.KEY_DOWN, this, confirmFunc);
             confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
             confirmIcon.on(Laya.Event.KEY_DOWN, this, (e) => {
                 if (e.keyCode === 90 || e.keyCode === 88 || e.keyCode === 67) {
@@ -626,9 +639,9 @@
         generateMissionData(total) {
             for (let i = 0; i < total; i++) {
                 if (i < total / 3)
-                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 35);
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 105);
                 if (i >= total / 3 && i < total * 2 / 3)
-                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 20);
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 55);
                 if (i >= total * 2 / 3)
                     this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 5);
             }
@@ -646,7 +659,7 @@
                     eliteHpMultiplier: 1.5,
                     eliteAtkMultiplier: 1.5,
                     crystal: 0,
-                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
+                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 90)),
                     map: "forest",
                 };
                 MissionManager.missionDataPool.push(missionData);
@@ -1224,7 +1237,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#0065ff", 8, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            this.m_animation.filters = [colorFilter];
+            this.m_animation.filters = [colorFilter, glowFilter];
             this.m_animation.on(Laya.Event.COMPLETE, this, function () {
                 Laya.stage.removeChild(this.m_animation);
                 this.m_animation.destroy();
@@ -1249,7 +1262,7 @@
         attackRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
             let targetEnemy = Math.floor(Math.random() * enemy.length);
-            if (enemy.length === 0 || (enemy[targetEnemy]._ent.m_animation.x <= 258 || enemy[targetEnemy]._ent.m_animation.x > 3849)) {
+            if (enemy.length === 0 || (enemy[targetEnemy]._ent.m_animation.x <= 300 || enemy[targetEnemy]._ent.m_animation.x > 3800)) {
                 return;
             }
             owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? -50 : 50);
@@ -1505,6 +1518,8 @@
             CharacterInit.playerEnt.m_rigidbody.linearVelocity = { x: 0, y: 0 };
         }
         showEndSkillUI() {
+            if (this.endingSkillUIToggle)
+                return;
             let player = CharacterInit.playerEnt;
             this.endingSkillUIToggle = true;
             this.endingSkillUI = Laya.Pool.getItemByClass("endingSkillUI", Laya.Sprite);
@@ -1733,7 +1748,7 @@
         }
         endingUpdateData() {
             let data = JSON.parse(Laya.LocalStorage.getItem("gameData"));
-            ExtraData.currentData['gold'] = data.gold + this.rewardCrystalValue;
+            ExtraData.currentData['gold'] = data.gold + this.rewardGoldValue;
             ExtraData.saveData();
         }
         changeToVillage() {
@@ -2010,20 +2025,19 @@
         }
         debuffTextEffect(text) {
             let damageText = new Laya.Text();
-            damageText.pos(this.player.m_animation.x, this.player.m_animation.y);
-            damageText.bold = true;
-            damageText.align = "center";
+            damageText.pos(this.player.m_animation.x - 270, this.player.m_animation.y - 190);
+            damageText.align = "left";
             damageText.alpha = 1;
-            damageText.fontSize = 20;
-            damageText.color = "red";
+            damageText.fontSize = 35;
+            damageText.color = "#FF49ED";
             damageText.text = text;
             damageText.font = "silver";
-            damageText.stroke = 5;
+            damageText.stroke = 4;
             damageText.strokeColor = "#000";
             Laya.stage.addChild(damageText);
             ZOrderManager.setZOrder(damageText, 80);
-            Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 50, y: damageText.y + 50, }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 13, y: damageText.y - 100 }, 450, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+            Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 40, }, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
+                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 20, }, 1000, Laya.Ease.linearInOut, Laya.Handler.create(this, () => {
                     Laya.stage.removeChild(damageText);
                     damageText.destroy();
                 }), 0);
@@ -2759,6 +2773,7 @@
                 this.m_animation.destroy();
                 this.m_animation.destroyed = true;
                 CharacterInit.generated = false;
+                SceneDestroyer.wake();
                 Laya.Scene.open("Died.scene");
                 Laya.stage.x = Laya.stage.y = 0;
                 Laya.SoundManager.stopAll();
@@ -2912,7 +2927,6 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                new Village().showReinforceUI();
             }
             if (this.m_keyDownList[32]) {
             }
@@ -3662,8 +3676,8 @@
             ];
             let colorFilter = new Laya.ColorFilter(oathColorMat);
             let glowFilter_charge = new Laya.GlowFilter("#df6ef4", 10, 0, 0);
-            CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
-            CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
+            CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter, glowFilter_charge] : [];
+            CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter, glowFilter_charge] : [];
             CharacterInit.playerEnt.m_oathManager.oathUpdate();
         }
     }
@@ -4219,24 +4233,20 @@
 
     class BackToVillage extends Laya.Script {
         onStart() {
-            Laya.stage.on(Laya.Event.CLICK, this, () => {
-                Laya.stage.x = Laya.stage.y = 0;
-                Laya.SoundManager.stopAll();
-                EnemyHandler.clearAllEnemy();
-                let missionManager = new MissionManager();
-                missionManager.generateMissionData(9);
-                missionManager.showMissionUI();
-            });
+            Laya.stage.once(Laya.Event.CLICK, this, this.nextStep);
         }
         onKeyUp(e) {
             if (e.keyCode === 32) {
-                Laya.stage.x = Laya.stage.y = 0;
-                Laya.SoundManager.stopAll();
-                EnemyHandler.clearAllEnemy();
-                let missionManager = new MissionManager();
-                missionManager.generateMissionData(9);
-                missionManager.showMissionUI();
+                this.nextStep();
             }
+        }
+        nextStep() {
+            Laya.stage.x = Laya.stage.y = 0;
+            Laya.SoundManager.stopAll();
+            EnemyHandler.clearAllEnemy();
+            let missionManager = new MissionManager();
+            missionManager.generateMissionData(9);
+            missionManager.showMissionUI();
         }
     }
 
@@ -4401,7 +4411,9 @@
             this.mainToLoadFunc = () => {
                 Laya.stage.removeChild(this.dirtEffect);
                 this.dirtEffect.destroy();
-                Laya.Scene.open('Loading.scene', true);
+                Laya.Scene.open('Loading.scene', true, 0, Laya.Handler.create(this, () => {
+                    Laya.Scene.destroy("Main.scene");
+                }));
             };
         }
         onKeyDown() {
