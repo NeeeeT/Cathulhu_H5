@@ -3,25 +3,30 @@ import ZOrderManager from "./ZOrderManager";
 export default class MainToLoading extends Laya.Script{
     dirtEffect: Laya.Animation;
     windBgm: string = 'Audio/Misc/wind.wav';
+    mainToLoadFunc = () => { };
     onAwake(): void{
         Laya.loader.load(this.windBgm, Laya.Handler.create(this, ()=>{
             Laya.SoundManager.playMusic(this.windBgm, 0);
             Laya.SoundManager.setMusicVolume(0.8);
         }));
+        this.mainToLoadFunc = () => {
+            Laya.stage.removeChild(this.dirtEffect);
+            this.dirtEffect.destroy();
+            Laya.Scene.open('Loading.scene', true);
+        }
+        
     }
     onKeyDown(): void{
-        Laya.stage.removeChild(this.dirtEffect);
-        this.dirtEffect.destroy();
-        Laya.Scene.open('Loading.scene', true);
+        this.mainToLoadFunc();
     }
     onStart(): void
     {
         this.createDirtEffect();
+        
         //for mobile start
         Laya.stage.on(Laya.Event.CLICK, this, () => {
-            Laya.stage.removeChild(this.dirtEffect);
-            this.dirtEffect.destroy();
-            Laya.Scene.open('Loading.scene', true);
+            this.mainToLoadFunc();
+            Laya.stage.off(Laya.Event.CLICK, this, this.mainToLoadFunc);
         })
         // Laya.stage.frameOnce(90, this, ()=>{
         //     Laya.SoundManager.playMusic('Audio/Misc/wind.wav', 0);

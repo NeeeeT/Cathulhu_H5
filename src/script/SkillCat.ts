@@ -9,7 +9,7 @@ export class Slam extends VirtualSkill {
     m_info = '強大的範圍傷害';
     m_damage: number;
     m_cost = 50;
-    m_id = 2;
+    m_id = 1;
     m_cd = 3;
 
     m_iconA = "UI/icon/slamA.png";
@@ -252,7 +252,7 @@ export class BigExplosion extends VirtualSkill {
     m_damage: number;
     m_dotDamage = 7;
     m_cost = 80;
-    m_id = 2;
+    m_id = 3;
     m_cd = 15;
     m_lastTime = 2;
     m_radius = 100;//黑洞半徑
@@ -392,7 +392,7 @@ export class None extends VirtualSkill{
     m_info = '無';
     m_damage = 0;
     m_cost = 0;
-    m_id = -1;
+    m_id = 0;
     m_cd = 0;
 
     m_iconA = "";
