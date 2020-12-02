@@ -1595,8 +1595,8 @@ export default class CharacterInit extends Laya.Script {
             ];
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(oathColorMat);
         let glowFilter_charge: Laya.GlowFilter = new Laya.GlowFilter("#df6ef4", 10, 0, 0);
-        CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
-        CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter] : [];
+        CharacterInit.playerEnt.m_animation.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter, glowFilter_charge] : [];
+        CharacterInit.playerEnt.m_oathManager.characterLogo.filters = (CharacterInit.playerEnt.m_bloodyPoint >= CharacterInit.playerEnt.m_maxBloodyPoint_soft) ? [colorFilter, glowFilter_charge] : [];
 
         //更新誓約所影響的數值變化
         CharacterInit.playerEnt.m_oathManager.oathUpdate();

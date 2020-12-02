@@ -159,7 +159,7 @@ export class Behead extends VirtualSkill {
         ];
     let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#0065ff", 8, 0, 0);
     let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-    this.m_animation.filters = [colorFilter];
+    this.m_animation.filters = [colorFilter, glowFilter];
         this.m_animation.on(Laya.Event.COMPLETE, this, function () {
             Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
