@@ -275,7 +275,8 @@
             this.reinforceHpCostIcon.alpha = 0.75;
             Laya.stage.addChild(this.reinforceHpCostIcon);
             ZOrderManager.setZOrder(this.reinforceHpCostIcon, 101);
-            this.reinforceHpCostIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, this.addHpLevel);
+            this.reinforceHpCostIcon.off(Laya.Event.CLICK, this, this.addHpLevel);
+            this.reinforceHpCostIcon.off(Laya.Event.KEY_DOWN, this, this.addHpLevel);
             this.reinforceHpCostIcon.on(Laya.Event.MOUSE_OVER, this, () => {
                 this.reinforceHpCostIcon.alpha = 1.0;
             });
@@ -287,7 +288,7 @@
                 if (e.keyCode === 90) {
                     this.addAtkLevel();
                 }
-                if (e.keyCode === 90) {
+                else if (e.keyCode === 88) {
                     this.addHpLevel();
                 }
             });
@@ -406,10 +407,10 @@
             this.storyInfo = new Laya.Text();
             this.storyInfo.text = this.storyInfoCard[randomCard];
             this.storyInfo.color = "#fff";
-            this.storyInfo.stroke = 3;
+            this.storyInfo.stroke = 4;
             this.storyInfo.strokeColor = "#000";
             this.storyInfo.font = "silver";
-            this.storyInfo.fontSize = 38;
+            this.storyInfo.fontSize = 40;
             this.storyInfo.wordWrap = true;
             this.storyInfo.size(837, 180);
             this.storyInfo.pos(267, 230);
@@ -613,7 +614,8 @@
             confirmIcon.on(Laya.Event.MOUSE_OUT, this, () => {
                 confirmIcon.alpha = 1;
             });
-            confirmIcon.off(Laya.Event.CLICK && Laya.Event.KEY_DOWN, this, confirmFunc);
+            confirmIcon.off(Laya.Event.CLICK, this, confirmFunc);
+            confirmIcon.off(Laya.Event.CLICK, this, confirmFunc);
             confirmIcon.on(Laya.Event.CLICK, this, confirmFunc);
             confirmIcon.on(Laya.Event.KEY_DOWN, this, (e) => {
                 if (e.keyCode === 90 || e.keyCode === 88 || e.keyCode === 67) {
@@ -626,9 +628,9 @@
         generateMissionData(total) {
             for (let i = 0; i < total; i++) {
                 if (i < total / 3)
-                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 35);
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 105);
                 if (i >= total / 3 && i < total * 2 / 3)
-                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 20);
+                    this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 55);
                 if (i >= total * 2 / 3)
                     this.missionDifficultyArr.push(Math.floor(Math.random() * 15) + 5);
             }
@@ -646,7 +648,7 @@
                     eliteHpMultiplier: 1.5,
                     eliteAtkMultiplier: 1.5,
                     crystal: 0,
-                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 100)),
+                    money: Math.round(500 + 500 * (1 + this.missionDifficultyArr[i] / 90)),
                     map: "forest",
                 };
                 MissionManager.missionDataPool.push(missionData);
@@ -1249,7 +1251,7 @@
         attackRangeCheck(owner, pos) {
             let enemy = EnemyHandler.enemyPool;
             let targetEnemy = Math.floor(Math.random() * enemy.length);
-            if (enemy.length === 0 || (enemy[targetEnemy]._ent.m_animation.x <= 258 || enemy[targetEnemy]._ent.m_animation.x > 3849)) {
+            if (enemy.length === 0 || (enemy[targetEnemy]._ent.m_animation.x <= 300 || enemy[targetEnemy]._ent.m_animation.x > 3800)) {
                 return;
             }
             owner.m_animation.x = enemy[targetEnemy]._ent.m_animation.x + (enemy[targetEnemy]._ent.m_animation.skewY === 0 ? -50 : 50);
@@ -2642,7 +2644,6 @@
             this.mobileHumanSkillBtnFunc = () => { };
         }
         spawn() {
-            console.log('生成一次');
             this.loadCharacterData();
             this.getAtkValue(this.m_atkLevel);
             this.m_state = CharacterStatus.idle;
@@ -2899,7 +2900,6 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                new Village().showReinforceUI();
             }
             if (this.m_keyDownList[32]) {
             }

@@ -104,10 +104,10 @@ export default class Loading2 extends Laya.Script{
         this.storyInfo = new Laya.Text();
         this.storyInfo.text = this.storyInfoCard[randomCard];
         this.storyInfo.color = "#fff";
-        this.storyInfo.stroke = 3;
+        this.storyInfo.stroke = 4;
         this.storyInfo.strokeColor = "#000";
         this.storyInfo.font = "silver";
-        this.storyInfo.fontSize = 38;
+        this.storyInfo.fontSize = 40;
         this.storyInfo.wordWrap = true;
         this.storyInfo.size(837,180);
         this.storyInfo.pos(267, 230);

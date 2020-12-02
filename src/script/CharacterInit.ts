@@ -125,7 +125,9 @@ export class Character extends Laya.Script {
     emptySprForMobile: Laya.Sprite;
 
     spawn() {
-        console.log('生成一次');
+        // if(CharacterInit.playerEnt !== undefined) return;
+        // console.log(CharacterInit.playerEnt);
+        
 
         this.loadCharacterData();
         this.getAtkValue(this.m_atkLevel);
@@ -479,7 +481,7 @@ export class Character extends Laya.Script {
             if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
         if (this.m_keyDownList[40]) {//Down
-            new Village().showReinforceUI();
+            // new Village().showReinforceUI();
         }
         if (this.m_keyDownList[32]) {
             // let width_offset: number =

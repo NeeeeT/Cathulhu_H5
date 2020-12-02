@@ -15,7 +15,7 @@ export class ExtraData extends Laya.Script{
                 "humanSkill": Data.humanSkill,
                 "catSkillLevel": Data.catSkillLevel,
                 "humanSkillLevel": Data.humanSkillLevel,
-                "battleRound":Data.battleRound,
+                "battleRound": Data.battleRound,
             }
             // console.log('成功讀取檔案!');
             return;
