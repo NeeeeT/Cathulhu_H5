@@ -125,7 +125,7 @@ export class Character extends Laya.Script {
     emptySprForMobile: Laya.Sprite;
 
     spawn() {
-        console.log('生成一次');
+        // console.log('生成一次');
 
         this.loadCharacterData();
         this.getAtkValue(this.m_atkLevel);
