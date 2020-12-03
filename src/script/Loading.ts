@@ -21,6 +21,7 @@ export default class Loading extends Laya.Script{
         "Background(0912)/Red Forest/Red Forest(0912).png",
         "Background(0912)/gray town(1126).png",
         "Background(0912)/Loading2.png",
+        "Background(0912)/blackBg.png",
         //Character
         "character/Idle.atlas",
         "character/Attack1.atlas",

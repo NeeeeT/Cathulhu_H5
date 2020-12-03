@@ -29,27 +29,44 @@ export abstract class DebuffProto extends Laya.Script {
         let damageText = new Laya.Text();
 
         // damageText.pos(this.m_animation.x - this.m_animation.width/2 - 20, this.m_animation.y - this.m_animation.height - 100);
-        damageText.pos(this.player.m_animation.x - 270, this.player.m_animation.y - 290);
+
+        // damageText.pos(this.player.m_animation.x - 270, this.player.m_animation.y - 290);
+
+        let tempRandomX = 200 * Math.random();
+        let tempRandomY = 300 + 100 * Math.random();
+        if (Laya.stage.x < -250 && Laya.stage.x > -2475) damageText.pos(this.player.m_animation.x - 300 + tempRandomX, tempRandomY);
+        if (Laya.stage.x >= -250) damageText.pos(935 - 300 + tempRandomX, tempRandomY);
+        if (Laya.stage.x <= -2475) damageText.pos(3155 - 300 + tempRandomX, tempRandomY);
         // damageText.bold = true;
         damageText.align = "left";
         damageText.alpha = 1;
 
-        damageText.fontSize = 35;
-        damageText.color = "#FF49ED";
+        damageText.fontSize = 65;
+        // damageText.color = "#FF49ED";
+        damageText.color = '#34A853';
 
         damageText.text = text;
         damageText.font = "silver";
-        damageText.stroke = 4;
-        damageText.strokeColor = "#000";
+        damageText.stroke = 5;
+        damageText.strokeColor = "#fff";
+        damageText.alpha = 0.1;
 
         //soundNum = critical ? 0 : 1;
         //this.setSound(0.1, "Audio/EnemyHurt/EnemyHurt" + soundNum + ".wav", 1);//loop:0為循環播放
         Laya.stage.addChild(damageText);
         ZOrderManager.setZOrder(damageText, 80);
 
-        Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 40, }, 1000, Laya.Ease.linearInOut,
+        // Laya.Tween.to(damageText, { alpha: 0.65, fontSize: damageText.fontSize + 40, }, 1000, Laya.Ease.linearInOut,
+        //     Laya.Handler.create(this, () => {
+        //         Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 20, }, 1000, Laya.Ease.linearInOut,
+        //             Laya.Handler.create(this, () => {
+        //                 Laya.stage.removeChild(damageText);
+        //                 damageText.destroy()
+        //             }), 0);
+        //     }), 0);
+        Laya.Tween.to(damageText, {y:tempRandomY + 10, alpha: 0.8 }, 1000, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
-                Laya.Tween.to(damageText, { alpha: 0, fontSize: damageText.fontSize - 20, }, 1000, Laya.Ease.linearInOut,
+                Laya.Tween.to(damageText, {y:tempRandomY + 200, alpha: 0 }, 2500, Laya.Ease.linearInOut,
                     Laya.Handler.create(this, () => {
                         Laya.stage.removeChild(damageText);
                         damageText.destroy()
@@ -59,18 +76,29 @@ export abstract class DebuffProto extends Laya.Script {
 }
 
 export class Blind extends DebuffProto{
-    debuffText = "哈，那東西爆掉的樣子真滑稽";
+    debuffText = "失明 ─ 哈，那東西爆掉的樣子真滑稽";
     blindSprite: Laya.Sprite = null;
     blindBlackBg: Laya.Sprite = null;
     blindCircleMask: Laya.Sprite = null;
     blindHandler = null;
     public debuffUpdate() {
+        // console.log("執行失明更新");
         
         super.debuffUpdate();
-        if (Laya.stage.x < -252.5 && Laya.stage.x > -2472.5) {
-            this.blindBlackBg.x = this.player.m_animation.x - 1400 / 2;
-            this.blindCircleMask.x = this.player.m_animation.x;
-            this.blindCircleMask.y = this.player.m_animation.y;
+        if (Laya.stage.x < -250 && Laya.stage.x > -2475) {
+            this.blindBlackBg.pos(CharacterInit.playerEnt.m_animation.x - Laya.stage.width / 2, 0);
+            // this.blindCircleMask.x = this.player.m_animation.x;
+            // this.blindCircleMask.y = this.player.m_animation.y;
+        }
+        if (Laya.stage.x >= -250) {
+            this.blindBlackBg.pos(935 - Laya.stage.width / 2, 0);
+            // this.blindCircleMask.x = this.player.m_animation.x;
+            // this.blindCircleMask.y = this.player.m_animation.y;
+        }
+        if ( Laya.stage.x <= -2475) {
+            this.blindBlackBg.pos(3155 - Laya.stage.width / 2, 0);
+            // this.blindCircleMask.x = this.player.m_animation.x;
+            // this.blindCircleMask.y = this.player.m_animation.y;
         }
 
     }
@@ -81,18 +109,22 @@ export class Blind extends DebuffProto{
         this.blindSprite = new Laya.Sprite();
         this.blindBlackBg = new Laya.Sprite();
         this.blindCircleMask = new Laya.Sprite();
-        this.blindSprite.cacheAs = "bitmap";
-        Laya.stage.addChild(this.blindSprite);
-        
-        this.blindBlackBg.graphics.drawRect(this.player.m_animation.x, 0, 1400, 768, "000");
-        this.blindCircleMask.graphics.drawCircle(this.player.m_animation.x, this.player.m_animation.y, 150, "000");
-        this.blindSprite.addChild(this.blindBlackBg);
-        this.blindCircleMask.blendMode = "destination-out";
-        this.blindSprite.addChild(this.blindCircleMask);
+        // this.blindSprite.cacheAs = "bitmap";
 
-        ZOrderManager.setZOrder(this.blindSprite, 70);
+        this.blindBlackBg.size(1366, 768);
+        this.blindBlackBg.pos(CharacterInit.playerEnt.m_animation.x - Laya.stage.width / 2, 0);
+        this.blindBlackBg.loadImage("Background(0912)/blackBg.png");
+        
+        // this.blindBlackBg.graphics.drawRect(this.player.m_animation.x, 0, 1400, 768, "000");
+        // this.blindCircleMask.graphics.drawCircle(this.player.m_animation.x, this.player.m_animation.y, 150, "000");
+        // this.blindCircleMask.blendMode = "destination-out";
+        // this.blindSprite.addChild(this.blindCircleMask);
+        // Laya.stage.addChild(this.blindSprite);
+        Laya.stage.addChild(this.blindBlackBg);
+
+        // ZOrderManager.setZOrder(this.blindSprite, 70);
         ZOrderManager.setZOrder(this.blindBlackBg, 70);
-        ZOrderManager.setZOrder(this.blindCircleMask, 70);
+        // ZOrderManager.setZOrder(this.blindCircleMask, 70);
 
         this.blindHandler = setInterval(() => {
             this.debuffUpdate();
@@ -106,16 +138,19 @@ export class Blind extends DebuffProto{
 
     public stopBlind() {
         // console.log("停止Blind");
-        this.blindSprite.graphics.clear();
-        this.blindBlackBg.graphics.clear();
-        this.blindCircleMask.graphics.clear();
+        // this.blindSprite.graphics.clear();
+        // this.blindBlackBg.graphics.clear();
+        Laya.stage.removeChild(this.blindBlackBg);
+        this.blindBlackBg.destroy();
+        this.blindBlackBg = null;
+        // this.blindCircleMask.graphics.clear();
         clearInterval(this.blindHandler);
         this.blindHandler = null;
     }
 }
 
 export class BodyCrumble extends DebuffProto{
-    debuffText = "希望你還走得回去";
+    debuffText = "殘廢 ─ 希望你還走得回去";
     bodyCrumbleHandler = null;
     originVM: number = 0;
     newVM: number = 0;
@@ -161,7 +196,7 @@ export class BodyCrumble extends DebuffProto{
 }
 
 export class Decay extends DebuffProto{
-    debuffText = "為我戰鬥至到粉身碎骨吧";
+    debuffText = "失血 ─ 為我戰鬥至到粉身碎骨吧";
     isDecaying = false;
     isKilling: boolean = false;
     isDamaging: boolean = false;
