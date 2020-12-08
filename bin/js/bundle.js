@@ -1136,19 +1136,21 @@
             this.m_animation = new Laya.Animation();
             this.m_animation.width = 400;
             this.m_animation.height = 200;
-            this.m_animation.scaleX = 2;
-            this.m_animation.scaleY = 2;
-            this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 195);
+            this.m_animation.scaleX = 1.2;
+            this.m_animation.scaleY = 1.2;
+            this.m_animation.interval = 35;
+            this.m_animation.alpha = 0.5;
+            this.m_animation.pos(rightSide ? position['x'] - 520 : position['x'] + 500, position['y'] - 300);
             let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
             let offsetY = position['y'] - this.m_animation.height / 2 + 20;
-            this.m_animation.source = "comp/Spike.atlas";
+            this.m_animation.source = "comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
             this.m_animation.autoPlay = true;
             this.m_animation.interval = 20;
             this.castRoar(position);
             let colorMat = [
-                2, 0, 0, 0, -100,
-                0, 4, 0, 0, -100,
-                0, 0, Math.floor(Math.random() * 2) + 1, 0, -100,
+                1, 1, 3, 0, -100,
+                0, 2, 1, 0, -100,
+                2, 0, 3, 0, -100,
                 0, 0, 0, 1, 0,
             ];
             let glowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);
