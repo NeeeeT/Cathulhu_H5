@@ -32,14 +32,16 @@ export class Spike extends VirtualSkill {
         this.m_animation = new Laya.Animation()
         this.m_animation.width = 400;
         this.m_animation.height = 200;
-        this.m_animation.scaleX = 2;
-        this.m_animation.scaleY = 2;
-        this.m_animation.pos(rightSide ? position['x'] + 3 : position['x'] + 100, position['y'] - 195);
+        this.m_animation.scaleX = 1.2;
+        this.m_animation.scaleY = 1.2;
+        this.m_animation.interval = 35;
+        this.m_animation.alpha = 0.45;
+        this.m_animation.pos(rightSide ? position['x'] - 520 : position['x'] + 500, position['y'] - 300);
 
         let offsetX: number = rightSide ? position['x'] : position['x'] - this.m_animation.width;
         let offsetY: number = position['y'] - this.m_animation.height / 2 + 20;
 
-        this.m_animation.source = "comp/Spike.atlas";
+        this.m_animation.source = "comp/Spike/Spike_0003.png,comp/Spike/Spike_0004.png,comp/Spike/Spike_0005.png,comp/Spike/Spike_0006.png,comp/Spike/Spike_0007.png,comp/Spike/Spike_0008.png";
         this.m_animation.autoPlay = true;
         this.m_animation.interval = 20;
 
@@ -47,9 +49,9 @@ export class Spike extends VirtualSkill {
 
         let colorMat: Array<number> =
             [
-                2, 0, 0, 0, -100, //R
-                0, 4, 0, 0, -100, //G
-                0, 0, Math.floor(Math.random() * 2) + 1, 0, -100, //B
+                1, 1, 3, 0, -100, //R
+                0, 2, 1, 0, -100, //G
+                2, 0, 3, 0, -100, //B
                 0, 0, 0, 1, 0, //A
             ];
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#9b05ff", 20, 0, 0);

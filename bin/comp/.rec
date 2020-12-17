@@ -1,5 +1,5 @@
 D .
-R CEB72241 .rec
+R 2D7B1259 .rec
 R A6ACFA1E BigExplosion.atlas
 R 2905917E BigExplosion.png
 R AA63CC8E BlackExplosion.atlas
@@ -15,8 +15,8 @@ R 5EECF7BD DirtEffect2.png
 R C61E6A15 DirtEffect3.png
 R A44A38E0 FireBall.atlas
 R 38E8D72C FireBall.png
-R 6DA27860 Hurt.atlas
-R EA4F227F Hurt.png
+R D63F3D62 Hurt.atlas
+R 96600EA8 Hurt.png
 R A6AEB990 loading$bar.png
 R 7C976AD5 loading.png
 R B532E2F6 NewBlood.atlas
@@ -39,8 +39,6 @@ R 5DFA2E1 SlashEffects.atlas
 R CC956199 SlashEffects.png
 R 443055FB SlashLight.atlas
 R 73B0B328 SlashLight.png
-R AFAE159A Spike.atlas
-R 475544FE Spike.png
 R B5C48C99 Target.atlas
 R C1B48B0E Target.png
 R 43DD20EB TargetSlash.atlas
@@ -247,14 +245,12 @@ P D8836284 SlashLight_0003.png
 P 60BB545A SlashLight_0004.png
 P FE0C42B9 SlashLight_0005.png
 D Spike
-P 9E75966A Spike_0001.png
-P 400E3C18 Spike_0002.png
-P A0C37684 Spike_0003.png
-P 69F64490 Spike_0004.png
-P 71A22456 Spike_0005.png
-P 11C2A002 Spike_0006.png
-P 66777956 Spike_0007.png
-P 53E4AF43 Spike_0008.png
+R AFD3F1C4 Spike_0003.png
+R CD571952 Spike_0004.png
+R DDCFC1E3 Spike_0005.png
+R 186AB6B6 Spike_0006.png
+R 90A5131E Spike_0007.png
+R 4047119C Spike_0008.png
 D Stone
 D Target
 P 333618C0 Target_0000.png
