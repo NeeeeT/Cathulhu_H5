@@ -1,4 +1,5 @@
 import MissionManager from "./MissionManager";
+import SceneInit from "./SceneInit";
 import Village from "./Village";
 import ZOrderManager from "./ZOrderManager";
 
@@ -22,6 +23,17 @@ export default class Loading extends Laya.Script{
         "Background(0912)/gray town(1126).png",
         "Background(0912)/Loading2.png",
         "Background(0912)/blackBg.png",
+        "Background(0912)/Gray Town/0.gray town_bgrd.png",
+        "Background(0912)/Gray Town/1.gray town_bgrd.png",
+        "Background(0912)/Gray Town/2.gray town_bgrd.png",
+        "Background(0912)/Gray Town/3.gray town_bgrd.png",
+        "Background(0912)/Gray Town/4.gray town_ground.png",
+        "Background(0912)/Red Forest/0.red forest_bgrd.png",
+        "Background(0912)/Red Forest/1.red forest_bgrd_tree1.png",
+        "Background(0912)/Red Forest/3.red forest_bgrd_tree3.png",
+        "Background(0912)/Red Forest/4.red forest_grass.png",
+        "Background(0912)/Red Forest/5.red forest_ground.png",
+        "Background(0912)/Red Forest/6.red forest_black.png",
         //Character
         "character/Idle.atlas",
         "character/Attack1.atlas",
@@ -140,7 +152,9 @@ export default class Loading extends Laya.Script{
             this.loadingProgress.value = 1;
             new MissionManager().firstEnter();
             if(Village.isNewbie){
-                Laya.Scene.open("Newbie_temp1.scene");
+                // Laya.Scene.open("Newbie_temp1.scene");
+                SceneInit.currentMap = "NewbieForest";
+                Laya.Scene.open("Newbie_scroll.scene");
             }
             Laya.stage.removeChild(this.loadingProgress);
             this.loadingProgress.destroy();

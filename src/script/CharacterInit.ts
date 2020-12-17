@@ -14,6 +14,7 @@ import Turtorial from "./Tutorial";
 import ZOrderManager from "./ZOrderManager";
 import Village from "./Village";
 import SceneDestroyer from "./SceneDestroyer";
+import SceneInit from "./SceneInit";
 
 
 export class Character extends Laya.Script {
@@ -128,6 +129,27 @@ export class Character extends Laya.Script {
 
     emptySprForMobile: Laya.Sprite;
 
+    //for scroll background
+    BG_Sky_1: Laya.Sprite = new Laya.Sprite();
+    BG_Sky_2: Laya.Sprite = new Laya.Sprite();
+    BG_Sky_3: Laya.Sprite = new Laya.Sprite();
+    BG_Landscape_B_1: Laya.Sprite = new Laya.Sprite();
+    BG_Landscape_B_2: Laya.Sprite = new Laya.Sprite();
+    BG_Landscape_B_3: Laya.Sprite = new Laya.Sprite();
+    BG_Landscape_F_1: Laya.Sprite = new Laya.Sprite();
+    BG_Landscape_F_2: Laya.Sprite = new Laya.Sprite();
+    BG_Landscape_F_3: Laya.Sprite = new Laya.Sprite();
+    BG_Grass_1: Laya.Sprite = new Laya.Sprite();
+    BG_Grass_2: Laya.Sprite = new Laya.Sprite();
+    BG_Grass_3: Laya.Sprite = new Laya.Sprite();
+    BG_Ground_1: Laya.Sprite = new Laya.Sprite();
+    BG_Ground_2: Laya.Sprite = new Laya.Sprite();
+    BG_Ground_3: Laya.Sprite = new Laya.Sprite();
+    BG_Front_1: Laya.Sprite = new Laya.Sprite();
+    BG_Front_2: Laya.Sprite = new Laya.Sprite();
+    BG_Front_3: Laya.Sprite = new Laya.Sprite();
+    
+
     spawn() {
         console.log('角色生成一次');
 
@@ -235,10 +257,15 @@ export class Character extends Laya.Script {
             this.showMobileUI(this.m_animation);
         }
 
+        
         this.cameraFollower();
         this.setSkill();
         // this.checkJumpTimer();
     };
+
+    onDestroy() {
+        this.clearBackground();
+    }
 
     public setHealth(amount: number): void {
         this.m_health = amount;
@@ -264,6 +291,7 @@ export class Character extends Laya.Script {
             this.m_animation.destroyed = true;
             CharacterInit.generated = false;
             SceneDestroyer.wake();
+            CharacterInit.playerEnt.clearBackground();
             Laya.Scene.open("Died.scene");
             Laya.stage.x = Laya.stage.y = 0;
             Laya.SoundManager.stopAll();
@@ -825,7 +853,7 @@ export class Character extends Laya.Script {
         //     this.m_walkeffect.destroyed = true;
         // });
         Laya.stage.addChild(this.m_walkeffect);
-        ZOrderManager.setZOrder(this.m_walkeffect, 60);
+        ZOrderManager.setZOrder(this.m_walkeffect, 24);
         this.m_walkeffect.play();
 
         let walkTimerFunc = function () {
@@ -954,8 +982,31 @@ export class Character extends Laya.Script {
     private cameraFollower(): void {
         if (this.m_animation.destroyed) return;
 
+        //移動整個舞台的背景模式
         let player_pivot_x: number = Laya.stage.width / 2;
+
         // let player_pivot_y: number = Laya.stage.height / 2;
+
+        // let BG_Sky_1: Laya.Sprite = new Laya.Sprite();
+        // let BG_Sky_2: Laya.Sprite = new Laya.Sprite();
+        // let BG_Sky_3: Laya.Sprite = new Laya.Sprite();
+        // let BG_Landscape_B_1: Laya.Sprite = new Laya.Sprite();
+        // let BG_Landscape_B_2: Laya.Sprite = new Laya.Sprite();
+        // let BG_Landscape_B_3: Laya.Sprite = new Laya.Sprite();
+        // let BG_Landscape_F_1: Laya.Sprite = new Laya.Sprite();
+        // let BG_Landscape_F_2: Laya.Sprite = new Laya.Sprite();
+        // let BG_Landscape_F_3: Laya.Sprite = new Laya.Sprite();
+        // let BG_Grass_1: Laya.Sprite = new Laya.Sprite();
+        // let BG_Grass_2: Laya.Sprite = new Laya.Sprite();
+        // let BG_Grass_3: Laya.Sprite = new Laya.Sprite();
+        // let BG_Ground_1: Laya.Sprite = new Laya.Sprite();
+        // let BG_Ground_2: Laya.Sprite = new Laya.Sprite();
+        // let BG_Ground_3: Laya.Sprite = new Laya.Sprite();
+        // let BG_Front_1: Laya.Sprite = new Laya.Sprite();
+        // let BG_Front_2: Laya.Sprite = new Laya.Sprite();
+        // let BG_Front_3: Laya.Sprite = new Laya.Sprite();
+
+        
 
         //以幀為主體的更新
         let camTimerFunc = function(){
@@ -970,41 +1021,305 @@ export class Character extends Laya.Script {
                 Laya.stage.y = Math.random() * this.m_cameraShakingMultiplyer * randomSign;
                 this.m_cameraShakingTimer--;
             } else {
-                Laya.stage.x = player_pivot_x - this.m_animation.x;
+
+                this.BG_Sky_1.x = -662 + Laya.stage.width * 0 - 0.9 * (player_pivot_x - this.m_animation.x);
+                this.BG_Sky_2.x = -662 + Laya.stage.width * 1 - 0.9 * (player_pivot_x - this.m_animation.x);
+                this.BG_Sky_3.x = -662 + Laya.stage.width * 2 - 0.9 * (player_pivot_x - this.m_animation.x);
+                
+                this.BG_Landscape_B_1.x = -662 + Laya.stage.width * 0 - 0.7 * (player_pivot_x - this.m_animation.x);
+                this.BG_Landscape_B_2.x = -662 + Laya.stage.width * 1 - 0.7 * (player_pivot_x - this.m_animation.x);
+                this.BG_Landscape_B_3.x = -662 + Laya.stage.width * 2 - 0.7 * (player_pivot_x - this.m_animation.x);
+                
+                this.BG_Landscape_F_1.x = -662 + Laya.stage.width * 0 - 0.5 * (player_pivot_x - this.m_animation.x);
+                this.BG_Landscape_F_2.x = -662 + Laya.stage.width * 1 - 0.5 * (player_pivot_x - this.m_animation.x);
+                this.BG_Landscape_F_3.x = -662 + Laya.stage.width * 2 - 0.5 * (player_pivot_x - this.m_animation.x);
+
+                this.BG_Grass_1.x = -662 + Laya.stage.width * 0 - 0.4 * (player_pivot_x - this.m_animation.x);
+                this.BG_Grass_2.x = -662 + Laya.stage.width * 1 - 0.4 * (player_pivot_x - this.m_animation.x);
+                this.BG_Grass_3.x = -662 + Laya.stage.width * 2 - 0.4 * (player_pivot_x - this.m_animation.x);
+                
+                this.BG_Ground_1.x = -662 + Laya.stage.width * 0 - 0.2 * (player_pivot_x - this.m_animation.x);
+                this.BG_Ground_2.x = -662 + Laya.stage.width * 1 - 0.2 * (player_pivot_x - this.m_animation.x);
+                this.BG_Ground_3.x = -662 + Laya.stage.width * 2 - 0.2 * (player_pivot_x - this.m_animation.x);
+
+                this.BG_Front_1.x = -662 + Laya.stage.width * 0 - 0.05 * (player_pivot_x - this.m_animation.x);
+                this.BG_Front_2.x = -662 + Laya.stage.width * 1 - 0.05 * (player_pivot_x - this.m_animation.x);
+                this.BG_Front_3.x = -662 + Laya.stage.width * 2 - 0.05 * (player_pivot_x - this.m_animation.x);
+
                 Laya.stage.y = 0
+
+                //移動整個舞台的背景模式
+                Laya.stage.x = player_pivot_x - this.m_animation.x;
+                // Laya.stage.y = 0
             }
+            //移動整個舞台的背景模式
             if (Laya.stage.x >= -250.0){
                 Laya.stage.x = -250.0;
+                this.BG_Sky_1.x = -662 + Laya.stage.width * 0 - 0.9 * (-250);
+                this.BG_Sky_2.x = -662 + Laya.stage.width * 1 - 0.9 * (-250);
+                this.BG_Sky_3.x = -662 + Laya.stage.width * 2 - 0.9 * (-250);
+                
+                this.BG_Landscape_B_1.x = -662 + Laya.stage.width * 0 - 0.7 * (-250);
+                this.BG_Landscape_B_2.x = -662 + Laya.stage.width * 1 - 0.7 * (-250);
+                this.BG_Landscape_B_3.x = -662 + Laya.stage.width * 2 - 0.7 * (-250);
+                
+                this.BG_Landscape_F_1.x = -662 + Laya.stage.width * 0 - 0.5 * (-250);
+                this.BG_Landscape_F_2.x = -662 + Laya.stage.width * 1 - 0.5 * (-250);
+                this.BG_Landscape_F_3.x = -662 + Laya.stage.width * 2 - 0.5 * (-250);
+
+                this.BG_Grass_1.x = -662 + Laya.stage.width * 0 - 0.4 * (-250);
+                this.BG_Grass_2.x = -662 + Laya.stage.width * 1 - 0.4 * (-250);
+                this.BG_Grass_3.x = -662 + Laya.stage.width * 2 - 0.4 * (-250);
+                
+                this.BG_Ground_1.x = -662 + Laya.stage.width * 0 - 0.2 * (-250);
+                this.BG_Ground_2.x = -662 + Laya.stage.width * 1 - 0.2 * (-250);
+                this.BG_Ground_3.x = -662 + Laya.stage.width * 2 - 0.2 * (-250);
+
+                this.BG_Front_1.x = -662 + Laya.stage.width * 0 - 0.05 * (-250);
+                this.BG_Front_2.x = -662 + Laya.stage.width * 1 - 0.05 * (-250);
+                this.BG_Front_3.x = -662 + Laya.stage.width * 2 - 0.05 * (-250);
             }
             if (Laya.stage.x <= -2475.0){
                 Laya.stage.x = -2475.0;
-            }
+
+                this.BG_Sky_1.x = -662 + Laya.stage.width * 0 - 0.9 * (-2475);
+                this.BG_Sky_2.x = -662 + Laya.stage.width * 1 - 0.9 * (-2475);
+                this.BG_Sky_3.x = -662 + Laya.stage.width * 2 - 0.9 * (-2475);
+                
+                this.BG_Landscape_B_1.x = -662 + Laya.stage.width * 0 - 0.7 * (-2475);
+                this.BG_Landscape_B_2.x = -662 + Laya.stage.width * 1 - 0.7 * (-2475);
+                this.BG_Landscape_B_3.x = -662 + Laya.stage.width * 2 - 0.7 * (-2475);
+                
+                this.BG_Landscape_F_1.x = -662 + Laya.stage.width * 0 - 0.5 * (-2475);
+                this.BG_Landscape_F_2.x = -662 + Laya.stage.width * 1 - 0.5 * (-2475);
+                this.BG_Landscape_F_3.x = -662 + Laya.stage.width * 2 - 0.5 * (-2475);
+
+                this.BG_Grass_1.x = -662 + Laya.stage.width * 0 - 0.4 * (-2475);
+                this.BG_Grass_2.x = -662 + Laya.stage.width * 1 - 0.4 * (-2475);
+                this.BG_Grass_3.x = -662 + Laya.stage.width * 2 - 0.4 * (-2475);
+                
+                this.BG_Ground_1.x = -662 + Laya.stage.width * 0 - 0.2 * (-2475);
+                this.BG_Ground_2.x = -662 + Laya.stage.width * 1 - 0.2 * (-2475);
+                this.BG_Ground_3.x = -662 + Laya.stage.width * 2 - 0.2 * (-2475);
+
+                this.BG_Front_1.x = -662 + Laya.stage.width * 0 - 0.05 * (-2475);
+                this.BG_Front_2.x = -662 + Laya.stage.width * 1 - 0.05 * (-2475);
+                this.BG_Front_3.x = -662 + Laya.stage.width * 2 - 0.05 * (-2475);
+            }    
         }
         Laya.timer.frameLoop(1, this, camTimerFunc);
-        //以時間為主體的更新
-        // setInterval(() => {
-        //     if (this.m_animation.destroyed) {
-        //         return;
-        //     }
-
-        //     if (this.m_cameraShakingTimer > 0) {
-        //         let randomSign: number = (Math.floor(Math.random() * 2) == 1) ? 1 : -1; //隨機取正負數
-        //         Laya.stage.x = (player_pivot_x - this.m_animation.x) + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
-        //         Laya.stage.y = /*(player_pivot_y - this.m_animation.y + 150)*/0 + Math.random() * this.m_cameraShakingMultiplyer * randomSign;
-        //         this.m_cameraShakingTimer--;
-        //     } else {
-        //         Laya.stage.x = player_pivot_x - this.m_animation.x;
-        //         Laya.stage.y = 0
-        //         // Laya.stage.y = player_pivot_y - this.m_animation.y + 150;
-        //     }
-        //     if (Laya.stage.x >= -250.0) Laya.stage.x = -250.0;
-        //     if (Laya.stage.x <= -2475.0) Laya.stage.x = -2475.0;
-        // }, 10);
     }
     public setCameraShake(timer: number, multiplier: number) {
         this.m_cameraShakingMultiplyer = multiplier;
         this.m_cameraShakingTimer = timer;
     }
+
+    public setBackground(map: string): void{
+        this.BG_Sky_1 = new Laya.Sprite();
+        this.BG_Sky_2 = new Laya.Sprite();
+        this.BG_Sky_3 = new Laya.Sprite();
+        this.BG_Landscape_B_1 = new Laya.Sprite();
+        this.BG_Landscape_B_2 = new Laya.Sprite();
+        this.BG_Landscape_B_3 = new Laya.Sprite();
+        this.BG_Landscape_F_1 = new Laya.Sprite();
+        this.BG_Landscape_F_2 = new Laya.Sprite();
+        this.BG_Landscape_F_3 = new Laya.Sprite();
+        this.BG_Grass_1 = new Laya.Sprite();
+        this.BG_Grass_2 = new Laya.Sprite();
+        this.BG_Grass_3 = new Laya.Sprite();
+        this.BG_Ground_1 = new Laya.Sprite();
+        this.BG_Ground_2 = new Laya.Sprite();
+        this.BG_Ground_3 = new Laya.Sprite();
+        this.BG_Front_1 = new Laya.Sprite();
+        this.BG_Front_2 = new Laya.Sprite();
+        this.BG_Front_3 = new Laya.Sprite();
+
+        this.BG_Sky_1.size(1366, 768);
+        this.BG_Sky_2.size(1366, 768);
+        this.BG_Sky_3.size(1366, 768);
+        this.BG_Landscape_B_1.size(1366, 768);
+        this.BG_Landscape_B_2.size(1366, 768);
+        this.BG_Landscape_B_3.size(1366, 768);
+        this.BG_Landscape_F_1.size(1366, 768);
+        this.BG_Landscape_F_2.size(1366, 768);
+        this.BG_Landscape_F_3.size(1366, 768);
+        this.BG_Grass_1.size(1366, 768);
+        this.BG_Grass_2.size(1366, 768);
+        this.BG_Grass_3.size(1366, 768);
+        this.BG_Ground_1.size(1366, 768);
+        this.BG_Ground_2.size(1366, 768);
+        this.BG_Ground_3.size(1366, 768);
+        this.BG_Front_1.size(1366, 768);
+        this.BG_Front_2.size(1366, 768);
+        this.BG_Front_3.size(1366, 768);
+        
+        switch (map) {
+            case "RedForest":
+                this.BG_Sky_1.loadImage("Background(0912)/Red Forest/0.red forest_bgrd.png");
+                this.BG_Sky_2.loadImage("Background(0912)/Red Forest/0.red forest_bgrd.png");
+                this.BG_Sky_3.loadImage("Background(0912)/Red Forest/0.red forest_bgrd.png");
+                this.BG_Landscape_B_1.loadImage("Background(0912)/Red Forest/1.red forest_bgrd_tree1.png");
+                this.BG_Landscape_B_2.loadImage("Background(0912)/Red Forest/1.red forest_bgrd_tree1.png");
+                this.BG_Landscape_B_3.loadImage("Background(0912)/Red Forest/1.red forest_bgrd_tree1.png");
+                this.BG_Landscape_F_1.loadImage("Background(0912)/Red Forest/3.red forest_bgrd_tree3.png");
+                this.BG_Landscape_F_2.loadImage("Background(0912)/Red Forest/3.red forest_bgrd_tree3.png");
+                this.BG_Landscape_F_3.loadImage("Background(0912)/Red Forest/3.red forest_bgrd_tree3.png");
+                this.BG_Grass_1.loadImage("Background(0912)/Red Forest/4.red forest_grass.png");
+                this.BG_Grass_2.loadImage("Background(0912)/Red Forest/4.red forest_grass.png");
+                this.BG_Grass_3.loadImage("Background(0912)/Red Forest/4.red forest_grass.png");
+                this.BG_Ground_1.loadImage("Background(0912)/Red Forest/5.red forest_ground.png");
+                this.BG_Ground_2.loadImage("Background(0912)/Red Forest/5.red forest_ground.png");
+                this.BG_Ground_3.loadImage("Background(0912)/Red Forest/5.red forest_ground.png");
+                this.BG_Front_1.loadImage("Background(0912)/Red Forest/6.red forest_black.png");
+                this.BG_Front_2.loadImage("Background(0912)/Red Forest/6.red forest_black.png");
+                this.BG_Front_3.loadImage("Background(0912)/Red Forest/6.red forest_black.png");
+                break;
+            case "Town":
+                this.BG_Sky_1.loadImage("Background(0912)/Gray Town/0.gray town_bgrd.png");
+                this.BG_Sky_2.loadImage("Background(0912)/Gray Town/0.gray town_bgrd.png");
+                this.BG_Sky_3.loadImage("Background(0912)/Gray Town/0.gray town_bgrd.png");
+                this.BG_Landscape_B_1.loadImage("Background(0912)/Gray Town/1.gray town_bgrd.png");
+                this.BG_Landscape_B_2.loadImage("Background(0912)/Gray Town/1.gray town_bgrd.png");
+                this.BG_Landscape_B_3.loadImage("Background(0912)/Gray Town/1.gray town_bgrd.png");
+                this.BG_Landscape_F_1.loadImage("Background(0912)/Gray Town/2.gray town_bgrd.png");
+                this.BG_Landscape_F_2.loadImage("Background(0912)/Gray Town/2.gray town_bgrd.png");
+                this.BG_Landscape_F_3.loadImage("Background(0912)/Gray Town/2.gray town_bgrd.png");
+                this.BG_Grass_1.loadImage("Background(0912)/Gray Town/3.gray town_bgrd.png");
+                this.BG_Grass_2.loadImage("Background(0912)/Gray Town/3.gray town_bgrd.png");
+                this.BG_Grass_3.loadImage("Background(0912)/Gray Town/3.gray town_bgrd.png");
+                this.BG_Ground_1.loadImage("Background(0912)/Gray Town/4.gray town_ground.png");
+                this.BG_Ground_2.loadImage("Background(0912)/Gray Town/4.gray town_ground.png");
+                this.BG_Ground_3.loadImage("Background(0912)/Gray Town/4.gray town_ground.png");
+                this.BG_Front_1.loadImage("");
+                this.BG_Front_2.loadImage("");
+                this.BG_Front_3.loadImage("");
+                break;
+            case "NewbieForest":
+                this.BG_Sky_1.loadImage("Background(0912)/Red Forest/0.red forest_bgrd.png");
+                this.BG_Sky_2.loadImage("Background(0912)/Red Forest/0.red forest_bgrd.png");
+                this.BG_Sky_3.loadImage("Background(0912)/Red Forest/0.red forest_bgrd.png");
+                this.BG_Landscape_B_1.loadImage("Background(0912)/Red Forest/1.red forest_bgrd_tree1.png");
+                this.BG_Landscape_B_2.loadImage("Background(0912)/Red Forest/1.red forest_bgrd_tree1.png");
+                this.BG_Landscape_B_3.loadImage("Background(0912)/Red Forest/1.red forest_bgrd_tree1.png");
+                this.BG_Landscape_F_1.loadImage("Background(0912)/Red Forest/3.red forest_bgrd_tree3.png");
+                this.BG_Landscape_F_2.loadImage("Background(0912)/Red Forest/3.red forest_bgrd_tree3.png");
+                this.BG_Landscape_F_3.loadImage("Background(0912)/Red Forest/3.red forest_bgrd_tree3.png");
+                this.BG_Grass_1.loadImage("Background(0912)/Red Forest/4.red forest_grass.png");
+                this.BG_Grass_2.loadImage("Background(0912)/Red Forest/4.red forest_grass.png");
+                this.BG_Grass_3.loadImage("Background(0912)/Red Forest/4.red forest_grass.png");
+                this.BG_Ground_1.loadImage("Background(0912)/Red Forest/5.red forest_ground.png");
+                this.BG_Ground_2.loadImage("Background(0912)/Red Forest/5.red forest_ground.png");
+                this.BG_Ground_3.loadImage("Background(0912)/Red Forest/5.red forest_ground.png");
+                this.BG_Front_1.loadImage("Background(0912)/Red Forest/6.red forest_black.png");
+                this.BG_Front_2.loadImage("Background(0912)/Red Forest/6.red forest_black.png");
+                this.BG_Front_3.loadImage("Background(0912)/Red Forest/6.red forest_black.png");
+                break;
+            default:
+                break;
+        }
+        
+        
+        ZOrderManager.setZOrder(this.BG_Sky_1, 5);
+        ZOrderManager.setZOrder(this.BG_Sky_2, 5);
+        ZOrderManager.setZOrder(this.BG_Sky_3, 5);
+        ZOrderManager.setZOrder(this.BG_Landscape_B_1, 6);
+        ZOrderManager.setZOrder(this.BG_Landscape_B_2, 6);
+        ZOrderManager.setZOrder(this.BG_Landscape_B_3, 6);
+        ZOrderManager.setZOrder(this.BG_Landscape_F_1, 8);
+        ZOrderManager.setZOrder(this.BG_Landscape_F_2, 8);
+        ZOrderManager.setZOrder(this.BG_Landscape_F_3, 8);
+        ZOrderManager.setZOrder(this.BG_Grass_1, 9);
+        ZOrderManager.setZOrder(this.BG_Grass_2, 9);
+        ZOrderManager.setZOrder(this.BG_Grass_3, 9);
+        ZOrderManager.setZOrder(this.BG_Ground_1, 10);
+        ZOrderManager.setZOrder(this.BG_Ground_2, 10);
+        ZOrderManager.setZOrder(this.BG_Ground_3, 10);
+        ZOrderManager.setZOrder(this.BG_Front_1, 25);
+        ZOrderManager.setZOrder(this.BG_Front_2, 25);
+        ZOrderManager.setZOrder(this.BG_Front_3, 25);
+
+        Laya.stage.addChild(this.BG_Sky_1);
+        Laya.stage.addChild(this.BG_Sky_2);
+        Laya.stage.addChild(this.BG_Sky_3);
+        Laya.stage.addChild(this.BG_Landscape_B_1);
+        Laya.stage.addChild(this.BG_Landscape_B_2);
+        Laya.stage.addChild(this.BG_Landscape_B_3);
+        Laya.stage.addChild(this.BG_Landscape_F_1);
+        Laya.stage.addChild(this.BG_Landscape_F_2);
+        Laya.stage.addChild(this.BG_Landscape_F_3);
+        Laya.stage.addChild(this.BG_Grass_1);
+        Laya.stage.addChild(this.BG_Grass_2);
+        Laya.stage.addChild(this.BG_Grass_3);
+        Laya.stage.addChild(this.BG_Ground_1);
+        Laya.stage.addChild(this.BG_Ground_2);
+        Laya.stage.addChild(this.BG_Ground_3);
+        Laya.stage.addChild(this.BG_Front_1);
+        Laya.stage.addChild(this.BG_Front_2);
+        Laya.stage.addChild(this.BG_Front_3);
+    }
+    public clearBackground(): void{
+
+        console.log("清除背景圖層");
+        
+
+        Laya.stage.removeChild(this.BG_Sky_1);
+        Laya.stage.removeChild(this.BG_Sky_2);
+        Laya.stage.removeChild(this.BG_Sky_3);
+        Laya.stage.removeChild(this.BG_Landscape_B_1);
+        Laya.stage.removeChild(this.BG_Landscape_B_2);
+        Laya.stage.removeChild(this.BG_Landscape_B_3);
+        Laya.stage.removeChild(this.BG_Landscape_F_1);
+        Laya.stage.removeChild(this.BG_Landscape_F_2);
+        Laya.stage.removeChild(this.BG_Landscape_F_3);
+        Laya.stage.removeChild(this.BG_Grass_1);
+        Laya.stage.removeChild(this.BG_Grass_2);
+        Laya.stage.removeChild(this.BG_Grass_3);
+        Laya.stage.removeChild(this.BG_Ground_1);
+        Laya.stage.removeChild(this.BG_Ground_2);
+        Laya.stage.removeChild(this.BG_Ground_3);
+        Laya.stage.removeChild(this.BG_Front_1);
+        Laya.stage.removeChild(this.BG_Front_2);
+        Laya.stage.removeChild(this.BG_Front_3);
+
+        if(this.BG_Sky_1 != null){ this.BG_Sky_1.destroy(); this.BG_Sky_1.destroyed = true};
+        if(this.BG_Sky_2 != null){ this.BG_Sky_2.destroy(); this.BG_Sky_2.destroyed = true};
+        if(this.BG_Sky_3 != null){ this.BG_Sky_3.destroy(); this.BG_Sky_3.destroyed = true};
+        if(this.BG_Landscape_B_1 != null){ this.BG_Landscape_B_1.destroy(); this.BG_Landscape_B_1.destroyed = true};
+        if(this.BG_Landscape_B_2 != null){ this.BG_Landscape_B_2.destroy(); this.BG_Landscape_B_2.destroyed = true};
+        if(this.BG_Landscape_B_3 != null){ this.BG_Landscape_B_3.destroy(); this.BG_Landscape_B_3.destroyed = true};
+        if(this.BG_Landscape_F_1 != null){ this.BG_Landscape_F_1.destroy(); this.BG_Landscape_F_1.destroyed = true};
+        if(this.BG_Landscape_F_2 != null){ this.BG_Landscape_F_2.destroy(); this.BG_Landscape_F_2.destroyed = true};
+        if(this.BG_Landscape_F_3 != null){ this.BG_Landscape_F_3.destroy(); this.BG_Landscape_F_3.destroyed = true};
+        if(this.BG_Grass_1 != null){ this.BG_Grass_1.destroy(); this.BG_Grass_1.destroyed = true};
+        if(this.BG_Grass_2 != null){ this.BG_Grass_2.destroy(); this.BG_Grass_2.destroyed = true};
+        if(this.BG_Grass_3 != null){ this.BG_Grass_3.destroy(); this.BG_Grass_3.destroyed = true};
+        if(this.BG_Ground_1 != null){ this.BG_Ground_1.destroy(); this.BG_Ground_1.destroyed = true};
+        if(this.BG_Ground_2 != null){ this.BG_Ground_2.destroy(); this.BG_Ground_2.destroyed = true};
+        if(this.BG_Ground_3 != null){ this.BG_Ground_3.destroy(); this.BG_Ground_3.destroyed = true};
+        if(this.BG_Front_1 != null){ this.BG_Front_1.destroy(); this.BG_Front_1.destroyed = true};
+        if(this.BG_Front_2 != null){ this.BG_Front_2.destroy(); this.BG_Front_2.destroyed = true};
+        if(this.BG_Front_3 != null){ this.BG_Front_3.destroy(); this.BG_Front_3.destroyed = true};
+
+        this.BG_Sky_1 = null;
+        this.BG_Sky_2 = null;
+        this.BG_Sky_3 = null;
+        this.BG_Landscape_B_1 = null;
+        this.BG_Landscape_B_2 = null;
+        this.BG_Landscape_B_3 = null;
+        this.BG_Landscape_F_1 = null;
+        this.BG_Landscape_F_2 = null;
+        this.BG_Landscape_F_3 = null;
+        this.BG_Grass_1 = null;
+        this.BG_Grass_2 = null;
+        this.BG_Grass_3 = null;
+        this.BG_Ground_1 = null;
+        this.BG_Ground_2 = null;
+        this.BG_Ground_3 = null;
+        this.BG_Front_1 = null;
+        this.BG_Front_2 = null;
+        this.BG_Front_3 = null;
+    }
+
     private bloodSplitEffect(enemy: Laya.Animation) {
         // let bloodEffect: Laya.Animation = new Laya.Animation();
         let bloodEffect: Laya.Animation = Laya.Pool.getItemByClass("bloodEffect", Laya.Animation);
@@ -1649,6 +1964,8 @@ export default class CharacterInit extends Laya.Script {
         player.showHealth();
         player.m_catSkill = player.getSkillTypeByExtraData('c', 0);
         player.m_humanSkill = player.getSkillTypeByExtraData('h', 0);
+
+        player.setBackground(SceneInit.currentMap);
     }
     //9/13新增
     onUpdate() {

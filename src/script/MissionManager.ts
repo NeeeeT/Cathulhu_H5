@@ -4,6 +4,7 @@ import Village from "./Village";
 import Loading2 from "./Loading2";
 import ZOrderManager from "./ZOrderManager";
 import SceneInit from "./SceneInit";
+import CharacterInit from "./CharacterInit";
 
 export default class MissionManager extends Laya.Script {
     //任務介面
@@ -177,18 +178,22 @@ export default class MissionManager extends Laya.Script {
             console.log('任務執行一次');
             
             if (Village.isNewbie) {
-                Loading2.nextSceneName = 'Newbie_temp.scene';
+                Loading2.nextSceneName = 'Newbie_scroll.scene';
                 Laya.Scene.open('Loading2.scene', true);
                 // Village.isNewbie = false;
             } else {
                 let x = Math.round(Math.random());
                 if (x > 0.5) {
                     Laya.Scene.destroy;
-                    Loading2.nextSceneName = 'First.scene';
+                    Loading2.nextSceneName = 'First_scroll.scene';
+                    SceneInit.currentMap = "RedForest";
+                    CharacterInit.playerEnt.clearBackground();
                     // SceneInit.setBattleMap("RedForest");
                     Laya.Scene.open('Loading2.scene');
                 } else {
-                    Loading2.nextSceneName = 'Town.scene';
+                    Loading2.nextSceneName = 'Town_scroll.scene';
+                    SceneInit.currentMap = "Town";
+                    CharacterInit.playerEnt.clearBackground();
                     // SceneInit.setBattleMap("Town");
                     Laya.Scene.open('Loading2.scene');
                 }
