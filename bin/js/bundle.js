@@ -1158,7 +1158,7 @@
             this.m_animation.scaleX = 1.2;
             this.m_animation.scaleY = 1.2;
             this.m_animation.interval = 35;
-            this.m_animation.alpha = 0.5;
+            this.m_animation.alpha = 0.45;
             this.m_animation.pos(rightSide ? position['x'] - 520 : position['x'] + 500, position['y'] - 300);
             let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
             let offsetY = position['y'] - this.m_animation.height / 2 + 20;
@@ -4288,7 +4288,7 @@
                 this.m_rigidbody.linearVelocity = { x: facingRight ? -4.0 : 4.0, y: 0.0 };
             }
             this.m_atkTimer = 60;
-            this.updateAnimation(this.m_state, EnemyStatus.idle);
+            this.updateAnimation(this.m_state, EnemyStatus.hurt);
             this.enemyInjuredColor();
         }
         damageTextEffect(amount, critical) {
@@ -4502,6 +4502,9 @@
                     this.m_animation.source = 'normalEnemy/Walk.atlas';
                     this.m_animation.play();
                     break;
+                case EnemyStatus.hurt:
+                    this.m_animation.source = "normalEnemy/Hit/normalEnemy_hit_highLight.png";
+                    break;
                 default:
                     this.m_animation.source = 'normalEnemy/Idle.atlas';
                     break;
@@ -4684,6 +4687,17 @@
                 "Background(0912)/gray town(1126).png",
                 "Background(0912)/Loading2.png",
                 "Background(0912)/blackBg.png",
+                "Background(0912)/Gray Town/0.gray town_bgrd.png",
+                "Background(0912)/Gray Town/1.gray town_bgrd.png",
+                "Background(0912)/Gray Town/2.gray town_bgrd.png",
+                "Background(0912)/Gray Town/3.gray town_bgrd.png",
+                "Background(0912)/Gray Town/4.gray town_ground.png",
+                "Background(0912)/Red Forest/0.red forest_bgrd.png",
+                "Background(0912)/Red Forest/1.red forest_bgrd_tree1.png",
+                "Background(0912)/Red Forest/3.red forest_bgrd_tree3.png",
+                "Background(0912)/Red Forest/4.red forest_grass.png",
+                "Background(0912)/Red Forest/5.red forest_ground.png",
+                "Background(0912)/Red Forest/6.red forest_black.png",
                 "character/Idle.atlas",
                 "character/Attack1.atlas",
                 "character/Attack2.atlas",
@@ -4717,6 +4731,7 @@
                 "normalEnemy/Attack.atlas",
                 "normalEnemy/Idle.atlas",
                 "normalEnemy/Walk.atlas",
+                "normalEnemy/Hit/normalEnemy_hit_highLight.png",
                 "comp/NewSlahLight.atlas",
                 "comp/NewSlashLight90.atlas",
                 "comp/NewSlashLight-43.5.atlas",
