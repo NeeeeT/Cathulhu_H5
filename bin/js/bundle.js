@@ -1158,7 +1158,7 @@
             this.m_animation.scaleX = 1.2;
             this.m_animation.scaleY = 1.2;
             this.m_animation.interval = 35;
-            this.m_animation.alpha = 0.5;
+            this.m_animation.alpha = 0.45;
             this.m_animation.pos(rightSide ? position['x'] - 520 : position['x'] + 500, position['y'] - 300);
             let offsetX = rightSide ? position['x'] : position['x'] - this.m_animation.width;
             let offsetY = position['y'] - this.m_animation.height / 2 + 20;
@@ -2206,6 +2206,7 @@
         startDecay() {
             this.isDecaying = true;
             this.debuffTextEffect(this.debuffText);
+            this.debuffBloodEffect(this.player.m_animation);
         }
         stopDecay() {
             this.isDecaying = false;
@@ -2224,6 +2225,31 @@
             else if (this.killingTimer <= 0) {
                 this.isDamaging = true;
             }
+        }
+        debuffBloodEffect(player) {
+            let blood = Laya.Pool.getItemByClass("blood", Laya.Animation);
+            blood.scaleX = 0.7;
+            blood.scaleY = 0.7;
+            blood.interval = 20;
+            blood.alpha = 0.5;
+            ZOrderManager.setZOrder(blood, 5);
+            let colorMat = [
+                2, 0, 0, 0, -100,
+                0, 1, 0, 0, -100,
+                0, 0, 1, 0, -100,
+                0, 0, 0, 1, 0,
+            ];
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            blood.filters = [colorFilter];
+            blood.pos(this.player.m_isFacingRight ? player.x - 180 : player.x - 185, player.y - 160);
+            blood.source = "comp/DebuffBlood.atlas";
+            blood.on(Laya.Event.COMPLETE, this, function () {
+                Laya.stage.removeChild(blood);
+                Laya.Pool.recover("blood", blood);
+            });
+            Laya.stage.addChild(blood);
+            ZOrderManager.setZOrder(blood, 60);
+            blood.play();
         }
     }
     class Insane extends DebuffProto {
@@ -2977,6 +3003,7 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
+                this.debuffBloodEffect(this.m_animation);
             }
             if (this.m_keyDownList[32]) {
             }
@@ -3099,7 +3126,7 @@
             ];
             let glowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            slashEffect.filters = [colorFilter, glowFilter];
+            slashEffect.filters = [colorFilter];
             slashEffect.on(Laya.Event.COMPLETE, this, function () {
                 Laya.stage.removeChild(slashEffect);
                 Laya.Pool.recover("slashEffect", slashEffect);
@@ -3141,6 +3168,31 @@
                 this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
             };
             Laya.timer.frameLoop(1, this, walkTimerFunc);
+        }
+        debuffBloodEffect(player) {
+            let blood = Laya.Pool.getItemByClass("blood", Laya.Animation);
+            blood.scaleX = 0.7;
+            blood.scaleY = 0.7;
+            blood.interval = 20;
+            blood.alpha = 0.6;
+            ZOrderManager.setZOrder(blood, 5);
+            let colorMat = [
+                2, 0, 1, 0, -100,
+                0, 1, 0, 0, -100,
+                0, 0, 1, 0, -100,
+                0, 0, 0, 1, 0,
+            ];
+            let colorFilter = new Laya.ColorFilter(colorMat);
+            blood.filters = [colorFilter];
+            blood.pos(this.m_isFacingRight ? player.x - 180 : player.x - 185, player.y - 160);
+            blood.source = "comp/DebuffBlood.atlas";
+            blood.on(Laya.Event.COMPLETE, this, function () {
+                Laya.stage.removeChild(blood);
+                Laya.Pool.recover("blood", blood);
+            });
+            Laya.stage.addChild(blood);
+            ZOrderManager.setZOrder(blood, 60);
+            blood.play();
         }
         setSkill() {
             this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
@@ -3585,9 +3637,8 @@
                 0, 0, 1, 0, -100,
                 0, 0, 0, 1, 0,
             ];
-            let glowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
             let colorFilter = new Laya.ColorFilter(colorMat);
-            bloodEffect.filters = [glowFilter, colorFilter];
+            bloodEffect.filters = [colorFilter];
             bloodEffect.pos(enemy.x - 325, enemy.y - 310);
             bloodEffect.source = "comp/Hurt.atlas";
             bloodEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -4684,6 +4735,17 @@
                 "Background(0912)/gray town(1126).png",
                 "Background(0912)/Loading2.png",
                 "Background(0912)/blackBg.png",
+                "Background(0912)/Gray Town/0.gray town_bgrd.png",
+                "Background(0912)/Gray Town/1.gray town_bgrd.png",
+                "Background(0912)/Gray Town/2.gray town_bgrd.png",
+                "Background(0912)/Gray Town/3.gray town_bgrd.png",
+                "Background(0912)/Gray Town/4.gray town_ground.png",
+                "Background(0912)/Red Forest/0.red forest_bgrd.png",
+                "Background(0912)/Red Forest/1.red forest_bgrd_tree1.png",
+                "Background(0912)/Red Forest/3.red forest_bgrd_tree3.png",
+                "Background(0912)/Red Forest/4.red forest_grass.png",
+                "Background(0912)/Red Forest/5.red forest_ground.png",
+                "Background(0912)/Red Forest/6.red forest_black.png",
                 "character/Idle.atlas",
                 "character/Attack1.atlas",
                 "character/Attack2.atlas",

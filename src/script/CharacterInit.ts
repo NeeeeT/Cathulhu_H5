@@ -794,7 +794,7 @@ export class Character extends Laya.Script {
         let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ffffff", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         
-        slashEffect.filters = [colorFilter, glowFilter];
+        slashEffect.filters = [colorFilter];
         //待優化區域end
 
         slashEffect.on(Laya.Event.COMPLETE, this, function () {
@@ -1337,9 +1337,8 @@ export class Character extends Laya.Script {
                 0, 0, 1, 0, -100, //B
                 0, 0, 0, 1, 0, //A
             ];
-        let glowFilter: Laya.GlowFilter = new Laya.GlowFilter("#ff0028", 10, 0, 0);
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
-        bloodEffect.filters = [glowFilter, colorFilter];
+        bloodEffect.filters = [colorFilter];
         //
         
         bloodEffect.pos(enemy.x - 325, enemy.y - 310);

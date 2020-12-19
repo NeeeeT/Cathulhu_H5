@@ -1,0 +1,178 @@
+{
+    "frames": {
+        "DebuffBlood_0002.png": {
+            "frame": {
+                "h": 97,
+                "idx": 0,
+                "w": 97,
+                "x": 0,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 208,
+                "y": 191
+            }
+        },
+        "DebuffBlood_0003.png": {
+            "frame": {
+                "h": 96,
+                "idx": 0,
+                "w": 95,
+                "x": 0,
+                "y": 98
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 209,
+                "y": 191
+            }
+        },
+        "DebuffBlood_0004.png": {
+            "frame": {
+                "h": 103,
+                "idx": 0,
+                "w": 97,
+                "x": 0,
+                "y": 195
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 211,
+                "y": 189
+            }
+        },
+        "DebuffBlood_0005.png": {
+            "frame": {
+                "h": 112,
+                "idx": 0,
+                "w": 111,
+                "x": 0,
+                "y": 299
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 205,
+                "y": 182
+            }
+        },
+        "DebuffBlood_0006.png": {
+            "frame": {
+                "h": 121,
+                "idx": 0,
+                "w": 122,
+                "x": 98,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 200,
+                "y": 177
+            }
+        },
+        "DebuffBlood_0007.png": {
+            "frame": {
+                "h": 133,
+                "idx": 0,
+                "w": 134,
+                "x": 98,
+                "y": 122
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 194,
+                "y": 172
+            }
+        },
+        "DebuffBlood_0008.png": {
+            "frame": {
+                "h": 136,
+                "idx": 0,
+                "w": 138,
+                "x": 112,
+                "y": 256
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 192,
+                "y": 171
+            }
+        },
+        "DebuffBlood_0009.png": {
+            "frame": {
+                "h": 139,
+                "idx": 0,
+                "w": 140,
+                "x": 233,
+                "y": 0
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 191,
+                "y": 170
+            }
+        },
+        "DebuffBlood_0010.png": {
+            "frame": {
+                "h": 123,
+                "idx": 0,
+                "w": 142,
+                "x": 251,
+                "y": 140
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 190,
+                "y": 171
+            }
+        },
+        "DebuffBlood_0011.png": {
+            "frame": {
+                "h": 120,
+                "idx": 0,
+                "w": 141,
+                "x": 251,
+                "y": 264
+            },
+            "sourceSize": {
+                "h": 500,
+                "w": 500
+            },
+            "spriteSourceSize": {
+                "x": 191,
+                "y": 174
+            }
+        }
+    },
+    "meta": {
+        "image": "DebuffBlood.png",
+        "prefix": "DebuffBlood/"
+    }
+}

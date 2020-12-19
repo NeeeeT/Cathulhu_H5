@@ -255,6 +255,7 @@ export class Decay extends DebuffProto{
     public startDecay() {
         this.isDecaying = true;
         this.debuffTextEffect(this.debuffText);
+        this.debuffBloodEffect(this.player.m_animation);
     }
     
     public stopDecay() {
@@ -301,6 +302,39 @@ export class Decay extends DebuffProto{
     //         }
     //     }, 1000)
     // }
+
+    public debuffBloodEffect(player: Laya.Animation) {
+        let blood: Laya.Animation = Laya.Pool.getItemByClass("blood", Laya.Animation);
+        blood.scaleX = 0.7;
+        blood.scaleY = 0.7;
+        blood.interval = 20;
+        blood.alpha = 0.6;
+        ZOrderManager.setZOrder(blood, 5);
+
+        //待優化
+        let colorMat: Array<number> =
+            [
+                2, 0, 1, 0, -100, //R
+                0, 1, 0, 0, -100, //G
+                0, 0, 1, 0, -100, //B
+                0, 0, 0, 1, 0, //A
+            ];
+        let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
+        blood.filters = [colorFilter];
+        //
+        
+        blood.pos(this.player.m_isFacingRight ? player.x - 180 : player.x - 185, player.y - 160);
+        blood.source = "comp/DebuffBlood.atlas";
+        blood.on(Laya.Event.COMPLETE, this, function () {
+            // blood.destroy();
+            // blood.destroyed = true;
+            Laya.stage.removeChild(blood);
+            Laya.Pool.recover("blood", blood);
+        });
+        Laya.stage.addChild(blood);
+        ZOrderManager.setZOrder(blood, 60);
+        blood.play();
+}//需要優化
 
 }
 

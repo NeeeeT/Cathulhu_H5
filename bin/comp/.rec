@@ -1,5 +1,5 @@
 D .
-R 2D7B1259 .rec
+R 633080A2 .rec
 R A6ACFA1E BigExplosion.atlas
 R 2905917E BigExplosion.png
 R AA63CC8E BlackExplosion.atlas
@@ -8,6 +8,8 @@ R D71DD9C4 BlackHole.atlas
 R 4B28DCC1 BlackHole.png
 R D0E5ADF0 Blood.atlas
 R 85AFA56A Blood.png
+R CC8D663C DebuffBlood.atlas
+R 7DCC765 DebuffBlood.png
 R 1386EC1B DirtEffect.atlas
 R F7E3D90B DirtEffect.png
 R 2BDB8C18 DirtEffect1.png
@@ -93,6 +95,17 @@ P 26119CBA BlakeHole_0037.png
 P C835C8B0 BlakeHole_0038.png
 P 038ABF49 BlakeHole_0039.png
 P 3BDDECDF BlakeHole_0040.png
+D DebuffBlood
+P 760F8C9A DebuffBlood_0002.png
+P 0FD28963 DebuffBlood_0003.png
+P 52E7B108 DebuffBlood_0004.png
+P A1876E7A DebuffBlood_0005.png
+P 463745D6 DebuffBlood_0006.png
+P E3097D12 DebuffBlood_0007.png
+P D96D9DCE DebuffBlood_0008.png
+P BAE8F814 DebuffBlood_0009.png
+P 09623463 DebuffBlood_0010.png
+P 0658D048 DebuffBlood_0011.png
 D DirtEffect
 P 61B98720 DirtEffect_0040.png
 P BD5D9ADE DirtEffect_0041.png
