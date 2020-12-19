@@ -70,6 +70,7 @@ export default class Loading extends Laya.Script{
         "normalEnemy/Attack.atlas",
         "normalEnemy/Idle.atlas",
         "normalEnemy/Walk.atlas",
+        "normalEnemy/Hit/normalEnemy_hit_highLight.png",
         "comp/NewSlahLight.atlas",
         "comp/NewSlashLight90.atlas",
         "comp/NewSlashLight-43.5.atlas",
