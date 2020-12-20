@@ -513,7 +513,7 @@ export class Character extends Laya.Script {
             if (!this.m_animationChanging) this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
         }
         if (this.m_keyDownList[40]) {//Down
-            // new Village().showReinforceUI();
+            this.m_catSkill = new cSkill.BigExplosion();
         }
         if (this.m_keyDownList[32]) {
             // let width_offset: number =
@@ -907,6 +907,8 @@ export class Character extends Laya.Script {
                     return new cSkill.Slam();
                 case 2:
                     return new cSkill.BlackHole();
+                case 3:
+                    return new cSkill.BigExplosion();
                 default:
                     return new cSkill.None();
             }

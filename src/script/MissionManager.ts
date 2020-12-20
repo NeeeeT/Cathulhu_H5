@@ -183,6 +183,7 @@ export default class MissionManager extends Laya.Script {
                 // Village.isNewbie = false;
             } else {
                 let x = Math.round(Math.random());
+                console.log(data['eliteNum']);
                 if (x > 0.5) {
                     Laya.Scene.destroy;
                     Loading2.nextSceneName = 'First_scroll.scene';

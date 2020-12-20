@@ -250,12 +250,12 @@ export class BigExplosion extends VirtualSkill {
     m_name = '魔法大爆射';
     m_info = '造成全場敵人極大的損傷';
     m_damage: number;
-    m_dotDamage = 7;
+    m_dotDamage = 999999;
     m_cost = 80;
     m_id = 3;
     m_cd = 15;
     m_lastTime = 2;
-    m_radius = 100;//黑洞半徑
+    m_radius = 5000;//黑洞半徑
 
     m_iconA = "UI/icon/blackholeA.png";
     m_iconB = "UI/icon/blackholeB.png";

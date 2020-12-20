@@ -605,6 +605,7 @@
                 }
                 else {
                     let x = Math.round(Math.random());
+                    console.log(data['eliteNum']);
                     if (x > 0.5) {
                         Laya.Scene.destroy;
                         Loading2.nextSceneName = 'First_scroll.scene';
@@ -1015,12 +1016,12 @@
             super(...arguments);
             this.m_name = '魔法大爆射';
             this.m_info = '造成全場敵人極大的損傷';
-            this.m_dotDamage = 7;
-            this.m_cost = 80;
+            this.m_dotDamage = 999999;
+            this.m_cost = 0;
             this.m_id = 3;
             this.m_cd = 15;
             this.m_lastTime = 2;
-            this.m_radius = 100;
+            this.m_radius = 5000;
             this.m_iconA = "UI/icon/blackholeA.png";
             this.m_iconB = "UI/icon/blackholeB.png";
         }
@@ -1350,6 +1351,7 @@
         updateSkillList() {
             SkillList.catSkillList.push(new Slam());
             SkillList.catSkillList.push(new BlackHole());
+            SkillList.catSkillList.push(new BigExplosion());
             SkillList.humanSkillList.push(new Spike());
             SkillList.humanSkillList.push(new Behead());
         }
@@ -1686,8 +1688,8 @@
             this.rewardGoldText.fontSize = 50;
             this.rewardGoldText.color = "#FCFF56";
             this.rewardGoldText.text = '+' + String(this.rewardGoldValue);
-            this.rewardGold.pos(pos['x'] + 94, pos['y'] + 104);
-            this.rewardGoldText.pos(pos['x'] + 168, pos['y'] + 111);
+            this.rewardGold.pos(pos['x'] + 94, pos['y'] + 124);
+            this.rewardGoldText.pos(pos['x'] + 168, pos['y'] + 131);
             this.rewardGold.loadImage('UI/ending/gold.png');
             Laya.stage.addChild(this.endingRewardUI);
             Laya.stage.addChild(this.rewardGold);
@@ -2989,6 +2991,7 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
+                this.m_catSkill = new BigExplosion();
             }
             if (this.m_keyDownList[32]) {
             }
@@ -3167,6 +3170,8 @@
                         return new Slam();
                     case 2:
                         return new BlackHole();
+                    case 3:
+                        return new BigExplosion();
                     default:
                         return new None();
                 }
@@ -4594,7 +4599,7 @@
             this.m_name = '快攻敵人';
             this.m_armor = 100;
             this.m_speed = 7;
-            this.m_tag = 's';
+            this.m_tag = 'f';
             this.m_attackRange = 100;
             this.m_mdelay = 0.7;
             this.m_atkTag = "EnemyFastAttack";
@@ -4606,9 +4611,21 @@
             this.m_name = '新手敵人';
             this.m_armor = 100;
             this.m_speed = 3;
-            this.m_tag = 's';
+            this.m_tag = 'nn';
             this.m_attackRange = 100;
             this.m_mdelay = 0.5;
+            this.m_atkTag = "EnemyNewbieAttack";
+        }
+    }
+    class EliteEnemy extends VirtualEnemy {
+        constructor() {
+            super(...arguments);
+            this.m_name = '菁英怪';
+            this.m_armor = 100;
+            this.m_speed = 4;
+            this.m_tag = 'el';
+            this.m_attackRange = 120;
+            this.m_mdelay = 0.2;
             this.m_atkTag = "EnemyNewbieAttack";
         }
     }
