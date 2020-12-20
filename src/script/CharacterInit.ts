@@ -1262,8 +1262,7 @@ export class Character extends Laya.Script {
     public clearBackground(): void{
 
         console.log("清除背景圖層");
-        
-
+    
         Laya.stage.removeChild(this.BG_Sky_1);
         Laya.stage.removeChild(this.BG_Sky_2);
         Laya.stage.removeChild(this.BG_Sky_3);
@@ -1320,6 +1319,32 @@ export class Character extends Laya.Script {
         this.BG_Front_1 = null;
         this.BG_Front_2 = null;
         this.BG_Front_3 = null;
+    }
+
+    public resetBackgroundPos(): void{
+        this.BG_Sky_1.x = -662 + Laya.stage.width * 0;
+        this.BG_Sky_2.x = -662 + Laya.stage.width * 1;
+        this.BG_Sky_3.x = -662 + Laya.stage.width * 2;
+        
+        this.BG_Landscape_B_1.x = -662 + Laya.stage.width * 0;
+        this.BG_Landscape_B_2.x = -662 + Laya.stage.width * 1;
+        this.BG_Landscape_B_3.x = -662 + Laya.stage.width * 2;
+        
+        this.BG_Landscape_F_1.x = -662 + Laya.stage.width * 0;
+        this.BG_Landscape_F_2.x = -662 + Laya.stage.width * 1;
+        this.BG_Landscape_F_3.x = -662 + Laya.stage.width * 2;
+
+        this.BG_Grass_1.x = -662 + Laya.stage.width * 0;
+        this.BG_Grass_2.x = -662 + Laya.stage.width * 1;
+        this.BG_Grass_3.x = -662 + Laya.stage.width * 2;
+        
+        this.BG_Ground_1.x = -662 + Laya.stage.width * 0;
+        this.BG_Ground_2.x = -662 + Laya.stage.width * 1;
+        this.BG_Ground_3.x = -662 + Laya.stage.width * 2;
+
+        this.BG_Front_1.x = -662 + Laya.stage.width * 0;
+        this.BG_Front_2.x = -662 + Laya.stage.width * 1;
+        this.BG_Front_3.x = -662 + Laya.stage.width * 2;
     }
 
     private bloodSplitEffect(enemy: Laya.Animation) {

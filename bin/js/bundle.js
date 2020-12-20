@@ -147,6 +147,7 @@
         }
         setReinfoceUI() {
             Laya.stage.x = Laya.stage.y = 0;
+            CharacterInit.playerEnt.resetBackgroundPos();
             this.reinforceUI = new Laya.Sprite();
             this.reinforceUI.loadImage("UI/reinforce.png");
             this.reinforceUI.width = 700;
@@ -2154,6 +2155,27 @@
             this.previousEnemyCount = 0;
             this.decayHandler = null;
             this.checkKillingHandler = null;
+            this.bloodEffectFunc = () => { };
+            this.bloodEffect = new Laya.Animation();
+            this.bloodEffect.size(500, 500);
+            this.bloodEffect.source = "comp/DebuffBlood.atlas";
+            this.bloodEffect.scaleX = 1.2;
+            this.bloodEffect.scaleY = 1.2;
+            this.bloodEffect.interval = 35;
+            this.bloodEffect.alpha = 0.45;
+            this.bloodEffect.play();
+            ZOrderManager.setZOrder(this.bloodEffect, 60);
+            Laya.stage.addChild(this.bloodEffect);
+            this.isDecaying = true;
+            this.bloodEffectFunc = () => {
+                if (!this.isDecaying) {
+                    Laya.timer.clear(this, this.bloodEffectFunc);
+                }
+                if (this.bloodEffect != null) {
+                    this.bloodEffect.pos(CharacterInit.playerEnt.m_animation.x - 300, CharacterInit.playerEnt.m_animation.y - 300);
+                }
+            };
+            Laya.timer.frameLoop(1, this, this.bloodEffectFunc);
             this.checkKillingHandler = setInterval(() => {
                 this.currentEnemyCount = EnemyHandler.getEnemiesCount();
                 if (this.currentEnemyCount < this.previousEnemyCount) {
@@ -2200,6 +2222,12 @@
             this.isDecaying = false;
             clearInterval(this.decayHandler);
             this.decayHandler = null;
+            if (this.bloodEffect != null) {
+                Laya.stage.removeChild(this.bloodEffect);
+                this.bloodEffect.destroy();
+                this.bloodEffect.destroyed = true;
+                this.bloodEffect = null;
+            }
         }
         killingTimerUpdate() {
             if (this.isKilling)
@@ -3590,6 +3618,26 @@
             this.BG_Front_2 = null;
             this.BG_Front_3 = null;
         }
+        resetBackgroundPos() {
+            this.BG_Sky_1.x = -662 + Laya.stage.width * 0;
+            this.BG_Sky_2.x = -662 + Laya.stage.width * 1;
+            this.BG_Sky_3.x = -662 + Laya.stage.width * 2;
+            this.BG_Landscape_B_1.x = -662 + Laya.stage.width * 0;
+            this.BG_Landscape_B_2.x = -662 + Laya.stage.width * 1;
+            this.BG_Landscape_B_3.x = -662 + Laya.stage.width * 2;
+            this.BG_Landscape_F_1.x = -662 + Laya.stage.width * 0;
+            this.BG_Landscape_F_2.x = -662 + Laya.stage.width * 1;
+            this.BG_Landscape_F_3.x = -662 + Laya.stage.width * 2;
+            this.BG_Grass_1.x = -662 + Laya.stage.width * 0;
+            this.BG_Grass_2.x = -662 + Laya.stage.width * 1;
+            this.BG_Grass_3.x = -662 + Laya.stage.width * 2;
+            this.BG_Ground_1.x = -662 + Laya.stage.width * 0;
+            this.BG_Ground_2.x = -662 + Laya.stage.width * 1;
+            this.BG_Ground_3.x = -662 + Laya.stage.width * 2;
+            this.BG_Front_1.x = -662 + Laya.stage.width * 0;
+            this.BG_Front_2.x = -662 + Laya.stage.width * 1;
+            this.BG_Front_3.x = -662 + Laya.stage.width * 2;
+        }
         bloodSplitEffect(enemy) {
             let bloodEffect = Laya.Pool.getItemByClass("bloodEffect", Laya.Animation);
             bloodEffect.scaleX = 1.2;
@@ -4799,6 +4847,7 @@
                 "UI/Box.png",
                 "UI/icon/sprint.png",
                 "UI/Gold.png",
+                "comp/DebuffBlood.atlas",
                 "UI/chioce_mission.png",
                 "UI/skull.png",
                 "UI/star.png",

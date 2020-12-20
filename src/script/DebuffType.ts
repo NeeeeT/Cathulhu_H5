@@ -206,6 +206,9 @@ export class Decay extends DebuffProto{
     decayHandler = null;
     checkKillingHandler = null;
 
+    bloodEffect: Laya.Animation;
+    bloodEffectFunc = ()=>{};
+
     public get currentEnemyCount() {
         return this._currentEnemyCount;
     }
@@ -238,6 +241,31 @@ export class Decay extends DebuffProto{
     constructor() {
         super();
         // console.log("執行 Decay Constructor");
+
+        this.bloodEffect = new Laya.Animation();
+        this.bloodEffect.size(500, 500);
+        this.bloodEffect.source = "comp/DebuffBlood.atlas";
+        this.bloodEffect.scaleX = 1.2;
+        this.bloodEffect.scaleY = 1.2;
+        this.bloodEffect.interval = 35;
+        this.bloodEffect.alpha = 0.45;
+        this.bloodEffect.play();
+        ZOrderManager.setZOrder(this.bloodEffect, 60);
+        Laya.stage.addChild(this.bloodEffect);
+        this.isDecaying = true;
+        this.bloodEffectFunc = () => {
+            if (!this.isDecaying) {
+                Laya.timer.clear(this, this.bloodEffectFunc);
+            }
+            if (this.bloodEffect != null) {
+                this.bloodEffect.pos(CharacterInit.playerEnt.m_animation.x - 300, CharacterInit.playerEnt.m_animation.y - 300);
+                // console.log(CharacterInit.playerEnt.m_animation.x, CharacterInit.playerEnt.m_animation.y);
+                
+            }
+        }
+
+        Laya.timer.frameLoop(1, this, this.bloodEffectFunc);
+
         this.checkKillingHandler = setInterval(() => {
             this.currentEnemyCount = EnemyHandler.getEnemiesCount();
             if (this.currentEnemyCount < this.previousEnemyCount) {
@@ -263,6 +291,13 @@ export class Decay extends DebuffProto{
         this.isDecaying = false;
         clearInterval(this.decayHandler);
         this.decayHandler = null;
+
+        if (this.bloodEffect != null) {
+            Laya.stage.removeChild(this.bloodEffect);
+            this.bloodEffect.destroy();
+            this.bloodEffect.destroyed = true;
+            this.bloodEffect = null;
+        }
     }
     
     public killingTimerUpdate() {
