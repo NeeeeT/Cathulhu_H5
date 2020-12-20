@@ -14,6 +14,7 @@ export default class MissionManager extends Laya.Script {
     public static missionRound = 0;
     public static missionDataPool: any = [];
     public static hasSetBtn: boolean = false;
+    public static hasElite: boolean;
 
     missionNum: number = 3;
 
@@ -21,7 +22,7 @@ export default class MissionManager extends Laya.Script {
     missionUI: Laya.Sprite = null;
     eliteIcons: Laya.Sprite[] = [];
     difficultyIcons: any = [];
-    crystalNums: Laya.Text[] = [];
+    // crystalNums: Laya.Text[] = [];
     moneyNums: Laya.Text[] = [];
     confirmIcons: Laya.Button[] = [];
 
@@ -70,10 +71,10 @@ export default class MissionManager extends Laya.Script {
                 Laya.stage.addChild(this.difficultyIcons[i]);
                 ZOrderManager.setZOrder(this.difficultyIcons[i], 101);
              }
-            for (let i = 0; i < this.crystalNums.length; i++) { 
-                Laya.stage.addChild(this.crystalNums[i]);
-                ZOrderManager.setZOrder(this.crystalNums[i], 101);
-             }
+            // for (let i = 0; i < this.crystalNums.length; i++) { 
+            //     Laya.stage.addChild(this.crystalNums[i]);
+            //     ZOrderManager.setZOrder(this.crystalNums[i], 101);
+            //  }
             for (let i = 0; i < this.moneyNums.length; i++) { 
                 Laya.stage.addChild(this.moneyNums[i]);
                 ZOrderManager.setZOrder(this.moneyNums[i], 101);
@@ -101,11 +102,11 @@ export default class MissionManager extends Laya.Script {
             this.difficultyIcons[i].destroy();
             this.difficultyIcons[i] = null;
         }
-        for (let i = 0; i < this.crystalNums.length; i++) {
-            Laya.stage.removeChild(this.crystalNums[i]);
-            this.crystalNums[i].destroy();
-            this.crystalNums[i] = null;
-        }
+        // for (let i = 0; i < this.crystalNums.length; i++) {
+        //     Laya.stage.removeChild(this.crystalNums[i]);
+        //     this.crystalNums[i].destroy();
+        //     this.crystalNums[i] = null;
+        // }
         for (let i = 0; i < this.moneyNums.length; i++) {
             Laya.stage.removeChild(this.moneyNums[i]);
             this.moneyNums[i].destroy();
@@ -122,8 +123,11 @@ export default class MissionManager extends Laya.Script {
     }
     sendMissionData(data: object) {
         EnemyInit.missionEnemyNum = data["enemyNum"];
-        EnemyInit.missionRewardCrystalValue = data["crystal"];
+        // EnemyInit.missionRewardCrystalValue = data["crystal"];
         EnemyInit.missionRewardGoldValue = data["money"];
+        EnemyInit.hasElite = data['eliteNum'];
+        console.log('當前為精英關卡 ? ', EnemyInit.hasElite);
+        console.log('當前菁英數字 ?', data['eliteNum']);
     }
 
     setEliteIcon(col: number, eliteNum: number): void{
@@ -150,17 +154,17 @@ export default class MissionManager extends Laya.Script {
         }
     }
     setRewardInfo(col: number, crystal: number, money: number): void{
-        let crystalNum = new Laya.Text();
+        // let crystalNum = new Laya.Text();
         let moneyNum = new Laya.Text();
-        crystalNum.font = "silver";
+        // crystalNum.font = "silver";
         moneyNum.font = "silver";
-        crystalNum.fontSize = 45;
+        // crystalNum.fontSize = 45;
         moneyNum.fontSize = 45;
-        crystalNum.text = crystal.toString();
+        // crystalNum.text = crystal.toString();
         moneyNum.text = money.toString();
-        crystalNum.pos(171 + 252 + 5 + col * (256 + 34), 305 + 96); //x: 262(mid baseline) + 10(offset)
+        // crystalNum.pos(171 + 252 + 5 + col * (256 + 34), 305 + 96); //x: 262(mid baseline) + 10(offset)
         moneyNum.pos(171 + 252 + 5 + col * (256 + 34), 375 + 96);
-        this.crystalNums.push(crystalNum);
+        // this.crystalNums.push(crystalNum);
         this.moneyNums.push(moneyNum);
     }
     setConfirmIcon(col: number, data: object): void{
@@ -175,15 +179,13 @@ export default class MissionManager extends Laya.Script {
 
 
         let switchSceneFunc = () => {
-            console.log('任務執行一次');
-            
             if (Village.isNewbie) {
                 Loading2.nextSceneName = 'Newbie_scroll.scene';
                 Laya.Scene.open('Loading2.scene', true);
                 // Village.isNewbie = false;
             } else {
                 let x = Math.round(Math.random());
-                console.log(data['eliteNum']);
+                // console.log(data['eliteNum']);
                 if (x > 0.5) {
                     Laya.Scene.destroy;
                     Loading2.nextSceneName = 'First_scroll.scene';
@@ -197,7 +199,7 @@ export default class MissionManager extends Laya.Script {
                     CharacterInit.playerEnt.clearBackground();
                     // SceneInit.setBattleMap("Town");
                     Laya.Scene.open('Loading2.scene');
-                }
+                }                
             }
         }
         let confirmFunc = () =>  {

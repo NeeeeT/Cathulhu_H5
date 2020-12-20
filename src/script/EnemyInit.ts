@@ -12,6 +12,7 @@ export default class EnemyInit extends Laya.Script{
     public static missionRewardGoldValue;
     public static missionRewardCrystalValue;
     public static isWin;
+    public static hasElite;
 
     /** @prop {name:enemyGenerateTime,tips:"經過多少時間(ms)會生成1個敵人",type:int,default:3000}*/
     enemyGenerateTime: number = 5000;

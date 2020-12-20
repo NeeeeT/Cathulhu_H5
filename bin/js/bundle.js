@@ -464,7 +464,6 @@
             this.missionUI = null;
             this.eliteIcons = [];
             this.difficultyIcons = [];
-            this.crystalNums = [];
             this.moneyNums = [];
             this.confirmIcons = [];
         }
@@ -501,10 +500,6 @@
                     Laya.stage.addChild(this.difficultyIcons[i]);
                     ZOrderManager.setZOrder(this.difficultyIcons[i], 101);
                 }
-                for (let i = 0; i < this.crystalNums.length; i++) {
-                    Laya.stage.addChild(this.crystalNums[i]);
-                    ZOrderManager.setZOrder(this.crystalNums[i], 101);
-                }
                 for (let i = 0; i < this.moneyNums.length; i++) {
                     Laya.stage.addChild(this.moneyNums[i]);
                     ZOrderManager.setZOrder(this.moneyNums[i], 101);
@@ -526,11 +521,6 @@
                 this.difficultyIcons[i].destroy();
                 this.difficultyIcons[i] = null;
             }
-            for (let i = 0; i < this.crystalNums.length; i++) {
-                Laya.stage.removeChild(this.crystalNums[i]);
-                this.crystalNums[i].destroy();
-                this.crystalNums[i] = null;
-            }
             for (let i = 0; i < this.moneyNums.length; i++) {
                 Laya.stage.removeChild(this.moneyNums[i]);
                 this.moneyNums[i].destroy();
@@ -547,8 +537,10 @@
         }
         sendMissionData(data) {
             EnemyInit.missionEnemyNum = data["enemyNum"];
-            EnemyInit.missionRewardCrystalValue = data["crystal"];
             EnemyInit.missionRewardGoldValue = data["money"];
+            EnemyInit.hasElite = data['eliteNum'];
+            console.log('當前為精英關卡 ? ', EnemyInit.hasElite);
+            console.log('當前菁英數字 ?', data['eliteNum']);
         }
         setEliteIcon(col, eliteNum) {
             let eliteIcon = new Laya.Sprite();
@@ -580,17 +572,11 @@
             }
         }
         setRewardInfo(col, crystal, money) {
-            let crystalNum = new Laya.Text();
             let moneyNum = new Laya.Text();
-            crystalNum.font = "silver";
             moneyNum.font = "silver";
-            crystalNum.fontSize = 45;
             moneyNum.fontSize = 45;
-            crystalNum.text = crystal.toString();
             moneyNum.text = money.toString();
-            crystalNum.pos(171 + 252 + 5 + col * (256 + 34), 305 + 96);
             moneyNum.pos(171 + 252 + 5 + col * (256 + 34), 375 + 96);
-            this.crystalNums.push(crystalNum);
             this.moneyNums.push(moneyNum);
         }
         setConfirmIcon(col, data) {
@@ -599,14 +585,12 @@
             confirmIcon.height = 50;
             confirmIcon.pos(171 + 173 + col * (256 + 34), 458 + 96);
             let switchSceneFunc = () => {
-                console.log('任務執行一次');
                 if (Village.isNewbie) {
                     Loading2.nextSceneName = 'Newbie_scroll.scene';
                     Laya.Scene.open('Loading2.scene', true);
                 }
                 else {
                     let x = Math.round(Math.random());
-                    console.log(data['eliteNum']);
                     if (x > 0.5) {
                         Laya.Scene.destroy;
                         Loading2.nextSceneName = 'First_scroll.scene';
@@ -1018,7 +1002,7 @@
             this.m_name = '魔法大爆射';
             this.m_info = '造成全場敵人極大的損傷';
             this.m_dotDamage = 999999;
-            this.m_cost = 0;
+            this.m_cost = 80;
             this.m_id = 3;
             this.m_cd = 15;
             this.m_lastTime = 2;
@@ -4188,6 +4172,7 @@
             this.m_moveDelayValue = 0.0;
             this.m_moveDelayTimer = null;
             this.m_deadTimer = null;
+            this.m_buffTimer = null;
             this.m_animationChanging = false;
             this.m_hurtDelayTimer = null;
             this.m_state = EnemyStatus.idle;
@@ -4269,10 +4254,42 @@
             ZOrderManager.setZOrder(this.m_animation, 15);
             this.showHealth();
             if (this.m_isElite) {
-                this.setEnemyEliteColor();
+                this.giveRandomAroundBuff();
             }
         }
         ;
+        giveRandomAroundBuff() {
+            let enemy = EnemyHandler.enemyPool;
+            switch (Math.floor(Math.random() * 2)) {
+                case 0:
+                    this.setEnemyEliteColor('green');
+                    this.m_buffTimer = setInterval(() => {
+                        let enemyFound = enemy.filter(data => (Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000));
+                        enemyFound.forEach((e) => {
+                            e._ent.m_health += 1000;
+                        });
+                    }, 1000);
+                    break;
+                case 1:
+                    this.setEnemyEliteColor('red');
+                    this.m_buffTimer = setInterval(() => {
+                        let enemyFound = enemy.filter(data => (Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1500));
+                        enemyFound.forEach((e) => {
+                            e._ent.m_speed *= 1.5;
+                        });
+                    }, 1000);
+                    break;
+                default:
+                    this.setEnemyEliteColor('green');
+                    this.m_buffTimer = setInterval(() => {
+                        let enemyFound = enemy.filter(data => (Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000));
+                        enemyFound.forEach((e) => {
+                            e._ent.m_health += 1000;
+                        });
+                    }, 1000);
+                    break;
+            }
+        }
         destroy() {
             Laya.stage.removeChild(this.m_animation);
             this.m_animation.destroy();
@@ -4597,16 +4614,37 @@
                 this.m_animation.filters = null;
             }, 200);
         }
-        setEnemyEliteColor() {
+        setEnemyEliteColor(color) {
             if (this.m_animation.destroyed || !this.m_animation)
                 return;
             this.m_animation.alpha = 1;
-            let colorMat = [
-                0, 0, 1, 0, 10,
-                0, 1, 0, 0, 10,
-                0, 0, 0, 0, 10,
-                0, 0, 0, 1, 0,
-            ];
+            let colorMat;
+            switch (color) {
+                case 'red':
+                    colorMat = [
+                        0, 0, 1, 0, 10,
+                        0, 0, 0, 0, 10,
+                        0, 0, 0, 0, 10,
+                        0, 0, 0, 1, 0,
+                    ];
+                    break;
+                case 'green':
+                    colorMat = [
+                        0, 0, 1, 0, 10,
+                        0, 1, 0, 0, 10,
+                        0, 0, 0, 0, 10,
+                        0, 0, 0, 1, 0,
+                    ];
+                    break;
+                default:
+                    colorMat = [
+                        0, 0, 1, 0, 10,
+                        0, 1, 0, 0, 10,
+                        0, 0, 0, 0, 10,
+                        0, 0, 0, 1, 0,
+                    ];
+                    break;
+            }
             let colorFilter = new Laya.ColorFilter(colorMat);
             let timer = setInterval(() => {
                 if (!this.m_animation || this.m_animation.destroyed) {
@@ -4686,6 +4724,10 @@
                 { "x": 3935.0, "y": 450.0 }
             ];
             let randomPoint = Math.floor(Math.random() * point.length);
+            if (EnemyInit.hasElite) {
+                if (Math.floor(Math.random() * 5) < 1)
+                    enemy.m_isElite = true;
+            }
             enemy.spawn(player, id, point[randomPoint], enemyType);
             this.enemyPool.push({ '_id': id, '_ent': enemy });
             this.updateEnemies();

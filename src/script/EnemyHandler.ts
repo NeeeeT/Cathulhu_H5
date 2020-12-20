@@ -46,6 +46,7 @@ export abstract class VirtualEnemy extends Laya.Script {
     m_moveDelayValue: number = 0.0;
     m_moveDelayTimer = null;
     m_deadTimer = null;
+    m_buffTimer = null;
 
     m_animationChanging: boolean = false;
 
@@ -154,9 +155,42 @@ export abstract class VirtualEnemy extends Laya.Script {
         ZOrderManager.setZOrder(this.m_animation, 15);
         this.showHealth();
         if(this.m_isElite){
-            this.setEnemyEliteColor();
+            // this.setEnemyEliteColor();
+            this.giveRandomAroundBuff();
         }
     };
+    giveRandomAroundBuff(): void{
+        let enemy = EnemyHandler.enemyPool;
+        switch (Math.floor(Math.random() * 2)){
+            case 0:
+                this.setEnemyEliteColor('green');//heal
+                this.m_buffTimer = setInterval(()=>{
+                    let enemyFound = enemy.filter(data => ((Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000)) === true);
+                    enemyFound.forEach((e) => {
+                        e._ent.m_health += 1000;
+                    });
+                }, 5000);
+                break;
+            case 1:
+                this.setEnemyEliteColor('red');//atk UP
+                this.m_buffTimer = setInterval(()=>{
+                    let enemyFound = enemy.filter(data => (Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1500));
+                    enemyFound.forEach((e) => {
+                        e._ent.m_speed *= 1.1;
+                    });
+                }, 10000);
+                break;
+            default:
+                this.setEnemyEliteColor('green');//heal
+                this.m_buffTimer = setInterval(()=>{
+                    let enemyFound = enemy.filter(data => ((Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000)) === true);
+                    enemyFound.forEach((e) => {
+                        e._ent.m_health += 1000;
+                    });
+                }, 5000);
+                break;
+        }
+    }
     destroy(): void {
         Laya.stage.removeChild(this.m_animation);
         this.m_animation.destroy();
@@ -577,17 +611,42 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_animation.filters = null;
         }, 200);
     }
-    public setEnemyEliteColor(): void
+    public setEnemyEliteColor(color: string): void
     {
         if (this.m_animation.destroyed || !this.m_animation) return;
         this.m_animation.alpha = 1;
-        let colorMat: Array<number> =
-            [
-                0, 0, 1, 0, 10, //R
-                0, 1, 0, 0, 10, //G
-                0, 0, 0, 0, 10, //B
-                0, 0, 0, 1, 0, //A
-            ];
+
+        let colorMat: Array<number>;
+
+        switch (color){
+            case 'red':
+                colorMat = [
+                    0, 0, 1, 0, 10, //R
+                    0, 0, 0, 0, 10, //G
+                    0, 0, 0, 0, 10, //B
+                    0, 0, 0, 1, 0, //A
+                ];
+                break;
+            case 'green':
+                colorMat = [
+                    0, 0, 1, 0, 10, //R
+                    0, 1, 0, 0, 10, //G
+                    0, 0, 0, 0, 10, //B
+                    0, 0, 0, 1, 0, //A
+                ];
+                break;
+            default:
+                colorMat = [//綠
+                    0, 0, 1, 0, 10, //R
+                    0, 1, 0, 0, 10, //G
+                    0, 0, 0, 0, 10, //B
+                    0, 0, 0, 1, 0, //A
+                ];
+                break;
+        }
+
+
+
         let colorFilter: Laya.ColorFilter = new Laya.ColorFilter(colorMat);
         // this.m_animation.filters = [colorFilter];
         let timer = setInterval(() => {
@@ -679,7 +738,11 @@ export default class EnemyHandler extends Laya.Script {
             {"x": 3935.0, "y": 450.0}
         ];
         let randomPoint = Math.floor(Math.random() * point.length);
-        // enemy.m_isElite = true;
+
+        if(EnemyInit.hasElite){
+            if(Math.floor(Math.random() * 5) < 1)
+                enemy.m_isElite = true;
+        }
         enemy.spawn(player, id, point[randomPoint], enemyType);
         
         this.enemyPool.push({ '_id': id, '_ent': enemy });
