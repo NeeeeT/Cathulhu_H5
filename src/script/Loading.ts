@@ -113,7 +113,7 @@ export default class Loading extends Laya.Script{
         "UI/Box.png",
         "UI/icon/sprint.png",
         "UI/Gold.png",
-
+        "comp/DebuffBlood.atlas",
         //Mission
         "UI/chioce_mission.png",
         "UI/skull.png",

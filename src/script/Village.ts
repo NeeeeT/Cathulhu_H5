@@ -1,3 +1,4 @@
+import CharacterInit from "./CharacterInit";
 import { ExtraData } from "./ExtraData";
 import MissionManager from "./MissionManager";
 import ZOrderManager from "./ZOrderManager";
@@ -129,6 +130,7 @@ export default class Village extends Laya.Script{
     }
     setReinfoceUI(): void{
         Laya.stage.x = Laya.stage.y = 0;
+        CharacterInit.playerEnt.resetBackgroundPos();
         this.reinforceUI = new Laya.Sprite();
         this.reinforceUI.loadImage("UI/reinforce.png");
         this.reinforceUI.width = 700;
