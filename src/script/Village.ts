@@ -23,7 +23,7 @@ export default class Village extends Laya.Script{
 
     skipIcon: Laya.Sprite;
 
-    c_crystal: number;
+    // c_crystal: number;
     public static gold: number;
     public static hpLevel: number;
     public static atkDmgLevel: number;

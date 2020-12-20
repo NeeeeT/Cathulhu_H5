@@ -1,4 +1,4 @@
-// v1.8.1
+// v1.8.0
 const ideModuleDir = global.ideModuleDir;
 const workSpaceDir = global.workSpaceDir;
 
@@ -149,14 +149,6 @@ gulp.task("generateSign_XM", ["clearTempDir_XM"], function() {
 
 		cp.on('close', (code) => {
 			console.log(`子进程退出码：${code}`);
-			// 签名是否生成成功
-			let 
-				privatePem = path.join(projDir, "private.pem"),
-				certificatePem = path.join(projDir, "certificate.pem");
-			let isSignExits = fs.existsSync(privatePem) && fs.existsSync(certificatePem);
-			if (!isSignExits) {
-				throw new Error("签名生成失败，请检查！");
-			}
 			resolve();
 		});
 	});
@@ -309,11 +301,6 @@ gulp.task("buildRPK_XM", ["version_XM"], function() {
 
 		cp.on('close', (code) => {
 			console.log(`子进程退出码：${code}`);
-			// rpk是否生成成功
-			let distRpkPath = path.join(projDir, "dist", `${config.xmInfo.package}${config.xmInfo.useReleaseSign ? ".release" : ".debug"}.rpk`);
-			if (!fs.existsSync(distRpkPath)) {
-				throw new Error("rpk生成失败，请检查！");
-			}
 			resolve();
 		});
 	});

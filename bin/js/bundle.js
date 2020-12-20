@@ -1676,48 +1676,34 @@
                 'x': this.endingRewardUI.x,
                 'y': this.endingRewardUI.y,
             };
-            this.rewardCrystal = Laya.Pool.getItemByClass("rewardCrystal", Laya.Sprite);
             this.rewardGold = Laya.Pool.getItemByClass("rewardGold", Laya.Sprite);
-            this.rewardCrystalText = Laya.Pool.getItemByClass("rewardCrystalText", Laya.Text);
             this.rewardGoldText = Laya.Pool.getItemByClass("rewardGoldText", Laya.Text);
-            this.rewardCrystal.width = this.rewardGold.width = 50;
-            this.rewardCrystal.height = this.rewardGold.height = 50;
-            this.rewardCrystalText.width = this.rewardGoldText.width = 135;
-            this.rewardCrystalText.height = this.rewardGoldText.height = 35;
-            this.rewardCrystalText.font = this.rewardGoldText.font = "silver";
-            this.rewardCrystalText.fontSize = this.rewardGoldText.fontSize = 50;
-            this.rewardCrystalText.color = this.rewardGoldText.color = "#FCFF56";
-            this.rewardCrystalText.text = '+' + String(this.rewardCrystalValue);
+            this.rewardGold.width = 50;
+            this.rewardGold.height = 50;
+            this.rewardGoldText.width = 135;
+            this.rewardGoldText.height = 35;
+            this.rewardGoldText.font = "silver";
+            this.rewardGoldText.fontSize = 50;
+            this.rewardGoldText.color = "#FCFF56";
             this.rewardGoldText.text = '+' + String(this.rewardGoldValue);
-            this.rewardCrystal.pos(pos['x'] + 98, pos['y'] + 98);
-            this.rewardCrystalText.pos(pos['x'] + 168, pos['y'] + 104);
-            this.rewardGold.pos(pos['x'] + 94, pos['y'] + 154);
-            this.rewardGoldText.pos(pos['x'] + 168, pos['y'] + 161);
-            this.rewardCrystal.loadImage('UI/ending/crystal.png');
+            this.rewardGold.pos(pos['x'] + 94, pos['y'] + 104);
+            this.rewardGoldText.pos(pos['x'] + 168, pos['y'] + 111);
             this.rewardGold.loadImage('UI/ending/gold.png');
             Laya.stage.addChild(this.endingRewardUI);
-            Laya.stage.addChild(this.rewardCrystal);
             Laya.stage.addChild(this.rewardGold);
-            Laya.stage.addChild(this.rewardCrystalText);
             Laya.stage.addChild(this.rewardGoldText);
             ZOrderManager.setZOrder(this.endingRewardUI, 100);
-            ZOrderManager.setZOrder(this.rewardCrystal, 101);
             ZOrderManager.setZOrder(this.rewardGold, 101);
-            ZOrderManager.setZOrder(this.rewardCrystalText, 102);
             ZOrderManager.setZOrder(this.rewardGoldText, 102);
             this.endingUpdateData();
         }
         clearEndRewardUI() {
             this.endingRewardUIToggle = false;
             Laya.stage.removeChild(this.endingRewardUI);
-            Laya.stage.removeChild(this.rewardCrystal);
             Laya.stage.removeChild(this.rewardGold);
-            Laya.stage.removeChild(this.rewardCrystalText);
             Laya.stage.removeChild(this.rewardGoldText);
             Laya.Pool.recover("endingRewardUI", this.endingRewardUI);
-            Laya.Pool.recover("rewardCrystal", this.rewardCrystal);
             Laya.Pool.recover("rewardGold", this.rewardGold);
-            Laya.Pool.recover("rewardCrystalText", this.rewardCrystalText);
             Laya.Pool.recover("rewardGoldText", this.rewardGoldText);
         }
         showBattleInfo() {
@@ -2231,10 +2217,10 @@
             blood.scaleX = 0.7;
             blood.scaleY = 0.7;
             blood.interval = 20;
-            blood.alpha = 0.5;
+            blood.alpha = 0.6;
             ZOrderManager.setZOrder(blood, 5);
             let colorMat = [
-                2, 0, 0, 0, -100,
+                2, 0, 1, 0, -100,
                 0, 1, 0, 0, -100,
                 0, 0, 1, 0, -100,
                 0, 0, 0, 1, 0,
@@ -3003,7 +2989,6 @@
                     this.updateAnimation(this.m_state, CharacterStatus.run, null, false, 100);
             }
             if (this.m_keyDownList[40]) {
-                this.debuffBloodEffect(this.m_animation);
             }
             if (this.m_keyDownList[32]) {
             }
@@ -3168,31 +3153,6 @@
                 this.m_walkeffect.pos(player.x + (this.m_isFacingRight ? -posX : posX), player.y - posY + 10);
             };
             Laya.timer.frameLoop(1, this, walkTimerFunc);
-        }
-        debuffBloodEffect(player) {
-            let blood = Laya.Pool.getItemByClass("blood", Laya.Animation);
-            blood.scaleX = 0.7;
-            blood.scaleY = 0.7;
-            blood.interval = 20;
-            blood.alpha = 0.6;
-            ZOrderManager.setZOrder(blood, 5);
-            let colorMat = [
-                2, 0, 1, 0, -100,
-                0, 1, 0, 0, -100,
-                0, 0, 1, 0, -100,
-                0, 0, 0, 1, 0,
-            ];
-            let colorFilter = new Laya.ColorFilter(colorMat);
-            blood.filters = [colorFilter];
-            blood.pos(this.m_isFacingRight ? player.x - 180 : player.x - 185, player.y - 160);
-            blood.source = "comp/DebuffBlood.atlas";
-            blood.on(Laya.Event.COMPLETE, this, function () {
-                Laya.stage.removeChild(blood);
-                Laya.Pool.recover("blood", blood);
-            });
-            Laya.stage.addChild(blood);
-            ZOrderManager.setZOrder(blood, 60);
-            blood.play();
         }
         setSkill() {
             this.m_catSkill = this.getSkillTypeByExtraData('c', ExtraData.currentData['catSkill']);
