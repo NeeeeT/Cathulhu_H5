@@ -1677,48 +1677,34 @@
                 'x': this.endingRewardUI.x,
                 'y': this.endingRewardUI.y,
             };
-            this.rewardCrystal = Laya.Pool.getItemByClass("rewardCrystal", Laya.Sprite);
             this.rewardGold = Laya.Pool.getItemByClass("rewardGold", Laya.Sprite);
-            this.rewardCrystalText = Laya.Pool.getItemByClass("rewardCrystalText", Laya.Text);
             this.rewardGoldText = Laya.Pool.getItemByClass("rewardGoldText", Laya.Text);
-            this.rewardCrystal.width = this.rewardGold.width = 50;
-            this.rewardCrystal.height = this.rewardGold.height = 50;
-            this.rewardCrystalText.width = this.rewardGoldText.width = 135;
-            this.rewardCrystalText.height = this.rewardGoldText.height = 35;
-            this.rewardCrystalText.font = this.rewardGoldText.font = "silver";
-            this.rewardCrystalText.fontSize = this.rewardGoldText.fontSize = 50;
-            this.rewardCrystalText.color = this.rewardGoldText.color = "#FCFF56";
-            this.rewardCrystalText.text = '+' + String(this.rewardCrystalValue);
+            this.rewardGold.width = 50;
+            this.rewardGold.height = 50;
+            this.rewardGoldText.width = 135;
+            this.rewardGoldText.height = 35;
+            this.rewardGoldText.font = "silver";
+            this.rewardGoldText.fontSize = 50;
+            this.rewardGoldText.color = "#FCFF56";
             this.rewardGoldText.text = '+' + String(this.rewardGoldValue);
-            this.rewardCrystal.pos(pos['x'] + 98, pos['y'] + 98);
-            this.rewardCrystalText.pos(pos['x'] + 168, pos['y'] + 104);
-            this.rewardGold.pos(pos['x'] + 94, pos['y'] + 154);
-            this.rewardGoldText.pos(pos['x'] + 168, pos['y'] + 161);
-            this.rewardCrystal.loadImage('UI/ending/crystal.png');
+            this.rewardGold.pos(pos['x'] + 94, pos['y'] + 104);
+            this.rewardGoldText.pos(pos['x'] + 168, pos['y'] + 111);
             this.rewardGold.loadImage('UI/ending/gold.png');
             Laya.stage.addChild(this.endingRewardUI);
-            Laya.stage.addChild(this.rewardCrystal);
             Laya.stage.addChild(this.rewardGold);
-            Laya.stage.addChild(this.rewardCrystalText);
             Laya.stage.addChild(this.rewardGoldText);
             ZOrderManager.setZOrder(this.endingRewardUI, 100);
-            ZOrderManager.setZOrder(this.rewardCrystal, 101);
             ZOrderManager.setZOrder(this.rewardGold, 101);
-            ZOrderManager.setZOrder(this.rewardCrystalText, 102);
             ZOrderManager.setZOrder(this.rewardGoldText, 102);
             this.endingUpdateData();
         }
         clearEndRewardUI() {
             this.endingRewardUIToggle = false;
             Laya.stage.removeChild(this.endingRewardUI);
-            Laya.stage.removeChild(this.rewardCrystal);
             Laya.stage.removeChild(this.rewardGold);
-            Laya.stage.removeChild(this.rewardCrystalText);
             Laya.stage.removeChild(this.rewardGoldText);
             Laya.Pool.recover("endingRewardUI", this.endingRewardUI);
-            Laya.Pool.recover("rewardCrystal", this.rewardCrystal);
             Laya.Pool.recover("rewardGold", this.rewardGold);
-            Laya.Pool.recover("rewardCrystalText", this.rewardCrystalText);
             Laya.Pool.recover("rewardGoldText", this.rewardGoldText);
         }
         showBattleInfo() {

@@ -634,7 +634,7 @@ export class Fast extends VirtualEnemy {
     m_critical: number;
     m_criticalDmgMultiplier: number;
     m_speed = 7;
-    m_tag = 's';
+    m_tag = 'f';
     m_attackRange = 100;
     m_mdelay = 0.7;
     m_atkTag = "EnemyFastAttack";
@@ -647,9 +647,22 @@ export class Newbie extends VirtualEnemy {
     m_critical: number;
     m_criticalDmgMultiplier: number;
     m_speed = 3;
-    m_tag = 's';
+    m_tag = 'nn';
     m_attackRange = 100;
     m_mdelay = 0.5;
+    m_atkTag = "EnemyNewbieAttack";
+}
+export class EliteEnemy extends VirtualEnemy {
+    m_name = '菁英怪';
+    m_armor = 100;
+    m_health: number;
+    m_dmg: number;
+    m_critical: number;
+    m_criticalDmgMultiplier: number;
+    m_speed = 4;
+    m_tag = 'el';
+    m_attackRange = 120;
+    m_mdelay = 0.2;
     m_atkTag = "EnemyNewbieAttack";
 }
 

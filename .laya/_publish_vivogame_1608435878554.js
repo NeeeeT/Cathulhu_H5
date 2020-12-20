@@ -1,4 +1,4 @@
-// v1.8.2
+// v1.8.1
 const ideModuleDir = global.ideModuleDir;
 const workSpaceDir = global.workSpaceDir;
 
@@ -343,14 +343,6 @@ gulp.task("generateSign_VIVO", ["clearTempDir_VIVO"], function() {
 
 		cp.on('close', (code) => {
 			console.log(`子进程退出码：${code}`);
-			// 签名是否生成成功
-			let 
-				privatePem = path.join(projDir, "private.pem"),
-				certificatePem = path.join(projDir, "certificate.pem");
-			let isSignExits = fs.existsSync(privatePem) && fs.existsSync(certificatePem);
-			if (!isSignExits) {
-				throw new Error("签名生成失败，请检查！");
-			}
 			resolve();
 		});
 	});
@@ -968,11 +960,6 @@ gulp.task("buildRPK_VIVO", ["pluginEngin_VIVO"], function() {
 
 		cp.on('close', (code) => {
 			console.log(`子进程退出码：${code}`);
-			// rpk是否生成成功
-			let distRpkPath = path.join(projDir, "dist", `${config.vivoInfo.package}${config.vivoInfo.useReleaseSign ? ".signed" : ""}.rpk`);
-			if (!fs.existsSync(distRpkPath)) {
-				throw new Error("rpk生成失败，请检查！");
-			}
 			resolve();
 		});
 	});
