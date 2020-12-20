@@ -132,7 +132,14 @@ export default class MissionManager extends Laya.Script {
 
     setEliteIcon(col: number, eliteNum: number): void{
         let eliteIcon: Laya.Sprite = new Laya.Sprite();
-        if(eliteNum > 0) eliteIcon.loadImage("UI/skull.png");
+        if (eliteNum > 0) {
+            console.log("有菁英");
+            
+            eliteIcon.loadImage("UI/skull.png");
+        } else {
+            eliteIcon.loadImage("");
+        }
+        
         eliteIcon.width = 49;
         eliteIcon.height = 66;
         eliteIcon.pos(171 + 198.5 + col * (256 + 34), 135 + 96); 
