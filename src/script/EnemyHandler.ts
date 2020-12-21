@@ -160,20 +160,23 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
     };
     giveRandomAroundBuff(): void{
-        let enemy = EnemyHandler.enemyPool;
         switch (Math.floor(Math.random() * 2)){
             case 0:
                 this.setEnemyEliteColor('green');//heal
                 this.m_buffTimer = setInterval(()=>{
+                    let enemy = EnemyHandler.enemyPool;
                     let enemyFound = enemy.filter(data => ((Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000)) === true);
                     enemyFound.forEach((e) => {
-                        e._ent.m_health += 1000;
+                        // e._ent.m_health += 1000;
+                        e._ent.m_health = (e._ent.m_health + 300 > e._ent.m_maxHealth) ? e._ent.m_maxHealth : e._ent.m_health + 300;
+                        e._ent.damageTextEffect(0, false, true);
                     });
-                }, 5000);
+                }, 500);
                 break;
             case 1:
                 this.setEnemyEliteColor('red');//atk UP
                 this.m_buffTimer = setInterval(()=>{
+                    let enemy = EnemyHandler.enemyPool;
                     let enemyFound = enemy.filter(data => (Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1500));
                     enemyFound.forEach((e) => {
                         e._ent.m_speed *= 1.1;
@@ -183,11 +186,14 @@ export abstract class VirtualEnemy extends Laya.Script {
             default:
                 this.setEnemyEliteColor('green');//heal
                 this.m_buffTimer = setInterval(()=>{
+                    let enemy = EnemyHandler.enemyPool;
                     let enemyFound = enemy.filter(data => ((Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000)) === true);
                     enemyFound.forEach((e) => {
-                        e._ent.m_health += 1000;
+                        // e._ent.m_health += 1000;
+                        e._ent.m_health = (e._ent.m_health + 300 > e._ent.m_maxHealth) ? e._ent.m_maxHealth : e._ent.m_health + 300;
+                        e._ent.damageTextEffect(0, false, true);
                     });
-                }, 5000);
+                }, 500);
                 break;
         }
     }
@@ -270,11 +276,10 @@ export abstract class VirtualEnemy extends Laya.Script {
             this.m_rigidbody.linearVelocity = {x: facingRight?-4.0:4.0, y:0.0};
         }
         this.m_atkTimer = 60;
-        // this.delayMove(1.0);
         this.updateAnimation(this.m_state, EnemyStatus.hurt, null, true, 600);
         this.enemyInjuredColor();
     }
-    private damageTextEffect(amount: number, critical: boolean): void {
+    private damageTextEffect(amount: number, critical: boolean, heal: boolean = false): void {
         let damageText = new Laya.Text();
         //let soundNum: number;
 
@@ -308,6 +313,12 @@ export abstract class VirtualEnemy extends Laya.Script {
 
         Laya.stage.addChild(damageText);
         ZOrderManager.setZOrder(damageText, 80);
+
+        if(heal){
+            damageText.color = '#80ffdb';
+            damageText.text = '+';
+            damageText.fontSize = 55;
+        }
 
         Laya.Tween.to(damageText, { alpha: 0.4, fontSize: damageText.fontSize + 50, y: damageText.y + 80, }, 650, Laya.Ease.linearInOut,
             Laya.Handler.create(this, () => {
