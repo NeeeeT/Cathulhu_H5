@@ -335,16 +335,16 @@ export class BigExplosion extends VirtualSkill {
                 }, this.m_damage);
                 clearInterval(timer);
             }
-            this.attractRangeCheck(owner, {
-                "x": offsetX,
-                "y": offsetY,
-                "r": this.m_radius + 100,
-            });
-            this.attackRangeCheck(owner, {
-                "x": offsetX,
-                "y": offsetY,
-                "r": this.m_radius + 100,
-            }, this.m_dotDamage);
+            // this.attractRangeCheck(owner, {
+            //     "x": offsetX,
+            //     "y": offsetY,
+            //     "r": this.m_radius + 100,
+            // });
+            // this.attackRangeCheck(owner, {
+            //     "x": offsetX,
+            //     "y": offsetY,
+            //     "r": this.m_radius + 100,
+            // }, this.m_dotDamage);
             count += 100;
         }, 100);
 
