@@ -557,16 +557,7 @@
             this.eliteIcons.push(eliteIcon);
         }
         setDifficultyIcon(col, difficulty) {
-            let difficultyStage = 0;
-            if (difficulty > 35 && difficulty <= 50) {
-                difficultyStage = 3;
-            }
-            else if (difficulty > 20 && difficulty <= 35) {
-                difficultyStage = 2;
-            }
-            else if (difficulty >= 5 && difficulty <= 20) {
-                difficultyStage = 1;
-            }
+            let difficultyStage = 3;
             for (let i = 0; i < difficultyStage; i++) {
                 let difficultyIcon_temp = new Laya.Sprite();
                 difficultyIcon_temp.loadImage("UI/star.png");
@@ -665,7 +656,7 @@
                     enemyNum: Math.round((20 + this.roundAddEnemy * MissionManager.missionRound) * (1 + this.missionDifficultyArr[i] / 100)),
                     enemyHp: 1000,
                     enemyAtk: 100,
-                    eliteNum: Math.round(Math.random()),
+                    eliteNum: 1,
                     eliteHpMultiplier: 1.5,
                     eliteAtkMultiplier: 1.5,
                     crystal: 0,
@@ -4315,6 +4306,8 @@
                     this.m_animation.alpha -= 0.1;
                     if (this.m_animation.alpha <= 0) {
                         clearInterval(this.m_deadTimer);
+                        clearInterval(this.m_buffTimer);
+                        this.m_buffTimer = null;
                         this.destroy();
                         EnemyInit.enemyLeftCur--;
                         EnemyHandler.updateEnemies();
