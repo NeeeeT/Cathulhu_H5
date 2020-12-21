@@ -146,10 +146,10 @@ export default class MissionManager extends Laya.Script {
         this.eliteIcons.push(eliteIcon);
     }
     setDifficultyIcon(col: number, difficulty: number): void{
-        let difficultyStage = 0;
-        if (difficulty > 35 && difficulty <= 50) { difficultyStage = 3; }
-        else if (difficulty > 20 && difficulty <= 35) { difficultyStage = 2; }
-        else if (difficulty >= 5 && difficulty <= 20) { difficultyStage = 1; }
+        let difficultyStage = 3;
+        // if (difficulty > 35 && difficulty <= 50) { difficultyStage = 3; }
+        // else if (difficulty > 20 && difficulty <= 35) { difficultyStage = 2; }
+        // else if (difficulty >= 5 && difficulty <= 20) { difficultyStage = 1; }
         for (let i = 0; i < difficultyStage; i++) {
             let difficultyIcon_temp: Laya.Sprite = new Laya.Sprite();
             // if (!Village.isNewbie) difficultyIcon_temp.loadImage("UI/star.png");
@@ -263,7 +263,8 @@ export default class MissionManager extends Laya.Script {
                 // enemyNum: 3,
                 enemyHp: 1000,
                 enemyAtk: 100,
-                eliteNum: Math.round(Math.random()),
+                // eliteNum: Math.round(Math.random()),
+                eliteNum: 1,
                 eliteHpMultiplier: 1.5,
                 eliteAtkMultiplier: 1.5,
                 // crystal: Math.round(100 + 100 * (1 + this.missionDifficultyArr[i] / 100)),

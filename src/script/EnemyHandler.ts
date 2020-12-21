@@ -215,6 +215,8 @@ export abstract class VirtualEnemy extends Laya.Script {
             if(this.m_animation.alpha <= 0)
             {
                 clearInterval(this.m_deadTimer);
+                clearInterval(this.m_buffTimer);
+                this.m_buffTimer = null;
                 this.destroy();
                 EnemyInit.enemyLeftCur--;
                 EnemyHandler.updateEnemies();
