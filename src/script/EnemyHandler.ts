@@ -271,7 +271,7 @@ export abstract class VirtualEnemy extends Laya.Script {
         }
         this.m_atkTimer = 60;
         // this.delayMove(1.0);
-        this.updateAnimation(this.m_state, EnemyStatus.hurt);
+        this.updateAnimation(this.m_state, EnemyStatus.hurt, null, true, 600);
         this.enemyInjuredColor();
     }
     private damageTextEffect(amount: number, critical: boolean): void {
@@ -576,6 +576,7 @@ export abstract class VirtualEnemy extends Laya.Script {
                 break;
             case EnemyStatus.hurt:
                 this.m_animation.source = "normalEnemy/Hit/normalEnemy_hit_highLight.png";
+                this.m_animation.play();
                 break;
             default:
                 this.m_animation.source = 'normalEnemy/Idle.atlas';

@@ -544,8 +544,13 @@
         }
         setEliteIcon(col, eliteNum) {
             let eliteIcon = new Laya.Sprite();
-            if (eliteNum > 0)
+            if (eliteNum > 0) {
+                console.log("有菁英");
                 eliteIcon.loadImage("UI/skull.png");
+            }
+            else {
+                eliteIcon.loadImage("");
+            }
             eliteIcon.width = 49;
             eliteIcon.height = 66;
             eliteIcon.pos(171 + 198.5 + col * (256 + 34), 135 + 96);
@@ -4264,29 +4269,29 @@
                 case 0:
                     this.setEnemyEliteColor('green');
                     this.m_buffTimer = setInterval(() => {
-                        let enemyFound = enemy.filter(data => (Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000));
+                        let enemyFound = enemy.filter(data => ((Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000)) === true);
                         enemyFound.forEach((e) => {
                             e._ent.m_health += 1000;
                         });
-                    }, 1000);
+                    }, 5000);
                     break;
                 case 1:
                     this.setEnemyEliteColor('red');
                     this.m_buffTimer = setInterval(() => {
                         let enemyFound = enemy.filter(data => (Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1500));
                         enemyFound.forEach((e) => {
-                            e._ent.m_speed *= 1.5;
+                            e._ent.m_speed *= 1.1;
                         });
-                    }, 1000);
+                    }, 10000);
                     break;
                 default:
                     this.setEnemyEliteColor('green');
                     this.m_buffTimer = setInterval(() => {
-                        let enemyFound = enemy.filter(data => (Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000));
+                        let enemyFound = enemy.filter(data => ((Math.abs((this.m_animation.x - data._ent.m_animation.x)) < 1000)) === true);
                         enemyFound.forEach((e) => {
                             e._ent.m_health += 1000;
                         });
-                    }, 1000);
+                    }, 5000);
                     break;
             }
         }
@@ -4369,7 +4374,7 @@
                 this.m_rigidbody.linearVelocity = { x: facingRight ? -4.0 : 4.0, y: 0.0 };
             }
             this.m_atkTimer = 60;
-            this.updateAnimation(this.m_state, EnemyStatus.hurt);
+            this.updateAnimation(this.m_state, EnemyStatus.hurt, null, true, 600);
             this.enemyInjuredColor();
         }
         damageTextEffect(amount, critical) {
@@ -4585,6 +4590,7 @@
                     break;
                 case EnemyStatus.hurt:
                     this.m_animation.source = "normalEnemy/Hit/normalEnemy_hit_highLight.png";
+                    this.m_animation.play();
                     break;
                 default:
                     this.m_animation.source = 'normalEnemy/Idle.atlas';
