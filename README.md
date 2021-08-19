@@ -1,20 +1,22 @@
-# Cathulhu_H5
+# HTML5 Cross-platform Game - Cathulhu
 
-貓蘇魯 2D Roguelike Game Design!
+### Online Demo
+<https://cathulhu-h5.web.app/>
+### Description
+It's a simple 2D game developed by LayaAir 2.8.0 Beta and scripted by Typescript.
+(should be work with **version >= 2.8.0**)
+You can just clone the whole repo and open **Cathulhu_H5.laya** file with LayaAir engine.
 
-HTML5 遊戲製作 with Laya2.8 beta engine
+The repo contains many basic features below.
++ Character Movement 
++ Character Ability Enforcement 
++ Character Camera Fololwing(center of screen)
++ Animation Controller(Character、Enemy、Skill, ...etc)
++ Enemy AI System
++ Skill System
++ Background Parallax Scrolling
++ Scene Switching
 
-GAME DEMO ONLINE WEBSITE : https://cathulhu-h5.web.app/
-
-遊戲戰鬥畫面簡圖 2020/10/27
-
+### Screenshots
 ![image](https://github.com/NeeeeT/Cathulhu_H5/blob/master/title.jpg)
 ![image](https://github.com/NeeeeT/Cathulhu_H5/blob/master/title2.png)
-
-```
-for (let i = 0; i < 10; i++) {
-  setTimeout(function () {
-    console.log('這執行第' + i + '次');
-  }, 0);
-}
-```
