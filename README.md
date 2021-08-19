@@ -10,3 +10,11 @@ GAME DEMO ONLINE WEBSITE : https://cathulhu-h5.web.app/
 
 ![image](https://github.com/NeeeeT/Cathulhu_H5/blob/master/title.jpg)
 ![image](https://github.com/NeeeeT/Cathulhu_H5/blob/master/title2.png)
+
+```
+for (let i = 0; i < 10; i++) {
+  setTimeout(function () {
+    console.log('這執行第' + i + '次');
+  }, 0);
+}
+```
