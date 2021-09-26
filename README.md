@@ -10,7 +10,7 @@ You can just clone the whole repo and open **Cathulhu_H5.laya** file with LayaAi
 The repo contains many basic features below.
 + Character Movement 
 + Character Ability Enforcement 
-+ Character Camera Fololwing(center of screen)
++ Character Camera Follower(center of screen)
 + Animation Controller(Character、Enemy、Skill, ...etc)
 + Enemy AI System
 + Skill System
