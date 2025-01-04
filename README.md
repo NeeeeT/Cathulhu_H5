@@ -3,7 +3,7 @@
 ### Online Demo
 <https://cathulhu-h5.web.app/>
 ### Description
-It's a simple 2D game developed using LayaAir 2.8.0 Beta and scripted with TypeScript (should work with versions >= 2.8.0). You can clone the entire repository and open Cathulhu_H5.laya file with the LayaAir engine.
+It's a simple 2D game developed by LayaAir 2.8.0 Beta and scripted with TypeScript (should work with versions >= 2.8.0). You can clone the entire repository and open Cathulhu_H5.laya file with the LayaAir engine.
 
 The repository contains many basic features, including:
 
