@@ -1,5 +1,8 @@
 # HTML5 Cross-platform Game - Cathulhu
 
+### GamePlay Video
+https://www.youtube.com/watch?v=QWR6YKaJxFw
+
 ### Online Demo
 <https://cathulhu-h5.web.app/>
 ### Description
